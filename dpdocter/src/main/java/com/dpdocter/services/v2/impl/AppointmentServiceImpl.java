@@ -548,6 +548,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public Appointment addAppointment(final AppointmentRequest request, Boolean isFormattedResponseRequired) {
 		Appointment response = null;
 		DoctorClinicProfileCollection clinicProfileCollection = null;
+
+		System.out.println(request.getFromDate() + " to " + request.getToDate());
 		try {
 
 			ObjectId doctorId = new ObjectId(request.getDoctorId()), locationId = new ObjectId(request.getLocationId()),
@@ -1435,38 +1437,46 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
+			System.out.println(from + " to " + to);
+
 			DateTime fromDateTime = null, toDateTime = null;
-			if (!DPDoctorUtils.anyStringEmpty(from)) {
-			} else
-				localCalendar.setTime(new Date());
-			int currentDay = localCalendar.get(Calendar.DATE);
-			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-			int currentYear = localCalendar.get(Calendar.YEAR);
+			if (doctorId != null && !doctorId.isEmpty()) {
+				if (!DPDoctorUtils.anyStringEmpty(from)) {
+					localCalendar.setTime(new Date(Long.parseLong(from)));
+				} else {
+					localCalendar.setTime(new Date());
+				}
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
 
-			// DateTime
-			fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				// DateTime
+				fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
-			criteria.and("fromDate").gte(fromDateTime);
+				criteria.and("fromDate").gte(fromDateTime);
 
-			System.out.println("fromDateTime" + fromDateTime);
+				System.out.println("fromDateTime" + fromDateTime);
 
-			if (!DPDoctorUtils.anyStringEmpty(to)) {
-				localCalendar.setTime(new Date(Long.parseLong(to)));
-			} else
-				localCalendar.setTime(new Date());
-			int currentDay1 = localCalendar.get(Calendar.DATE);
-			int currentMonth1 = localCalendar.get(Calendar.MONTH) + 1;
-			int currentYear1 = localCalendar.get(Calendar.YEAR);
+			}
+			if (doctorId != null && !doctorId.isEmpty()) {
+				if (!DPDoctorUtils.anyStringEmpty(to)) {
+					localCalendar.setTime(new Date(Long.parseLong(to)));
+				} else {
+					localCalendar.setTime(new Date());
+				}
+				int currentDay1 = localCalendar.get(Calendar.DATE);
+				int currentMonth1 = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear1 = localCalendar.get(Calendar.YEAR);
 
-			// DateTime
-			toDateTime = new DateTime(currentYear1, currentMonth1, currentDay1, 23, 59, 59,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				// DateTime
+				toDateTime = new DateTime(currentYear1, currentMonth1, currentDay1, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
-			criteria.and("toDate").lte(toDateTime);
-			System.out.println("toDateTime" + toDateTime);
+				criteria.and("toDate").lte(toDateTime);
+				System.out.println("toDateTime" + toDateTime);
+			}
 
-	
 			if (!DPDoctorUtils.anyStringEmpty(fromTime))
 				criteria.and("time.fromTime").is(Integer.parseInt(fromTime));
 
