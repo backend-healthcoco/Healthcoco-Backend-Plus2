@@ -483,7 +483,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Autowired
 	private AcadamicProfileRespository acadamicProfileRespository;
-	
+
 	@Autowired
 	private DoctorCalendarViewRepository doctorCalendarViewRepository;
 
@@ -714,7 +714,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
 			registeredPatientDetails.setImageUrl(patientCollection.getImageUrl());
 			registeredPatientDetails.setThumbnailUrl(patientCollection.getThumbnailUrl());
-			
+
 			registeredPatientDetails.setLanguage(patientCollection.getLanguage());
 			if (referencesCollection != null) {
 				Reference reference = new Reference();
@@ -756,12 +756,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 				 * sendReferenceMessage(patientCollection, locationCollection.getLocationName(),
 				 * referencesCollection.getMobileNumber()); } }
 				 */
-
-				if (locationCollection.getIsPatientWelcomeMessageOn() != null) {
+				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+						.findByDoctorIdAndLocationId(new ObjectId(request.getDoctorId()),
+								new ObjectId(request.getLocationId()));
+				if (doctorClinicProfileCollection != null) {
 					if (locationCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE)) {
 						sendWelcomeMessageToPatient(patientCollection, locationCollection, request.getMobileNumber());
 					}
 				}
+//				if (locationCollection.getIsPatientWelcomeMessageOn() != null) {
+//					if (locationCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE)) {
+//						sendWelcomeMessageToPatient(patientCollection, locationCollection, request.getMobileNumber());
+//					}
+//				}
 
 				pushNotificationServices.notifyUser(request.getDoctorId(), "New patient created.",
 						ComponentType.PATIENT_REFRESH.getType(), null, null);
@@ -1196,7 +1203,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (request.getLocationId() != null) {
 				LocationCollection locationCollection = locationRepository
 						.findById(new ObjectId(request.getLocationId())).orElse(null);
-				if (locationCollection.getIsPatientWelcomeMessageOn() != null) {
+				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+						.findByDoctorIdAndLocationId(new ObjectId(request.getDoctorId()),
+								new ObjectId(request.getLocationId()));
+				if (doctorClinicProfileCollection != null) {
 					if (locationCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE)) {
 						sendWelcomeMessageToPatient(patientCollection, locationCollection, request.getMobileNumber());
 					}
@@ -1217,7 +1227,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return registeredPatientDetails;
 	}
 
-	//@Scheduled(cron = "0 30 12 * * ?", zone = "IST")
+	// @Scheduled(cron = "0 30 12 * * ?", zone = "IST")
 	@Override
 	public Boolean updatePatientAge() {
 		PatientCollection patientCollection = null;
@@ -3246,15 +3256,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 				doctorClinicProfileCollection.setIsActivate(isActivate);
 				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 				UserCollection userCollection = userRepository.findById(new ObjectId(userId)).orElse(null);
-				if(userCollection!=null) {
-					if(isActivate==false)
-				pushNotificationServices.notifyUser(userCollection.getId().toString(),
-						" Your Healthcoco+ account has been deactivated", ComponentType.DEACTIVATED.getType(), null, null);
+				if (userCollection != null) {
+					if (isActivate == false)
+						pushNotificationServices.notifyUser(userCollection.getId().toString(),
+								" Your Healthcoco+ account has been deactivated", ComponentType.DEACTIVATED.getType(),
+								null, null);
 					else
 						pushNotificationServices.notifyUser(userCollection.getId().toString(),
-								" Your Healthcoco+ account has been activated", ComponentType.SIGNED_UP.getType(), null, null);
+								" Your Healthcoco+ account has been activated", ComponentType.SIGNED_UP.getType(), null,
+								null);
 
-				
 				}
 			}
 		} catch (Exception e) {
@@ -3276,10 +3287,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 				doctorClinicProfileCollection.setHasLoginAccess(hasLoginAccess);
 				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 				UserCollection userCollection = userRepository.findById(new ObjectId(userId)).orElse(null);
-				if(userCollection!=null) {
-					if(hasLoginAccess==false)
-				pushNotificationServices.notifyUser(userCollection.getId().toString(),
-						" Your Healthcoco+ clinic login access has been removed", ComponentType.DEACTIVATED.getType(), null, null);
+				if (userCollection != null) {
+					if (hasLoginAccess == false)
+						pushNotificationServices.notifyUser(userCollection.getId().toString(),
+								" Your Healthcoco+ clinic login access has been removed",
+								ComponentType.DEACTIVATED.getType(), null, null);
 				}
 			}
 		} catch (Exception e) {

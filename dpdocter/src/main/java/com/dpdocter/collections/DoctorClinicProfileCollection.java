@@ -168,6 +168,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Field
 	private AppointmentSlot onlineConsultationSlot;
 	
+	@Field
+	private Boolean isPatientWelcomeMessageOn = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -554,6 +557,14 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setClinicOwnershipImageUrl(String clinicOwnershipImageUrl) {
 		this.clinicOwnershipImageUrl = clinicOwnershipImageUrl;
+	}
+
+	public Boolean getIsPatientWelcomeMessageOn() {
+		return isPatientWelcomeMessageOn;
+	}
+
+	public void setIsPatientWelcomeMessageOn(Boolean isPatientWelcomeMessageOn) {
+		this.isPatientWelcomeMessageOn = isPatientWelcomeMessageOn;
 	}
 
 	@Override
