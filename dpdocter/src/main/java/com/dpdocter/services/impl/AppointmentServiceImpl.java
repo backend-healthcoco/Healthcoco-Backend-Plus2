@@ -21,6 +21,7 @@ import javax.mail.MessagingException;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -298,6 +299,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Value(value = "${jasper.print.calender.a4.fileName}")
 	private String calenderA4FileName;
 
+	@Value(value = "${healthcoco.support.number}")
+	private String healthcocoSupportNumber;
 	@Autowired
 	private PatientVisitService patientVisitService;
 
@@ -328,6 +331,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Autowired
 	private PatientTreatmentServices patientTreatmentServices;
+
+	@Autowired
+	private SMSServices smsServices;
 
 	@Override
 	@Transactional
@@ -4433,6 +4439,25 @@ public class AppointmentServiceImpl implements AppointmentService {
 				appointmentCollection.setCheckedOutAt(new Date(System.currentTimeMillis()).getTime());
 				appointmentCollection
 						.setEngagedFor(appointmentCollection.getCheckedOutAt() - appointmentCollection.getEngagedAt());
+
+				// thank you SMS to patient after checkout
+
+				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+						.findByDoctorIdAndLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+
+				PatientCollection patientCollection = patientRepository
+						.findByUserIdAndLocationIdAndHospitalId(patientObjectId, locationObjectId, hospitalObjectId);
+				UserCollection userCollection = userRepository.findById(patientObjectId).orElse(null);
+				LocationCollection locationCollection = locationRepository.findByIdAndHospitalId(locationObjectId,
+						hospitalObjectId);
+
+				if (doctorClinicProfileCollection != null) {
+					if (doctorClinicProfileCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE)) {
+						sendWelcomeMessageToPatient(patientCollection, locationCollection,
+								userCollection.getMobileNumber());
+					}
+				}
+
 			}
 
 			appointmentCollection.setStatus(QueueStatus.valueOf(status));
@@ -4464,6 +4489,45 @@ public class AppointmentServiceImpl implements AppointmentService {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
+	}
+
+	private void sendWelcomeMessageToPatient(PatientCollection patientCollection, LocationCollection locationCollection,
+			String mobileNumber) {
+		try {
+			if (patientCollection != null) {
+				String message = "Dear " + patientCollection.getLocalPatientName() + "," + " Thank you for visiting "
+						+ locationCollection.getLocationName() + ". Call " + healthcocoSupportNumber + " for queries."
+						+ "\n" + "- Healthcoco";
+				message = StringEscapeUtils.unescapeJava(message);
+				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+				smsTrackDetail.setDoctorId(patientCollection.getDoctorId());
+				smsTrackDetail.setLocationId(patientCollection.getLocationId());
+				smsTrackDetail.setHospitalId(patientCollection.getHospitalId());
+				smsTrackDetail.setType("APP_LINK_THROUGH_PRESCRIPTION");
+				SMSDetail smsDetail = new SMSDetail();
+				smsDetail.setUserId(patientCollection.getUserId());
+				SMS sms = new SMS();
+				smsDetail.setUserName(patientCollection.getLocalPatientName());
+				message = message.replace("{patientName}", patientCollection.getLocalPatientName());
+				message = message.replace("{clinicName}", locationCollection.getLocationName());
+				message = message.replace("{clinicNumber}", locationCollection.getClinicNumber());
+				sms.setSmsText(message);
+
+				SMSAddress smsAddress = new SMSAddress();
+				smsAddress.setRecipient(mobileNumber);
+				sms.setSmsAddress(smsAddress);
+
+				smsDetail.setSms(sms);
+				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+				smsDetails.add(smsDetail);
+				smsTrackDetail.setSmsDetails(smsDetails);
+				smsServices.sendSMS(smsTrackDetail, true);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public CustomAppointment addCustomAppointment(CustomAppointment request) {

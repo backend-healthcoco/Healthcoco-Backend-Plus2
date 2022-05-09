@@ -528,10 +528,10 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	@Autowired
 	private ServicesRepository servicesRepository;
-	
+
 	@Autowired
 	private CollectionBoyRepository collectionBoyRepository;
-	
+
 	@Value(value = "${mail.appointment.details.subject}")
 	private String appointmentDetailsSub;
 
@@ -544,39 +544,42 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Value("${send.sms}")
 	private Boolean sendSMS;
 
+	@Value(value = "${smilebird.support.number}")
+	private String smilebirdSupportNumber;
+
 	@Autowired
 	private ProfessionalMembershipRepository professionalMembershipRepository;
-	
+
 	@Autowired
 	SpecialityRepository specialityRepository;
-	
+
 	@Autowired
 	SymptomDiseaseConditionRepository symptomDiseaseConditionRepository;
-	
+
 	@Autowired
 	private ESProfessionalMembershipRepository esProfessionalMembershipRepository;
-	
+
 	@Autowired
 	private MedicalCouncilRepository medicalCouncilRepository;
-	
+
 	@Autowired
 	private ESMedicalCouncilRepository esMedicalCouncilRepository;
-	
+
 	@Autowired
 	private EducationInstituteRepository educationInstituteRepository;
-	
+
 	@Autowired
 	private ESEducationInstituteRepository esEducationInstituteRepository;
-	
+
 	@Autowired
 	private EducationQualificationRepository educationQualificationRepository;
-	
+
 	@Autowired
 	private ESEducationQualificationRepository esEducationQualificationRepository;
-	
+
 	@Autowired
 	private AppointmentRepository appointmentRepository;
-	
+
 	@Scheduled(cron = "${mongo.to.elastic.scheduler.cron.time}", zone = "IST")
 //	@Scheduled(fixedDelay = 18000000)
 	@Override
@@ -585,9 +588,12 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		System.out.println(">>> Scheduled test service <<<");
 		List<TransactionalCollection> transactionalCollections = null;
 		try {
-			
-			transactionalCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("isCached").is(false))).withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), TransactionalCollection.class, TransactionalCollection.class).getMappedResults();
-			
+
+			transactionalCollections = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("isCached").is(false)))
+							.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
+					TransactionalCollection.class, TransactionalCollection.class).getMappedResults();
+
 //			long count = mongoTemplate.count(new Query(new Criteria("isCached").is(false)), TransactionalCollection.class);
 //			long remainingCount = count;
 //			int page = 0;
@@ -598,200 +604,203 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 //						Aggregation.skip(page * size), Aggregation.limit(size)).withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), TransactionalCollection.class, TransactionalCollection.class).getMappedResults();
 
 //				transactionalCollections = transnationalRepositiory.findByIsCached(false);
-				if (transactionalCollections != null) {
-					for (TransactionalCollection transactionalCollection : transactionalCollections) {
-						if (transactionalCollection.getResourceId() != null)
-							switch (transactionalCollection.getResource()) {
+			if (transactionalCollections != null) {
+				for (TransactionalCollection transactionalCollection : transactionalCollections) {
+					if (transactionalCollection.getResourceId() != null)
+						switch (transactionalCollection.getResource()) {
 
-							case PATIENT:
-								checkPatient(transactionalCollection.getResourceId());
-								break;
-							case DRUG:
-								checkDrug(transactionalCollection.getResourceId());
-								break;
-							case DOCTORDRUG:
-								checkDoctorDrug(transactionalCollection.getResourceId());
-								break;
-							case LABTEST:
-								checkLabTest(transactionalCollection.getResourceId());
-								break;
-							case COMPLAINT:
-								checkComplaint(transactionalCollection.getResourceId());
-								break;
-							case DIAGNOSIS:
-								checkDiagnosis(transactionalCollection.getResourceId());
-								break;
-							case DIAGRAM:
-								checkDiagrams(transactionalCollection.getResourceId());
-								break;
-							case INVESTIGATION:
-								checkInvestigation(transactionalCollection.getResourceId());
-								break;
-							case NOTES:
-								checkNotes(transactionalCollection.getResourceId());
-								break;
-							case OBSERVATION:
-								checkObservation(transactionalCollection.getResourceId());
-								break;
-							case CITY:
-								checkCity(transactionalCollection.getResourceId());
-								break;
-							case LANDMARKLOCALITY:
-								checkLandmarkLocality(transactionalCollection.getResourceId());
-								break;
-							case DOCTOR:
-								checkDoctor(transactionalCollection.getResourceId(), null);
-								break;
-							case LOCATION:
-								checkLocation(transactionalCollection.getResourceId());
-								break;
-							case REFERENCE:
-								checkReference(transactionalCollection.getResourceId());
-								break;
-							case DISEASE:
-								checkDisease(transactionalCollection.getResourceId());
-								break;
-							case DIAGNOSTICTEST:
-								checkDiagnosticTest(transactionalCollection.getResourceId());
-								break;
-							case TREATMENTSERVICE:
-								checkTreatmentService(transactionalCollection.getResourceId());
-								break;
-							case TREATMENTSERVICECOST:
-								checkTreatmentServiceCost(transactionalCollection.getResourceId());
-								break;
-							case XRAY:
-								checkXray(transactionalCollection.getResourceId());
-								break;
-							case ADVICE:
-								checkAdvice(transactionalCollection.getResourceId());
-								break;
-							case PRESENT_COMPLAINT:
-								checkPresentComplaint(transactionalCollection.getResourceId());
-								break;
-							case GENERAL_EXAMINATION:
-								checkGeneralExam(transactionalCollection.getResourceId());
-								break;
-							case PROVISIONAL_DIAGNOSIS:
-								checkProvisionalDignosis(transactionalCollection.getResourceId());
-								break;
-							case SYSTEMIC_EXAMINATION:
-								checkSystemExam(transactionalCollection.getResourceId());
-								break;
-							case HISTORY_OF_PRESENT_COMPLAINT:
-								checkPresentComplaintHistory(transactionalCollection.getResourceId());
-								break;
-							case PS:
-								checkPS(transactionalCollection.getResourceId());
-								break;
-							case PA:
-								checkPA(transactionalCollection.getResourceId());
-								break;
-							case PV:
-								checkPV(transactionalCollection.getResourceId());
-								break;
-							case ECHO:
-								checkEcho(transactionalCollection.getResourceId());
-								break;
-							case INDICATION_OF_USG:
-								checkIndicationOfUCG(transactionalCollection.getResourceId());
-								break;
-
-							case ECG:
-								checkECG(transactionalCollection.getResourceId());
-								break;
-
-							case HOLTER:
-								checkHolter(transactionalCollection.getResourceId());
-								break;
-
-							case PHARMACY:
-								checkPharmacy(transactionalCollection.getResourceId());
-								break;
-
-							case PROCEDURE_NOTE:
-								checkProcedureNote(transactionalCollection.getResourceId());
-								break;
-							case PC_NOSE:
-								checkPCNoses(transactionalCollection.getResourceId());
-								break;
-							case PC_EARS:
-								checkPCEars(transactionalCollection.getResourceId());
-								break;
-							case PC_THROAT:
-								checkPCThroat(transactionalCollection.getResourceId());
-								break;
-							case PC_ORAL_CAVITY:
-								checkPCOralCavity(transactionalCollection.getResourceId());
-								break;
-							case EARS_EXAM:
-								checkEarsExam(transactionalCollection.getResourceId());
-								break;
-							case INDIRECT_LARYGOSCOPY_EXAM:
-								checkINdirectExam(transactionalCollection.getResourceId());
-								break;
-							case ORAL_CAVITY_THROAT_EXAM:
-								checkOralCavityAndThroatExam(transactionalCollection.getResourceId());
-								break;
-							case NOSE_EXAM:
-								checkNoseExam(transactionalCollection.getResourceId());
-								break;
-							case NECK_EXAM:
-								checkNeckExam(transactionalCollection.getResourceId());
-								break;
-							case LABOUR_NOTES:
-								checkLabourNotes(transactionalCollection.getResourceId());
-								break;
-
-							case BABY_NOTES:
-								checkBabyNote(transactionalCollection.getResourceId());
-								break;
-
-							case MENSTRUAL_HISTORY:
-								checkmenstrualHistory(transactionalCollection.getResourceId());
-								break;
-							case OBSTETRIC_HISTORY:
-								checkObstresrticHistory(transactionalCollection.getResourceId());
-								break;
-
-							case OPERATION_NOTES:
-								checkOperationNote(transactionalCollection.getResourceId());
-								break;
-							case CEMENT:
-								checkCement(transactionalCollection.getResourceId());
-								break;
-							case IMPLANT:
-								checkImplant(transactionalCollection.getResourceId());
-								break;
-							case EXPENSE_TYPE:
-								checkExpenseType(transactionalCollection.getResourceId());
-								break;
-							case RECIPE:
-								checkRecipe(transactionalCollection.getResourceId());
-								break;
-							case INGREDIENT:
-								checkIngredient(transactionalCollection.getResourceId());
-								break;
-							case NUTRIENT:
-								checkNutrient(transactionalCollection.getResourceId());
-								break;
-							case STATE:
-								break;
-							case SERVICE:checkService(transactionalCollection.getResourceId());
-								break;
-							case SPECIALITY:checkSpeciality(transactionalCollection.getResourceId());
+						case PATIENT:
+							checkPatient(transactionalCollection.getResourceId());
 							break;
-							case SYMPTOM_DISEASE_CONDITION:checkSymptomsDiseasesCondition(transactionalCollection.getResourceId());
+						case DRUG:
+							checkDrug(transactionalCollection.getResourceId());
 							break;
-							default:
-								break;
-							}
-					}
+						case DOCTORDRUG:
+							checkDoctorDrug(transactionalCollection.getResourceId());
+							break;
+						case LABTEST:
+							checkLabTest(transactionalCollection.getResourceId());
+							break;
+						case COMPLAINT:
+							checkComplaint(transactionalCollection.getResourceId());
+							break;
+						case DIAGNOSIS:
+							checkDiagnosis(transactionalCollection.getResourceId());
+							break;
+						case DIAGRAM:
+							checkDiagrams(transactionalCollection.getResourceId());
+							break;
+						case INVESTIGATION:
+							checkInvestigation(transactionalCollection.getResourceId());
+							break;
+						case NOTES:
+							checkNotes(transactionalCollection.getResourceId());
+							break;
+						case OBSERVATION:
+							checkObservation(transactionalCollection.getResourceId());
+							break;
+						case CITY:
+							checkCity(transactionalCollection.getResourceId());
+							break;
+						case LANDMARKLOCALITY:
+							checkLandmarkLocality(transactionalCollection.getResourceId());
+							break;
+						case DOCTOR:
+							checkDoctor(transactionalCollection.getResourceId(), null);
+							break;
+						case LOCATION:
+							checkLocation(transactionalCollection.getResourceId());
+							break;
+						case REFERENCE:
+							checkReference(transactionalCollection.getResourceId());
+							break;
+						case DISEASE:
+							checkDisease(transactionalCollection.getResourceId());
+							break;
+						case DIAGNOSTICTEST:
+							checkDiagnosticTest(transactionalCollection.getResourceId());
+							break;
+						case TREATMENTSERVICE:
+							checkTreatmentService(transactionalCollection.getResourceId());
+							break;
+						case TREATMENTSERVICECOST:
+							checkTreatmentServiceCost(transactionalCollection.getResourceId());
+							break;
+						case XRAY:
+							checkXray(transactionalCollection.getResourceId());
+							break;
+						case ADVICE:
+							checkAdvice(transactionalCollection.getResourceId());
+							break;
+						case PRESENT_COMPLAINT:
+							checkPresentComplaint(transactionalCollection.getResourceId());
+							break;
+						case GENERAL_EXAMINATION:
+							checkGeneralExam(transactionalCollection.getResourceId());
+							break;
+						case PROVISIONAL_DIAGNOSIS:
+							checkProvisionalDignosis(transactionalCollection.getResourceId());
+							break;
+						case SYSTEMIC_EXAMINATION:
+							checkSystemExam(transactionalCollection.getResourceId());
+							break;
+						case HISTORY_OF_PRESENT_COMPLAINT:
+							checkPresentComplaintHistory(transactionalCollection.getResourceId());
+							break;
+						case PS:
+							checkPS(transactionalCollection.getResourceId());
+							break;
+						case PA:
+							checkPA(transactionalCollection.getResourceId());
+							break;
+						case PV:
+							checkPV(transactionalCollection.getResourceId());
+							break;
+						case ECHO:
+							checkEcho(transactionalCollection.getResourceId());
+							break;
+						case INDICATION_OF_USG:
+							checkIndicationOfUCG(transactionalCollection.getResourceId());
+							break;
+
+						case ECG:
+							checkECG(transactionalCollection.getResourceId());
+							break;
+
+						case HOLTER:
+							checkHolter(transactionalCollection.getResourceId());
+							break;
+
+						case PHARMACY:
+							checkPharmacy(transactionalCollection.getResourceId());
+							break;
+
+						case PROCEDURE_NOTE:
+							checkProcedureNote(transactionalCollection.getResourceId());
+							break;
+						case PC_NOSE:
+							checkPCNoses(transactionalCollection.getResourceId());
+							break;
+						case PC_EARS:
+							checkPCEars(transactionalCollection.getResourceId());
+							break;
+						case PC_THROAT:
+							checkPCThroat(transactionalCollection.getResourceId());
+							break;
+						case PC_ORAL_CAVITY:
+							checkPCOralCavity(transactionalCollection.getResourceId());
+							break;
+						case EARS_EXAM:
+							checkEarsExam(transactionalCollection.getResourceId());
+							break;
+						case INDIRECT_LARYGOSCOPY_EXAM:
+							checkINdirectExam(transactionalCollection.getResourceId());
+							break;
+						case ORAL_CAVITY_THROAT_EXAM:
+							checkOralCavityAndThroatExam(transactionalCollection.getResourceId());
+							break;
+						case NOSE_EXAM:
+							checkNoseExam(transactionalCollection.getResourceId());
+							break;
+						case NECK_EXAM:
+							checkNeckExam(transactionalCollection.getResourceId());
+							break;
+						case LABOUR_NOTES:
+							checkLabourNotes(transactionalCollection.getResourceId());
+							break;
+
+						case BABY_NOTES:
+							checkBabyNote(transactionalCollection.getResourceId());
+							break;
+
+						case MENSTRUAL_HISTORY:
+							checkmenstrualHistory(transactionalCollection.getResourceId());
+							break;
+						case OBSTETRIC_HISTORY:
+							checkObstresrticHistory(transactionalCollection.getResourceId());
+							break;
+
+						case OPERATION_NOTES:
+							checkOperationNote(transactionalCollection.getResourceId());
+							break;
+						case CEMENT:
+							checkCement(transactionalCollection.getResourceId());
+							break;
+						case IMPLANT:
+							checkImplant(transactionalCollection.getResourceId());
+							break;
+						case EXPENSE_TYPE:
+							checkExpenseType(transactionalCollection.getResourceId());
+							break;
+						case RECIPE:
+							checkRecipe(transactionalCollection.getResourceId());
+							break;
+						case INGREDIENT:
+							checkIngredient(transactionalCollection.getResourceId());
+							break;
+						case NUTRIENT:
+							checkNutrient(transactionalCollection.getResourceId());
+							break;
+						case STATE:
+							break;
+						case SERVICE:
+							checkService(transactionalCollection.getResourceId());
+							break;
+						case SPECIALITY:
+							checkSpeciality(transactionalCollection.getResourceId());
+							break;
+						case SYMPTOM_DISEASE_CONDITION:
+							checkSymptomsDiseasesCondition(transactionalCollection.getResourceId());
+							break;
+						default:
+							break;
+						}
 				}
+			}
 //				page = page + 1;
 //				remainingCount=remainingCount-transactionalCollections.size();
 //			}
-			
+
 			// Expire invalid otp
 			checkOTP();
 //			addDataFromMongoToElasticSearch();
@@ -802,7 +811,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	}
 
 	// Appointment Reminder to Doctor, if appointment > 0
-	//@Scheduled(cron = "0 35 13 * * ?", zone = "IST")
+	// @Scheduled(cron = "0 35 13 * * ?", zone = "IST")
 	@Scheduled(cron = "${appointment.reminder.to.doctor.cron.time}", zone = "IST")
 	@Override
 	@Transactional
@@ -823,7 +832,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 				Aggregation aggregation = Aggregation.newAggregation(
 						Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type")
-								.is(AppointmentType.APPOINTMENT.getType()).and("fromDate").gte(fromTime).and("toDate")
+								.is(AppointmentType.APPOINTMENT.getType()).and("isDentalChainAppointment").is(false)
+								.and("isDentalChainAppointment").is(false).and("fromDate").gte(fromTime).and("toDate")
 								.lte(toTime)),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 						Aggregation.lookup("user_device_cl", "doctorId", "userIds", "userDevices"),
@@ -879,7 +889,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 //					String message = "Healthcoco! You have " + response.getNoOfAppointments()
 //							+ " appointments scheduled today.%0a" + response.getMessage()
 //							+ ".%0aStay Happy!!";
-					String message="Hi "+userCollection.getFirstName()+" ,you have "+response.getNoOfAppointments()+" appointments scheduled today.-Healthcoco";
+					String message = "Hi " + userCollection.getFirstName() + " ,you have "
+							+ response.getNoOfAppointments() + " appointments scheduled today.-Healthcoco";
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 					smsTrackDetail.setDoctorId(userCollection.getId());
 					smsTrackDetail.setLocationId(response.getLocationId());
@@ -931,7 +942,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
-				RoleCollection roleCollection = roleRepository.findByRoleAndLocationIdIsNullAndHospitalIdIsNull(RoleEnum.LOCATION_ADMIN.getRole());
+				RoleCollection roleCollection = roleRepository
+						.findByRoleAndLocationIdIsNullAndHospitalIdIsNull(RoleEnum.LOCATION_ADMIN.getRole());
 				if (roleCollection != null) {
 					Aggregation aggregation = Aggregation.newAggregation(
 							Aggregation.match(new Criteria("roleId").is(roleCollection.getId())),
@@ -942,14 +954,14 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							Aggregation.lookup("user_device_cl", "userId", "userIds", "userDevices"),
 							Aggregation.lookup("appointment_cl", "locationId", "locationId", "locationAppointments"),
 							Aggregation.unwind("locationAppointments"),
-							Aggregation.match(new Criteria("locationAppointments.state").is(AppointmentState.CONFIRM.getState())
-									.and("locationAppointments.type").is(AppointmentType.APPOINTMENT.getType())
-									.and("locationAppointments.fromDate").gte(fromTime).and("locationAppointments.toDate").lte(toTime)),
-							
-							Aggregation.lookup("user_cl", "locationAppointments.doctorId", "_id", "doctor"), 
+							Aggregation.match(new Criteria("locationAppointments.state")
+									.is(AppointmentState.CONFIRM.getState()).and("locationAppointments.type")
+									.is(AppointmentType.APPOINTMENT.getType()).and("locationAppointments.fromDate")
+									.gte(fromTime).and("locationAppointments.toDate").lte(toTime)),
+
+							Aggregation.lookup("user_cl", "locationAppointments.doctorId", "_id", "doctor"),
 							new CustomAggregationOperation(new Document("$unwind",
-									new BasicDBObject("path", "$doctor")
-											.append("preserveNullAndEmptyArrays", true))),
+									new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("patient_cl", "locationAppointments.patientId", "userId", "patient"),
 
 							new CustomAggregationOperation(new Document("$unwind",
@@ -974,29 +986,23 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 															Arrays.asList("$doctor.title", " ", "$doctor.firstName")))
 											.append("drAppointments.doctorId", "$locationAppointments.doctorId"))),
 
+							new CustomAggregationOperation(
+									new Document("$sort", new BasicDBObject("drAppointments.time.fromTime", 1))),
 
-							new CustomAggregationOperation(new Document("$sort",
-									new BasicDBObject("drAppointments.time.fromTime", 1))),
-							
-							new CustomAggregationOperation(new Document("$group",
-									new BasicDBObject("id", "$locationId")
-											.append("locationId", new BasicDBObject("$first", "$locationId"))
-											.append("userId", new BasicDBObject("$first", "$userId"))
-											.append("locationAdminName",
-													new BasicDBObject("$first", "$locationAdminName"))
-											.append("locationAdminMobileNumber",
-													new BasicDBObject("$first", "$locationAdminMobileNumber"))
-											.append("locationName", new BasicDBObject("$first", "$locationName"))
-											.append("locationAdminEmailAddress",
-													new BasicDBObject("$first", "$locationAdminEmailAddress"))
-											.append("userDevices", new BasicDBObject("$first", "$userDevices"))
-											.append("drAppointments",
-													new BasicDBObject("$addToSet", "$drAppointments")))),
-									
-									new CustomAggregationOperation(new Document("$sort",
-											new BasicDBObject("drAppointments.time.fromTime", 1)))		
-									);
+							new CustomAggregationOperation(new Document("$group", new BasicDBObject("id", "$locationId")
+									.append("locationId", new BasicDBObject("$first", "$locationId"))
+									.append("userId", new BasicDBObject("$first", "$userId"))
+									.append("locationAdminName", new BasicDBObject("$first", "$locationAdminName"))
+									.append("locationAdminMobileNumber",
+											new BasicDBObject("$first", "$locationAdminMobileNumber"))
+									.append("locationName", new BasicDBObject("$first", "$locationName"))
+									.append("locationAdminEmailAddress",
+											new BasicDBObject("$first", "$locationAdminEmailAddress"))
+									.append("userDevices", new BasicDBObject("$first", "$userDevices"))
+									.append("drAppointments", new BasicDBObject("$addToSet", "$drAppointments")))),
 
+							new CustomAggregationOperation(
+									new Document("$sort", new BasicDBObject("drAppointments.time.fromTime", 1))));
 
 					List<LocationAdminAppointmentLookupResponse> aggregationResults = mongoTemplate
 							.aggregate(aggregation, UserRoleCollection.class,
@@ -1026,15 +1032,17 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 											.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
 										DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap
 												.get(appointmentDoctorReminderResponse.getDoctorId().toString());
-										
-										if(!response.getAppointmentIds().contains(new ObjectId(appointmentDoctorReminderResponse.getId()))) {
+
+										if (!response.getAppointmentIds()
+												.contains(new ObjectId(appointmentDoctorReminderResponse.getId()))) {
 											response.setMessage(response.getMessage() + "%0a"
 													+ appointmentDoctorReminderResponse.getLocalPatientName() + "("
 													+ _12HourSDF.format(_24HourDt) + ")");
 											response.getAppointmentIds().add(appointmentDoctorReminderResponse.getId());
 											count = count + 1;
 											doctorAppointmentSMSResponseMap.put(
-													appointmentDoctorReminderResponse.getDoctorId().toString(), response);	
+													appointmentDoctorReminderResponse.getDoctorId().toString(),
+													response);
 										}
 									} else {
 										DoctorAppointmentSMSResponse response = new DoctorAppointmentSMSResponse();
@@ -1053,7 +1061,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							String message = "";
 							for (Entry<String, DoctorAppointmentSMSResponse> entry : doctorAppointmentSMSResponseMap
 									.entrySet()) {
-								
+
 								if (DPDoctorUtils.anyStringEmpty(message))
 									message = entry.getValue().getMessage();
 								else
@@ -1065,18 +1073,19 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						for (Entry<String, LocationAdminAppointmentLookupResponse> entry : locationDetailsMap
 								.entrySet()) {
 							LocationAdminAppointmentLookupResponse response = entry.getValue();
-						//	String message = "Healthcoco! Your clinic " + response.getLocationName() + " have "
-						//			+ response.getTotalAppointments() + " appointments scheduled today.%0a"
-						//			+ response.getMessage() + ".%0aStay Happy!";
-							String message="Hi "+response.getLocationAdminName()+" ,you have "+response.getTotalAppointments()+" appointments scheduled today.-Healthcoco";
-
+							// String message = "Healthcoco! Your clinic " + response.getLocationName() + "
+							// have "
+							// + response.getTotalAppointments() + " appointments scheduled today.%0a"
+							// + response.getMessage() + ".%0aStay Happy!";
+							String message = "Hi " + response.getLocationAdminName() + " ,you have "
+									+ response.getTotalAppointments() + " appointments scheduled today.-Healthcoco";
 
 							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 							smsTrackDetail.setDoctorId(response.getUserId());
-							
-							if(!DPDoctorUtils.anyStringEmpty(response.getLocationId()))
+
+							if (!DPDoctorUtils.anyStringEmpty(response.getLocationId()))
 								smsTrackDetail.setLocationId(new ObjectId(response.getLocationId()));
-							
+
 							smsTrackDetail.setType("APPOINTMENT");
 							SMSDetail smsDetail = new SMSDetail();
 							smsDetail.setUserId(response.getUserId());
@@ -1134,7 +1143,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						Aggregation.unwind("doctorIds"), Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
 						Aggregation.lookup("user_device_cl", "doctorIds", "userIds", "userDevices"),
-						Aggregation.sort(new Sort(Direction.ASC,"time.fromTime")));
+						Aggregation.sort(new Sort(Direction.ASC, "time.fromTime")));
 				AggregationResults<AppointmentDoctorReminderResponse> aggregationResults = mongoTemplate
 						.aggregate(aggregation, AppointmentCollection.class, AppointmentDoctorReminderResponse.class);
 
@@ -1225,7 +1234,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
-			RoleCollection roleCollection = roleRepository.findByRoleAndLocationIdIsNullAndHospitalIdIsNull(RoleEnum.RECEPTIONIST_NURSE.getRole());
+			RoleCollection roleCollection = roleRepository
+					.findByRoleAndLocationIdIsNullAndHospitalIdIsNull(RoleEnum.RECEPTIONIST_NURSE.getRole());
 			if (roleCollection != null) {
 				Aggregation aggregation = Aggregation.newAggregation(
 						Aggregation.match(new Criteria("roleId").is(roleCollection.getId())),
@@ -1264,8 +1274,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 												new BasicDBObject("$concat",
 														Arrays.asList("$doctor.title", " ", "$doctor.firstName")))
 										.append("drAppointments.doctorId", "$locationAppointments.doctorId"))),
-			new CustomAggregationOperation(new Document("$sort",
-								new BasicDBObject("drAppointments.time.fromTime", 1))),
+						new CustomAggregationOperation(
+								new Document("$sort", new BasicDBObject("drAppointments.time.fromTime", 1))),
 						new CustomAggregationOperation(new Document("$group",
 								new BasicDBObject("id", "$locationId")
 										.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -1392,10 +1402,11 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 					String[] type = { "APP_LINK_THROUGH_PRESCRIPTION" };
 					Calendar cal = Calendar.getInstance();
 					cal.add(Calendar.DATE, -5);
-					List<SMSTrackDetail> smsTrackDetails = smsTrackRepository.findByDoctorIdAndLocationIdAndHospitalIdAndSmsDetailsUserIdAndTypeInAndCreatedTimeBetween(
-							prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
-							prescriptionCollection.getHospitalId(), prescriptionCollection.getPatientId(), type,
-							cal.getTime(), new Date(), PageRequest.of(0, 1));
+					List<SMSTrackDetail> smsTrackDetails = smsTrackRepository
+							.findByDoctorIdAndLocationIdAndHospitalIdAndSmsDetailsUserIdAndTypeInAndCreatedTimeBetween(
+									prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
+									prescriptionCollection.getHospitalId(), prescriptionCollection.getPatientId(), type,
+									cal.getTime(), new Date(), PageRequest.of(0, 1));
 
 					if (smsTrackDetails == null || smsTrackDetails.isEmpty()) {
 						String message = downloadAppMessageToPatient;
@@ -1457,17 +1468,15 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				ProjectionOperation projectList = new ProjectionOperation(Fields.from(
 						Fields.field("doctorName", "$user.firstName"), Fields.field("doctorTitle", "$user.title"),
 						Fields.field("patientMobileNumber", "$patient.mobileNumber"),
-						Fields.field("appointmentId", "$appointmentId"),
-						Fields.field("locationId", "$locationId"),
-						Fields.field("doctorId", "$doctorId"),
-						Fields.field("clinicNumber", "$location.clinicNumber"),
+						Fields.field("appointmentId", "$appointmentId"), Fields.field("locationId", "$locationId"),
+						Fields.field("doctorId", "$doctorId"), Fields.field("clinicNumber", "$location.clinicNumber"),
 						Fields.field("locationName", "$location.locationName"), Fields.field("time", "$time"),
 						Fields.field("fromDate", "$fromDate")));
 
 				Aggregation aggregation = Aggregation.newAggregation(
 						Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type")
-								.is(AppointmentType.APPOINTMENT.getType()).and("fromDate").gte(fromTime).and("toDate")
-								.lte(toTime)),
+								.is(AppointmentType.APPOINTMENT.getType()).and("isDentalChainAppointment").is(false)
+								.and("fromDate").gte(fromTime).and("toDate").lte(toTime)),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 						Aggregation.unwind("location"), Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
@@ -1503,8 +1512,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							SMS sms = new SMS();
 							smsTrackDetail.setType("Reminder To Patient");
 							sms.setSmsText("Your appointment with "
-									+ appointmentPatientReminderResponse.getDoctorTitle() 
-									+ appointmentPatientReminderResponse.getDoctorName()+" has been scheduled @"+dateTime
+									+ appointmentPatientReminderResponse.getDoctorTitle()
+									+ appointmentPatientReminderResponse.getDoctorName() + " has been scheduled @"
+									+ dateTime
 									+ (!DPDoctorUtils
 											.anyStringEmpty(appointmentPatientReminderResponse.getLocationName())
 													? (", at " + appointmentPatientReminderResponse.getLocationName())
@@ -1514,7 +1524,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 													? ", " + appointmentPatientReminderResponse.getClinicNumber()
 													: "")
 									+ ". -Healthcoco");
-							
 
 							SMSAddress smsAddress = new SMSAddress();
 							smsAddress.setRecipient(appointmentPatientReminderResponse.getPatientMobileNumber());
@@ -1526,11 +1535,12 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							smsDetails.add(smsDetail);
 							smsTrackDetail.setTemplateId("1307161526616449686");
 							smsTrackDetail.setDoctorId(new ObjectId(appointmentPatientReminderResponse.getDoctorId()));
-							smsTrackDetail.setLocationId(new ObjectId(appointmentPatientReminderResponse.getLocationId()));
+							smsTrackDetail
+									.setLocationId(new ObjectId(appointmentPatientReminderResponse.getLocationId()));
 							smsTrackDetail.setSmsDetails(smsDetails);
-					//		System.out.println(smsTrackDetail);
+							// System.out.println(smsTrackDetail);
 							sMSServices.sendSMS(smsTrackDetail, true);
-							
+
 						}
 					}
 			}
@@ -1556,7 +1566,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Transactional
 	public void updateActivePrescription() {
 		try {
-			List<PrescriptionCollection> prescriptionCollections = prescriptionRepository.findByIsActiveAndItemsExists(true, true);
+			List<PrescriptionCollection> prescriptionCollections = prescriptionRepository
+					.findByIsActiveAndItemsExists(true, true);
 			for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
 				Boolean isActive = false;
 				for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
@@ -1895,7 +1906,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 					LocationCollection locationCollection = null;
 					if (!DPDoctorUtils.anyStringEmpty(doctorClinicProfileCollection.getLocationId())) {
-						locationCollection = locationRepository.findById(doctorClinicProfileCollection.getLocationId()).orElse(null);
+						locationCollection = locationRepository.findById(doctorClinicProfileCollection.getLocationId())
+								.orElse(null);
 					}
 					GeoPoint geoPoint = null;
 
@@ -1966,7 +1978,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						doctorDocument.setProfessionalMemberships(professionalMemberships);
 					}
 
-					
 					esRegistrationService.addDoctor(doctorDocument);
 				}
 			}
@@ -1978,7 +1989,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	public void checkLandmarkLocality(ObjectId resourceId) {
 		try {
-			LandmarkLocalityCollection landmarkLocalityCollection = landmarkLocalityRepository.findById(resourceId).orElse(null);
+			LandmarkLocalityCollection landmarkLocalityCollection = landmarkLocalityRepository.findById(resourceId)
+					.orElse(null);
 			if (landmarkLocalityCollection != null) {
 				ESLandmarkLocalityDocument esLocalityLandmarkDocument = new ESLandmarkLocalityDocument();
 				BeanUtil.map(landmarkLocalityCollection, esLocalityLandmarkDocument);
@@ -2035,7 +2047,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	public void checkDiagnosticTest(ObjectId resourceId) {
 		try {
-			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findById(resourceId).orElse(null);
+			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findById(resourceId)
+					.orElse(null);
 			if (diagnosticTestCollection != null) {
 				ESDiagnosticTestDocument esDiagnosticTestDocument = new ESDiagnosticTestDocument();
 				BeanUtil.map(diagnosticTestCollection, esDiagnosticTestDocument);
@@ -2049,7 +2062,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	public void checkTreatmentService(ObjectId resourceId) {
 		try {
-			TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findById(resourceId).orElse(null);
+			TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findById(resourceId)
+					.orElse(null);
 			if (treatmentServicesCollection != null) {
 				ESTreatmentServiceDocument esTreatmentServiceDocument = new ESTreatmentServiceDocument();
 				BeanUtil.map(treatmentServicesCollection, esTreatmentServiceDocument);
@@ -2111,8 +2125,10 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			LocaleCollection localeCollection = localeRepository.findById(resourceId).orElse(null);
 			UserCollection userCollection = null;
 			if (localeCollection != null) {
-				List<UserCollection> userCollections = userRepository.findByMobileNumberAndUserState(localeCollection.getContactNumber(), "PHARMACY");
-				if(userCollections!= null && !userCollections.isEmpty())userCollection = userCollections.get(0);
+				List<UserCollection> userCollections = userRepository
+						.findByMobileNumberAndUserState(localeCollection.getContactNumber(), "PHARMACY");
+				if (userCollections != null && !userCollections.isEmpty())
+					userCollection = userCollections.get(0);
 			}
 
 			if (localeCollection != null && userCollection != null) {
@@ -2221,7 +2237,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkIndicationOfUCG(ObjectId resourceId) {
 		try {
 
-			IndicationOfUSGCollection indicationOfUCGCollection = indicationOfUSGRepository.findById(resourceId).orElse(null);
+			IndicationOfUSGCollection indicationOfUCGCollection = indicationOfUSGRepository.findById(resourceId)
+					.orElse(null);
 			if (indicationOfUCGCollection != null) {
 				ESIndicationOfUSGDocument esIndicationOfUSGDocument = new ESIndicationOfUSGDocument();
 				BeanUtil.map(indicationOfUCGCollection, esIndicationOfUSGDocument);
@@ -2298,7 +2315,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkPresentComplaint(ObjectId resourceId) {
 		try {
 
-			PresentComplaintCollection presentComplaintCollection = presentComplaintRepository.findById(resourceId).orElse(null);
+			PresentComplaintCollection presentComplaintCollection = presentComplaintRepository.findById(resourceId)
+					.orElse(null);
 			if (presentComplaintCollection != null) {
 				ESPresentComplaintDocument esPresentComplaintDocument = new ESPresentComplaintDocument();
 				BeanUtil.map(presentComplaintCollection, esPresentComplaintDocument);
@@ -2377,7 +2395,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkPCEars(ObjectId resourceId) {
 		try {
 
-			PresentingComplaintEarsCollection earsCollection = presentingComplaintEarsRepository.findById(resourceId).orElse(null);
+			PresentingComplaintEarsCollection earsCollection = presentingComplaintEarsRepository.findById(resourceId)
+					.orElse(null);
 			if (earsCollection != null) {
 				ESPresentingComplaintEarsDocument earsDocument = new ESPresentingComplaintEarsDocument();
 				BeanUtil.map(earsCollection, earsDocument);
@@ -2392,7 +2411,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkNoseExam(ObjectId resourceId) {
 		try {
 
-			NoseExaminationCollection noseExaminationCollection = noseExaminationRepository.findById(resourceId).orElse(null);
+			NoseExaminationCollection noseExaminationCollection = noseExaminationRepository.findById(resourceId)
+					.orElse(null);
 			if (noseExaminationCollection != null) {
 				ESNoseExaminationDocument noseExaminationDocument = new ESNoseExaminationDocument();
 				BeanUtil.map(noseExaminationCollection, noseExaminationDocument);
@@ -2439,7 +2459,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkNeckExam(ObjectId resourceId) {
 		try {
 
-			NeckExaminationCollection neckExaminationCollection = neckExaminationRepository.findById(resourceId).orElse(null);
+			NeckExaminationCollection neckExaminationCollection = neckExaminationRepository.findById(resourceId)
+					.orElse(null);
 			if (neckExaminationCollection != null) {
 				ESNeckExaminationDocument examinationDocument = new ESNeckExaminationDocument();
 				BeanUtil.map(neckExaminationCollection, examinationDocument);
@@ -2454,7 +2475,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkEarsExam(ObjectId resourceId) {
 		try {
 
-			EarsExaminationCollection earsExaminationCollection = earsExaminationRepository.findById(resourceId).orElse(null);
+			EarsExaminationCollection earsExaminationCollection = earsExaminationRepository.findById(resourceId)
+					.orElse(null);
 			if (earsExaminationCollection != null) {
 				ESEarsExaminationDocument examinationDocument = new ESEarsExaminationDocument();
 				BeanUtil.map(earsExaminationCollection, examinationDocument);
@@ -2579,7 +2601,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				ESExpenseTypeDocument expenseDocument = new ESExpenseTypeDocument();
 				BeanUtil.map(typeCollection, expenseDocument);
 				exExpenseTypeService.addEditExpenseType(expenseDocument);
-	
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2640,12 +2662,12 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				BeanUtil.map(services, esServicesDocument);
 				esMasterService.addEditServices(esServicesDocument);
 			}
-		}catch (Exception e) {
-				e.printStackTrace();
-				logger.error(e);
-			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
 	}
-	
+
 	private void checkSpeciality(ObjectId resourceId) {
 		try {
 			SpecialityCollection specialityCollection = specialityRepository.findById(resourceId).orElse(null);
@@ -2654,26 +2676,27 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				BeanUtil.map(specialityCollection, esSpecialityDocument);
 				esMasterService.addEditSpecialities(esSpecialityDocument);
 			}
-		}catch (Exception e) {
-				e.printStackTrace();
-				logger.error(e);
-			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
 	}
-	
+
 	private void checkSymptomsDiseasesCondition(ObjectId resourceId) {
 		try {
-			SymptomDiseaseConditionCollection symptomDiseaseConditionCollection = symptomDiseaseConditionRepository.findById(resourceId).orElse(null);
+			SymptomDiseaseConditionCollection symptomDiseaseConditionCollection = symptomDiseaseConditionRepository
+					.findById(resourceId).orElse(null);
 			if (symptomDiseaseConditionCollection != null) {
 				ESSymptomDiseaseConditionDocument esSymptomDiseaseConditionDocument = new ESSymptomDiseaseConditionDocument();
 				BeanUtil.map(symptomDiseaseConditionCollection, esSymptomDiseaseConditionDocument);
 				esMasterService.addEditSymptomDiseaseConditionDocument(esSymptomDiseaseConditionDocument);
 			}
-		}catch (Exception e) {
-				e.printStackTrace();
-				logger.error(e);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
 		}
 	}
-	
+
 	public Boolean addDataFromMongoToElasticSearch() {
 		try {
 			System.out.println("addDataFromMongoToElasticSearch");
@@ -2926,7 +2949,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			}
 			System.out.println("added present complaint nose");
 
-
 			List<NoseExaminationCollection> noseExaminationCollections = noseExaminationRepository.findAll();
 			if (noseExaminationCollections != null) {
 				for (NoseExaminationCollection noseExaminationCollection : noseExaminationCollections) {
@@ -3131,7 +3153,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			}
 			System.out.println("added nutrients");
 
-			
 			List<LabTestCollection> labTestCollections = labTestRepository.findAll();
 			if (labTestCollections != null) {
 				for (LabTestCollection labTestCollection : labTestCollections) {
@@ -3212,12 +3233,12 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				}
 			}
 			System.out.println("added diagnosticTest");
-			
+
 			long drugCount = drugRepository.count();
 			long remainingDrugCount = drugCount;
 			int page = 0;
-			while(remainingDrugCount>0) {
-				
+			while (remainingDrugCount > 0) {
+
 				List<DrugCollection> drugCollections = drugRepository.findAll(PageRequest.of(page, 10000)).getContent();
 				if (drugCollections != null) {
 					for (DrugCollection drugCollection : drugCollections) {
@@ -3231,7 +3252,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 					}
 				}
 				page = page + 1;
-				remainingDrugCount=remainingDrugCount-drugCollections.size();
+				remainingDrugCount = remainingDrugCount - drugCollections.size();
 			}
 			System.out.println("added drugs");
 
@@ -3256,5 +3277,210 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 		return true;
 	}
-	
+
+	// Smilebird Appointment Reminder to Patient
+	@Scheduled(cron = "0 35 9 * * *", zone = "IST")
+	@Override
+	@Transactional
+	public void sendSmilebirdAppointmentReminderToPatient() {
+		try {
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+
+			localCalendar.setTime(new Date());
+			int currentDayFromTime = localCalendar.get(Calendar.DATE);
+			int currentMonthFromTime = localCalendar.get(Calendar.MONTH) + 1;
+			int currentYearFromTime = localCalendar.get(Calendar.YEAR);
+			DateTime fromTime = new DateTime(currentYearFromTime, currentMonthFromTime, currentDayFromTime, 0, 0, 0,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+			localCalendar.setTime(new Date());
+			int currentDay = localCalendar.get(Calendar.DATE);
+			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+			int currentYear = localCalendar.get(Calendar.YEAR);
+			DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
+					Fields.field("doctorName", "$user.firstName"), Fields.field("doctorTitle", "$user.title"),
+					Fields.field("patientName", "$patient.firstName"),
+					Fields.field("patientMobileNumber", "$patient.mobileNumber"),
+					Fields.field("appointmentId", "$appointmentId"), Fields.field("locationId", "$locationId"),
+					Fields.field("doctorId", "$doctorId"), Fields.field("clinicNumber", "$location.clinicNumber"),
+					Fields.field("locationName", "$location.locationName"), Fields.field("time", "$time"),
+					Fields.field("fromDate", "$fromDate")));
+
+			Aggregation aggregation = Aggregation.newAggregation(
+					Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type")
+							.is(AppointmentType.APPOINTMENT.getType()).and("isDentalChainAppointment").is(true)
+							.and("fromDate").gte(fromTime).and("toDate").lte(toTime)),
+					Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
+					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
+					Aggregation.lookup("user_cl", "patientId", "_id", "patient"), Aggregation.unwind("patient"),
+					projectList);
+			AggregationResults<AppointmentPatientReminderResponse> aggregationResults = mongoTemplate
+					.aggregate(aggregation, AppointmentCollection.class, AppointmentPatientReminderResponse.class);
+
+			List<AppointmentPatientReminderResponse> appointmentPatientReminderResponses = aggregationResults
+					.getMappedResults();
+
+			if (appointmentPatientReminderResponses != null && !appointmentPatientReminderResponses.isEmpty())
+				for (AppointmentPatientReminderResponse appointmentPatientReminderResponse : appointmentPatientReminderResponses) {
+					SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
+
+					String _24HourTime = String.format("%02d:%02d",
+							appointmentPatientReminderResponse.getTime().getFromTime() / 60,
+							appointmentPatientReminderResponse.getTime().getFromTime() % 60);
+					SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+					SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+					sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+					_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+					_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+
+					Date _24HourDt = _24HourSDF.parse(_24HourTime);
+					String dateTime = _12HourSDF.format(_24HourDt) + ", "
+							+ sdf.format(appointmentPatientReminderResponse.getFromDate());
+
+					if (!DPDoctorUtils.anyStringEmpty(appointmentPatientReminderResponse.getPatientMobileNumber())) {
+
+						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+						SMSDetail smsDetail = new SMSDetail();
+						SMS sms = new SMS();
+						smsTrackDetail.setType("Reminder To Patient");
+						sms.setSmsText("Hi " + appointmentPatientReminderResponse.getPatientName() + ","
+								+ " You have an upcoming appointment" + "(ID:"
+								+ appointmentPatientReminderResponse.getAppointmentId() + ")" + " scheduled @"
+								+ dateTime
+								+ (!DPDoctorUtils.anyStringEmpty(appointmentPatientReminderResponse.getLocationName())
+										? (", at " + appointmentPatientReminderResponse.getLocationName())
+										: "")
+								+ "." + " If you need any help, reach out to us at" + smilebirdSupportNumber + "."
+								+ "\nOur Dental Studio address link- "
+								+ appointmentPatientReminderResponse.getGoogleMapShortUrl() + "." + "\n"
+								+ "Team Smilebird");
+
+						SMSAddress smsAddress = new SMSAddress();
+						smsAddress.setRecipient(appointmentPatientReminderResponse.getPatientMobileNumber());
+						sms.setSmsAddress(smsAddress);
+
+						smsDetail.setSms(sms);
+						smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+						List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+						smsDetails.add(smsDetail);
+						smsTrackDetail.setTemplateId("1307165106752071733");
+						smsTrackDetail.setDoctorId(new ObjectId(appointmentPatientReminderResponse.getDoctorId()));
+						smsTrackDetail.setLocationId(new ObjectId(appointmentPatientReminderResponse.getLocationId()));
+						smsTrackDetail.setSmsDetails(smsDetails);
+						sMSServices.sendDentalChainSMS(smsTrackDetail, true);
+					}
+				}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	// Smilebird Appointment Reminder to Doctor, if appointment > 0
+	@Scheduled(cron = "0 35 9 * * *", zone = "IST")
+	@Override
+	@Transactional
+	public void sendSmilebirdAppointmentReminderToDoctor() {
+		try {
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+
+			localCalendar.setTime(new Date());
+			int currentDay = localCalendar.get(Calendar.DATE);
+			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+			int currentYear = localCalendar.get(Calendar.YEAR);
+			DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+			DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+			Aggregation aggregation = Aggregation.newAggregation(
+					Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type")
+							.is(AppointmentType.APPOINTMENT.getType()).and("isDentalChainAppointment").is(true)
+							.and("fromDate").gte(fromTime).and("toDate").lte(toTime)),
+					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+					Aggregation.lookup("user_device_cl", "doctorId", "userIds", "userDevices"),
+					Aggregation.sort(new Sort(Direction.ASC, "time.fromTime")));
+			AggregationResults<AppointmentDoctorReminderResponse> aggregationResults = mongoTemplate
+					.aggregate(aggregation, AppointmentCollection.class, AppointmentDoctorReminderResponse.class);
+
+			List<AppointmentDoctorReminderResponse> appointmentDoctorReminderResponses = aggregationResults
+					.getMappedResults();
+			Map<String, DoctorAppointmentSMSResponse> doctorAppointmentSMSResponseMap = new HashMap<String, DoctorAppointmentSMSResponse>();
+
+			SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+			SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+
+			if (appointmentDoctorReminderResponses != null && !appointmentDoctorReminderResponses.isEmpty())
+				for (AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : appointmentDoctorReminderResponses) {
+					PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
+							new ObjectId(appointmentDoctorReminderResponse.getPatientId()),
+							appointmentDoctorReminderResponse.getLocationId(),
+							appointmentDoctorReminderResponse.getHospitalId());
+
+					String _24HourTime = String.format("%02d:%02d",
+							appointmentDoctorReminderResponse.getTime().getFromTime() / 60,
+							appointmentDoctorReminderResponse.getTime().getFromTime() % 60);
+
+					Date _24HourDt = _24HourSDF.parse(_24HourTime);
+
+					if (doctorAppointmentSMSResponseMap
+							.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
+						DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap
+								.get(appointmentDoctorReminderResponse.getDoctorId().toString());
+						response.setMessage(response.getMessage() + "%0a" + patientCollection.getLocalPatientName()
+								+ "(" + _12HourSDF.format(_24HourDt) + ")");
+						response.setNoOfAppointments(response.getNoOfAppointments() + 1);
+						response.setLocationId(appointmentDoctorReminderResponse.getLocationId());
+						doctorAppointmentSMSResponseMap.put(appointmentDoctorReminderResponse.getDoctorId().toString(),
+								response);
+					} else {
+						DoctorAppointmentSMSResponse response = new DoctorAppointmentSMSResponse();
+						response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
+						response.setMessage(
+								patientCollection.getLocalPatientName() + "(" + _12HourSDF.format(_24HourDt) + ")");
+						response.setNoOfAppointments(1);
+						response.setLocationId(appointmentDoctorReminderResponse.getLocationId());
+						response.setUserDevices(appointmentDoctorReminderResponse.getUserDevices());
+						doctorAppointmentSMSResponseMap.put(appointmentDoctorReminderResponse.getDoctorId().toString(),
+								response);
+					}
+				}
+			for (Entry<String, DoctorAppointmentSMSResponse> entry : doctorAppointmentSMSResponseMap.entrySet()) {
+				DoctorAppointmentSMSResponse response = entry.getValue();
+				UserCollection userCollection = response.getDoctor();
+				final String doctorName = userCollection.getTitle() + " " + userCollection.getFirstName();
+
+				String message = "Hello " + doctorName + " ,you have " + response.getNoOfAppointments()
+						+ " appointments scheduled today.\nTeam Smilebird";
+				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+				smsTrackDetail.setDoctorId(userCollection.getId());
+				smsTrackDetail.setLocationId(response.getLocationId());
+				smsTrackDetail.setType("APPOINTMENT");
+				smsTrackDetail.setTemplateId("1307165105267069320");
+				SMSDetail smsDetail = new SMSDetail();
+				smsDetail.setUserId(userCollection.getId());
+				SMS sms = new SMS();
+				smsDetail.setUserName(userCollection.getFirstName());
+				sms.setSmsText(message);
+
+				SMSAddress smsAddress = new SMSAddress();
+				smsAddress.setRecipient(userCollection.getMobileNumber());
+				sms.setSmsAddress(smsAddress);
+
+				smsDetail.setSms(sms);
+				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+				smsDetails.add(smsDetail);
+				smsTrackDetail.setSmsDetails(smsDetails);
+				sMSServices.sendDentalChainSMS(smsTrackDetail, true);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
 }

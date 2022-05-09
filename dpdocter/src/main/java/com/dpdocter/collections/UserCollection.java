@@ -102,6 +102,22 @@ public class UserCollection extends GenericCollection {
 	
 	
 	
+	public Boolean getIsDentalChainVerified() {
+		return isDentalChainVerified;
+	}
+
+	public void setIsDentalChainVerified(Boolean isDentalChainVerified) {
+		this.isDentalChainVerified = isDentalChainVerified;
+	}
+
+	public Boolean getIsDentalChainPatient() {
+		return isDentalChainPatient;
+	}
+
+	public void setIsDentalChainPatient(Boolean isDentalChainPatient) {
+		this.isDentalChainPatient = isDentalChainPatient;
+	}
+
 	public ObjectId getId() {
 		return id;
 	}

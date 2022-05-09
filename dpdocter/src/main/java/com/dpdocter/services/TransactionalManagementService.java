@@ -1,3 +1,4 @@
+
 package com.dpdocter.services;
 
 import org.bson.types.ObjectId;
@@ -51,5 +52,9 @@ public interface TransactionalManagementService {
 	void sendEventReminderToDoctor();
 
 	Boolean addDataFromMongoToElasticSearch();
+
+	void sendSmilebirdAppointmentReminderToPatient();
+
+	void sendSmilebirdAppointmentReminderToDoctor();
 
 }

@@ -487,6 +487,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Autowired
 	private DoctorCalendarViewRepository doctorCalendarViewRepository;
 
+	@Value(value = "${healthcoco.support.number}")
+	private String healthcocoSupportNumber;
+
 	@Override
 	@Transactional
 	public User checkIfPatientExist(PatientRegistrationRequest request) {
@@ -760,7 +763,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 						.findByDoctorIdAndLocationId(new ObjectId(request.getDoctorId()),
 								new ObjectId(request.getLocationId()));
 				if (doctorClinicProfileCollection != null) {
-					if (locationCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE)) {
+					if (doctorClinicProfileCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE)) {
 						sendWelcomeMessageToPatient(patientCollection, locationCollection, request.getMobileNumber());
 					}
 				}
@@ -5276,9 +5279,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private void sendWelcomeMessageToPatient(PatientCollection patientCollection, LocationCollection locationCollection,
 			String mobileNumber) {
 		try {
-
 			if (patientCollection != null) {
-				String message = patientWelcomeMessage;
+				String message = "Dear " + patientCollection.getLocalPatientName() + "," + " Thank you for visiting "
+						+ locationCollection.getLocationName() + ". Call " + healthcocoSupportNumber + " for queries."
+						+ "\n" + "- Healthcoco";
 				message = StringEscapeUtils.unescapeJava(message);
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 				smsTrackDetail.setDoctorId(patientCollection.getDoctorId());
@@ -5678,6 +5682,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 		return response;
 
+	}
+
+	@Override
+	public Boolean updateShowPatient(String doctorId, Boolean isShowPatientNumber, String locationId) {
+		Boolean response = false;
+		DoctorClinicProfileCollection doctorClinicProfile = doctorClinicProfileRepository
+				.findByDoctorIdAndLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+		if (doctorClinicProfile != null) {
+			doctorClinicProfile.setIsShowPatientNumber(isShowPatientNumber);
+			doctorClinicProfile = doctorClinicProfileRepository.save(doctorClinicProfile);
+			response = true;
+		}
+		return response;
 	}
 
 }

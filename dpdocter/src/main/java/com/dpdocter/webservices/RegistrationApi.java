@@ -136,7 +136,7 @@ public class RegistrationApi {
 			throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
 		}
 
-		System.out.println("lang"+request.getLanguage());
+		System.out.println("lang" + request.getLanguage());
 		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 		RegisteredPatientDetails registeredPatientDetails = null;
 
@@ -196,8 +196,8 @@ public class RegistrationApi {
 				throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
 			}
 		}
-		
-		System.out.println("lang"+request.getLanguage());
+
+		System.out.println("lang" + request.getLanguage());
 
 		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 		RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request,
@@ -1400,4 +1400,17 @@ public class RegistrationApi {
 
 	}
 
+	@Path(value = PathProxy.RegistrationUrls.UPDATE_SHOW_PATIENT_NUMBER)
+	@GET
+	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_SHOW_PATIENT_NUMBER, notes = PathProxy.RegistrationUrls.UPDATE_SHOW_PATIENT_NUMBER)
+	public Response<Boolean> updateShowPatient(@PathParam("doctorId") String doctorId,@PathParam("locationId") String locationId,
+			@DefaultValue("false") @QueryParam("isShowPatientNumber") Boolean isShowPatientNumber) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId,locationId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor ,location Id could not null");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(registrationService.updateShowPatient(doctorId, isShowPatientNumber,locationId));
+		return response;
+	}
 }

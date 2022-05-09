@@ -37,6 +37,7 @@ import com.dpdocter.beans.v2.RegisteredPatientDetails;
 import com.dpdocter.collections.ExportContactsRequestCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.ImportContactsRequestCollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.collections.UserCollection;
@@ -48,6 +49,7 @@ import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.ExportContactsRequestRepository;
 import com.dpdocter.repository.GroupRepository;
 import com.dpdocter.repository.ImportContactsRequestRepository;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientGroupRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrescriptionRepository;
@@ -79,6 +81,9 @@ public class ContactsServiceImpl implements ContactsService {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
+
+	@Autowired
+	private LocationRepository locationRepository;
 
 	@Autowired
 	private GroupRepository groupRepository;
@@ -318,26 +323,16 @@ public class ContactsServiceImpl implements ContactsService {
 		patientCards = aggregationResults.getMappedResults();
 		if (patientCards != null) {
 			for (PatientCard patientCard : patientCards) {
-				patientCard.setColorCode(patientCard.getUser().getColorCode());
+//				LocationCollection locationCollection = locationRepository.findById(new ObjectId(patientCard.getLocationId())).orElse(null);
+//				String mobileNumber = patientCard.getUser().getMobileNumber();
+//				if (locationCollection.getIsDentalChain()) {
+//					patientCard.setMobileNumber(mobileNumber.replaceAll("\\w(?=\\w{4})", "*"));
+//				} else
 				patientCard.setMobileNumber(patientCard.getUser().getMobileNumber());
+				patientCard.setColorCode(patientCard.getUser().getColorCode());
 				patientCard.setDoctorSepecificPatientId(patientCard.getUserId().toString());
 				patientCard.setId(patientCard.getUserId());
 				patientCard.setUser(null);
-				// calculate age of patient upto today
-//				if (patientCard.getDob() != null) {
-//					if(patientCard.getDob().getDays() > 0 && patientCard.getDob().getMonths() > 0 && patientCard.getDob().getYears() > 0) {
-//					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
-//					LocalDate today = LocalDate.now();
-//					LocalDate birthday = LocalDate.parse(patientCard.getDob().getDays()+"/"+patientCard.getDob().getMonths()
-//							+"/"+patientCard.getDob().getYears(), formatter);
-//
-//					Period p = Period.between(birthday, today);
-//									
-//					patientCard.getDob().getAge().setDays(p.getDays());
-//					patientCard.getDob().getAge().setMonths(p.getMonths());
-//					patientCard.getDob().getAge().setYears(p.getYears());
-//					}
-//				}
 			}
 			response = new DoctorContactsResponse();
 			response.setPatientCards(patientCards);

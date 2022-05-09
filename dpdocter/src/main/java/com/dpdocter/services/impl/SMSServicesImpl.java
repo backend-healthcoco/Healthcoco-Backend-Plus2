@@ -173,6 +173,8 @@ public class SMSServicesImpl implements SMSServices {
 	@Autowired
 	private DoctorRepository doctorRepository;
 
+	@Value(value = "${SMILEBIRD_SENDER_ID}")
+	private String SMILEBIRD_SENDER_ID;
 
 	
 //	@Override
@@ -1337,6 +1339,60 @@ public class SMSServicesImpl implements SMSServices {
 	public Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, String otp, Boolean save) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Boolean sendDentalChainSMS(SMSTrackDetail smsTrackDetail, boolean save) {
+		Boolean response = false;
+		String responseId = null;
+		try {
+			String type = "TXN";
+			String message = smsTrackDetail.getSmsDetails().get(0).getSms().getSmsText();
+			String mobileNumber = smsTrackDetail.getSmsDetails().get(0).getSms().getSmsAddress().getRecipient();
+			String strUrl = "https://api.ap.kaleyra.io/v1/" + SID + "/messages";
+
+			String senderId = SMILEBIRD_SENDER_ID;
+
+			ObjectMapper mapper = new ObjectMapper();
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			MessageResponse list = null;
+
+			HttpClient client = HttpClients.custom().build();
+			HttpUriRequest httprequest = RequestBuilder.post().addParameter("to", COUNTRY_CODE + mobileNumber)
+					.addParameter("type", type).addParameter("body", message).addParameter("sender", SMILEBIRD_SENDER_ID)
+					.addParameter("template_id", smsTrackDetail.getTemplateId()).setUri(strUrl)
+					.setHeader("api-key", KEY).build();
+			System.out.println("senderId" + senderId);
+			org.apache.http.HttpResponse responses = client.execute(httprequest);
+			responses.getEntity().writeTo(out);
+			list = mapper.readValue(out.toString(), MessageResponse.class);
+
+			if (save) {
+				String responseString = out.toString();
+				System.out.println("responseString" + responseString);
+
+				MessageCollection collection = new MessageCollection();
+				list.setMessageId(list.getId());
+				list.setId(null);
+				BeanUtil.map(list, collection);
+				collection.setDoctorId(smsTrackDetail.getDoctorId());
+				collection.setLocationId(smsTrackDetail.getLocationId());
+				collection.setHospitalId(smsTrackDetail.getHospitalId());
+				collection.setCreatedTime(new Date());
+				collection.setUpdatedTime(new Date());
+				collection.setMessageType(smsTrackDetail.getType());
+				messageRepository.save(collection);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(responseId))
+				response = true;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+		
 	}
 	
 	

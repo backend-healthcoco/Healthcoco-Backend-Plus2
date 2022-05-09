@@ -166,6 +166,18 @@ public class LocationCollection extends GenericCollection {
 	
 	@Field
 	private ObjectId defaultLocationId;
+	
+	@Field
+	private Boolean isDentalChain = false;
+	
+
+	public Boolean getIsDentalChain() {
+		return isDentalChain;
+	}
+
+	public void setIsDentalChain(Boolean isDentalChain) {
+		this.isDentalChain = isDentalChain;
+	}
 
 	public Integer getNoOfClinicReview() {
 		return noOfClinicReview;

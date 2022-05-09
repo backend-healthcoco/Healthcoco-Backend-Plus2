@@ -356,6 +356,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Value(value = "${update.drug.interaction.file}")
 	private String UPDATE_DRUG_INTERACTION_DATA_FILE;
 
+	@Value(value = "${smilebird.support.number}")
+	private String smilebirdSupportNumber;
+	
 	@Autowired
 	private GenericCodeRepository genericCodeRepository;
 
@@ -3156,10 +3159,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								if (userCollection != null)
 									smsDetail.setUserName(patientCollection.getLocalPatientName());
 								SMS sms = new SMS();
-								sms.setSmsText("Hi " + patientName + ", your prescription "
-										+ prescriptionCollection.getUniqueEmrId() + " by " + doctorName + ". Your medicines are - "
-										+ prescriptionDetails + ". For queries,contact Doctor" + clinicContactNum
-										+ ".-Healthcoco");
+								if (!locationCollection.getIsDentalChain()) {
+									smsTrackDetail.setTemplateId("1307161526775042485");
+									sms.setSmsText("Hi " + patientName + ", your prescription "
+											+ prescriptionCollection.getUniqueEmrId() + " by " + doctorName
+											+ ". Your medicines are - " + prescriptionDetails + ". For queries,contact Doctor"
+											+ clinicContactNum + ".-Healthcoco");
+								} else {
+									smsTrackDetail.setTemplateId("1307165106718322744");
+									sms.setSmsText("Hi " + patientName + ", your prescription "+
+											" (ID: " 	+ prescriptionCollection.getUniqueEmrId() + " ) " + " by " + doctorName
+											+ ". Your medicines list is - " + prescriptionDetails + ". If you need any help, reach out to us at"
+											+ smilebirdSupportNumber + ".\n Team Smilebird");
+								}
 
 								SMSAddress smsAddress = new SMSAddress();
 								smsAddress.setRecipient(mobileNumber);

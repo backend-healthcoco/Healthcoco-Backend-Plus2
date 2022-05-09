@@ -10,6 +10,8 @@ public class AppointmentPatientReminderResponse {
 	
 	private String doctorName;
 	
+	private String patientName;
+	
 	private String patientMobileNumber;
 	
 	private String locationName;
@@ -116,6 +118,14 @@ public class AppointmentPatientReminderResponse {
 
 	public void setLocationId(String locationId) {
 		this.locationId = locationId;
+	}
+
+	public String getPatientName() {
+		return patientName;
+	}
+
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
 	}
 
 	@Override

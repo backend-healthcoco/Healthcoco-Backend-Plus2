@@ -171,6 +171,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Field
 	private Boolean isPatientWelcomeMessageOn = false;
 	
+	@Field
+	private Boolean isShowPatientNumber = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -565,6 +568,14 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setIsPatientWelcomeMessageOn(Boolean isPatientWelcomeMessageOn) {
 		this.isPatientWelcomeMessageOn = isPatientWelcomeMessageOn;
+	}
+
+	public Boolean getIsShowPatientNumber() {
+		return isShowPatientNumber;
+	}
+
+	public void setIsShowPatientNumber(Boolean isShowPatientNumber) {
+		this.isShowPatientNumber = isShowPatientNumber;
 	}
 
 	@Override
