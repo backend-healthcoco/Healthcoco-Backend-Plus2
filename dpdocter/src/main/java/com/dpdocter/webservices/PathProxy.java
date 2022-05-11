@@ -272,7 +272,7 @@ public interface PathProxy {
 
 		public static final String GET_DOCTOR_CALENDAR_VIEW = "/setting/calenderView/get";
 		
-		public static final String UPDATE_SHOW_PATIENT_NUMBER = "/updateShowPatient";
+		public static final String UPDATE_SHOW_PATIENT_NUMBER = "/updateShowPatient/{doctorId}/{locationId}";
 
 
 	}
