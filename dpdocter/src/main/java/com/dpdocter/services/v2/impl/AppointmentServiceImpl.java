@@ -1442,17 +1442,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			criteria.and("state").in(appointmentStates);
 
-//			criteria.and("state").ne(AppointmentState.PENDING.getState());
-//			and("type")
-//					.is(AppointmentType.DENTAL_CHAIN_APPOINTMENT.getType());
-			criteria.and("isDentalChainAppointment").is(true);
-
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
 
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
-			System.out.println(from + " to " + to);
 
 			DateTime fromDateTime = null, toDateTime = null;
 			if (doctorId != null && !doctorId.isEmpty()) {
@@ -1471,8 +1465,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 				criteria.and("fromDate").gte(fromDateTime);
 
-				System.out.println("fromDateTime" + fromDateTime);
-
 			}
 			if (doctorId != null && !doctorId.isEmpty()) {
 				if (!DPDoctorUtils.anyStringEmpty(to)) {
@@ -1489,7 +1481,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 				criteria.and("toDate").lte(toDateTime);
-				System.out.println("toDateTime" + toDateTime);
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(fromTime))

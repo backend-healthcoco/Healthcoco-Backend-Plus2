@@ -1392,7 +1392,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					if (request.getNotifyDoctorByEmail() != null && request.getNotifyDoctorByEmail())
 						sendEmail(doctorName, patientName, dateTime, clinicName,
 								"CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT", doctorEmailAddress, branch,
-								request.getConsultationType().getType());
+								null);
 					if (request.getNotifyDoctorBySms() != null && request.getNotifyDoctorBySms()) {
 						sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), request.getLocationId(),
 								request.getHospitalId(), request.getDoctorId(), doctorMobileNumber, patientName,
@@ -1406,7 +1406,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
 							&& patientEmailAddress != null)
 						sendEmail(doctorName, patientName, dateTime, clinicName, "CONFIRMED_APPOINTMENT_TO_PATIENT",
-								patientEmailAddress, branch, request.getConsultationType().getType());
+								patientEmailAddress, branch, null);
 					if (request.getNotifyPatientBySms() != null && request.getNotifyPatientBySms()
 							&& !DPDoctorUtils.anyStringEmpty(patientMobileNumber)) {
 						sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_APPOINTMENT_TO_PATIENT",
@@ -1454,7 +1454,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						&& (doctorFacility.getType().equalsIgnoreCase(DoctorFacility.IBS.getType()))) {
 					sendEmail(doctorName, patientName, dateTime, clinicName,
 							"CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT", doctorEmailAddress, branch,
-							request.getConsultationType().getType());
+							null);
 					sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), request.getLocationId(),
 							request.getHospitalId(), request.getDoctorId(), doctorMobileNumber, patientName,
 							appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch,
