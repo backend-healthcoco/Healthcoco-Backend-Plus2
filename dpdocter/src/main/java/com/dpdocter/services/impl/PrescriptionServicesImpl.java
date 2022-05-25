@@ -1,11 +1,14 @@
 package com.dpdocter.services.impl;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,10 +39,13 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -171,6 +177,7 @@ import com.dpdocter.response.DrugDurationUnitAddEditResponse;
 import com.dpdocter.response.DrugInteractionResposne;
 import com.dpdocter.response.DrugTypeAddEditResponse;
 import com.dpdocter.response.EyeTestJasperResponse;
+import com.dpdocter.response.InteraktResponse;
 import com.dpdocter.response.InventoryItemLookupResposne;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
@@ -358,9 +365,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Value(value = "${smilebird.support.number}")
 	private String smilebirdSupportNumber;
-	
+
 	@Autowired
 	private GenericCodeRepository genericCodeRepository;
+	
+	@Value(value = "${interakt.secret.key}")
+	private String secretKey;
+
 
 	LoadingCache<String, List<Code>> Cache = CacheBuilder.newBuilder().maximumSize(100)
 			// maximum 100 records can be cached
@@ -868,7 +879,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			} else {
 				prescriptionCollection.setCreatedTime(createdTime);
 			}
-			
+
 			if (request.getFromDate() != null) {
 				prescriptionCollection.setFromDate(request.getFromDate());
 			} else {
@@ -3110,7 +3121,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 													directions = "," + directions;
 											}
 
-											prescriptionDetails = prescriptionDetails +"\n"+ " " + i + ")" + drugType + " "
+											prescriptionDetails = prescriptionDetails + "\n" + " " + i + ")" + drugType
+													+ " "
 
 													+ drugName + dosage + durationValue + directions;
 										}
@@ -3163,14 +3175,17 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									smsTrackDetail.setTemplateId("1307161526775042485");
 									sms.setSmsText("Hi " + patientName + ", your prescription "
 											+ prescriptionCollection.getUniqueEmrId() + " by " + doctorName
-											+ ". Your medicines are - " + prescriptionDetails + ". For queries,contact Doctor"
-											+ clinicContactNum + ".-Healthcoco");
+											+ ". Your medicines are - " + prescriptionDetails
+											+ ". For queries,contact Doctor" + clinicContactNum + ".-Healthcoco");
 								} else {
 									smsTrackDetail.setTemplateId("1307165106718322744");
-									sms.setSmsText("Hi " + patientName + ", your prescription "+
-											" (ID: " 	+ prescriptionCollection.getUniqueEmrId() + " ) " + " by " + doctorName
-											+ ". Your medicines list is - " + prescriptionDetails + ". If you need any help, reach out to us at"
-											+ smilebirdSupportNumber + ".\n Team Smilebird");
+									sms.setSmsText("Hi " + patientName + ", your prescription " + " (ID: "
+											+ prescriptionCollection.getUniqueEmrId() + " ) " + " by " + doctorName
+											+ ". Your medicines list is - " + prescriptionDetails
+											+ ". If you need any help, reach out to us at" + smilebirdSupportNumber
+											+ ".\n Team Smilebird");
+									// send whastapp msg
+									sendWhatsAppMsg(userCollection.getMobileNumber(), patientName, prescriptionCollection.getUniqueEmrId(),doctorName,prescriptionDetails);
 								}
 
 								SMSAddress smsAddress = new SMSAddress();
@@ -3199,6 +3214,83 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
+	}
+
+	private void sendWhatsAppMsg(String mobileNumber, String patientName, String emrId, String doctorName,
+			String prescriptionDetails) {
+		try {
+			JSONObject requestObject1 = new JSONObject();
+			JSONObject requestObject2 = new JSONObject();
+			JSONArray requestObject3 = new JSONArray();
+			requestObject1.put("phoneNumber", mobileNumber);
+			requestObject1.put("countryCode", "+91");
+			requestObject1.put("type", "Template");
+
+			requestObject2.put("name", "dental_prescription");
+			requestObject2.put("languageCode", "en");
+			requestObject3.put(patientName);
+			requestObject3.put(emrId);
+			requestObject3.put(doctorName);
+			requestObject3.put(prescriptionDetails);
+			requestObject3.put(smilebirdSupportNumber);
+
+			requestObject2.put("bodyValues", requestObject3);
+			requestObject1.put("template", requestObject2);
+			InputStream is = null;
+			URL url = new URL("https://api.interakt.ai/v1/public/message/");
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("POST");
+			connection.setRequestProperty("Content-Type", "application/json");
+			connection.setRequestProperty("Authorization", "Basic " + secretKey);
+			connection.setUseCaches(false);
+			connection.setDoOutput(true);
+
+			// Send request
+			System.out.println(requestObject1);
+			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+			wr.writeBytes(requestObject1.toString());
+			wr.close();
+
+			// Get Response
+
+			try {
+				is = connection.getInputStream();
+			} catch (IOException ioe) {
+				if (connection instanceof HttpURLConnection) {
+					HttpURLConnection httpConn = (HttpURLConnection) connection;
+					int statusCode = httpConn.getResponseCode();
+					if (statusCode != 200) {
+						is = httpConn.getErrorStream();
+					}
+				}
+			}
+
+			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+
+			StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
+			String line;
+			while ((line = rd.readLine()) != null) {
+				response.append(line);
+				response.append('\r');
+			}
+			rd.close();
+
+			System.out.println("http response" + response.toString());
+
+			ObjectMapper mapper = new ObjectMapper();
+
+			InteraktResponse interaktResponse = mapper.readValue(response.toString(), InteraktResponse.class);
+			if (!interaktResponse.getResult()) {
+				logger.warn("Error while sending message :" + interaktResponse.getMessage());
+				throw new BusinessException(ServiceError.Unknown,
+						"Error while sending message:" + interaktResponse.getMessage());
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+
+		}
+		
 	}
 
 	@Override
@@ -3959,13 +4051,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
 						prescriptionCollection.getHospitalId(), ComponentType.ALL.getType(),
 						PrintSettingType.EMR.getType());
-		if (printSettings == null){
+		if (printSettings == null) {
 			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
 					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 							prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
 							prescriptionCollection.getHospitalId(), ComponentType.ALL.getType(),
-							PrintSettingType.DEFAULT.getType(),new Sort(Sort.Direction.DESC, "updatedTime"));
-			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+							PrintSettingType.DEFAULT.getType(), new Sort(Sort.Direction.DESC, "updatedTime"));
+			if (!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
 				printSettings = printSettingsCollections.get(0);
 		}
 		if (printSettings == null) {
@@ -4045,9 +4137,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								}
 							}
 							if (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())) {
-								
+
 								if (printSettings.getContentSetup() != null) {
-									
+
 									if (printSettings.getContentSetup().getInstructionAlign() != null && printSettings
 											.getContentSetup().getInstructionAlign().equals(FieldAlign.HORIZONTAL)) {
 										prescriptionItem.setInstructions(
@@ -4582,33 +4674,29 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	}
-	
+
 	@Override
-	public Boolean transferGenericDrugs()
-	{
-		List<GenericCodesAndReactionsCollection> generics=genericCodesAndReactionsRepository.findAll();
-		
-		for(GenericCodesAndReactionsCollection generic:generics)
-		{
-			ESGenericCodesAndReactions reaction=esGenericCodesAndReactionsRepository.findById(generic.getGenericCode()).orElse(null);
-			if(reaction==null)
-			{
-				reaction=new ESGenericCodesAndReactions();
+	public Boolean transferGenericDrugs() {
+		List<GenericCodesAndReactionsCollection> generics = genericCodesAndReactionsRepository.findAll();
+
+		for (GenericCodesAndReactionsCollection generic : generics) {
+			ESGenericCodesAndReactions reaction = esGenericCodesAndReactionsRepository
+					.findById(generic.getGenericCode()).orElse(null);
+			if (reaction == null) {
+				reaction = new ESGenericCodesAndReactions();
 				BeanUtil.map(generic, reaction);
 				reaction.setId(generic.getGenericCode());
 				reaction.setUpdatedTime(new Date());
 				esGenericCodesAndReactionsRepository.save(reaction);
-			}
-			else
-			{
+			} else {
 				reaction.setCodes(generic.getCodes());
 				reaction.setUpdatedTime(new Date());
 				esGenericCodesAndReactionsRepository.save(reaction);
 			}
 		}
-		
+
 		return true;
-		
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -4677,7 +4765,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					}
 			}
 
-		} 
+		}
 //		catch (ExecutionException e) {
 //			e.printStackTrace();
 //			throw new BusinessException(ServiceError.Unknown, "Error Occurred While drugInteraction");
@@ -5814,13 +5902,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
 						prescriptionCollection.getHospitalId(), ComponentType.ALL.getType(),
 						PrintSettingType.EMR.getType());
-		if (printSettings == null){
+		if (printSettings == null) {
 			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
 					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 							prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
 							prescriptionCollection.getHospitalId(), ComponentType.ALL.getType(),
-							PrintSettingType.DEFAULT.getType(),new Sort(Sort.Direction.DESC, "updatedTime"));
-			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+							PrintSettingType.DEFAULT.getType(), new Sort(Sort.Direction.DESC, "updatedTime"));
+			if (!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
 				printSettings = printSettingsCollections.get(0);
 		}
 		if (printSettings == null) {
@@ -6714,9 +6802,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						if (patientCollection != null)
 							smsDetail.setUserName(patientCollection.getLocalPatientName());
 						SMS sms = new SMS();
-						sms.setSmsText("Hi " + patientName + ", your prescription "
-								+ prescriptionCollection.getUniqueEmrId() + " by " + doctorName + ". Your medicines are - "
-								+ prescriptionDetails + ". For queries,contact Doctor" + clinicContactNum + ".-Healthcoco");
+						sms.setSmsText(
+								"Hi " + patientName + ", your prescription " + prescriptionCollection.getUniqueEmrId()
+										+ " by " + doctorName + ". Your medicines are - " + prescriptionDetails
+										+ ". For queries,contact Doctor" + clinicContactNum + ".-Healthcoco");
 
 						SMSAddress smsAddress = new SMSAddress();
 						smsAddress.setRecipient(mobileNumber);
