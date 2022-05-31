@@ -1,12 +1,5 @@
 package com.dpdocter.services.impl;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,11 +20,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -288,7 +278,6 @@ import com.dpdocter.repository.XRayDetailsRepository;
 import com.dpdocter.response.AppointmentDoctorReminderResponse;
 import com.dpdocter.response.AppointmentPatientReminderResponse;
 import com.dpdocter.response.DoctorAppointmentSMSResponse;
-import com.dpdocter.response.InteraktResponse;
 import com.dpdocter.response.LocationAdminAppointmentLookupResponse;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PushNotificationServices;
@@ -554,12 +543,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	@Value("${send.sms}")
 	private Boolean sendSMS;
-
-	@Value(value = "${smilebird.support.number}")
-	private String smilebirdSupportNumber;
-
-	@Value(value = "${interakt.secret.key}")
-	private String secretKey;
 
 	@Autowired
 	private ProfessionalMembershipRepository professionalMembershipRepository;
@@ -846,9 +829,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 				Aggregation aggregation = Aggregation.newAggregation(
 						Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type")
-								.is(AppointmentType.APPOINTMENT.getType())
-//								.and("isDentalChainAppointment").is(false)
-								.and("fromDate").gte(fromTime).and("toDate").lte(toTime)),
+								.is(AppointmentType.APPOINTMENT.getType()).and("fromDate").gte(fromTime).and("toDate")
+								.lte(toTime)),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 						Aggregation.lookup("user_device_cl", "doctorId", "userIds", "userDevices"),
 						Aggregation.sort(new Sort(Direction.ASC, "time.fromTime")));
@@ -897,6 +879,10 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 									.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
 						}
 					}
+				for (String string : doctorAppointmentSMSResponseMap.keySet()) {
+					System.out.println("doctorAppointmentSMSResponseMap key:" + string);
+				}
+
 				for (Entry<String, DoctorAppointmentSMSResponse> entry : doctorAppointmentSMSResponseMap.entrySet()) {
 					DoctorAppointmentSMSResponse response = entry.getValue();
 					UserCollection userCollection = response.getDoctor();
@@ -905,8 +891,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 //							+ ".%0aStay Happy!!";
 					final String doctorName = userCollection.getTitle() + " " + userCollection.getFirstName();
 
-					String message = "Hi " + doctorName + ", you have " + response.getNoOfAppointments()
-							+ " appointments scheduled today." + "\n" + "-Healthcoco";
+					String message = "Hi " + doctorName + " ,you have " + response.getNoOfAppointments()
+							+ " appointments scheduled today.-Healthcoco";
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 					smsTrackDetail.setDoctorId(userCollection.getId());
 					smsTrackDetail.setLocationId(response.getLocationId());
@@ -927,6 +913,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 					List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 					smsDetails.add(smsDetail);
 					smsTrackDetail.setSmsDetails(smsDetails);
+					System.out.println("sendSMS :" + userCollection.getMobileNumber());
+					
 					sMSServices.sendSMS(smsTrackDetail, true);
 					if (response.getUserDevices() != null && !response.getUserDevices().isEmpty()) {
 //						pushNotificationServices.notifyUser(null, message, ComponentType.CALENDAR_REMINDER.getType(),
@@ -1491,8 +1479,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 				Aggregation aggregation = Aggregation.newAggregation(
 						Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type")
-								.is(AppointmentType.APPOINTMENT.getType()).and("isDentalChainAppointment").is(false)
-								.and("fromDate").gte(fromTime).and("toDate").lte(toTime)),
+								.is(AppointmentType.APPOINTMENT.getType()).and("fromDate").gte(fromTime).and("toDate")
+								.lte(toTime)),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 						Aggregation.unwind("location"), Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
@@ -3294,366 +3282,4 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		return true;
 	}
 
-	// Smilebird Appointment Reminder to Patient
-	@Scheduled(cron = "0 35 9 * * *", zone = "IST")
-	@Override
-	@Transactional
-	public void sendSmilebirdAppointmentReminderToPatient() {
-		String appointmentId = null;
-		try {
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-
-			localCalendar.setTime(new Date());
-			int currentDayFromTime = localCalendar.get(Calendar.DATE);
-			int currentMonthFromTime = localCalendar.get(Calendar.MONTH) + 1;
-			int currentYearFromTime = localCalendar.get(Calendar.YEAR);
-			DateTime fromTime = new DateTime(currentYearFromTime, currentMonthFromTime, currentDayFromTime, 0, 0, 0,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-			localCalendar.setTime(new Date());
-			int currentDay = localCalendar.get(Calendar.DATE);
-			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-			int currentYear = localCalendar.get(Calendar.YEAR);
-			DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
-					Fields.field("doctorName", "$user.firstName"), Fields.field("doctorTitle", "$user.title"),
-					Fields.field("patientName", "$patient.firstName"),
-					Fields.field("patientMobileNumber", "$patient.mobileNumber"),
-					Fields.field("appointmentId", "$appointmentId"), Fields.field("locationId", "$locationId"),
-					Fields.field("doctorId", "$doctorId"), Fields.field("clinicNumber", "$location.clinicNumber"),
-					Fields.field("locationName", "$location.locationName"), Fields.field("time", "$time"),
-					Fields.field("fromDate", "$fromDate")));
-
-			Aggregation aggregation = Aggregation.newAggregation(
-					Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type")
-							.is(AppointmentType.APPOINTMENT.getType()).and("isDentalChainAppointment").is(true)
-							.and("fromDate").gte(fromTime).and("toDate").lte(toTime)),
-					Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
-					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-					Aggregation.lookup("user_cl", "patientId", "_id", "patient"), Aggregation.unwind("patient"),
-					projectList);
-			AggregationResults<AppointmentPatientReminderResponse> aggregationResults = mongoTemplate
-					.aggregate(aggregation, AppointmentCollection.class, AppointmentPatientReminderResponse.class);
-
-			List<AppointmentPatientReminderResponse> appointmentPatientReminderResponses = aggregationResults
-					.getMappedResults();
-
-			if (appointmentPatientReminderResponses != null && !appointmentPatientReminderResponses.isEmpty())
-				for (AppointmentPatientReminderResponse appointmentPatientReminderResponse : appointmentPatientReminderResponses) {
-					SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
-
-					String _24HourTime = String.format("%02d:%02d",
-							appointmentPatientReminderResponse.getTime().getFromTime() / 60,
-							appointmentPatientReminderResponse.getTime().getFromTime() % 60);
-					SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
-					SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
-					sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-					_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-					_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-
-					Date _24HourDt = _24HourSDF.parse(_24HourTime);
-					String dateTime = _12HourSDF.format(_24HourDt) + ", "
-							+ sdf.format(appointmentPatientReminderResponse.getFromDate());
-					appointmentId = "(ID:" + appointmentPatientReminderResponse.getAppointmentId() + ")";
-					if (!DPDoctorUtils.anyStringEmpty(appointmentPatientReminderResponse.getPatientMobileNumber())) {
-
-						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-						SMSDetail smsDetail = new SMSDetail();
-						SMS sms = new SMS();
-						smsTrackDetail.setType("Reminder To Patient");
-						sms.setSmsText("Hi " + appointmentPatientReminderResponse.getPatientName() + ","
-								+ " You have an upcoming appointment" + "(ID:"
-								+ appointmentPatientReminderResponse.getAppointmentId() + ")" + " scheduled @"
-								+ dateTime
-								+ (!DPDoctorUtils.anyStringEmpty(appointmentPatientReminderResponse.getLocationName())
-										? (", at " + appointmentPatientReminderResponse.getLocationName())
-										: "")
-								+ "." + " If you need any help, reach out to us at " + smilebirdSupportNumber + "."
-								+ "\nOur Dental Studio address link- "
-								+ appointmentPatientReminderResponse.getGoogleMapShortUrl() + "." + "\n"
-								+ "Team Smilebird");
-
-						SMSAddress smsAddress = new SMSAddress();
-						smsAddress.setRecipient(appointmentPatientReminderResponse.getPatientMobileNumber());
-						sms.setSmsAddress(smsAddress);
-
-						smsDetail.setSms(sms);
-						smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-						List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-						smsDetails.add(smsDetail);
-						smsTrackDetail.setTemplateId("1307165106752071733");
-						smsTrackDetail.setDoctorId(new ObjectId(appointmentPatientReminderResponse.getDoctorId()));
-						smsTrackDetail.setLocationId(new ObjectId(appointmentPatientReminderResponse.getLocationId()));
-						smsTrackDetail.setSmsDetails(smsDetails);
-						sMSServices.sendDentalChainSMS(smsTrackDetail, true);
-
-						//
-						sendSmilebirdAppointmentReminderWhatsAppMsg(appointmentPatientReminderResponse.getPatientName(),
-								appointmentPatientReminderResponse.getPatientMobileNumber(), appointmentId, dateTime,
-								appointmentPatientReminderResponse.getLocationName(), smilebirdSupportNumber,
-								appointmentPatientReminderResponse.getGoogleMapShortUrl());
-					}
-				}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-		}
-	}
-
-	private void sendSmilebirdAppointmentReminderWhatsAppMsg(String name, String patientMobileNumber,
-			String appointmentId, String dateTime, String locationName, String smilebirdSupportNumber2,
-			String googleMapShortUrl) {
-		try {
-			JSONObject requestObject1 = new JSONObject();
-			JSONObject requestObject2 = new JSONObject();
-			JSONArray requestObject3 = new JSONArray();
-			requestObject1.put("phoneNumber", patientMobileNumber);
-			requestObject1.put("countryCode", "+91");
-			requestObject1.put("type", "Template");
-
-			requestObject2.put("name", "appointment_reminder_sms_to_patient");
-			requestObject2.put("languageCode", "en");
-			requestObject3.put(name);
-			requestObject3.put(appointmentId);
-			requestObject3.put(dateTime);
-			requestObject3.put(locationName);
-			requestObject3.put(smilebirdSupportNumber2);
-			requestObject3.put(googleMapShortUrl);
-			requestObject2.put("bodyValues", requestObject3);
-			requestObject1.put("template", requestObject2);
-			InputStream is = null;
-			URL url = new URL("https://api.interakt.ai/v1/public/message/");
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("POST");
-			connection.setRequestProperty("Content-Type", "application/json");
-			connection.setRequestProperty("Authorization", "Basic " + secretKey);
-			connection.setUseCaches(false);
-			connection.setDoOutput(true);
-
-			// Send request
-			System.out.println(requestObject1);
-			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-			wr.writeBytes(requestObject1.toString());
-			wr.close();
-
-			// Get Response
-
-			try {
-				is = connection.getInputStream();
-			} catch (IOException ioe) {
-				if (connection instanceof HttpURLConnection) {
-					HttpURLConnection httpConn = (HttpURLConnection) connection;
-					int statusCode = httpConn.getResponseCode();
-					if (statusCode != 200) {
-						is = httpConn.getErrorStream();
-					}
-				}
-			}
-
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-
-			StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
-			String line;
-			while ((line = rd.readLine()) != null) {
-				response.append(line);
-				response.append('\r');
-			}
-			rd.close();
-
-			System.out.println("http response" + response.toString());
-
-			ObjectMapper mapper = new ObjectMapper();
-
-			InteraktResponse interaktResponse = mapper.readValue(response.toString(), InteraktResponse.class);
-			if (!interaktResponse.getResult()) {
-				logger.warn("Error while sending message :" + interaktResponse.getMessage());
-				throw new BusinessException(ServiceError.Unknown,
-						"Error while sending message:" + interaktResponse.getMessage());
-			}
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			e.printStackTrace();
-
-		}
-	}
-
-	// Smilebird Appointment Reminder to Doctor, if appointment > 0
-	@Scheduled(cron = "0 35 9 * * *", zone = "IST")
-	@Override
-	@Transactional
-	public void sendSmilebirdAppointmentReminderToDoctor() {
-		try {
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-
-			localCalendar.setTime(new Date());
-			int currentDay = localCalendar.get(Calendar.DATE);
-			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-			int currentYear = localCalendar.get(Calendar.YEAR);
-			DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-			DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-			Aggregation aggregation = Aggregation.newAggregation(
-					Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type")
-							.is(AppointmentType.APPOINTMENT.getType()).and("isDentalChainAppointment").is(true)
-							.and("fromDate").gte(fromTime).and("toDate").lte(toTime)),
-					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-					Aggregation.lookup("user_device_cl", "doctorId", "userIds", "userDevices"),
-					Aggregation.sort(new Sort(Direction.ASC, "time.fromTime")));
-			AggregationResults<AppointmentDoctorReminderResponse> aggregationResults = mongoTemplate
-					.aggregate(aggregation, AppointmentCollection.class, AppointmentDoctorReminderResponse.class);
-
-			List<AppointmentDoctorReminderResponse> appointmentDoctorReminderResponses = aggregationResults
-					.getMappedResults();
-			Map<String, DoctorAppointmentSMSResponse> doctorAppointmentSMSResponseMap = new HashMap<String, DoctorAppointmentSMSResponse>();
-
-			SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
-			SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
-
-			if (appointmentDoctorReminderResponses != null && !appointmentDoctorReminderResponses.isEmpty())
-				for (AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : appointmentDoctorReminderResponses) {
-					PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
-							new ObjectId(appointmentDoctorReminderResponse.getPatientId()),
-							appointmentDoctorReminderResponse.getLocationId(),
-							appointmentDoctorReminderResponse.getHospitalId());
-
-					String _24HourTime = String.format("%02d:%02d",
-							appointmentDoctorReminderResponse.getTime().getFromTime() / 60,
-							appointmentDoctorReminderResponse.getTime().getFromTime() % 60);
-
-					Date _24HourDt = _24HourSDF.parse(_24HourTime);
-
-					if (doctorAppointmentSMSResponseMap
-							.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
-						DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap
-								.get(appointmentDoctorReminderResponse.getDoctorId().toString());
-						response.setMessage(response.getMessage() + "%0a" + patientCollection.getLocalPatientName()
-								+ "(" + _12HourSDF.format(_24HourDt) + ")");
-						response.setNoOfAppointments(response.getNoOfAppointments() + 1);
-						response.setLocationId(appointmentDoctorReminderResponse.getLocationId());
-						doctorAppointmentSMSResponseMap.put(appointmentDoctorReminderResponse.getDoctorId().toString(),
-								response);
-					} else {
-						DoctorAppointmentSMSResponse response = new DoctorAppointmentSMSResponse();
-						response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
-						response.setMessage(
-								patientCollection.getLocalPatientName() + "(" + _12HourSDF.format(_24HourDt) + ")");
-						response.setNoOfAppointments(1);
-						response.setLocationId(appointmentDoctorReminderResponse.getLocationId());
-						response.setUserDevices(appointmentDoctorReminderResponse.getUserDevices());
-						doctorAppointmentSMSResponseMap.put(appointmentDoctorReminderResponse.getDoctorId().toString(),
-								response);
-					}
-				}
-			for (Entry<String, DoctorAppointmentSMSResponse> entry : doctorAppointmentSMSResponseMap.entrySet()) {
-				DoctorAppointmentSMSResponse response = entry.getValue();
-				UserCollection userCollection = response.getDoctor();
-				final String doctorName = userCollection.getTitle() + " " + userCollection.getFirstName();
-
-				String message = "Hello " + doctorName + " ,you have " + response.getNoOfAppointments()
-						+ " appointments scheduled today.\nTeam Smilebird";
-				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-				smsTrackDetail.setDoctorId(userCollection.getId());
-				smsTrackDetail.setLocationId(response.getLocationId());
-				smsTrackDetail.setType("APPOINTMENT");
-				smsTrackDetail.setTemplateId("1307165105267069320");
-				SMSDetail smsDetail = new SMSDetail();
-				smsDetail.setUserId(userCollection.getId());
-				SMS sms = new SMS();
-				smsDetail.setUserName(userCollection.getFirstName());
-				sms.setSmsText(message);
-
-				SMSAddress smsAddress = new SMSAddress();
-				smsAddress.setRecipient(userCollection.getMobileNumber());
-				sms.setSmsAddress(smsAddress);
-
-				smsDetail.setSms(sms);
-				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-				smsDetails.add(smsDetail);
-				smsTrackDetail.setSmsDetails(smsDetails);
-				sMSServices.sendDentalChainSMS(smsTrackDetail, true);
-
-				sendWhatsAppMsg(userCollection.getMobileNumber(), doctorName, response.getNoOfAppointments());
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-		}
-	}
-
-	private void sendWhatsAppMsg(String mobileNumber, String doctorName, int appointmentNumber) {
-		try {
-			JSONObject requestObject1 = new JSONObject();
-			JSONObject requestObject2 = new JSONObject();
-			JSONArray requestObject3 = new JSONArray();
-			requestObject1.put("phoneNumber", mobileNumber);
-			requestObject1.put("countryCode", "+91");
-			requestObject1.put("type", "Template");
-
-			requestObject2.put("name", "morning_sms_reminder_to_dentist");
-			requestObject2.put("languageCode", "en");
-			requestObject3.put(doctorName);
-			requestObject3.put(appointmentNumber);
-			requestObject2.put("bodyValues", requestObject3);
-			requestObject1.put("template", requestObject2);
-			InputStream is = null;
-			URL url = new URL("https://api.interakt.ai/v1/public/message/");
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("POST");
-			connection.setRequestProperty("Content-Type", "application/json");
-			connection.setRequestProperty("Authorization", "Basic " + secretKey);
-			connection.setUseCaches(false);
-			connection.setDoOutput(true);
-
-			// Send request
-			System.out.println(requestObject1);
-			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-			wr.writeBytes(requestObject1.toString());
-			wr.close();
-
-			// Get Response
-
-			try {
-				is = connection.getInputStream();
-			} catch (IOException ioe) {
-				if (connection instanceof HttpURLConnection) {
-					HttpURLConnection httpConn = (HttpURLConnection) connection;
-					int statusCode = httpConn.getResponseCode();
-					if (statusCode != 200) {
-						is = httpConn.getErrorStream();
-					}
-				}
-			}
-
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-
-			StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
-			String line;
-			while ((line = rd.readLine()) != null) {
-				response.append(line);
-				response.append('\r');
-			}
-			rd.close();
-
-			System.out.println("http response" + response.toString());
-
-			ObjectMapper mapper = new ObjectMapper();
-
-			InteraktResponse interaktResponse = mapper.readValue(response.toString(), InteraktResponse.class);
-			if (!interaktResponse.getResult()) {
-				logger.warn("Error while sending message :" + interaktResponse.getMessage());
-				throw new BusinessException(ServiceError.Unknown,
-						"Error while sending message:" + interaktResponse.getMessage());
-			}
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			e.printStackTrace();
-
-		}
-	}
 }
