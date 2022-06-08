@@ -162,6 +162,26 @@ public class DoctorClinicProfile {
 
 //	private List<ConsultationType> onlineConsultationType;
 //>>>>>>> Stashed changes
+private Boolean isDentalChain = false;
+private Boolean isShowPatientNumber = false;
+
+
+public Boolean getIsShowPatientNumber() {
+	return isShowPatientNumber;
+}
+
+public void setIsShowPatientNumber(Boolean isShowPatientNumber) {
+	this.isShowPatientNumber = isShowPatientNumber;
+}
+
+
+	public Boolean getIsDentalChain() {
+		return isDentalChain;
+	}
+
+	public void setIsDentalChain(Boolean isDentalChain) {
+		this.isDentalChain = isDentalChain;
+	}
 
 	public Boolean getIsSuperAdmin() {
 		return isSuperAdmin;

@@ -111,6 +111,8 @@ private Boolean isAnonymousAppointment = false;
 	
 	private String specialityId;
 	
+	private Boolean isDentalChainAppointment = false;
+	
 	public String getId() {
 		return id;
 	}
@@ -481,10 +483,14 @@ private Boolean isAnonymousAppointment = false;
 	public void setProblemDetailsId(String problemDetailsId) {
 		this.problemDetailsId = problemDetailsId;
 	}
-	
-	
 
+	public Boolean getIsDentalChainAppointment() {
+		return isDentalChainAppointment;
+	}
 
+	public void setIsDentalChainAppointment(Boolean isDentalChainAppointment) {
+		this.isDentalChainAppointment = isDentalChainAppointment;
+	}
 
 	public Long getCallDurationInMinutes() {
 		return callDurationInMinutes;

@@ -37,6 +37,16 @@ public class ClinicDoctorResponse {
 	private Boolean isSuperAdmin = false;
 	
 	private Boolean hasLoginAccess;
+	
+	private Boolean isShowPatientNumber = false;
+
+	public Boolean getIsShowPatientNumber() {
+		return isShowPatientNumber;
+	}
+
+	public void setIsShowPatientNumber(Boolean isShowPatientNumber) {
+		this.isShowPatientNumber = isShowPatientNumber;
+	}
 
 	public Boolean getHasLoginAccess() {
 		return hasLoginAccess;

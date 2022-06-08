@@ -53,8 +53,8 @@ public interface TransactionalManagementService {
 
 	Boolean addDataFromMongoToElasticSearch();
 
-//	void sendSmilebirdAppointmentReminderToPatient();
-//
-//	void sendSmilebirdAppointmentReminderToDoctor();
+	void sendSmilebirdAppointmentReminderToPatient();
+
+	void sendSmilebirdAppointmentReminderToDoctor();
 
 }

@@ -101,6 +101,17 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	
 	private AppointmentSlot onlineConsultationSlot;
 	
+	private Boolean isShowPatientNumber = false;
+
+	
+	public Boolean getIsShowPatientNumber() {
+		return isShowPatientNumber;
+	}
+
+	public void setIsShowPatientNumber(Boolean isShowPatientNumber) {
+		this.isShowPatientNumber = isShowPatientNumber;
+	}
+
 	public ObjectId getId() {
 		return id;
 	}

@@ -763,7 +763,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 						.findByDoctorIdAndLocationId(new ObjectId(request.getDoctorId()),
 								new ObjectId(request.getLocationId()));
 				if (doctorClinicProfileCollection != null) {
-					if (doctorClinicProfileCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE)) {
+					if (doctorClinicProfileCollection.getIsPatientWelcomeMessageOn()) {
 						sendWelcomeMessageToPatient(patientCollection, locationCollection, request.getMobileNumber());
 					}
 				}
@@ -3196,6 +3196,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 									clinicDoctorResponse.setWebRole(clinicDoctorResponse.getRole().get(0).getRole());
 								}
 							}
+							clinicDoctorResponse.setIsShowPatientNumber(doctorClinicProfileLookupResponse.getIsShowPatientNumber());
 							response.add(clinicDoctorResponse);
 						}
 					}
@@ -5293,9 +5294,27 @@ public class RegistrationServiceImpl implements RegistrationService {
 				smsDetail.setUserId(patientCollection.getUserId());
 				SMS sms = new SMS();
 				smsDetail.setUserName(patientCollection.getLocalPatientName());
-				message = message.replace("{patientName}", patientCollection.getLocalPatientName());
-				message = message.replace("{clinicName}", locationCollection.getLocationName());
-				message = message.replace("{clinicNumber}", locationCollection.getClinicNumber());
+				String localPatientName = "";
+				if (!DPDoctorUtils.anyStringEmpty(patientCollection.getLocalPatientName()))
+					localPatientName = patientCollection.getLocalPatientName();
+				else
+					localPatientName = "";
+
+				String locationName = "";
+				if (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocationName()))
+					locationName = locationCollection.getLocationName();
+				else
+					locationName = "";
+
+				String clinicNumber = "";
+				if (!DPDoctorUtils.anyStringEmpty(locationCollection.getClinicNumber()))
+					clinicNumber = locationCollection.getClinicNumber();
+				else
+					clinicNumber = "";
+
+				message = message.replace("{patientName}", localPatientName);
+				message = message.replace("{clinicName}", locationName);
+				message = message.replace("{clinicNumber}", clinicNumber);
 				sms.setSmsText(message);
 
 				SMSAddress smsAddress = new SMSAddress();
@@ -5311,6 +5330,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 
 	}

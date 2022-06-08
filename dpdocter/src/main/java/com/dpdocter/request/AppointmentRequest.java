@@ -101,6 +101,9 @@ private AppointmentSlot onlineConsultationSlot;
 	
 private Long callDurationInMinutes=0L;
 
+private Boolean isDentalChainAppointment = false;
+
+
 	public Boolean getIsTreatmentEdited() {
 		return isTreatmentEdited;
 	}
@@ -407,11 +410,14 @@ private Long callDurationInMinutes=0L;
 		this.type = type;
 	}
 	
-	
 
-	
-	
-	
+	public Boolean getIsDentalChainAppointment() {
+		return isDentalChainAppointment;
+	}
+
+	public void setIsDentalChainAppointment(Boolean isDentalChainAppointment) {
+		this.isDentalChainAppointment = isDentalChainAppointment;
+	}
 
 	public AppointmentSlot getOnlineConsultationSlot() {
 		return onlineConsultationSlot;

@@ -83,4 +83,6 @@ public interface MailBodyGenerator {
 
 	String generateOnlineAppointmentEmailBody(String doctorName, String patientName, String dateTime, String clinicName,
 			String templatePath, String branch, String consultationType);
+
+	public String generateSmilebirdAppointmentEmailBody(String emailBody, String string);
 }

@@ -572,6 +572,20 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		return text;
 	}
 
+	@Override
+	public String generateSmilebirdAppointmentEmailBody(String emailBody, String templatePath) {
+		VelocityContext context = new VelocityContext();
+		context.put("emailBody", emailBody);
+		context.put("imageURL", imagePath + "templatesImage");
+		context.put("contactUsEmail", contactUsEmail);
+		context.put("fbLink", fbLink);
+		context.put("twitterLink", twitterLink);
+		context.put("linkedInLink", linkedInLink);
+		context.put("googlePlusLink", googlePlusLink);
+
+		String text = mergeTemplate(context, templatePath);
+		return text;
+	}
 
 
 }

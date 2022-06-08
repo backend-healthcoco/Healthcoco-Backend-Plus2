@@ -17,6 +17,8 @@ public class BirthdaySMSDetailsForPatients {
 	private String localPatientName;
 
 	private String locationName;
+	
+	
 
 	public ObjectId getId() {
 		return id;
