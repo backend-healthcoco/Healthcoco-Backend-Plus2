@@ -39,6 +39,17 @@ public class ClinicDoctorResponse {
 	private Boolean hasLoginAccess;
 	
 	private Boolean isShowPatientNumber = false;
+	
+	private Boolean isShowDoctorInCalender = false;
+	
+	public Boolean getIsShowDoctorInCalender() {
+		return isShowDoctorInCalender;
+	}
+
+	public void setIsShowDoctorInCalender(Boolean isShowDoctorInCalender) {
+		this.isShowDoctorInCalender = isShowDoctorInCalender;
+	}
+
 
 	public Boolean getIsShowPatientNumber() {
 		return isShowPatientNumber;

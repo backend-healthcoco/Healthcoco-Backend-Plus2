@@ -46,6 +46,7 @@ public class Doctor {
 	private Integer reportCount = 0;
 
 	private Boolean isGetDiscardedEMR = false;
+	
 
 	public String getId() {
 		return id;

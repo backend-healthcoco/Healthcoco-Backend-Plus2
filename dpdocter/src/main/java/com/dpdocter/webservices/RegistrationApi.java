@@ -1413,4 +1413,18 @@ public class RegistrationApi {
 		response.setData(registrationService.updateShowPatient(doctorId, isShowPatientNumber,locationId));
 		return response;
 	}
+
+	@Path(value = PathProxy.RegistrationUrls.UPDATE_IS_SHOW_DOCTOR_IN_CALENDER)
+	@GET
+	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_IS_SHOW_DOCTOR_IN_CALENDER, notes = PathProxy.RegistrationUrls.UPDATE_IS_SHOW_DOCTOR_IN_CALENDER)
+	public Response<Boolean> updateIsShowDoctorInCalender(@PathParam("doctorId") String doctorId,@PathParam("locationId") String locationId,
+			@DefaultValue("false") @QueryParam("isShowDoctorInCalender") Boolean isShowDoctorInCalender) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId,locationId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor ,location Id could not null");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(registrationService.updateIsShowDoctorInCalender(doctorId, isShowDoctorInCalender,locationId));
+		return response;
+	}
 }

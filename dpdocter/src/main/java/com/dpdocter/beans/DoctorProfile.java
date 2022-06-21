@@ -105,6 +105,7 @@ public class DoctorProfile extends GenericCollection {
 	
 	private Boolean isTransactionalSms=true;
 	
+	
 	//private Map<DoctorConsultation, String> onlineConsultationFees;
 	
 //	private List<DoctorConsultation> consultationType;

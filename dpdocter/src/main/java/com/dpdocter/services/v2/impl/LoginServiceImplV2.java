@@ -51,11 +51,14 @@ import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorLoginPinRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
@@ -114,7 +117,14 @@ public class LoginServiceImplV2 implements LoginService {
 	private String role;
 
 	@Autowired
+	private RoleRepository roleRepository;
+
+	@Autowired
 	private ForgotPasswordService forgotPasswordService;
+
+	@Autowired
+	private DoctorClinicProfileRepository doctorClinicProfileRepository;
+
 	/**
 	 * This method is used for login purpose.
 	 */
@@ -128,24 +138,27 @@ public class LoginServiceImplV2 implements LoginService {
 			Query query = new Query();
 			query.addCriteria(criteria);
 			UserCollection userCollection = userRepository.findByUserName(request.getUsername());
-		
+
 			if (userCollection == null) {
 				logger.warn(login);
 				throw new BusinessException(ServiceError.InvalidInput, login);
 			} else {
-				if(userCollection.getIsPasswordSet() == null || !userCollection.getIsPasswordSet()) {
+				if (userCollection.getIsPasswordSet() == null || !userCollection.getIsPasswordSet()) {
 					ForgotUsernamePasswordRequest forgotUsernamePasswordRequest = new ForgotUsernamePasswordRequest();
 					forgotUsernamePasswordRequest.setEmailAddress(request.getUsername());
 					forgotUsernamePasswordRequest.setUsername(request.getUsername());
-					ForgotPasswordResponse forgotPasswordResponse = forgotPasswordService.forgotPasswordForDoctor(forgotUsernamePasswordRequest);
-					if(forgotPasswordResponse!=null) {
+					ForgotPasswordResponse forgotPasswordResponse = forgotPasswordService
+							.forgotPasswordForDoctor(forgotUsernamePasswordRequest);
+					if (forgotPasswordResponse != null) {
 						logger.warn("Please reset your password and check your email to update your password");
-						throw new BusinessException(ServiceError.InvalidInput, "Please reset your password and check your email to update your password");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Please reset your password and check your email to update your password");
 					}
 				}
-				boolean isPasswordCorrect = new CustomPasswordEncoder().matches(String.valueOf(request.getPassword()), String.valueOf(userCollection.getPassword()));
-				
-				if(!isPasswordCorrect) {
+				boolean isPasswordCorrect = new CustomPasswordEncoder().matches(String.valueOf(request.getPassword()),
+						String.valueOf(userCollection.getPassword()));
+
+				if (!isPasswordCorrect) {
 					logger.warn(login);
 					throw new BusinessException(ServiceError.InvalidInput, login);
 				}
@@ -191,11 +204,10 @@ public class LoginServiceImplV2 implements LoginService {
 					userCollection.setLastSession(new Date());
 					userCollection = userRepository.save(userCollection);
 					criteria = new Criteria("doctorId").is(userCollection.getId())
-				
-					.and("isActivate").is(true)
-							.and("hasLoginAccess").ne(false);
+
+							.and("isActivate").is(true).and("hasLoginAccess").ne(false);
 //---
-					//criteria.and("isNutritionist").is(isNutritionist);
+					// criteria.and("isNutritionist").is(isNutritionist);
 					List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate
 							.aggregate(
 									Aggregation.newAggregation(Aggregation.match(criteria),
@@ -208,9 +220,11 @@ public class LoginServiceImplV2 implements LoginService {
 							.getMappedResults();
 					if (doctorClinicProfileLookupResponses == null || doctorClinicProfileLookupResponses.isEmpty()) {
 
-						logger.warn("None of your clinic is active or or you dont have login access,please contact your admin.");
+						logger.warn(
+								"None of your clinic is active or or you dont have login access,please contact your admin.");
 						// user.setUserState(UserState.NOTACTIVATED);
-						throw new BusinessException(ServiceError.NotAuthorized, "None of your clinic is active or you dont have login access,please contact your admin.");
+						throw new BusinessException(ServiceError.NotAuthorized,
+								"None of your clinic is active or you dont have login access,please contact your admin.");
 
 					}
 					if (doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
@@ -229,8 +243,10 @@ public class LoginServiceImplV2 implements LoginService {
 									.setImages(getFinalClinicImages(locationAndAccessControl.getImages()));
 							locationAndAccessControl.setIsVaccinationModuleOn(
 									doctorClinicProfileLookupResponse.getIsVaccinationModuleOn());
-							locationAndAccessControl.setIsNutritionist(doctorClinicProfileLookupResponse.getIsAdminNutritionist());
-							locationAndAccessControl.setIsAdminNutritionist(doctorClinicProfileLookupResponse.getIsAdminNutritionist());
+							locationAndAccessControl
+									.setIsNutritionist(doctorClinicProfileLookupResponse.getIsAdminNutritionist());
+							locationAndAccessControl
+									.setIsAdminNutritionist(doctorClinicProfileLookupResponse.getIsAdminNutritionist());
 							List<Role> roles = null;
 
 							Boolean isStaff = false;
@@ -267,13 +283,30 @@ public class LoginServiceImplV2 implements LoginService {
 													.equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {
 										isStaff = true;
 									}
-
+									user.setIsSuperAdmin(doctorClinicProfileLookupResponse.getIsSuperAdmin());
 									if (otherRoleCollection != null) {
 										AccessControl accessControl = accessControlServices.getAccessControls(
 												otherRoleCollection.getRoleCollection().getId(),
 												otherRoleCollection.getRoleCollection().getLocationId(),
 												otherRoleCollection.getRoleCollection().getHospitalId());
+										// set is show patient number true for super admin
+										if (otherRoleCollection.getRoleCollection().getRole()
+												.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
+												|| otherRoleCollection.getRoleCollection().getRole()
+														.equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
+												|| otherRoleCollection.getRoleCollection().getRole()
+														.equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
+												|| otherRoleCollection.getRoleCollection().getRole()
+														.equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole())) {
+											user.setIsShowPatientNumber(true);
+											user.setIsShowDoctorInCalender(true);
+										} else {
+											user.setIsShowPatientNumber(
+													doctorClinicProfileLookupResponse.getIsShowPatientNumber());
+											user.setIsShowDoctorInCalender(
+													doctorClinicProfileLookupResponse.getIsShowDoctorInCalender());
 
+										}
 										Role role = new Role();
 										BeanUtil.map(otherRoleCollection.getRoleCollection(), role);
 										role.setAccessModules(accessControl.getAccessModules());
@@ -298,7 +331,8 @@ public class LoginServiceImplV2 implements LoginService {
 									hospital.setHospitalUId(hospitalCollection.getHospitalUId());
 									hospitals.add(hospital);
 								} else {
-									Hospital hospital = checkHospitalId.get(locationCollection.getHospitalId().toString());
+									Hospital hospital = checkHospitalId
+											.get(locationCollection.getHospitalId().toString());
 									hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
 									hospital.setHospitalUId(hospitalCollection.getHospitalUId());
 									checkHospitalId.put(locationCollection.getHospitalId().toString(), hospital);
@@ -321,9 +355,14 @@ public class LoginServiceImplV2 implements LoginService {
 							user.setParentSpecialities(parentSpecialities);
 							user.setIsTransactionalSms(doctorCollection.getIsTransactionalSms());
 						}
-	//comment for new signup
-						//	user.setIsSuperstarAssociated(mongoTemplate.count(new Query(new Criteria("doctorId").is(userCollection.getId())), DoctorSchoolAssociationCollection.class) > 0 ? true : false);
-			//			user.setIsSuperstarAssociated(mongoTemplate.exists(new Query(new Criteria("doctorId").is(userCollection.getId())), DoctorSchoolAssociationCollection.class));
+
+						// comment for new signup
+						// user.setIsSuperstarAssociated(mongoTemplate.count(new Query(new
+						// Criteria("doctorId").is(userCollection.getId())),
+						// DoctorSchoolAssociationCollection.class) > 0 ? true : false);
+						// user.setIsSuperstarAssociated(mongoTemplate.exists(new Query(new
+						// Criteria("doctorId").is(userCollection.getId())),
+						// DoctorSchoolAssociationCollection.class));
 						response = new LoginResponse();
 						user.setEmailAddress(user.getUserName());
 						response.setUser(user);
@@ -342,7 +381,7 @@ public class LoginServiceImplV2 implements LoginService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error occured while login");
-			throw new BusinessException(ServiceError.Unknown, "Error occured while login"+e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error occured while login" + e.getMessage());
 		}
 		return response;
 	}

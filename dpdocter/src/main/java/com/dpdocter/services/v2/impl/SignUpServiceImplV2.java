@@ -371,6 +371,20 @@ public class SignUpServiceImplV2 implements SignUpService {
 					doctorClinicProfileCollection.setMrCode(pcUserCollection.getMrCode());
 				}
 			}
+
+			for (RoleCollection roleCollection : roleCollections) {
+				if (roleCollection != null) {
+					if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
+							|| roleCollection.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
+							|| roleCollection.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
+							|| roleCollection.getRole().equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole())) {
+
+						doctorClinicProfileCollection.setIsShowDoctorInCalender(true);
+						doctorClinicProfileCollection.setIsShowPatientNumber(true);
+					}
+				}
+			}
+
 			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 
 			Collection<ObjectId> roleIds = CollectionUtils.collect(roleCollections,
@@ -552,7 +566,6 @@ public class SignUpServiceImplV2 implements SignUpService {
 					tokenCollection.setCreatedTime(new Date());
 					tokenCollection = tokenRepository.save(tokenCollection);
 
-					
 					// send activation email
 					String body = mailBodyGenerator
 							.verifyEmailBody(
@@ -561,8 +574,7 @@ public class SignUpServiceImplV2 implements SignUpService {
 									tokenCollection.getId(), "verifyDoctor.vm");
 					Boolean mail = mailService.sendEmail(userCollection.getEmailAddress(), signupRequestSubject, body,
 							null);
-					
-					
+
 					response = true;
 				}
 

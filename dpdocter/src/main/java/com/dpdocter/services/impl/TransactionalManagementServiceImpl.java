@@ -3571,8 +3571,11 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 													: "")
 									+ "." + " If you need any help, reach out to us at " + smilebirdSupportNumber + "."
 									+ "\nOur Dental Studio address link- "
-									+ appointmentPatientReminderResponse.getGoogleMapShortUrl() + "." + "\n"
-									+ "Team Smilebird");
+									+ (!DPDoctorUtils
+											.anyStringEmpty(appointmentPatientReminderResponse.getGoogleMapShortUrl())
+													? (appointmentPatientReminderResponse.getGoogleMapShortUrl())
+													: "")
+									+ "." + "\n" + "Team Smilebird");
 
 							SMSAddress smsAddress = new SMSAddress();
 							smsAddress.setRecipient(appointmentPatientReminderResponse.getPatientMobileNumber());

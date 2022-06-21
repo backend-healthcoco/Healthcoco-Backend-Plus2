@@ -2,6 +2,8 @@ package com.dpdocter.response;
 
 import java.util.List;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.ConsultationFee;
@@ -93,6 +95,10 @@ public class UserLocationWithDoctorClinicProfile {
 	private Boolean isVaccinationModuleOn = false;
 
 	private Boolean isPidHasDate = true;
+	
+	private Boolean isShowPatientNumber = false;
+	
+	private Boolean isShowDoctorInCalender = true;
 
 	public String getDoctorId() {
 		return doctorId;
@@ -412,6 +418,22 @@ public class UserLocationWithDoctorClinicProfile {
 
 	public void setIsPidHasDate(Boolean isPidHasDate) {
 		this.isPidHasDate = isPidHasDate;
+	}
+
+	public Boolean getIsShowPatientNumber() {
+		return isShowPatientNumber;
+	}
+
+	public void setIsShowPatientNumber(Boolean isShowPatientNumber) {
+		this.isShowPatientNumber = isShowPatientNumber;
+	}
+
+	public Boolean getIsShowDoctorInCalender() {
+		return isShowDoctorInCalender;
+	}
+
+	public void setIsShowDoctorInCalender(Boolean isShowDoctorInCalender) {
+		this.isShowDoctorInCalender = isShowDoctorInCalender;
 	}
 
 	@Override

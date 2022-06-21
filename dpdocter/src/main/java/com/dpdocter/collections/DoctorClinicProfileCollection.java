@@ -174,6 +174,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Field
 	private Boolean isShowPatientNumber = false;
 	
+	@Field
+	private Boolean isShowDoctorInCalender = true;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -576,6 +579,14 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setIsShowPatientNumber(Boolean isShowPatientNumber) {
 		this.isShowPatientNumber = isShowPatientNumber;
+	}
+
+	public Boolean getIsShowDoctorInCalender() {
+		return isShowDoctorInCalender;
+	}
+
+	public void setIsShowDoctorInCalender(Boolean isShowDoctorInCalender) {
+		this.isShowDoctorInCalender = isShowDoctorInCalender;
 	}
 
 	@Override

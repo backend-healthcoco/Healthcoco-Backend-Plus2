@@ -3196,7 +3196,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 									clinicDoctorResponse.setWebRole(clinicDoctorResponse.getRole().get(0).getRole());
 								}
 							}
-							clinicDoctorResponse.setIsShowPatientNumber(doctorClinicProfileLookupResponse.getIsShowPatientNumber());
+							clinicDoctorResponse
+									.setIsShowPatientNumber(doctorClinicProfileLookupResponse.getIsShowPatientNumber());
+							clinicDoctorResponse.setIsShowDoctorInCalender(
+									doctorClinicProfileLookupResponse.getIsShowDoctorInCalender());
 							response.add(clinicDoctorResponse);
 						}
 					}
@@ -5348,6 +5351,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				smsTrackDetail.setLocationId(patientCollection.getLocationId());
 				smsTrackDetail.setHospitalId(patientCollection.getHospitalId());
 				smsTrackDetail.setType("DOCTOR_REFERENCE_MESSAGE");
+				smsTrackDetail.setTemplateId("1307165509461780606");
 				SMSDetail smsDetail = new SMSDetail();
 				smsDetail.setUserId(patientCollection.getUserId());
 				SMS sms = new SMS();
@@ -5712,6 +5716,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 				.findByDoctorIdAndLocationId(new ObjectId(doctorId), new ObjectId(locationId));
 		if (doctorClinicProfile != null) {
 			doctorClinicProfile.setIsShowPatientNumber(isShowPatientNumber);
+			doctorClinicProfile = doctorClinicProfileRepository.save(doctorClinicProfile);
+			response = true;
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean updateIsShowDoctorInCalender(String doctorId, Boolean isShowDoctorInCalender, String locationId) {
+		Boolean response = false;
+		DoctorClinicProfileCollection doctorClinicProfile = doctorClinicProfileRepository
+				.findByDoctorIdAndLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+		if (doctorClinicProfile != null) {
+			doctorClinicProfile.setIsShowDoctorInCalender(isShowDoctorInCalender);
 			doctorClinicProfile = doctorClinicProfileRepository.save(doctorClinicProfile);
 			response = true;
 		}

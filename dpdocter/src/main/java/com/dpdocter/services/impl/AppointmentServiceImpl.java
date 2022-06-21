@@ -2253,12 +2253,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "APPOINTMENT_REMINDER_TO_PATIENT": {
-			text ="Your appointment with "
-					+ doctorName + " has been scheduled @"
-					+ dateTime
-					+ ", at " + clinicName
-					+  ", " + clinicContactNum
-					+ ". -Healthcoco";
+			text = "Your appointment with " + doctorName + " has been scheduled @" + dateTime + ", at " + clinicName
+					+ ", " + clinicContactNum + ". -Healthcoco";
 //					"You have an appointment @ " + dateTime + " with " + doctorName
 //					+ (clinicName != "" ? ", " + clinicName : "") + (branch != "" ? ", " + branch : "")
 //					+ (clinicContactNum != "" ? ", " + clinicContactNum : "")
@@ -3645,7 +3641,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 									appointmentLookupResponse.getLocationId().toString(),
 									appointmentLookupResponse.getHospitalId().toString(),
 									appointmentLookupResponse.getPatientId().toString(), patient.getMobileNumber(),
-									patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum,clinicGoogleMapShortUrl);
+									patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum,
+									clinicGoogleMapShortUrl);
 						} else {
 							sendMsg(SMSFormatType.APPOINTMENT_REMINDER.getType(), "APPOINTMENT_REMINDER_TO_PATIENT",
 									appointmentLookupResponse.getDoctorId().toString(),
@@ -4668,10 +4665,27 @@ public class AppointmentServiceImpl implements AppointmentService {
 				SMSDetail smsDetail = new SMSDetail();
 				smsDetail.setUserId(patientCollection.getUserId());
 				SMS sms = new SMS();
-				smsDetail.setUserName(patientCollection.getLocalPatientName());
-				message = message.replace("{patientName}", patientCollection.getLocalPatientName());
-				message = message.replace("{clinicName}", locationCollection.getLocationName());
-				message = message.replace("{clinicNumber}", locationCollection.getClinicNumber());
+				String localPatientName = "";
+				if (!DPDoctorUtils.anyStringEmpty(patientCollection.getLocalPatientName()))
+					localPatientName = patientCollection.getLocalPatientName();
+				else
+					localPatientName = "";
+
+				String locationName = "";
+				if (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocationName()))
+					locationName = locationCollection.getLocationName();
+				else
+					locationName = "";
+
+				String clinicNumber = "";
+				if (!DPDoctorUtils.anyStringEmpty(locationCollection.getClinicNumber()))
+					clinicNumber = locationCollection.getClinicNumber();
+				else
+					clinicNumber = "";
+
+				message = message.replace("{patientName}", localPatientName);
+				message = message.replace("{clinicName}", locationName);
+				message = message.replace("{clinicNumber}", clinicNumber);
 				sms.setSmsText(message);
 
 				SMSAddress smsAddress = new SMSAddress();

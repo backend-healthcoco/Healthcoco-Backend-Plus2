@@ -26,6 +26,10 @@ public class ClinicDoctorResponse {
 	private String colorCode;
 
 	private Boolean isDefault=false;
+	
+	private Boolean isShowDoctorInCalender = false;
+
+	private Boolean isShowPatientNumber = false;
 
 	public Boolean getIsDefault() {
 		return isDefault;
@@ -105,6 +109,22 @@ public class ClinicDoctorResponse {
 
 	public void setRole(List<Role> role) {
 		this.role = role;
+	}
+
+	public Boolean getIsShowDoctorInCalender() {
+		return isShowDoctorInCalender;
+	}
+
+	public void setIsShowDoctorInCalender(Boolean isShowDoctorInCalender) {
+		this.isShowDoctorInCalender = isShowDoctorInCalender;
+	}
+
+	public Boolean getIsShowPatientNumber() {
+		return isShowPatientNumber;
+	}
+
+	public void setIsShowPatientNumber(Boolean isShowPatientNumber) {
+		this.isShowPatientNumber = isShowPatientNumber;
 	}
 
 	@Override

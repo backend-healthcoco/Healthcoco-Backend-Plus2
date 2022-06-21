@@ -201,5 +201,7 @@ public interface RegistrationService {
 	DoctorCalendarView getDoctorCalendarView(String doctorId, String locationId);
 
 	Boolean updateShowPatient(String doctorId, Boolean isShowPatientNumber, String locationId);
+	
+	Boolean updateIsShowDoctorInCalender(String doctorId, Boolean isShowDoctorInCalender, String locationId);
 
 }

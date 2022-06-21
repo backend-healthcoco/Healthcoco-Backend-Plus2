@@ -274,6 +274,7 @@ public interface PathProxy {
 		
 		public static final String UPDATE_SHOW_PATIENT_NUMBER = "/updateShowPatient/{doctorId}/{locationId}";
 
+		public static final String UPDATE_IS_SHOW_DOCTOR_IN_CALENDER = "/updateIsShowDoctorInCalender/{doctorId}/{locationId}";
 
 	}
 

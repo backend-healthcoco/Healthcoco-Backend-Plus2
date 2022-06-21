@@ -62,6 +62,12 @@ public class User {
 	
 	private Boolean isTransactionalSms=true;
 	
+	private Boolean isShowPatientNumber = false;
+
+	private Boolean isShowDoctorInCalender = true;
+	
+	private Boolean isSuperAdmin = false;
+
 	public User(String firstName, String mobileNumber) {
 		this.firstName = firstName;
 		this.mobileNumber = mobileNumber;
@@ -246,7 +252,21 @@ public class User {
 		this.parentSpecialities = parentSpecialities;
 	}
 	
-	
+	public Boolean getIsShowPatientNumber() {
+		return isShowPatientNumber;
+	}
+
+	public void setIsShowPatientNumber(Boolean isShowPatientNumber) {
+		this.isShowPatientNumber = isShowPatientNumber;
+	}
+
+	public Boolean getIsShowDoctorInCalender() {
+		return isShowDoctorInCalender;
+	}
+
+	public void setIsShowDoctorInCalender(Boolean isShowDoctorInCalender) {
+		this.isShowDoctorInCalender = isShowDoctorInCalender;
+	}
 
 	public String getTimeZone() {
 		return timeZone;
@@ -254,6 +274,14 @@ public class User {
 
 	public void setTimeZone(String timeZone) {
 		this.timeZone = timeZone;
+	}
+
+	public Boolean getIsSuperAdmin() {
+		return isSuperAdmin;
+	}
+
+	public void setIsSuperAdmin(Boolean isSuperAdmin) {
+		this.isSuperAdmin = isSuperAdmin;
 	}
 
 	@Override
