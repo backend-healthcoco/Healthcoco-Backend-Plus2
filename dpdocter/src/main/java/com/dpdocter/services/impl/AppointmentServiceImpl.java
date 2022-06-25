@@ -5290,8 +5290,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 			} else {
 				parameters.put("age", "<b>Age :- </b> --");
 			}
+			String mobileNumber = request.getMobileNumber();
+			LocationCollection locationCollection = locationRepository.findById(new ObjectId(request.getLocationId()))
+					.orElse(null);
+			if (locationCollection != null && locationCollection.getIsDentalChain()) {
+				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+						.findByDoctorIdAndLocationId(new ObjectId(request.getDoctorId()),
+								new ObjectId(request.getLocationId()));
+				if (doctorClinicProfileCollection != null && !doctorClinicProfileCollection.getIsShowPatientNumber()) {
+					mobileNumber = mobileNumber.replaceAll("\\w(?=\\w{4})", "*");
+				}
+			}
 			if (request.getMobileNumber() != null) {
-				parameters.put("mobileNumber", "<b>Mobile No. :- </b> " + request.getMobileNumber());
+				parameters.put("mobileNumber", "<b>Mobile No. :- </b> " + mobileNumber);
 			} else {
 				parameters.put("mobileNumber", "<b>Mobile No. :- </b> --");
 			}
@@ -5764,9 +5775,20 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 					}
 				}
-
+				String mobileNumber = calenderResponse.getMobileNumber();
+				LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId))
+						.orElse(null);
+				if (locationCollection != null && locationCollection.getIsDentalChain()) {
+					DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+							.findByDoctorIdAndLocationId(new ObjectId(calenderResponseForJasper.getDoctorId()),
+									new ObjectId(locationId));
+					if (doctorClinicProfileCollection != null
+							&& !doctorClinicProfileCollection.getIsShowPatientNumber()) {
+						mobileNumber = mobileNumber.replaceAll("\\w(?=\\w{4})", "*");
+					}
+				}
 				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getMobileNumber()) && showMobileNo) {
-					calenderJasperBean.setMobileNumber(calenderResponse.getMobileNumber());
+					calenderJasperBean.setMobileNumber(mobileNumber);
 					mbnoAvailable = true;
 				}
 

@@ -3987,9 +3987,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 		parameters.put("showPID", show);
 		show = false;
-
 		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getMobileNumber())) {
-			consentFormItemJasperdetails.setMobileNumber(consentFormCollection.getMobileNumber());
+			String mobileNumber = consentFormCollection.getMobileNumber();
+			LocationCollection locationCollection = locationRepository.findById(consentFormCollection.getLocationId())
+					.orElse(null);
+			if (locationCollection != null && locationCollection.getIsDentalChain()) {
+				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+						.findByDoctorIdAndLocationId(consentFormCollection.getDoctorId(), consentFormCollection.getLocationId());
+				if (doctorClinicProfileCollection != null && !doctorClinicProfileCollection.getIsShowPatientNumber()) {
+					mobileNumber = mobileNumber.replaceAll("\\w(?=\\w{4})", "*");
+				}
+			}
+
+			consentFormItemJasperdetails.setMobileNumber(mobileNumber);
 			show = true;
 		}
 		parameters.put("showMbno", show);

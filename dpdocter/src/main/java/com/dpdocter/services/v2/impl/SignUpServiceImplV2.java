@@ -372,21 +372,11 @@ public class SignUpServiceImplV2 implements SignUpService {
 				}
 			}
 
-			for (RoleCollection roleCollection : roleCollections) {
-				if (roleCollection != null) {
-					if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
-							|| roleCollection.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
-							|| roleCollection.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
-							|| roleCollection.getRole().equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole())) {
-
-						doctorClinicProfileCollection.setIsShowDoctorInCalender(true);
-						doctorClinicProfileCollection.setIsShowPatientNumber(true);
-					}
-				}
-			}
-
 			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-
+			if (doctorClinicProfileCollection.getIsSuperAdmin()) {
+				doctorClinicProfileCollection.setIsShowDoctorInCalender(true);
+				doctorClinicProfileCollection.setIsShowPatientNumber(true);
+			}
 			Collection<ObjectId> roleIds = CollectionUtils.collect(roleCollections,
 					new BeanToPropertyValueTransformer("id"));
 			List<UserRoleCollection> userRoleCollections = new ArrayList<>();

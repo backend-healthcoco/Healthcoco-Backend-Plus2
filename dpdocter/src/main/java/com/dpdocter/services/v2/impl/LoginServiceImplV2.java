@@ -290,14 +290,7 @@ public class LoginServiceImplV2 implements LoginService {
 												otherRoleCollection.getRoleCollection().getLocationId(),
 												otherRoleCollection.getRoleCollection().getHospitalId());
 										// set is show patient number true for super admin
-										if (otherRoleCollection.getRoleCollection().getRole()
-												.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
-												|| otherRoleCollection.getRoleCollection().getRole()
-														.equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
-												|| otherRoleCollection.getRoleCollection().getRole()
-														.equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
-												|| otherRoleCollection.getRoleCollection().getRole()
-														.equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole())) {
+										if (doctorClinicProfileLookupResponse.getIsSuperAdmin()) {
 											user.setIsShowPatientNumber(true);
 											user.setIsShowDoctorInCalender(true);
 										} else {
@@ -305,7 +298,6 @@ public class LoginServiceImplV2 implements LoginService {
 													doctorClinicProfileLookupResponse.getIsShowPatientNumber());
 											user.setIsShowDoctorInCalender(
 													doctorClinicProfileLookupResponse.getIsShowDoctorInCalender());
-
 										}
 										Role role = new Role();
 										BeanUtil.map(otherRoleCollection.getRoleCollection(), role);

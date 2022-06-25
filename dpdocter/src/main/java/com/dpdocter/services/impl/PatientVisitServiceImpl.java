@@ -73,6 +73,7 @@ import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DiagramsCollection;
 import com.dpdocter.collections.DiseasesCollection;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.EyePrescriptionCollection;
@@ -106,9 +107,11 @@ import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.repository.DiagramsRepository;
 import com.dpdocter.repository.DiseasesRepository;
+import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.EyePrescriptionRepository;
 import com.dpdocter.repository.HistoryRepository;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientTreamentRepository;
 import com.dpdocter.repository.PatientVisitRepository;
@@ -271,6 +274,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Autowired
 	private ContactsService contactsService;
+
+	@Autowired
+	private DoctorClinicProfileRepository doctorClinicProfileRepository;
+
+	@Autowired
+	private LocationRepository locationRepository;
 
 	@Override
 	@Transactional
@@ -2545,11 +2554,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				Age ageObj = patientCard.getDob().getAge();
 				LocalDate dob = null;
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
-				if(patientCard.getDob().getDays() > 0 && patientCard.getDob().getMonths() > 0 && patientCard.getDob().getYears() > 0) {
-				 dob = LocalDate.parse(patientCard.getDob().getDays()+"/"+patientCard.getDob().getMonths()
-						+"/"+patientCard.getDob().getYears(), formatter);
+				if (patientCard.getDob().getDays() > 0 && patientCard.getDob().getMonths() > 0
+						&& patientCard.getDob().getYears() > 0) {
+					dob = LocalDate.parse(patientCard.getDob().getDays() + "/" + patientCard.getDob().getMonths() + "/"
+							+ patientCard.getDob().getYears(), formatter);
 				}
-				
+
 				if (ageObj.getYears() > 14)
 					age = ageObj.getYears() + "yrs";
 				else {
@@ -2575,11 +2585,20 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 				if (patientDetails.getShowDOB()) {
 					if (!DPDoctorUtils.anyStringEmpty(age, gender))
-						patientDetailList.add("<b>DOB(Age) | Gender: </b>" + dob+" ("+age+")"+ " | " + gender);
+						patientDetailList.add("<b>DOB(Age) | Gender: </b>" + dob + " (" + age + ")" + " | " + gender);
 					else if (!DPDoctorUtils.anyStringEmpty(age))
-						patientDetailList.add("<b>DOB(Age) | Gender: </b>" + dob+" ("+age+")" + " | --");
+						patientDetailList.add("<b>DOB(Age) | Gender: </b>" + dob + " (" + age + ")" + " | --");
 					else if (!DPDoctorUtils.anyStringEmpty(gender))
 						patientDetailList.add("<b>DOB(Age) | Gender: </b>-- | " + gender);
+				}
+			}
+			LocationCollection locationCollection = locationRepository.findById(patientCard.getLocationId())
+					.orElse(null);
+			if (locationCollection != null && locationCollection.getIsDentalChain()) {
+				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+						.findByDoctorIdAndLocationId(patientCard.getDoctorId(), patientCard.getLocationId());
+				if (doctorClinicProfileCollection != null && !doctorClinicProfileCollection.getIsShowPatientNumber()) {
+					mobileNumber = mobileNumber.replaceAll("\\w(?=\\w{4})", "*");
 				}
 			}
 			if (!DPDoctorUtils.anyStringEmpty(uniqueEMRId))
@@ -2788,16 +2807,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 								else
 									vitalSigns = bsa;
 							}
-							
-							//new field
+
+							// new field
 							String pefr = clinicalNotesCollection.getVitalSigns().getPefr();
 							pefr = (pefr != null && !pefr.isEmpty()
 									? "PEFR: " + pefr + " " + VitalSignsUnit.PEFR.getUnit()
 									: "");
 							if (!DPDoctorUtils.allStringsEmpty(pefr))
 								vitalSigns = pefr;
-							
-							
+
 							clinicalNotesJasperDetails
 									.setVitalSigns(vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
 						}
@@ -2806,7 +2824,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						clinicalNotesJasperDetails.setNotes(clinicalNotesCollection.getNote());
 						clinicalNotesJasperDetails.setInvestigations(clinicalNotesCollection.getInvestigation());
 						clinicalNotesJasperDetails.setDiagnosis(clinicalNotesCollection.getDiagnosis());
-						clinicalNotesJasperDetails.setVaccinationHistory(clinicalNotesCollection.getVaccinationHistory());
+						clinicalNotesJasperDetails
+								.setVaccinationHistory(clinicalNotesCollection.getVaccinationHistory());
 						clinicalNotesJasperDetails.setComplaints(clinicalNotesCollection.getComplaint());
 						clinicalNotesJasperDetails.setPresentComplaint(clinicalNotesCollection.getPresentComplaint());
 						clinicalNotesJasperDetails
@@ -3415,13 +3434,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 										drugName = (drugType + drugName) == "" ? "--"
 												: drugType + " " + drugName + genericName;
 									}
-//									String drugQuantity = "";
-//									if (prescriptionItem.getInventoryQuantity() != null
-//											&& prescriptionItem.getInventoryQuantity() > 0) {
-//										showDrugQty = true;
-//										drugQuantity = "" + prescriptionItem.getInventoryQuantity().toString();
-//										drugName = drugName + "<br>" + "<b>QTY: </b>" + drugQuantity;
-//									}
+
+									String drugQuantity = "";
+									if (prescriptionItem.getInventoryQuantity() != null
+											&& Long.valueOf(prescriptionItem.getInventoryQuantity()) > 0) {
+										showDrugQty = true;
+										drugQuantity = ""
+												+ Long.valueOf(prescriptionItem.getInventoryQuantity()).toString();
+										drugName = drugName + "<br>" + "<b>QTY: </b>" + drugQuantity;
+									}
 									String durationValue = prescriptionItem.getDuration() != null
 											? (prescriptionItem.getDuration().getValue() != null
 													? prescriptionItem.getDuration().getValue()
@@ -4128,7 +4149,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 //					BeanUtil.map(patientVisitlookupBean, response);
 //				}
 //			}
-			
+
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 					new CustomAggregationOperation(new Document("$unwind",

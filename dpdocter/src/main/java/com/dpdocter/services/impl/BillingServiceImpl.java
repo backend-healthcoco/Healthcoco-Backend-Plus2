@@ -61,6 +61,7 @@ import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.VendorExpense;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorExpenseCollection;
 import com.dpdocter.collections.DoctorPatientDueAmountCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
@@ -93,6 +94,7 @@ import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorExpenseRepository;
 import com.dpdocter.repository.DoctorPatientDueAmountRepository;
 import com.dpdocter.repository.DoctorPatientInvoiceRepository;
@@ -140,6 +142,9 @@ public class BillingServiceImpl implements BillingService {
 
 	@Autowired
 	private LocationRepository locationRepository;
+	
+	@Autowired
+	private DoctorClinicProfileRepository doctorClinicProfileRepository;
 
 	@Autowired
 	private DoctorPatientReceiptRepository doctorPatientReceiptRepository;
@@ -2291,6 +2296,15 @@ public class BillingServiceImpl implements BillingService {
 			}
 			if (!DPDoctorUtils.anyStringEmpty(uniqueEMRId))
 				patientDetailList.add(uniqueEMRId);
+			LocationCollection locationCollection = locationRepository.findById(patientCard.getLocationId())
+					.orElse(null);
+			if (locationCollection != null && locationCollection.getIsDentalChain()) {
+				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+						.findByDoctorIdAndLocationId(patientCard.getDoctorId(), patientCard.getLocationId());
+				if (doctorClinicProfileCollection != null && !doctorClinicProfileCollection.getIsShowPatientNumber()) {
+					mobileNumber = mobileNumber.replaceAll("\\w(?=\\w{4})", "*");
+				}
+			}
 			if (patientDetails.getShowDOB()) {
 				if (patientDetails.getShowDate())
 					patientDetailList.add("<b>Date: </b>" + sdf.format(date));
