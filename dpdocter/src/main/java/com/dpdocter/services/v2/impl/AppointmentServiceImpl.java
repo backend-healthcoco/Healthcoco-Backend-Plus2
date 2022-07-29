@@ -601,7 +601,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 					sendWhatsapp("CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR", request.getDoctorId(),
 							request.getLocationId(), request.getHospitalId(), request.getPatientId(),
-							patientMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
+							doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
 							clinicContactNum, branch, locationMapUrl);
 
 				}
@@ -648,7 +648,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						request.getHospitalId(), request.getPatientId(), doctorMobileNumber, patientName, appointmentId,
 						dateTime, doctorName, clinicName, clinicContactNum, branch, null, null, locationMapUrl);
 				sendWhatsapp("RESCHEDULE_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), request.getLocationId(),
-						request.getHospitalId(), request.getPatientId(), patientMobileNumber, patientName,
+						request.getHospitalId(), request.getPatientId(), doctorMobileNumber, patientName,
 						appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch, locationMapUrl);
 
 			}
@@ -660,7 +660,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					request.getHospitalId(), request.getPatientId(), doctorMobileNumber, patientName, appointmentId,
 					dateTime, doctorName, clinicName, clinicContactNum, branch, null, null, locationMapUrl);
 			sendWhatsapp("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), request.getLocationId(),
-					request.getHospitalId(), request.getPatientId(), patientMobileNumber, patientName, appointmentId,
+					request.getHospitalId(), request.getPatientId(), doctorMobileNumber, patientName, appointmentId,
 					dateTime, doctorName, clinicName, clinicContactNum, branch, locationMapUrl);
 
 			sendEmail(doctorName, patientName, dateTime, clinicName, "CONFIRMED_APPOINTMENT_TO_PATIENT",

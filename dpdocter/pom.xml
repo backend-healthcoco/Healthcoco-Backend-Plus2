@@ -1109,14 +1109,14 @@
 		</plugins>
 	</build>
 	<repositories>
-		<repository>
+			<repository>
 			<id>spring-milestone</id>
 			<name>Spring Milestone Maven Repository</name>
-			<url>http://repo.springsource.org/libs-milestone</url>
+			<url>https://repo.springsource.org/libs-milestone</url>
 		</repository>
 		<repository>
 			<id>bippo-nexus-public</id>
-			<url>http://nexus.bippo.co.id/nexus/content/groups/public/</url>
+			<url>https://nexus.bippo.co.id/nexus/content/groups/public/</url>
 		</repository>
 		<repository>
 			<id>jasperreports</id>
@@ -1124,14 +1124,14 @@
 		</repository>
 		<repository>
 			<id>jaspersoft-third-party</id>
-			<url>http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts/</url>
+			<url>https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/</url>
 		</repository>
 		<repository>
-            <id>MongoJasperRepo</id>
-            <url>http://jaspersoft.artifactoryonline.com/jaspersoft/jaspersoft-repo</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository>
+			<id>MongoJasperRepo</id>
+			<url>https://jaspersoft.jfrog.io/jaspersoft/jaspersoft-repo</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
 	</repositories>
 </project>

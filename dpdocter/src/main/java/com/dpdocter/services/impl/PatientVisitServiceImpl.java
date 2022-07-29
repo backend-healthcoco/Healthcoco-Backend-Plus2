@@ -3437,7 +3437,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 									String drugQuantity = "";
 									if (prescriptionItem.getInventoryQuantity() != null
-											&& Long.valueOf(prescriptionItem.getInventoryQuantity()) > 0) {
+											&& Long.valueOf(prescriptionItem.getInventoryQuantity()) > 1) {
 										showDrugQty = true;
 										drugQuantity = ""
 												+ Long.valueOf(prescriptionItem.getInventoryQuantity()).toString();

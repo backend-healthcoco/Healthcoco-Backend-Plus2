@@ -38,6 +38,9 @@ import com.dpdocter.beans.ContactUs;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Resume;
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.SendAppLink;
 import com.dpdocter.collections.AppLinkDetailsCollection;
 import com.dpdocter.collections.CityCollection;
@@ -99,6 +102,7 @@ import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.enums.AppType;
 import com.dpdocter.enums.Resource;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -238,76 +242,76 @@ public class AdminServicesImpl implements AdminServices {
 
 	@Autowired
 	MongoTemplate mongoTemplate;
-	
+
 	@Autowired
 	ElasticsearchTemplate elasticsearchTemplate;
-	
+
 	@Autowired
 	ESComplaintsRepository esComplaintsRepository;
-	
+
 	@Autowired
 	ESObservationsRepository esObservationsRepository;
-	
+
 	@Autowired
 	ESInvestigationsRepository esInvestigationsRepository;
-	
+
 	@Autowired
 	ESDiagnosesRepository esDiagnosesRepository;
-	
+
 	@Autowired
 	ProcedureNoteRepository procedureNoteRepository;
-	
+
 	@Autowired
 	InvestigationRepository investigationRepository;
-	
+
 	@Autowired
 	ESProcedureNoteRepository esProcedureNoteRepository;
-	
+
 	@Autowired
 	TransactionalManagementService transactionalManagementService;
-	
+
 	@Autowired
 	TransnationalRepositiory transnationalRepositiory;
-	
+
 	@Autowired
 	UserRoleRepository userRoleRepository;
-	
+
 	@Autowired
 	LandmarkLocalityRepository landmarkLocalityRepository;
-	
+
 	@Autowired
 	ESLandmarkLocalityRepository esLandmarkLocalityRepository;
-	
+
 	@Autowired
 	ServicesRepository servicesRepository;
-	
+
 	@Autowired
 	SpecialityRepository specialityRepository;
-	
+
 	@Autowired
 	private ESMasterService esMasterService;
-	
+
 	@Autowired
 	private ESDoctorRepository esDoctorRepository;
-	
+
 	@Autowired
 	private ESSpecialityRepository esSpecialityRepository;
 
 	@Autowired
 	private ESServicesRepository esServicesRepository;
-	
+
 	@Autowired
 	private DoctorRepository doctorRepository;
-	
+
 	@Autowired
 	private TransactionalManagementService transnationalService;
-	
+
 	@Autowired
 	SymptomDiseaseConditionRepository symptomDiseaseConditionRepository;
-	
+
 	@Autowired
 	ESSymptomDiseaseConditionRepository esSymptomDiseaseConditionRepository;
-	
+
 	@Override
 	@Transactional
 	public Resume addResumes(Resume request) {
@@ -379,7 +383,6 @@ public class AdminServicesImpl implements AdminServices {
 			}
 		}
 	}
-
 
 	@Override
 	@Transactional
@@ -659,19 +662,31 @@ public class AdminServicesImpl implements AdminServices {
 	public Boolean sendLink(SendAppLink request) {
 		Boolean response = false;
 		try {
+			SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+			smsTrackDetail.setType("Get App Link");
+			SMSDetail smsDetail = new SMSDetail();
+			SMS sms = new SMS();
+
+			String text = "";
 			String appType = "", appBitLink = "", appDeviceType = "";
 			if (request.getAppType().getType().equalsIgnoreCase(AppType.HEALTHCOCO.getType())) {
 				appType = "Healthcoco";
 				appBitLink = patientAppBitLink;
 				appDeviceType = "phone";
+				smsTrackDetail.setTemplateId("1307162272391102761");
+
 			} else if (request.getAppType().getType().equalsIgnoreCase(AppType.HEALTHCOCO_PLUS.getType())) {
 				appType = "Healthcoco+";
 				appBitLink = doctorAppBitLink;
 				appDeviceType = "phone";
+				smsTrackDetail.setTemplateId("1307162272379735144");
+
 			} else if (request.getAppType().getType().equalsIgnoreCase(AppType.HEALTHCOCO_PAD.getType())) {
 				appType = "Healthcoco Pad";
 				appBitLink = ipadAppBitLink;
 				appDeviceType = "ipad";
+				smsTrackDetail.setTemplateId("1307162272391102761");
+
 			}
 			if (!DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
 				AppLinkDetailsCollection appLinkDetailsCollection = appLinkDetailsRepository
@@ -682,10 +697,22 @@ public class AdminServicesImpl implements AdminServices {
 					appLinkDetailsCollection.setCreatedTime(new Date());
 				}
 				if (appLinkDetailsCollection.getCount() < 3) {
-					SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null,
-							appLinkMessage.replace("{appType}", appType).replace("{appLink}", appBitLink),
-							request.getMobileNumber(), "Get App Link");
+
+					text = "Your Healthcoco app is here! " + appBitLink + " Stay Healthy and Happy!\n-Healthcoco";
+//					appLinkMessage.replace("{appType}", appType).replace("{appLink}", appBitLink);
+
+					sms.setSmsText(text);
+					SMSAddress smsAddress = new SMSAddress();
+					smsAddress.setRecipient(request.getMobileNumber());
+					sms.setSmsAddress(smsAddress);
+
+					smsDetail.setSms(sms);
+					smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+					List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+					smsDetails.add(smsDetail);
+					smsTrackDetail.setSmsDetails(smsDetails);
 					sMSServices.sendSMS(smsTrackDetail, false);
+
 					response = true;
 					appLinkDetailsCollection.setCount(appLinkDetailsCollection.getCount() + 1);
 					appLinkDetailsRepository.save(appLinkDetailsCollection);
@@ -710,12 +737,16 @@ public class AdminServicesImpl implements AdminServices {
 	public Boolean discardDuplicateClinicalItems(String doctorId) {
 		Boolean response = false;
 		try {
-			discardDuplicateClinicalItemsInDb(doctorId, Resource.COMPLAINT.getType(), "complaint", ComplaintCollection.class);
-			discardDuplicateClinicalItemsInDb(doctorId, Resource.OBSERVATION.getType(), "observation", ObservationCollection.class);
-			discardDuplicateClinicalItemsInDb(doctorId, Resource.INVESTIGATION.getType(), "investigation", InvestigationCollection.class);
-			discardDuplicateClinicalItemsInDb(doctorId, Resource.DIAGNOSIS.getType(), "diagnosis", DiagnosisCollection.class);
+			discardDuplicateClinicalItemsInDb(doctorId, Resource.COMPLAINT.getType(), "complaint",
+					ComplaintCollection.class);
+			discardDuplicateClinicalItemsInDb(doctorId, Resource.OBSERVATION.getType(), "observation",
+					ObservationCollection.class);
+			discardDuplicateClinicalItemsInDb(doctorId, Resource.INVESTIGATION.getType(), "investigation",
+					InvestigationCollection.class);
+			discardDuplicateClinicalItemsInDb(doctorId, Resource.DIAGNOSIS.getType(), "diagnosis",
+					DiagnosisCollection.class);
 			response = true;
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -724,70 +755,100 @@ public class AdminServicesImpl implements AdminServices {
 		return response;
 	}
 
-	private void discardDuplicateClinicalItemsInDb(String doctorId, String resource, String fieldName, Class<?> className) {
-		
-		List<ClinicalItemsResponse> items = mongoTemplate.aggregate(Aggregation.newAggregation(
-				Aggregation.match(new Criteria("doctorId").is(new ObjectId(doctorId)).and("discarded").is(false)),
-				Aggregation.sort(new Sort(Direction.ASC, "createdTime")),
-				new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
-						.append("resourceIds", "$_id").append("resourceName", "$"+fieldName).append("resourceIdsForEs", "$_id"))),
-				new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$resourceName")
-								.append("keepResourceId", new BasicDBObject("$first", "$resourceIds"))
-								.append("resourceIds", new BasicDBObject("$addToSet", "$resourceIds"))
-								.append("resourceIdsForEs", new BasicDBObject("$addToSet", "$resourceIdsForEs"))
-								.append("resourceName", new BasicDBObject("$first","$resourceName"))
-								.append("count", new BasicDBObject("$sum", 1)))),
-				new CustomAggregationOperation(new Document("$redact",new BasicDBObject("$cond",
-						new BasicDBObject("if", new BasicDBObject("$gt", Arrays.asList("$count", 1)))
-						.append("then", "$$KEEP").append("else", "$$PRUNE"))))), 
-				className, ClinicalItemsResponse.class).getMappedResults();
-		
-		if(items != null) {
-			for(ClinicalItemsResponse itemsResponse : items) {
+	private void discardDuplicateClinicalItemsInDb(String doctorId, String resource, String fieldName,
+			Class<?> className) {
+
+		List<ClinicalItemsResponse> items = mongoTemplate
+				.aggregate(
+						Aggregation.newAggregation(
+								Aggregation.match(
+										new Criteria("doctorId").is(new ObjectId(doctorId)).and("discarded").is(false)),
+								Aggregation.sort(new Sort(Direction.ASC, "createdTime")),
+								new CustomAggregationOperation(new Document("$project",
+										new BasicDBObject("_id", "$_id").append("resourceIds", "$_id")
+												.append("resourceName", "$" + fieldName)
+												.append("resourceIdsForEs", "$_id"))),
+								new CustomAggregationOperation(new Document("$group",
+										new BasicDBObject("_id", "$resourceName")
+												.append("keepResourceId", new BasicDBObject("$first", "$resourceIds"))
+												.append("resourceIds", new BasicDBObject("$addToSet", "$resourceIds"))
+												.append("resourceIdsForEs",
+														new BasicDBObject("$addToSet", "$resourceIdsForEs"))
+												.append("resourceName", new BasicDBObject("$first", "$resourceName"))
+												.append("count", new BasicDBObject("$sum", 1)))),
+								new CustomAggregationOperation(new Document("$redact", new BasicDBObject("$cond",
+										new BasicDBObject("if", new BasicDBObject("$gt", Arrays.asList("$count", 1)))
+												.append("then", "$$KEEP").append("else", "$$PRUNE"))))),
+						className, ClinicalItemsResponse.class)
+				.getMappedResults();
+
+		if (items != null) {
+			for (ClinicalItemsResponse itemsResponse : items) {
 				Date updatedTime = new Date();
 				itemsResponse.getResourceIds().remove(itemsResponse.getKeepResourceId());
 				itemsResponse.getResourceIdsForEs().remove(itemsResponse.getKeepResourceId().toString());
-				
-				mongoTemplate.updateMulti(new Query(new Criteria("id").in(itemsResponse.getResourceIds())), Update.update("discarded", true).currentDate("updatedTime"), className);
-				
-				if(resource.equalsIgnoreCase(Resource.COMPLAINT.getType())) {
-					List<ESComplaintsDocument> esItems = elasticsearchTemplate.queryForList(
-							new CriteriaQuery(new org.springframework.data.elasticsearch.core.query.Criteria("id").in(itemsResponse.getResourceIdsForEs())), ESComplaintsDocument.class);
-					if(esItems != null) {
-						for(ESComplaintsDocument esComplaintsDocument : esItems) {
-							esComplaintsDocument.setDiscarded(true);esComplaintsDocument.setUpdatedTime(updatedTime);
+
+				mongoTemplate.updateMulti(new Query(new Criteria("id").in(itemsResponse.getResourceIds())),
+						Update.update("discarded", true).currentDate("updatedTime"), className);
+
+				if (resource.equalsIgnoreCase(Resource.COMPLAINT.getType())) {
+					List<ESComplaintsDocument> esItems = elasticsearchTemplate
+							.queryForList(
+									new CriteriaQuery(
+											new org.springframework.data.elasticsearch.core.query.Criteria("id")
+													.in(itemsResponse.getResourceIdsForEs())),
+									ESComplaintsDocument.class);
+					if (esItems != null) {
+						for (ESComplaintsDocument esComplaintsDocument : esItems) {
+							esComplaintsDocument.setDiscarded(true);
+							esComplaintsDocument.setUpdatedTime(updatedTime);
 							esComplaintsRepository.save(esComplaintsDocument);
 						}
 					}
-				}else if(resource.equalsIgnoreCase(Resource.OBSERVATION.getType())) {
-					List<ESObservationsDocument> esItems = elasticsearchTemplate.queryForList(
-							new CriteriaQuery(new org.springframework.data.elasticsearch.core.query.Criteria("id").in(itemsResponse.getResourceIdsForEs())), ESObservationsDocument.class);
-					if(esItems != null) {
-						for(ESObservationsDocument esDocument : esItems) {
-							esDocument.setDiscarded(true);esDocument.setUpdatedTime(updatedTime);
+				} else if (resource.equalsIgnoreCase(Resource.OBSERVATION.getType())) {
+					List<ESObservationsDocument> esItems = elasticsearchTemplate
+							.queryForList(
+									new CriteriaQuery(
+											new org.springframework.data.elasticsearch.core.query.Criteria("id")
+													.in(itemsResponse.getResourceIdsForEs())),
+									ESObservationsDocument.class);
+					if (esItems != null) {
+						for (ESObservationsDocument esDocument : esItems) {
+							esDocument.setDiscarded(true);
+							esDocument.setUpdatedTime(updatedTime);
 							esObservationsRepository.save(esDocument);
 						}
 					}
-				}else if(resource.equalsIgnoreCase(Resource.INVESTIGATION.getType())) {
-					List<ESInvestigationsDocument> esItems = elasticsearchTemplate.queryForList(
-							new CriteriaQuery(new org.springframework.data.elasticsearch.core.query.Criteria("id").in(itemsResponse.getResourceIdsForEs())), ESInvestigationsDocument.class);
-					if(esItems != null) {
-						for(ESInvestigationsDocument esDocument : esItems) {
-							esDocument.setDiscarded(true);esDocument.setUpdatedTime(updatedTime);
+				} else if (resource.equalsIgnoreCase(Resource.INVESTIGATION.getType())) {
+					List<ESInvestigationsDocument> esItems = elasticsearchTemplate
+							.queryForList(
+									new CriteriaQuery(
+											new org.springframework.data.elasticsearch.core.query.Criteria("id")
+													.in(itemsResponse.getResourceIdsForEs())),
+									ESInvestigationsDocument.class);
+					if (esItems != null) {
+						for (ESInvestigationsDocument esDocument : esItems) {
+							esDocument.setDiscarded(true);
+							esDocument.setUpdatedTime(updatedTime);
 							esInvestigationsRepository.save(esDocument);
 						}
 					}
-				}else if(resource.equalsIgnoreCase(Resource.DIAGNOSIS.getType())) {
-					List<ESDiagnosesDocument> esItems = elasticsearchTemplate.queryForList(
-							new CriteriaQuery(new org.springframework.data.elasticsearch.core.query.Criteria("id").in(itemsResponse.getResourceIdsForEs())), ESDiagnosesDocument.class);
-					if(esItems != null) {
-						for(ESDiagnosesDocument esDocument : esItems) {
-							esDocument.setDiscarded(true);esDocument.setUpdatedTime(updatedTime);
+				} else if (resource.equalsIgnoreCase(Resource.DIAGNOSIS.getType())) {
+					List<ESDiagnosesDocument> esItems = elasticsearchTemplate
+							.queryForList(
+									new CriteriaQuery(
+											new org.springframework.data.elasticsearch.core.query.Criteria("id")
+													.in(itemsResponse.getResourceIdsForEs())),
+									ESDiagnosesDocument.class);
+					if (esItems != null) {
+						for (ESDiagnosesDocument esDocument : esItems) {
+							esDocument.setDiscarded(true);
+							esDocument.setUpdatedTime(updatedTime);
 							esDiagnosesRepository.save(esDocument);
 						}
 					}
 				}
-				
+
 			}
 		}
 	}
@@ -796,18 +857,23 @@ public class AdminServicesImpl implements AdminServices {
 	public Boolean copyClinicalItems(String doctorId, String locationId, List<String> drIds) {
 		Boolean response = false;
 		try {
-			List<InvestigationCollection> investigationCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(
-					new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId").is(new ObjectId(locationId)))), InvestigationCollection.class, InvestigationCollection.class).getMappedResults();
-			
-			List<ObjectId> drObjectIds = new ArrayList<>();
-			for(String id : drIds)drObjectIds.add(new ObjectId(id));		
+			List<InvestigationCollection> investigationCollections = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("doctorId").is(new ObjectId(doctorId))
+							.and("locationId").is(new ObjectId(locationId)))),
+					InvestigationCollection.class, InvestigationCollection.class).getMappedResults();
 
-			if(investigationCollections != null) {
-				for(InvestigationCollection investigationCollection : investigationCollections) {
-					for(ObjectId id : drObjectIds) {
-						long count = mongoTemplate.count(new Query(new Criteria("doctorId").is(id).and("locationId").is(new ObjectId(locationId))
-								.and("investigation").is(investigationCollection.getInvestigation())), InvestigationCollection.class);
-						if(count == 0) {
+			List<ObjectId> drObjectIds = new ArrayList<>();
+			for (String id : drIds)
+				drObjectIds.add(new ObjectId(id));
+
+			if (investigationCollections != null) {
+				for (InvestigationCollection investigationCollection : investigationCollections) {
+					for (ObjectId id : drObjectIds) {
+						long count = mongoTemplate.count(
+								new Query(new Criteria("doctorId").is(id).and("locationId").is(new ObjectId(locationId))
+										.and("investigation").is(investigationCollection.getInvestigation())),
+								InvestigationCollection.class);
+						if (count == 0) {
 							InvestigationCollection inCollection = new InvestigationCollection();
 							BeanUtil.map(investigationCollection, inCollection);
 							inCollection.setId(null);
@@ -815,27 +881,33 @@ public class AdminServicesImpl implements AdminServices {
 							inCollection.setLocationId(investigationCollection.getLocationId());
 							inCollection.setHospitalId(investigationCollection.getHospitalId());
 							inCollection = investigationRepository.save(inCollection);
-							
-							transactionalManagementService.addResource(inCollection.getId(), Resource.INVESTIGATION, false);
+
+							transactionalManagementService.addResource(inCollection.getId(), Resource.INVESTIGATION,
+									false);
 							ESInvestigationsDocument esInvestigationsDocument = new ESInvestigationsDocument();
 							BeanUtil.map(inCollection, esInvestigationsDocument);
 							esInvestigationsRepository.save(esInvestigationsDocument);
 							response = true;
-							transactionalManagementService.addResource(inCollection.getId(), Resource.INVESTIGATION, true);
+							transactionalManagementService.addResource(inCollection.getId(), Resource.INVESTIGATION,
+									true);
 						}
 					}
 				}
 			}
 
-			List<ProcedureNoteCollection> procedureNoteCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(
-					new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId").is(new ObjectId(locationId)))), ProcedureNoteCollection.class, ProcedureNoteCollection.class).getMappedResults();
-			
-			if(procedureNoteCollections != null) {
-				for(ProcedureNoteCollection procedureNoteCollection : procedureNoteCollections) {
-					for(ObjectId id : drObjectIds) {
-						long count = mongoTemplate.count(new Query(new Criteria("doctorId").is(id).and("locationId").is(new ObjectId(locationId))
-								.and("procedureNote").is(procedureNoteCollection.getProcedureNote())), ProcedureNoteCollection.class);
-						if(count == 0) {
+			List<ProcedureNoteCollection> procedureNoteCollections = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("doctorId").is(new ObjectId(doctorId))
+							.and("locationId").is(new ObjectId(locationId)))),
+					ProcedureNoteCollection.class, ProcedureNoteCollection.class).getMappedResults();
+
+			if (procedureNoteCollections != null) {
+				for (ProcedureNoteCollection procedureNoteCollection : procedureNoteCollections) {
+					for (ObjectId id : drObjectIds) {
+						long count = mongoTemplate.count(
+								new Query(new Criteria("doctorId").is(id).and("locationId").is(new ObjectId(locationId))
+										.and("procedureNote").is(procedureNoteCollection.getProcedureNote())),
+								ProcedureNoteCollection.class);
+						if (count == 0) {
 							ProcedureNoteCollection prCollection = new ProcedureNoteCollection();
 							BeanUtil.map(procedureNoteCollection, prCollection);
 							prCollection.setId(null);
@@ -843,18 +915,20 @@ public class AdminServicesImpl implements AdminServices {
 							prCollection.setLocationId(procedureNoteCollection.getLocationId());
 							prCollection.setHospitalId(procedureNoteCollection.getHospitalId());
 							prCollection = procedureNoteRepository.save(prCollection);
-							
-							transactionalManagementService.addResource(prCollection.getId(), Resource.PROCEDURE_NOTE, false);
+
+							transactionalManagementService.addResource(prCollection.getId(), Resource.PROCEDURE_NOTE,
+									false);
 							ESProcedureNoteDocument esProcedureNoteDocument = new ESProcedureNoteDocument();
 							BeanUtil.map(prCollection, esProcedureNoteDocument);
 							esProcedureNoteRepository.save(esProcedureNoteDocument);
 							response = true;
-							transactionalManagementService.addResource(prCollection.getId(), Resource.PROCEDURE_NOTE, true);
+							transactionalManagementService.addResource(prCollection.getId(), Resource.PROCEDURE_NOTE,
+									true);
 						}
 					}
 				}
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -867,25 +941,27 @@ public class AdminServicesImpl implements AdminServices {
 	public Boolean updateLocationIdInRole() {
 		Boolean response = false;
 		try {
-			
-			Aggregation a = Aggregation.newAggregation(Aggregation.match(new Criteria("roleId").is(new ObjectId("5792556ee4b01207387a7a9c"))),
+
+			Aggregation a = Aggregation.newAggregation(
+					Aggregation.match(new Criteria("roleId").is(new ObjectId("5792556ee4b01207387a7a9c"))),
 					Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 					Aggregation.match(new Criteria("location").size(0)));
-			
-			List<UserRoleCollection> userRoleCollections = mongoTemplate.aggregate(a
-					, UserRoleCollection.class, UserRoleCollection.class).getMappedResults();
-			
-			if(userRoleCollections != null) {
-				for(UserRoleCollection userRoleCollection : userRoleCollections) {
-					List<LocationCollection> locationCollections = locationRepository.findByHospitalId(userRoleCollection.getHospitalId(), new Sort(Direction.ASC, "createdTime"));
-					if(locationCollections != null && !locationCollections.isEmpty()) {
+
+			List<UserRoleCollection> userRoleCollections = mongoTemplate
+					.aggregate(a, UserRoleCollection.class, UserRoleCollection.class).getMappedResults();
+
+			if (userRoleCollections != null) {
+				for (UserRoleCollection userRoleCollection : userRoleCollections) {
+					List<LocationCollection> locationCollections = locationRepository.findByHospitalId(
+							userRoleCollection.getHospitalId(), new Sort(Direction.ASC, "createdTime"));
+					if (locationCollections != null && !locationCollections.isEmpty()) {
 						userRoleCollection.setLocationId(locationCollections.get(0).getId());
 						userRoleRepository.save(userRoleCollection);
 						response = true;
 					}
 				}
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -895,7 +971,7 @@ public class AdminServicesImpl implements AdminServices {
 	}
 
 	public Boolean importLandmarkLocalities() {
-		
+
 		String csvFile = "/home/ubuntu/landmarklocalities.csv";
 		BufferedReader br = null;
 		String line = "";
@@ -905,21 +981,22 @@ public class AdminServicesImpl implements AdminServices {
 			br = new BufferedReader(new FileReader(csvFile));
 			while ((line = br.readLine()) != null) {
 				String[] obj = line.split(cvsSplitBy);
-				
+
 				CityCollection cityCollection = cityRepository.findByCity(obj[3]);
-				
-				if(cityCollection != null) {
+
+				if (cityCollection != null) {
 					LandmarkLocalityCollection landmarkLocalityCollection = new LandmarkLocalityCollection();
 					landmarkLocalityCollection.setCityId(cityCollection.getId());
 					landmarkLocalityCollection.setLocality(obj[0]);
 					landmarkLocalityCollection.setLatitude(Double.parseDouble(obj[1]));
 					landmarkLocalityCollection.setLongitude(Double.parseDouble(obj[2]));
-					
+
 					landmarkLocalityCollection = landmarkLocalityRepository.save(landmarkLocalityCollection);
 					ESLandmarkLocalityDocument esLandmarkLocalityDocument = new ESLandmarkLocalityDocument();
 					BeanUtil.map(landmarkLocalityCollection, esLandmarkLocalityDocument);
-					esLandmarkLocalityDocument.setGeoPoint(new GeoPoint(landmarkLocalityCollection.getLatitude(), landmarkLocalityCollection.getLongitude()));
-					
+					esLandmarkLocalityDocument.setGeoPoint(new GeoPoint(landmarkLocalityCollection.getLatitude(),
+							landmarkLocalityCollection.getLongitude()));
+
 					transactionalManagementService.addResource(new ObjectId(esLandmarkLocalityDocument.getId()),
 							Resource.LANDMARKLOCALITY, false);
 					esCityService.addLocalityLandmark(esLandmarkLocalityDocument);
@@ -943,46 +1020,45 @@ public class AdminServicesImpl implements AdminServices {
 	@Override
 	public Boolean addServices() {
 		Boolean response = false;
-		
+
 		try {
 			Scanner scanner = new Scanner(new File("/home/ubuntu/GlobalTreatments.csv"));
-	        while (scanner.hasNext()) {
-	        		String csvLine = scanner.nextLine();
-	        		List<String> line = CSVUtils.parseLine(csvLine);
-	        		ServicesCollection servicesCollection = new ServicesCollection();
-	        		servicesCollection.setAdminCreatedTime(new Date());
-	        		servicesCollection.setCreatedTime(new Date());
-	        		servicesCollection.setUpdatedTime(new Date());
-	        		servicesCollection.setCreatedBy("ADMIN");
-	        		servicesCollection.setService(line.get(0));
-	        		servicesCollection.setToShow(true);
-	        		
-	        		if(line.size()>1) {
-	        			if(!DPDoctorUtils.anyStringEmpty(line.get(1))) {
-	        				String[] specialities = line.get(1).split("\\+");
-	        				List<SpecialityCollection> specialityCollections = specialityRepository.find(specialities);
-	        				List<ObjectId> specialityIds = (List<ObjectId>) CollectionUtils.collect(specialityCollections,
-	    							new BeanToPropertyValueTransformer("id"));
-	        				
-	        				List<String> specialitiesList = (List<String>) CollectionUtils.collect(specialityCollections,
-	    							new BeanToPropertyValueTransformer("superSpeciality"));
-	        				
-	        				servicesCollection.setSpecialities(specialitiesList);
-	        				servicesCollection.setSpecialityIds(specialityIds);
-	        			}
-	        		}
-	        		
-	        		servicesCollection = servicesRepository.save(servicesCollection);
-	        		
-	        		if (servicesCollection != null) {
-	        			transactionalManagementService.addResource(servicesCollection.getId(), Resource.SERVICE,
-	        					false);
-	    				ESServicesDocument esServicesDocument = new ESServicesDocument();
-	    				BeanUtil.map(servicesCollection, esServicesDocument);
-	    				esMasterService.addEditServices(esServicesDocument);
-	    			}
-	        }
-	        scanner.close();
+			while (scanner.hasNext()) {
+				String csvLine = scanner.nextLine();
+				List<String> line = CSVUtils.parseLine(csvLine);
+				ServicesCollection servicesCollection = new ServicesCollection();
+				servicesCollection.setAdminCreatedTime(new Date());
+				servicesCollection.setCreatedTime(new Date());
+				servicesCollection.setUpdatedTime(new Date());
+				servicesCollection.setCreatedBy("ADMIN");
+				servicesCollection.setService(line.get(0));
+				servicesCollection.setToShow(true);
+
+				if (line.size() > 1) {
+					if (!DPDoctorUtils.anyStringEmpty(line.get(1))) {
+						String[] specialities = line.get(1).split("\\+");
+						List<SpecialityCollection> specialityCollections = specialityRepository.find(specialities);
+						List<ObjectId> specialityIds = (List<ObjectId>) CollectionUtils.collect(specialityCollections,
+								new BeanToPropertyValueTransformer("id"));
+
+						List<String> specialitiesList = (List<String>) CollectionUtils.collect(specialityCollections,
+								new BeanToPropertyValueTransformer("superSpeciality"));
+
+						servicesCollection.setSpecialities(specialitiesList);
+						servicesCollection.setSpecialityIds(specialityIds);
+					}
+				}
+
+				servicesCollection = servicesRepository.save(servicesCollection);
+
+				if (servicesCollection != null) {
+					transactionalManagementService.addResource(servicesCollection.getId(), Resource.SERVICE, false);
+					ESServicesDocument esServicesDocument = new ESServicesDocument();
+					BeanUtil.map(servicesCollection, esServicesDocument);
+					esMasterService.addEditServices(esServicesDocument);
+				}
+			}
+			scanner.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -997,11 +1073,12 @@ public class AdminServicesImpl implements AdminServices {
 			while (doctorDocuments.hasNext()) {
 				ESDoctorDocument doctorDocument = doctorDocuments.next();
 				if (doctorDocument.getSpecialities() != null && !doctorDocument.getSpecialities().isEmpty()) {
-					Iterable<ESSpecialityDocument>  iterableSpecialities = esSpecialityRepository.findAllById(doctorDocument.getSpecialities());
+					Iterable<ESSpecialityDocument> iterableSpecialities = esSpecialityRepository
+							.findAllById(doctorDocument.getSpecialities());
 					List<String> specialities = new ArrayList<>();
 					List<String> parentSpecialities = new ArrayList<>();
-					if(iterableSpecialities != null) {
-						for(ESSpecialityDocument esSpecialityDocument : iterableSpecialities) {
+					if (iterableSpecialities != null) {
+						for (ESSpecialityDocument esSpecialityDocument : iterableSpecialities) {
 							specialities.add(esSpecialityDocument.getSuperSpeciality().toLowerCase());
 							parentSpecialities.add(esSpecialityDocument.getSpeciality().toLowerCase());
 						}
@@ -1009,23 +1086,22 @@ public class AdminServicesImpl implements AdminServices {
 						doctorDocument.setParentSpecialities(parentSpecialities);
 					}
 				}
-			
 
-				if (doctorDocument.getServices() != null  && !doctorDocument.getServices().isEmpty()) {
-					Iterable<ESServicesDocument> iterableServices = esServicesRepository.findAllById(doctorDocument.getServices());
+				if (doctorDocument.getServices() != null && !doctorDocument.getServices().isEmpty()) {
+					Iterable<ESServicesDocument> iterableServices = esServicesRepository
+							.findAllById(doctorDocument.getServices());
 					List<String> services = new ArrayList<>();
-					if(iterableServices != null) {
-						for(ESServicesDocument esServicesDocument : iterableServices) {
+					if (iterableServices != null) {
+						for (ESServicesDocument esServicesDocument : iterableServices) {
 							services.add(esServicesDocument.getService().toLowerCase());
 						}
 						doctorDocument.setServicesValue(services);
-					}					
+					}
 				}
 				esDoctorRepository.save(doctorDocument);
 				response = true;
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return response;
@@ -1037,20 +1113,22 @@ public class AdminServicesImpl implements AdminServices {
 		Boolean response = false;
 		try {
 			List<DoctorCollection> doctorCollections = doctorRepository.findAll();
-			for(DoctorCollection doctorCollection : doctorCollections) {
-				if(doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
-					List<ServicesCollection> servicesCollections = servicesRepository.findBySpecialityIdsIn(doctorCollection.getSpecialities());
-					List<ObjectId> services = (List<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
-					
+			for (DoctorCollection doctorCollection : doctorCollections) {
+				if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+					List<ServicesCollection> servicesCollections = servicesRepository
+							.findBySpecialityIdsIn(doctorCollection.getSpecialities());
+					List<ObjectId> services = (List<ObjectId>) CollectionUtils.collect(servicesCollections,
+							new BeanToPropertyValueTransformer("id"));
+
 					Set<ObjectId> servicesIds = new HashSet<>(services);
 					doctorCollection.setServices(servicesIds);
 					doctorCollection = doctorRepository.save(doctorCollection);
 					transnationalService.checkDoctor(doctorCollection.getUserId(), null);
 				}
-				
+
 			}
-			
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return response;
@@ -1059,42 +1137,42 @@ public class AdminServicesImpl implements AdminServices {
 	@Override
 	public Boolean addSpecialities() {
 		Boolean response = false;
-		
+
 		try {
 			Scanner scanner = new Scanner(new File("/home/ubuntu/Specialities.csv"));
-	        while (scanner.hasNext()) {
-	        		String csvLine = scanner.nextLine();
-	        		List<String> line = CSVUtils.parseLine(csvLine);
-	        		
-	        		SpecialityCollection specialityCollection = null;
-	        		if(!(line.get(3) == "null" || DPDoctorUtils.anyStringEmpty(line.get(3))))
-	        			specialityCollection = specialityRepository.findById(new ObjectId(line.get(3))).orElse(null);
-	        		if(specialityCollection == null) {
-	        			specialityCollection = new SpecialityCollection();
-	        			specialityCollection.setAdminCreatedTime(new Date());
-		        		specialityCollection.setCreatedTime(new Date());
-		        		specialityCollection.setCreatedBy("ADMIN");
-	        		}
-	        		specialityCollection.setUpdatedTime(new Date());
-	        		specialityCollection.setSpeciality(line.get(0));
-	        		specialityCollection.setMetaTitle(line.get(2));
-	        		specialityCollection.setToShow(true);
-	        			        		
-	        		if(line.size()>1) {
-		        		specialityCollection.setSuperSpeciality(line.get(1));
-	        		}
-	        		
-	        		specialityCollection = specialityRepository.save(specialityCollection);
-	        		
-	        		if (specialityCollection != null) {
-	        			transactionalManagementService.addResource(specialityCollection.getId(), Resource.SPECIALITY,
-	        					false);
-	    				ESSpecialityDocument esSpecialityDocument = new ESSpecialityDocument();
-	    				BeanUtil.map(specialityCollection, esSpecialityDocument);
-	    				esMasterService.addEditSpecialities(esSpecialityDocument);
-	    			}
-	        }
-	        scanner.close();
+			while (scanner.hasNext()) {
+				String csvLine = scanner.nextLine();
+				List<String> line = CSVUtils.parseLine(csvLine);
+
+				SpecialityCollection specialityCollection = null;
+				if (!(line.get(3) == "null" || DPDoctorUtils.anyStringEmpty(line.get(3))))
+					specialityCollection = specialityRepository.findById(new ObjectId(line.get(3))).orElse(null);
+				if (specialityCollection == null) {
+					specialityCollection = new SpecialityCollection();
+					specialityCollection.setAdminCreatedTime(new Date());
+					specialityCollection.setCreatedTime(new Date());
+					specialityCollection.setCreatedBy("ADMIN");
+				}
+				specialityCollection.setUpdatedTime(new Date());
+				specialityCollection.setSpeciality(line.get(0));
+				specialityCollection.setMetaTitle(line.get(2));
+				specialityCollection.setToShow(true);
+
+				if (line.size() > 1) {
+					specialityCollection.setSuperSpeciality(line.get(1));
+				}
+
+				specialityCollection = specialityRepository.save(specialityCollection);
+
+				if (specialityCollection != null) {
+					transactionalManagementService.addResource(specialityCollection.getId(), Resource.SPECIALITY,
+							false);
+					ESSpecialityDocument esSpecialityDocument = new ESSpecialityDocument();
+					BeanUtil.map(specialityCollection, esSpecialityDocument);
+					esMasterService.addEditSpecialities(esSpecialityDocument);
+				}
+			}
+			scanner.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1105,47 +1183,49 @@ public class AdminServicesImpl implements AdminServices {
 	@Override
 	public Boolean addSymptomsDiseasesCondition() {
 		Boolean response = false;
-		
+
 		try {
 			Scanner scanner = new Scanner(new File("/home/ubuntu/Symptoms.csv"));
-	        while (scanner.hasNext()) {
-	        		String csvLine = scanner.nextLine();
-	        		List<String> line = CSVUtils.parseLine(csvLine);
-	        		SymptomDiseaseConditionCollection symptomDiseaseConditionCollection = new SymptomDiseaseConditionCollection();
-	        		symptomDiseaseConditionCollection.setAdminCreatedTime(new Date());
-	        		symptomDiseaseConditionCollection.setCreatedTime(new Date());
-	        		symptomDiseaseConditionCollection.setUpdatedTime(new Date());
-	        		symptomDiseaseConditionCollection.setCreatedBy("ADMIN");
-	        		symptomDiseaseConditionCollection.setName(StringUtils.capitalize(line.get(0).replaceAll("\"", "").trim()));
-	        		symptomDiseaseConditionCollection.setType(line.get(1).toUpperCase().replaceAll("\"", "").trim());
-	        		symptomDiseaseConditionCollection.setToShow(true);
-	        		
-	        		if(line.size()>2) {
-	        			if(!DPDoctorUtils.anyStringEmpty(line.get(2))) {
-	        				String[] specialities = line.get(2).replaceAll("\"", "").trim().split("\\+");
-	        				List<SpecialityCollection> specialityCollections = specialityRepository.find(specialities);
-	        				List<ObjectId> specialityIds = (List<ObjectId>) CollectionUtils.collect(specialityCollections,
-	    							new BeanToPropertyValueTransformer("id"));
-	        				
-	        				List<String> specialitiesList = (List<String>) CollectionUtils.collect(specialityCollections,
-	    							new BeanToPropertyValueTransformer("superSpeciality"));
-	        				
-	        				symptomDiseaseConditionCollection.setSpecialities(specialitiesList);
-	        				symptomDiseaseConditionCollection.setSpecialityIds(specialityIds);
-	        			}
-	        		}
-	        		
-	        		symptomDiseaseConditionCollection = symptomDiseaseConditionRepository.save(symptomDiseaseConditionCollection);
-	        		
-	        		if (symptomDiseaseConditionCollection != null) {
-	        			transactionalManagementService.addResource(symptomDiseaseConditionCollection.getId(), Resource.SYMPTOM_DISEASE_CONDITION,
-	        					false);
-	    				ESSymptomDiseaseConditionDocument esSymptomDiseaseConditionDocument = new ESSymptomDiseaseConditionDocument();
-	    				BeanUtil.map(symptomDiseaseConditionCollection, esSymptomDiseaseConditionDocument);
-	    				esMasterService.addEditSymptomDiseaseConditionDocument(esSymptomDiseaseConditionDocument);
-	    			}
-	        }
-	        scanner.close();
+			while (scanner.hasNext()) {
+				String csvLine = scanner.nextLine();
+				List<String> line = CSVUtils.parseLine(csvLine);
+				SymptomDiseaseConditionCollection symptomDiseaseConditionCollection = new SymptomDiseaseConditionCollection();
+				symptomDiseaseConditionCollection.setAdminCreatedTime(new Date());
+				symptomDiseaseConditionCollection.setCreatedTime(new Date());
+				symptomDiseaseConditionCollection.setUpdatedTime(new Date());
+				symptomDiseaseConditionCollection.setCreatedBy("ADMIN");
+				symptomDiseaseConditionCollection
+						.setName(StringUtils.capitalize(line.get(0).replaceAll("\"", "").trim()));
+				symptomDiseaseConditionCollection.setType(line.get(1).toUpperCase().replaceAll("\"", "").trim());
+				symptomDiseaseConditionCollection.setToShow(true);
+
+				if (line.size() > 2) {
+					if (!DPDoctorUtils.anyStringEmpty(line.get(2))) {
+						String[] specialities = line.get(2).replaceAll("\"", "").trim().split("\\+");
+						List<SpecialityCollection> specialityCollections = specialityRepository.find(specialities);
+						List<ObjectId> specialityIds = (List<ObjectId>) CollectionUtils.collect(specialityCollections,
+								new BeanToPropertyValueTransformer("id"));
+
+						List<String> specialitiesList = (List<String>) CollectionUtils.collect(specialityCollections,
+								new BeanToPropertyValueTransformer("superSpeciality"));
+
+						symptomDiseaseConditionCollection.setSpecialities(specialitiesList);
+						symptomDiseaseConditionCollection.setSpecialityIds(specialityIds);
+					}
+				}
+
+				symptomDiseaseConditionCollection = symptomDiseaseConditionRepository
+						.save(symptomDiseaseConditionCollection);
+
+				if (symptomDiseaseConditionCollection != null) {
+					transactionalManagementService.addResource(symptomDiseaseConditionCollection.getId(),
+							Resource.SYMPTOM_DISEASE_CONDITION, false);
+					ESSymptomDiseaseConditionDocument esSymptomDiseaseConditionDocument = new ESSymptomDiseaseConditionDocument();
+					BeanUtil.map(symptomDiseaseConditionCollection, esSymptomDiseaseConditionDocument);
+					esMasterService.addEditSymptomDiseaseConditionDocument(esSymptomDiseaseConditionDocument);
+				}
+			}
+			scanner.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

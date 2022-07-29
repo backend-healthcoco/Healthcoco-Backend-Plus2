@@ -640,6 +640,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 							doctorClinicProfile.setRoles(roles);
 						}
 						doctor.setDoctorClinicProfile(doctorClinicProfile);
+						doctor.setIsDentalChain(doctorClinicProfile.getIsDentalChain());
+						doctor.setIsShowDoctorInCalender(doctorClinicProfile.getIsShowDoctorInCalender());
+						doctor.setIsShowPatientNumber(doctorClinicProfile.getIsShowPatientNumber());
 
 						if (doctorCollection.getSpecialities() != null
 								&& !doctorCollection.getSpecialities().isEmpty()) {
@@ -4697,6 +4700,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 				smsDetails.add(smsDetail);
 				smsTrackDetail.setSmsDetails(smsDetails);
+				smsTrackDetail.setTemplateId("1307165121719074731");
 				smsServices.sendSMS(smsTrackDetail, true);
 			}
 		} catch (Exception e) {
@@ -6626,7 +6630,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 					sendWhatsapp("CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR", request.getDoctorId(),
 							request.getLocationId(), request.getHospitalId(), request.getPatientId(),
-							patientMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
+							doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
 							clinicContactNum, branch, locationMapUrl);
 
 				}
@@ -6675,8 +6679,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 						patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch, null,
 						null, locationMapUrl);
 				sendWhatsapp("RESCHEDULE_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), request.getLocationId(),
-						request.getHospitalId(), request.getPatientId(), patientMobileNumber, patientName,
-						appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch, locationMapUrl);
+						request.getHospitalId(), request.getPatientId(), doctorMobileNumber, patientName, appointmentId,
+						dateTime, doctorName, clinicName, clinicContactNum, branch, locationMapUrl);
 
 			}
 		} else if (request.getState().getState().equals(AppointmentState.CONFIRM.getState())) {
@@ -6687,7 +6691,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					request.getHospitalId(), request.getPatientId(), doctorMobileNumber, patientName, appointmentId,
 					dateTime, doctorName, clinicName, clinicContactNum, branch, null, null, locationMapUrl);
 			sendWhatsapp("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), request.getLocationId(),
-					request.getHospitalId(), request.getPatientId(), patientMobileNumber, patientName, appointmentId,
+					request.getHospitalId(), request.getPatientId(), doctorMobileNumber, patientName, appointmentId,
 					dateTime, doctorName, clinicName, clinicContactNum, branch, locationMapUrl);
 
 			sendSmilebirdEmail(doctorName, patientName, dateTime, clinicName, "CONFIRMED_APPOINTMENT_TO_PATIENT",
