@@ -3701,7 +3701,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			switch (type) {
 			case "APPOINTMENT_REMINDER_TO_PATIENT": {
-				requestObject2.put("name", "appointment_reminder_to_patient");
+				requestObject2.put("name", "appointment_reminder_to_patient_new");
 				requestObject3.put(patientName);
 				requestObject3.put(appointmentId);
 				requestObject3.put(dateTime);

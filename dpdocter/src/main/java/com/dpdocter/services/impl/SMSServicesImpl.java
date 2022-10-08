@@ -1107,7 +1107,8 @@ public class SMSServicesImpl implements SMSServices {
 
 			String type = "TXN";
 			if (smsTrackDetail.getType() != null)
-				if (smsTrackDetail.getType().equals("BIRTHDAY WISH TO PATIENT"))
+				if (smsTrackDetail.getType().equals("BIRTHDAY WISH TO PATIENT")
+						|| smsTrackDetail.getType().equals("BIRTHDAY WISH TO DOCTOR"))
 					type = "MKT";
 
 			String message = smsTrackDetail.getSmsDetails().get(0).getSms().getSmsText();
@@ -1149,7 +1150,8 @@ public class SMSServicesImpl implements SMSServices {
 			DoctorCollection doctorClinicProfileCollection = doctorRepository
 					.findByUserId(smsTrackDetail.getDoctorId());
 
-			if (doctorClinicProfileCollection.getIsTransactionalSms() == true) {
+			if (doctorClinicProfileCollection != null && doctorClinicProfileCollection.getIsTransactionalSms() != null
+					&& doctorClinicProfileCollection.getIsTransactionalSms()) {
 				// if (isSMSInAccount) {
 				// if (!isEnvProduction) {
 				// String recipient = smsDetails.getSms().getSmsAddress().getRecipient();

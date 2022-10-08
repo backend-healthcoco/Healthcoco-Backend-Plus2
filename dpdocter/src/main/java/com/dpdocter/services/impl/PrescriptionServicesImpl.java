@@ -368,10 +368,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Autowired
 	private GenericCodeRepository genericCodeRepository;
-	
+
 	@Value(value = "${interakt.secret.key}")
 	private String secretKey;
-
 
 	LoadingCache<String, List<Code>> Cache = CacheBuilder.newBuilder().maximumSize(100)
 			// maximum 100 records can be cached
@@ -2983,7 +2982,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						}
 
 						JasperReportResponse jasperReportResponse = createJasper(prescriptionCollection, patient, user,
-								null, false, false, false, false, false);
+								null, false, false, false, false, false, PrintSettingType.EMAIL.getType());
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
@@ -3185,7 +3184,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 											+ ". If you need any help, reach out to us at" + smilebirdSupportNumber
 											+ ".\n Team Smilebird");
 									// send whastapp msg
-									sendWhatsAppMsg(userCollection.getMobileNumber(), patientName, prescriptionCollection.getUniqueEmrId(),doctorName,prescriptionDetails);
+									sendWhatsAppMsg(userCollection.getMobileNumber(), patientName,
+											prescriptionCollection.getUniqueEmrId(), doctorName, prescriptionDetails);
 								}
 
 								SMSAddress smsAddress = new SMSAddress();
@@ -3290,7 +3290,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			e.printStackTrace();
 
 		}
-		
+
 	}
 
 	@Override
@@ -4021,7 +4021,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						historyCollection = historyCollections.get(0);
 				}
 				JasperReportResponse jasperReportResponse = createJasper(prescriptionCollection, patient, user,
-						historyCollection, showPH, showPLH, showFH, showDA, isLabPrint);
+						historyCollection, showPH, showPLH, showFH, showDA, isLabPrint, PrintSettingType.EMR.getType());
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -4041,7 +4041,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	private JasperReportResponse createJasper(PrescriptionCollection prescriptionCollection, PatientCollection patient,
 			UserCollection user, HistoryCollection historyCollection, Boolean showPH, Boolean showPLH, Boolean showFH,
-			Boolean showDA, Boolean isLabPrint) throws IOException, ParseException {
+			Boolean showDA, Boolean isLabPrint, String printSettingType) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 		JasperReportResponse response = null;
@@ -4049,8 +4049,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		printSettings = printSettingsRepository
 				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 						prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
-						prescriptionCollection.getHospitalId(), ComponentType.ALL.getType(),
-						PrintSettingType.EMR.getType());
+						prescriptionCollection.getHospitalId(), ComponentType.ALL.getType(), printSettingType);
 		if (printSettings == null) {
 			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
 					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
@@ -6927,7 +6926,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				}
 
 				JasperReportResponse jasperReportResponse = createJasper(prescriptionCollection, patient, user, null,
-						false, false, false, false, false);
+						false, false, false, false, false, PrintSettingType.EMAIL.getType());
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());

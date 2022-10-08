@@ -947,6 +947,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	@Transactional
 	public void sendAppointmentScheduleToClinicAdmin() {

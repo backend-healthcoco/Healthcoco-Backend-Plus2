@@ -3121,6 +3121,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 						clinicDoctorResponse.setIsActivate(doctorClinicProfileLookupResponse.getIsActivate());
 						clinicDoctorResponse.setHasLoginAccess(doctorClinicProfileLookupResponse.getHasLoginAccess());
 						clinicDoctorResponse.setDiscarded(doctorClinicProfileLookupResponse.getDiscarded());
+						clinicDoctorResponse.setIsSuperAdmin(doctorClinicProfileLookupResponse.getIsSuperAdmin());
 
 						if (doctorClinicProfileLookupResponse.getDoctor() != null)
 							clinicDoctorResponse.setRegisterNumber(
