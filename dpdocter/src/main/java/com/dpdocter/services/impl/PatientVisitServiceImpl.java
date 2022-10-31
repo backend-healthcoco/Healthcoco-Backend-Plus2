@@ -2203,9 +2203,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							} else {
 								patientTreatments.setStatus("--");
 							}
-							String serviceName = treatmentServicesCollection.getName() != null
-									? treatmentServicesCollection.getName()
-									: "";
+							String serviceName = "";
+							if (treatmentServicesCollection != null) {
+								serviceName = treatmentServicesCollection.getName() != null
+										? treatmentServicesCollection.getName()
+										: "";
+							}
 							String fieldName = "";
 							if (treatment.getTreatmentFields() != null && !treatment.getTreatmentFields().isEmpty()) {
 								String key = "";

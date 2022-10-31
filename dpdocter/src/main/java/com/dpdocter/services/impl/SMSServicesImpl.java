@@ -1147,20 +1147,26 @@ public class SMSServicesImpl implements SMSServices {
 			 * isSMSInAccount = this.checkNoOFsms(smsDetails.getSms().getSmsText(),
 			 * subscriptionDetailCollection);
 			 */
-			DoctorCollection doctorClinicProfileCollection = doctorRepository
-					.findByUserId(smsTrackDetail.getDoctorId());
 
-			if (doctorClinicProfileCollection != null && doctorClinicProfileCollection.getIsTransactionalSms() != null
-					&& doctorClinicProfileCollection.getIsTransactionalSms()) {
-				// if (isSMSInAccount) {
-				// if (!isEnvProduction) {
-				// String recipient = smsDetails.getSms().getSmsAddress().getRecipient();
-//							if (userNumber != null && smsDetails.getSms() != null
-//									&& smsDetails.getSms().getSmsAddress() != null) {
-				// if (userNumber.mobileNumber.contains(mobileNumber)) {
-				// smsDetails.getSms().getSmsAddress().setRecipient(COUNTRY_CODE +
-				// mobileNumber);
+			if (smsTrackDetail.getType().equals("BIRTHDAY WISH TO DOCTOR")) {
+				DoctorCollection doctorClinicProfileCollection = doctorRepository
+						.findByUserId(smsTrackDetail.getDoctorId());
 
+				if (doctorClinicProfileCollection != null
+						&& doctorClinicProfileCollection.getIsTransactionalSms() != null
+						&& doctorClinicProfileCollection.getIsTransactionalSms()) {
+
+					HttpClient client = HttpClients.custom().build();
+					HttpUriRequest httprequest = RequestBuilder.post().addParameter("to", COUNTRY_CODE + mobileNumber)
+							.addParameter("type", type).addParameter("body", message).addParameter("sender", SENDER_ID)
+							.addParameter("template_id", smsTrackDetail.getTemplateId()).setUri(strUrl)
+							.setHeader("api-key", KEY).build();
+					System.out.println("senderId" + senderId);
+					org.apache.http.HttpResponse responses = client.execute(httprequest);
+					responses.getEntity().writeTo(out);
+					list = mapper.readValue(out.toString(), MessageResponse.class);
+				}
+			} else {
 				HttpClient client = HttpClients.custom().build();
 				HttpUriRequest httprequest = RequestBuilder.post().addParameter("to", COUNTRY_CODE + mobileNumber)
 						.addParameter("type", type).addParameter("body", message).addParameter("sender", SENDER_ID)
@@ -1173,8 +1179,6 @@ public class SMSServicesImpl implements SMSServices {
 				responses.getEntity().writeTo(out);
 				list = mapper.readValue(out.toString(), MessageResponse.class);
 			}
-			// }
-			// }
 
 			if (save) {
 

@@ -2355,7 +2355,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 				criteria.and("patientId").is(new ObjectId(patientId));
 
 			if (!DPDoctorUtils.anyStringEmpty(status))
-				criteria.and("status").is(status.toUpperCase()).and("state").ne(AppointmentState.CANCEL.getState());
+				criteria.and("status").is(status.toUpperCase());
+
+			List<String> appointmentStates = new ArrayList<String>();
+			appointmentStates.add(AppointmentState.CONFIRM.getState());
+			appointmentStates.add(AppointmentState.CANCEL.getState());
+			appointmentStates.add(AppointmentState.RESCHEDULE.getState());
+			appointmentStates.add(AppointmentState.NEW.getState());
+
+			criteria.and("state").in(appointmentStates);
 
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 

@@ -313,6 +313,7 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 					smsDetails.add(smsDetail);
 					smsTrackDetail.setSmsDetails(smsDetails);
 					smsTrackDetail.setTemplateId("1307161191432703411");
+					smsTrackDetail.setDoctorId(userCollection.getId());
 					sMSServices.sendSMS(smsTrackDetail, true);
 
 				}

@@ -800,10 +800,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				if (otherRoleCollection != null) {
 					AccessControl accessControl = accessControlServices.getAccessControls(otherRoleCollection.getId(),
 							otherRoleCollection.getLocationId(), otherRoleCollection.getHospitalId());
-					// set is show patient number true for super admin
-//					if (doctorClinicProfileLookupResponse.getIsSuperAdmin()) {
-//						doctorClinic.setIsShowPatientNumber(true);
-//						doctorClinic.setIsShowDoctorInCalender(true);
+//					 set is show patient number true for super admin
+					if (doctorClinicProfileLookupResponse.getIsSuperAdmin()) {
+						doctorClinic.setIsShowPatientNumber(true);
+						doctorClinic.setIsShowDoctorInCalender(true);
+					}
 //					} else {
 //						doctorClinic.setIsShowPatientNumber(doctorClinicProfileLookupResponse.getIsShowPatientNumber());
 //						doctorClinic.setIsShowDoctorInCalender(

@@ -46,6 +46,9 @@ public class PrintSettings extends GenericCollection {
 	
 	private boolean isLab=false;
 	
+	private boolean isPaymentShow = false;
+
+	
 	public String getId() {
 		return id;
 	}
@@ -184,6 +187,14 @@ public class PrintSettings extends GenericCollection {
 
 	public void setLab(boolean isLab) {
 		this.isLab = isLab;
+	}
+
+	public boolean getIsPaymentShow() {
+		return isPaymentShow;
+	}
+
+	public void setIsPaymentShow(boolean isPaymentShow) {
+		this.isPaymentShow = isPaymentShow;
 	}
 
 	@Override

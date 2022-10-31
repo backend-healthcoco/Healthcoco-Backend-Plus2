@@ -55,6 +55,7 @@ import com.dpdocter.beans.InvoiceItemJasperDetails;
 import com.dpdocter.beans.Language;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientDetails;
+import com.dpdocter.beans.ReceiptItemJasperDetails;
 import com.dpdocter.beans.ReceiptJasperDetails;
 
 import com.dpdocter.beans.SMS;
@@ -142,7 +143,7 @@ public class BillingServiceImpl implements BillingService {
 
 	@Autowired
 	private LocationRepository locationRepository;
-	
+
 	@Autowired
 	private DoctorClinicProfileRepository doctorClinicProfileRepository;
 
@@ -1730,7 +1731,7 @@ public class BillingServiceImpl implements BillingService {
 
 	@Override
 	public DoctorPatientLedgerResponse getLedger(String doctorId, String locationId, String hospitalId,
-			String patientId, String from, String to, long page, int size, String updatedTime,String type) {
+			String patientId, String from, String to, long page, int size, String updatedTime, String type) {
 		DoctorPatientLedgerResponse response = null;
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
@@ -1770,9 +1771,10 @@ public class BillingServiceImpl implements BillingService {
 								new BasicDBObject("path", "$receipt").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}
-			
-			DoctorPatientLedgerResponse resp=getTotalCreditAndDebitAmount(doctorId,locationId,hospitalId,patientId,type);
-			
+
+			DoctorPatientLedgerResponse resp = getTotalCreditAndDebitAmount(doctorId, locationId, hospitalId, patientId,
+					type);
+
 			List<DoctorPatientLedger> doctorPatientLedgers = mongoTemplate
 					.aggregate(aggregation, DoctorPatientLedgerCollection.class, DoctorPatientLedger.class)
 					.getMappedResults();
@@ -1782,18 +1784,14 @@ public class BillingServiceImpl implements BillingService {
 				response.setTotalCreditAmount(resp.getTotalCreditAmount());
 				response.setTotalDebitAmount(resp.getTotalDebitAmount());
 				AmountResponse dueAmount = null;
-				Double balance=0.0;
-				for(DoctorPatientLedger ledger:doctorPatientLedgers)
-				{
-					
-					balance=balance+ledger.getDebitAmount();
+				Double balance = 0.0;
+				for (DoctorPatientLedger ledger : doctorPatientLedgers) {
+
+					balance = balance + ledger.getDebitAmount();
 					ledger.setBalance(balance);
-					
-					
-					
+
 				}
-				
-				
+
 //				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 //					dueAmount = mongoTemplate.aggregate(
 //							Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1815,85 +1813,81 @@ public class BillingServiceImpl implements BillingService {
 		}
 		return response;
 	}
-	
-	
-	
 
 	private DoctorPatientLedgerResponse getTotalCreditAndDebitAmount(String doctorId, String locationId,
-			String hospitalId, String patientId,String type) {
-		DoctorPatientLedgerResponse response=null;
+			String hospitalId, String patientId, String type) {
+		DoctorPatientLedgerResponse response = null;
 		try {
 			Criteria criteria1 = new Criteria();
-			Aggregation aggregation=null;
-			
-			criteria1.and("patientId").is(new ObjectId(patientId)).and("locationId").is(new ObjectId(locationId)).and("hospitalId")
-			.is(new ObjectId(hospitalId)).and("isPatientDiscarded").ne(true);
-			
-			if(!DPDoctorUtils.anyStringEmpty(type))
-			{
+			Aggregation aggregation = null;
+
+			criteria1.and("patientId").is(new ObjectId(patientId)).and("locationId").is(new ObjectId(locationId))
+					.and("hospitalId").is(new ObjectId(hospitalId)).and("isPatientDiscarded").ne(true);
+
+			if (!DPDoctorUtils.anyStringEmpty(type)) {
 				criteria1.and("type").is(type);
 			}
-				CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
-						new BasicDBObject("_id", "$_id")
-								.append("totalAmountReceivedByChat", new BasicDBObject("$cond",
-										new BasicDBObject("if",
-												new BasicDBObject("$eq",
-														Arrays.asList("$payment.consultationType.consultationType",
-																ConsultationType.CHAT.getType()))).append("then", "$amount")
-																		.append("else", 0)))
-								.append("totalAmountReceivedByVideo", new BasicDBObject("$cond",
-										new BasicDBObject("if",
-												new BasicDBObject("$eq",
-														Arrays.asList("$payment.consultationType.consultationType",
-																ConsultationType.VIDEO.getType())))
-																		.append("then", "$amount").append("else", 0)))
+			CustomAggregationOperation project = new CustomAggregationOperation(
+					new Document("$project",
+							new BasicDBObject("_id", "$_id")
+									.append("totalAmountReceivedByChat",
+											new BasicDBObject("$cond",
+													new BasicDBObject("if", new BasicDBObject("$eq",
+															Arrays.asList("$payment.consultationType.consultationType",
+																	ConsultationType.CHAT.getType())))
+																			.append("then", "$amount")
+																			.append("else", 0)))
+									.append("totalAmountReceivedByVideo",
+											new BasicDBObject("$cond",
+													new BasicDBObject("if", new BasicDBObject("$eq",
+															Arrays.asList("$payment.consultationType.consultationType",
+																	ConsultationType.VIDEO.getType())))
+																			.append("then", "$amount")
+																			.append("else", 0)))
 
-								// .append("consultationType.consultationType",
-								// "$consultationType.consultationType")
-								// .append("consultationType.cost", "$consultationType.cost")
-								// .append("consultationType.healthcocoCharges",
-								// "$consultationType.healthcocoCharges")
-								.append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")));
+									// .append("consultationType.consultationType",
+									// "$consultationType.consultationType")
+									// .append("consultationType.cost", "$consultationType.cost")
+									// .append("consultationType.healthcocoCharges",
+									// "$consultationType.healthcocoCharges")
+									.append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")));
 
-				CustomAggregationOperation project2 = new CustomAggregationOperation(new Document("$project",
-						new BasicDBObject("_id", "$_id")
-								// .append("totalAmountReceivedByChat", "$totalAmountReceivedByChat")
-								
-								.append("totalDebitAmount", "$totalDebitAmount")
-								.append("totalCreditAmount", "$totalCreditAmount")
+			CustomAggregationOperation project2 = new CustomAggregationOperation(new Document("$project",
+					new BasicDBObject("_id", "$_id")
+							// .append("totalAmountReceivedByChat", "$totalAmountReceivedByChat")
 
-								// .append("consultationType.consultationType",
-								// "$consultationType.consultationType")
-								// .append("consultationType.cost", "$consultationType.cost")
-								// .append("consultationType.healthcocoCharges",
-								// "$consultationType.healthcocoCharges")
-								.append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")));
+							.append("totalDebitAmount", "$totalDebitAmount")
+							.append("totalCreditAmount", "$totalCreditAmount")
 
-				CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
+							// .append("consultationType.consultationType",
+							// "$consultationType.consultationType")
+							// .append("consultationType.cost", "$consultationType.cost")
+							// .append("consultationType.healthcocoCharges",
+							// "$consultationType.healthcocoCharges")
+							.append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")));
 
-						new BasicDBObject("_id", "_id")
-								.append("totalDebitAmount",
-										new BasicDBObject("$sum", "$debitAmount"))
-								.append("totalCreditAmount",
-										new BasicDBObject("$sum", "$creditAmount"))
-								// .append("consultationType", new BasicDBObject("$addToSet",
-								// "$consultationType"))
-								.append("createdTime", new BasicDBObject("$first", "$createdTime"))));
+			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
 
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria1),
-						
-						  group,
+					new BasicDBObject("_id", "_id")
+							.append("totalDebitAmount", new BasicDBObject("$sum", "$debitAmount"))
+							.append("totalCreditAmount", new BasicDBObject("$sum", "$creditAmount"))
+							// .append("consultationType", new BasicDBObject("$addToSet",
+							// "$consultationType"))
+							.append("createdTime", new BasicDBObject("$first", "$createdTime"))));
 
-						 project2,
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria1),
 
-				// }
+					group,
 
-				 response = mongoTemplate.aggregate(aggregation, DoctorPatientLedgerCollection.class,DoctorPatientLedgerResponse.class)
+					project2, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			// }
+
+			response = mongoTemplate
+					.aggregate(aggregation, DoctorPatientLedgerCollection.class, DoctorPatientLedgerResponse.class)
 					.getUniqueMappedResult();
-			
-		}
-		catch (Exception e) {
+
+		} catch (Exception e) {
 			logger.error("Error while getting ledger" + e);
 			throw new BusinessException(ServiceError.Unknown, "Error while getting ledger" + e);
 		}
@@ -1949,14 +1943,18 @@ public class BillingServiceImpl implements BillingService {
 		try {
 			DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = doctorPatientInvoiceRepository
 					.findById(new ObjectId(invoiceId)).orElse(null);
+
+			List<DoctorPatientReceiptCollection> patientReceiptCollections = doctorPatientReceiptRepository
+					.findByInvoiceIdAndDiscarded(doctorPatientInvoiceCollection.getId(), false);
+
 			if (doctorPatientInvoiceCollection != null) {
 				PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						doctorPatientInvoiceCollection.getPatientId(), doctorPatientInvoiceCollection.getLocationId(),
 						doctorPatientInvoiceCollection.getHospitalId());
 				UserCollection user = userRepository.findById(doctorPatientInvoiceCollection.getPatientId())
 						.orElse(null);
-				JasperReportResponse jasperReportResponse = createJasper(doctorPatientInvoiceCollection, patient, user,
-						PrintSettingType.BILLING.getType());
+				JasperReportResponse jasperReportResponse = createJasper(doctorPatientInvoiceCollection,
+						patientReceiptCollections, patient, user, PrintSettingType.BILLING.getType());
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -1983,11 +1981,12 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	private JasperReportResponse createJasper(DoctorPatientInvoiceCollection doctorPatientInvoiceCollection,
-			PatientCollection patient, UserCollection user, String printSettingType)
-			throws IOException, ParseException {
+			List<DoctorPatientReceiptCollection> patientReceiptCollections, PatientCollection patient,
+			UserCollection user, String printSettingType) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		List<InvoiceItemJasperDetails> invoiceItemJasperDetails = null;
+		List<ReceiptItemJasperDetails> receiptItemJasperDetailList = null;
 		if (doctorPatientInvoiceCollection.getInvoiceItems() != null
 				&& !doctorPatientInvoiceCollection.getInvoiceItems().isEmpty()) {
 			invoiceItemJasperDetails = new ArrayList<InvoiceItemJasperDetails>();
@@ -2074,6 +2073,23 @@ public class BillingServiceImpl implements BillingService {
 			parameters.put("showStatus", showStatus);
 			parameters.put("showInvoiceItemQuantity", showInvoiceItemQuantity);
 			parameters.put("items", invoiceItemJasperDetails);
+			Boolean showPaymentItem = false;
+			if (patientReceiptCollections != null && !patientReceiptCollections.isEmpty()) {
+				SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("dd MMM, yyyy");
+				simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+				receiptItemJasperDetailList = new ArrayList<ReceiptItemJasperDetails>();
+				for (DoctorPatientReceiptCollection receiptCollection : patientReceiptCollections) {
+					ReceiptItemJasperDetails receiptItemJasperDetails = new ReceiptItemJasperDetails();
+					receiptItemJasperDetails.setAmountPaid(receiptCollection.getAmountPaid());
+					receiptItemJasperDetails
+							.setReceivedDate(simpleDateFormat1.format(receiptCollection.getReceivedDate()));
+					receiptItemJasperDetails.setModeOfPayment(receiptCollection.getModeOfPayment().name());
+					receiptItemJasperDetails.setReceiptNo(receiptCollection.getUniqueReceiptId());
+					receiptItemJasperDetailList.add(receiptItemJasperDetails);
+				}
+			}
+			parameters.put("receiptItems", receiptItemJasperDetailList);
+
 			String total = "";
 			if (doctorPatientInvoiceCollection.getTotalCost() > 0)
 				total = "<b>Total Cost :</b> ₹" + doctorPatientInvoiceCollection.getTotalCost() + " &nbsp;&nbsp;&nbsp;";
@@ -2159,6 +2175,10 @@ public class BillingServiceImpl implements BillingService {
 				DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 				BeanUtil.map(defaultPrintSettings, printSettings);
 			}
+			if (printSettings != null && printSettings.getIsPaymentShow()) {
+				showPaymentItem = true;
+			}
+			parameters.put("showPaymentItem", showPaymentItem);
 			generatePatientDetails(
 					(printSettings != null && printSettings.getHeaderSetup() != null
 							? printSettings.getHeaderSetup().getPatientDetails()
@@ -2258,9 +2278,10 @@ public class BillingServiceImpl implements BillingService {
 				Age ageObj = patientCard.getDob().getAge();
 				LocalDate dob = null;
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
-				if(patientCard.getDob().getDays() > 0 && patientCard.getDob().getMonths() > 0 && patientCard.getDob().getYears() > 0) {
-				 dob = LocalDate.parse(patientCard.getDob().getDays()+"/"+patientCard.getDob().getMonths()
-						+"/"+patientCard.getDob().getYears(), formatter);
+				if (patientCard.getDob().getDays() > 0 && patientCard.getDob().getMonths() > 0
+						&& patientCard.getDob().getYears() > 0) {
+					dob = LocalDate.parse(patientCard.getDob().getDays() + "/" + patientCard.getDob().getMonths() + "/"
+							+ patientCard.getDob().getYears(), formatter);
 				}
 				if (ageObj.getYears() > 14)
 					age = ageObj.getYears() + "yrs";
@@ -2287,9 +2308,9 @@ public class BillingServiceImpl implements BillingService {
 
 				if (patientDetails.getShowDOB()) {
 					if (!DPDoctorUtils.anyStringEmpty(age, gender))
-						patientDetailList.add("<b>DOB(Age) | Gender: </b>" + dob+" ("+age+")"+ " | " + gender);
+						patientDetailList.add("<b>DOB(Age) | Gender: </b>" + dob + " (" + age + ")" + " | " + gender);
 					else if (!DPDoctorUtils.anyStringEmpty(age))
-						patientDetailList.add("<b>DOB(Age) | Gender: </b>" + dob+" ("+age+")" + " | --");
+						patientDetailList.add("<b>DOB(Age) | Gender: </b>" + dob + " (" + age + ")" + " | --");
 					else if (!DPDoctorUtils.anyStringEmpty(gender))
 						patientDetailList.add("<b>DOB(Age) | Gender: </b>-- | " + gender);
 				}
@@ -2561,7 +2582,7 @@ public class BillingServiceImpl implements BillingService {
 							emailTrackCollection.setPatientId(user.getId());
 						}
 
-						JasperReportResponse jasperReportResponse = createJasper(doctorPatientInvoiceCollection,
+						JasperReportResponse jasperReportResponse = createJasper(doctorPatientInvoiceCollection, null,
 								patient, user, PrintSettingType.EMAIL.getType());
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
