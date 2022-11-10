@@ -520,6 +520,8 @@ public interface PathProxy {
 
 		public static final String GET_RECORDS_DOCTOR_ID = "getByDoctorId/{doctorId}";
 
+		public static final String UPLOAD_IMAGE = "/upload/image/";
+
 	}
 
 	public static final String PRESCRIPTION_BASE_URL = BASE_URL + "/prescription";
@@ -1166,6 +1168,8 @@ public interface PathProxy {
 		public static final String ADD_TREATMENT_SERVICES_TO_DOCTOR = "/service/{serviceId}/{doctorId}/{locationId}/{hospitalId}/makeFavourite";
 
 		public static final String GET_TREATMENT_SERVICES_BY_SPECIALITY = "/getServicesBySpeciality";
+
+		public static final String GET_TREATMENT_SERVICES_BY_RATELIST = "/getServicesByRatelist";
 
 		public static final String EMAIL_PATIENT_TREATMENT_WEB = "/{treatmentId}/{emailAddress}/mail";
 

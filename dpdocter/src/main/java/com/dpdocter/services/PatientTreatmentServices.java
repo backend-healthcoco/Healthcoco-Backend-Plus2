@@ -34,7 +34,7 @@ public interface PatientTreatmentServices {
 			String hospitalId, Boolean discarded);
 
 	List<?> getServices(String type, String range, long page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded);
+			String hospitalId, String updatedTime, Boolean discarded,String ratelistId);
 
 	PatientTreatmentResponse changePatientTreatmentStatus(String treatmentId, String doctorId, String locationId,
 			String hospitalId, Treatment treatment);
@@ -69,6 +69,8 @@ public interface PatientTreatmentServices {
 	PatientTreatmentResponse deletePatientTreatmentForWeb(String treatmentId, Boolean discarded);
 
 	public List<TreatmentService> getTreatmentServices(List<ObjectId> idList);
+
+	List<TreatmentService> getServicesByRatelist(String ratelistId);
 
 //	PatientTreatmentResponse addEditPatientTreatment(AppointmentRequest request, boolean isAppointmentAdd,
 //			Object createdBy, Object appointment);

@@ -1,7 +1,12 @@
 package com.dpdocter.services.impl;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,11 +14,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.mail.MessagingException;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -32,20 +39,27 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.dpdocter.beans.Count;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.MultipartUploadFile;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.RecordsFile;
+import com.dpdocter.beans.RecordsUrlData;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
@@ -244,8 +258,8 @@ public class RecordsServiceImpl implements RecordsService {
 			String localPatientName = null, patientMobileNumber = null;
 			PrescriptionCollection prescriptionCollection = null;
 			if (request.getPrescriptionId() != null) {
-				prescriptionCollection = prescriptionRepository.findByUniqueEmrIdAndPatientId(request.getPrescriptionId(),
-						new ObjectId(request.getPatientId()));
+				prescriptionCollection = prescriptionRepository.findByUniqueEmrIdAndPatientId(
+						request.getPrescriptionId(), new ObjectId(request.getPatientId()));
 			}
 			if (request.getRegisterPatient()) {
 				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
@@ -288,6 +302,7 @@ public class RecordsServiceImpl implements RecordsService {
 					recordsCollection.setRecordsLabel(request.getFileDetails().getFileName());
 			}
 			if (request.getFileDetails() != null) {
+
 				String recordLable = request.getFileDetails().getFileName();
 				request.getFileDetails().setFileName(request.getFileDetails().getFileName() + createdTime.getTime());
 				String path = "records" + File.separator + request.getPatientId();
@@ -303,6 +318,14 @@ public class RecordsServiceImpl implements RecordsService {
 				if (DPDoctorUtils.anyStringEmpty(request.getRecordsLabel()))
 					recordsCollection.setRecordsLabel(request.getFileDetails().getFileName());
 			}
+
+			if (request.getRecordsUrls() != null && !request.getRecordsUrls().isEmpty()) {
+				for (RecordsUrlData recordsUrlData : request.getRecordsUrls()) {
+					String recordsURL = recordsUrlData.getRecordsUrl().replaceAll(imagePath, "");
+
+				}
+			}
+
 			recordsCollection.setCreatedTime(createdTime);
 			recordsCollection.setUniqueEmrId(UniqueIdInitial.REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
 
@@ -316,7 +339,8 @@ public class RecordsServiceImpl implements RecordsService {
 
 			recordsCollection.setCreatedBy(createdBy);
 
-			LocationCollection locationCollection = locationRepository.findById(recordsCollection.getLocationId()).orElse(null);
+			LocationCollection locationCollection = locationRepository.findById(recordsCollection.getLocationId())
+					.orElse(null);
 			if (locationCollection != null) {
 				recordsCollection.setUploadedByLocation(locationCollection.getLocationName());
 			}
@@ -345,7 +369,8 @@ public class RecordsServiceImpl implements RecordsService {
 			if (prescriptionCollection != null && !DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState())) {
 				if (recordsCollection.getRecordsState()
 						.equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())) {
-					UserCollection userCollection = userRepository.findById(prescriptionCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(prescriptionCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						String subject = approvedRecordToDoctorSubject;
 						subject = subject.replace("{patientName}", localPatientName)
@@ -360,7 +385,8 @@ public class RecordsServiceImpl implements RecordsService {
 					}
 				} else if (recordsCollection.getRecordsState()
 						.equalsIgnoreCase(RecordsState.APPROVAL_REQUIRED.toString())) {
-					UserCollection userCollection = userRepository.findById(prescriptionCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(prescriptionCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						String subject = notApprovedRecordToDoctorSubject;
 						subject = subject.replace("{patientName}", localPatientName)
@@ -390,10 +416,9 @@ public class RecordsServiceImpl implements RecordsService {
 			records = new Records();
 			BeanUtil.map(recordsCollection, records);
 
-			pushNotificationServices.notifyUser(recordsCollection.getDoctorId().toString(),
-					"Records Added",
+			pushNotificationServices.notifyUser(recordsCollection.getDoctorId().toString(), "Records Added",
 					ComponentType.RECORDS_REFRESH.getType(), recordsCollection.getPatientId().toString(), null);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -483,11 +508,10 @@ public class RecordsServiceImpl implements RecordsService {
 			// recordsCollection.getId());
 
 			BeanUtil.map(recordsCollection, records);
-			
-			pushNotificationServices.notifyUser(recordsCollection.getDoctorId().toString(),
-					"Records Added",
+
+			pushNotificationServices.notifyUser(recordsCollection.getDoctorId().toString(), "Records Added",
 					ComponentType.RECORDS_REFRESH.getType(), recordsCollection.getPatientId().toString(), null);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -555,7 +579,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 				if (request.getSize() > 0)
 					recordsTagsCollections = recordsTagsRepository.findByTagsId(tagObjectId,
-							PageRequest.of((int)request.getPage(), request.getSize(), Direction.DESC, "createdTime"));
+							PageRequest.of((int) request.getPage(), request.getSize(), Direction.DESC, "createdTime"));
 				else
 					recordsTagsCollections = recordsTagsRepository.findByTagsId(tagObjectId,
 							new Sort(Sort.Direction.DESC, "createdTime"));
@@ -589,20 +613,20 @@ public class RecordsServiceImpl implements RecordsService {
 				if (!request.getDiscarded())
 					criteria.and("discarded").is(request.getDiscarded());
 
-			//	if (!isOTPVerified) {
-					Criteria ownCriteria = new Criteria(), prescribedByCriteria = new Criteria();
-					if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId)) {
-						ownCriteria = new Criteria("locationId").is(locationObjectId).and("hospitalId")
-								.is(hospitalObjectId);
-						prescribedByCriteria = new Criteria("prescribedByLocationId").is(locationObjectId)
-								.and("prescribedByHospitalId").is(hospitalObjectId);
-					}
-					if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
-					    ownCriteria = new Criteria("doctorId").is(doctorObjectId);
-						prescribedByCriteria = new Criteria("prescribedByDoctorId").is(doctorObjectId);
-					}
-					criteria.orOperator(ownCriteria, prescribedByCriteria);
-			//	}
+				// if (!isOTPVerified) {
+				Criteria ownCriteria = new Criteria(), prescribedByCriteria = new Criteria();
+				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId)) {
+					ownCriteria = new Criteria("locationId").is(locationObjectId).and("hospitalId")
+							.is(hospitalObjectId);
+					prescribedByCriteria = new Criteria("prescribedByLocationId").is(locationObjectId)
+							.and("prescribedByHospitalId").is(hospitalObjectId);
+				}
+				if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
+					ownCriteria = new Criteria("doctorId").is(doctorObjectId);
+					prescribedByCriteria = new Criteria("prescribedByDoctorId").is(doctorObjectId);
+				}
+				criteria.orOperator(ownCriteria, prescribedByCriteria);
+				// }
 
 				Aggregation aggregation = null;
 
@@ -611,7 +635,7 @@ public class RecordsServiceImpl implements RecordsService {
 							Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
 							Aggregation.unwind("patientVisit"),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-							Aggregation.skip((long)request.getPage() * request.getSize()),
+							Aggregation.skip((long) request.getPage() * request.getSize()),
 							Aggregation.limit(request.getSize()));
 				else
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1025,7 +1049,8 @@ public class RecordsServiceImpl implements RecordsService {
 				}
 
 				UserCollection doctorUser = userRepository.findById(new ObjectId(doctorId)).orElse(null);
-				LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
+				LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId))
+						.orElse(null);
 
 				mailResponse = new MailResponse();
 				mailResponse.setMailAttachment(mailAttachment);
@@ -1145,8 +1170,8 @@ public class RecordsServiceImpl implements RecordsService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("patientId").is(patientObjectId)
-					.and("isPatientDiscarded").ne(true);
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("patientId")
+					.is(patientObjectId).and("isPatientDiscarded").ne(true);
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
 			if (inHistory)
@@ -1227,14 +1252,14 @@ public class RecordsServiceImpl implements RecordsService {
 				patientObjectId = new ObjectId(patientId);
 
 			SortOperation sortOperation = Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime"));
-			if(!DPDoctorUtils.anyStringEmpty(sortBy)) {
-				if(sortBy.equalsIgnoreCase("updatedTime")) {
-				sortOperation = Aggregation.sort(new Sort(Direction.DESC, "updatedTime"));
-			}
+			if (!DPDoctorUtils.anyStringEmpty(sortBy)) {
+				if (sortBy.equalsIgnoreCase("updatedTime")) {
+					sortOperation = Aggregation.sort(new Sort(Direction.DESC, "updatedTime"));
+				}
 			}
 			if (isDoctorApp) {
-				Criteria criteria = new Criteria("updatedTime").gt(new Date(updatedTimeLong))
-						.and("isPatientDiscarded").ne(true);
+				Criteria criteria = new Criteria("updatedTime").gt(new Date(updatedTimeLong)).and("isPatientDiscarded")
+						.ne(true);
 
 				if (!DPDoctorUtils.anyStringEmpty(patientObjectId))
 					criteria.and("patientId").is(patientObjectId);
@@ -1244,20 +1269,18 @@ public class RecordsServiceImpl implements RecordsService {
 				long count = mongoTemplate.count(new Query(criteria), RecordsCollection.class);
 				if (count > 0) {
 					response.setData(count);
-					response.setCount((int)count);
+					response.setCount((int) count);
 					Aggregation aggregation = null;
 
 					if (size > 0)
 						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
-								Aggregation.unwind("patientVisit"),
-								sortOperation,
-								Aggregation.skip((long)(page) * size), Aggregation.limit(size));
+								Aggregation.unwind("patientVisit"), sortOperation,
+								Aggregation.skip((long) (page) * size), Aggregation.limit(size));
 					else
 						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
-								Aggregation.unwind("patientVisit"),
-								sortOperation);
+								Aggregation.unwind("patientVisit"), sortOperation);
 
 					AggregationResults<RecordsLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 							RecordsCollection.class, RecordsLookupResponse.class);
@@ -1276,20 +1299,18 @@ public class RecordsServiceImpl implements RecordsService {
 				long count = mongoTemplate.count(new Query(criteria), RecordsCollection.class);
 				if (count > 0) {
 					response.setData(count);
-					response.setCount((int)count);
+					response.setCount((int) count);
 					Aggregation aggregation = null;
 
 					if (size > 0)
 						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
-								Aggregation.unwind("patientVisit"),
-								sortOperation,
-								Aggregation.skip((long)page * size), Aggregation.limit(size));
+								Aggregation.unwind("patientVisit"), sortOperation, Aggregation.skip((long) page * size),
+								Aggregation.limit(size));
 					else
 						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
-								Aggregation.unwind("patientVisit"),
-								sortOperation);
+								Aggregation.unwind("patientVisit"), sortOperation);
 
 					AggregationResults<RecordsLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 							RecordsCollection.class, RecordsLookupResponse.class);
@@ -1308,7 +1329,7 @@ public class RecordsServiceImpl implements RecordsService {
 				}
 				response.setDataList(records);
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -1396,8 +1417,8 @@ public class RecordsServiceImpl implements RecordsService {
 			String localPatientName = null, patientMobileNumber = null;
 			PrescriptionCollection prescriptionCollection = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getPrescriptionId(), request.getPatientId())) {
-				prescriptionCollection = prescriptionRepository.findByUniqueEmrIdAndPatientId(request.getPrescriptionId(),
-						new ObjectId(request.getPatientId()));
+				prescriptionCollection = prescriptionRepository.findByUniqueEmrIdAndPatientId(
+						request.getPrescriptionId(), new ObjectId(request.getPatientId()));
 			}
 			if (request.getRegisterPatient()) {
 				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
@@ -1485,7 +1506,8 @@ public class RecordsServiceImpl implements RecordsService {
 							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
 									+ userCollection.getFirstName());
 				}
-				LocationCollection locationCollection = locationRepository.findById(recordsCollection.getLocationId()).orElse(null);
+				LocationCollection locationCollection = locationRepository.findById(recordsCollection.getLocationId())
+						.orElse(null);
 				if (locationCollection != null) {
 					recordsCollection.setUploadedByLocation(locationCollection.getLocationName());
 				}
@@ -1553,15 +1575,14 @@ public class RecordsServiceImpl implements RecordsService {
 						recordsCollection.getUploadedByLocation(), recordsCollection.getDoctorId(),
 						recordsCollection.getLocationId(), recordsCollection.getHospitalId(),
 						recordsCollection.getPatientId());
-				
-				pushNotificationServices.notifyUser(recordsCollection.getDoctorId().toString(),
-						"Records Added",
+
+				pushNotificationServices.notifyUser(recordsCollection.getDoctorId().toString(), "Records Added",
 						ComponentType.RECORDS_REFRESH.getType(), recordsCollection.getPatientId().toString(), null);
 			}
 
 			Records records = new Records();
 			BeanUtil.map(recordsCollection, records);
-			
+
 			return records;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1610,7 +1631,8 @@ public class RecordsServiceImpl implements RecordsService {
 			BeanUtil.map(recordsCollection, response);
 			if (recordsState.equalsIgnoreCase(RecordsState.APPROVED_BY_DOCTOR.toString())
 					&& recordsCollection.getShareWithPatient()) {
-				UserCollection patientUserCollection = userRepository.findById(recordsCollection.getPatientId()).orElse(null);
+				UserCollection patientUserCollection = userRepository.findById(recordsCollection.getPatientId())
+						.orElse(null);
 				PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						recordsCollection.getPatientId(), recordsCollection.getLocationId(),
 						recordsCollection.getHospitalId());
@@ -1788,7 +1810,8 @@ public class RecordsServiceImpl implements RecordsService {
 	public UserRecords getUserRecordById(String recordId) {
 		UserRecords userRecords = null;
 		try {
-			UserRecordsCollection userRecordsCollection = userRecordsRepository.findById(new ObjectId(recordId)).orElse(null);
+			UserRecordsCollection userRecordsCollection = userRecordsRepository.findById(new ObjectId(recordId))
+					.orElse(null);
 			if (userRecordsCollection != null) {
 				userRecords = new UserRecords();
 				BeanUtil.map(userRecordsCollection, userRecords);
@@ -1933,7 +1956,8 @@ public class RecordsServiceImpl implements RecordsService {
 	public UserRecords deleteUserRecord(String recordId, Boolean discarded, Boolean isVisible) {
 		UserRecords response = null;
 		try {
-			UserRecordsCollection userRecordsCollection = userRecordsRepository.findById(new ObjectId(recordId)).orElse(null);
+			UserRecordsCollection userRecordsCollection = userRecordsRepository.findById(new ObjectId(recordId))
+					.orElse(null);
 			if (userRecordsCollection == null) {
 				logger.warn("User Record Not found.Check Record Id");
 				throw new BusinessException(ServiceError.NoRecord, "User Record Not found.Check Record Id");
@@ -1977,7 +2001,8 @@ public class RecordsServiceImpl implements RecordsService {
 		if (userCollection == null) {
 			throw new BusinessException(ServiceError.NoRecord, "User not found");
 		}
-		RecordsCollection recordsCollection = recordsRepository.findById(new ObjectId(request.getRecordId())).orElse(null);
+		RecordsCollection recordsCollection = recordsRepository.findById(new ObjectId(request.getRecordId()))
+				.orElse(null);
 		if (recordsCollection == null) {
 			throw new BusinessException(ServiceError.NoRecord, "Record not found");
 		}
@@ -2013,7 +2038,8 @@ public class RecordsServiceImpl implements RecordsService {
 	public UserRecords deleteUserRecordsFile(String recordId, List<String> fileIds) {
 		UserRecords response = null;
 		try {
-			UserRecordsCollection userRecordsCollection = userRecordsRepository.findById(new ObjectId(recordId)).orElse(null);
+			UserRecordsCollection userRecordsCollection = userRecordsRepository.findById(new ObjectId(recordId))
+					.orElse(null);
 			if (userRecordsCollection == null) {
 				logger.warn("User Record Not found.Check RecordId");
 				throw new BusinessException(ServiceError.NoRecord, "Record Not found.Check RecordId");
@@ -2069,7 +2095,8 @@ public class RecordsServiceImpl implements RecordsService {
 	public UserRecords shareUserRecordsFile(String recordId, String userId) {
 		UserRecords response = null;
 		try {
-			UserRecordsCollection userRecordsCollection = userRecordsRepository.findById(new ObjectId(recordId)).orElse(null);
+			UserRecordsCollection userRecordsCollection = userRecordsRepository.findById(new ObjectId(recordId))
+					.orElse(null);
 			if (userRecordsCollection == null) {
 				logger.warn("User Record Not found.Check RecordId");
 				throw new BusinessException(ServiceError.NoRecord, "Record Not found.Check RecordId");
@@ -2085,9 +2112,10 @@ public class RecordsServiceImpl implements RecordsService {
 
 			UserCollection doctor = userRepository.findById(userRecordsCollection.getDoctorId()).orElse(null);
 			if (doctor != null) {
-				PatientCollection patientCollection = patientRepository.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(
-						userRecordsCollection.getShareWith(), userRecordsCollection.getDoctorId(),
-						userRecordsCollection.getLocationId(), userRecordsCollection.getHospitalId());
+				PatientCollection patientCollection = patientRepository
+						.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(userRecordsCollection.getShareWith(),
+								userRecordsCollection.getDoctorId(), userRecordsCollection.getLocationId(),
+								userRecordsCollection.getHospitalId());
 				UserCollection patient = userRepository.findById(userRecordsCollection.getPatientId()).orElse(null);
 
 				pushNotificationServices.notifyUser(userRecordsCollection.getShareWith().toString(),
@@ -2143,7 +2171,8 @@ public class RecordsServiceImpl implements RecordsService {
 			Date createdTime = new Date();
 
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
-				UserCollection userCollection = userRepository.findById(new ObjectId(request.getPatientId())).orElse(null);
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getPatientId()))
+						.orElse(null);
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 				}
@@ -2265,4 +2294,191 @@ public class RecordsServiceImpl implements RecordsService {
 		return null;
 	}
 
+	@Override
+	public MultipartUploadFile uploadImage(FormDataBodyPart file) {
+		String recordPath = null;
+		MultipartUploadFile multipartUploadFile = null;
+		try {
+			Date createdTime = new Date();
+			if (file != null) {
+
+				String path = "records" + File.separator;
+				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
+				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
+				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+
+				recordPath = path + File.separator + fileName + createdTime.getTime() + fileExtension;
+
+				ImageURLResponse imageURLResponse = fileManager.saveImage(file, recordPath, true);
+				multipartUploadFile = new MultipartUploadFile();
+
+				multipartUploadFile.setImageUrl(imageURLResponse.getImageUrl());
+				multipartUploadFile.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return multipartUploadFile;
+	}
+
+	public MultipartUploadFile saveImage(MultipartFile file, String recordPath, Boolean createThumbnail) {
+		BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+		AmazonS3 s3client = new AmazonS3Client(credentials);
+		MultipartUploadFile response = new MultipartUploadFile();
+		Double fileSizeInMB = 10.0;
+		try {
+			InputStream fis = file.getInputStream();
+			ObjectMetadata metadata = new ObjectMetadata();
+			byte[] contentBytes = IOUtils.toByteArray(fis);
+
+			/*
+			 * fileSizeInMB = new BigDecimal(contentBytes.length).divide(new BigDecimal(1000
+			 * * 1000)).doubleValue(); if (fileSizeInMB > 10) { throw new
+			 * BusinessException(ServiceError.Unknown,
+			 * " You cannot upload file more than 1O mb"); }
+			 */
+
+			metadata.setContentLength(contentBytes.length);
+			metadata.setContentEncoding(file.getContentType());
+			metadata.setContentType(file.getContentType());
+			metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+
+			s3client.putObject(new PutObjectRequest(bucketName, recordPath, file.getInputStream(), metadata));
+			response.setImageUrl(imagePath + recordPath);
+			if (createThumbnail) {
+				response.setThumbnailUrl(imagePath + saveThumbnailUrl(file, recordPath));
+			}
+		} catch (AmazonServiceException ase) {
+			ase.printStackTrace();
+			System.out.println("Error Message:    " + ase.getMessage() + " HTTP Status Code: " + ase.getStatusCode()
+					+ " AWS Error Code:   " + ase.getErrorCode() + " Error Type:       " + ase.getErrorType()
+					+ " Request ID:       " + ase.getRequestId());
+
+		} catch (AmazonClientException ace) {
+			ace.printStackTrace();
+			System.out.println(
+					"Caught an AmazonClientException, which means the client encountered an internal error while trying to communicate with S3, such as not being able to access the network.");
+			System.out.println("Error Message: " + ace.getMessage());
+
+		} catch (BusinessException e) {
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Error Message: " + e.getMessage());
+		}
+		return response;
+
+	}
+
+	public MultipartUploadFile saveVideo(MultipartFile file, String recordPath) {
+		BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+		AmazonS3 s3client = new AmazonS3Client(credentials);
+		MultipartUploadFile response = new MultipartUploadFile();
+		Double fileSizeInMB = 10.0;
+		try {
+			InputStream fis = file.getInputStream();
+			ObjectMetadata metadata = new ObjectMetadata();
+			byte[] contentBytes = IOUtils.toByteArray(fis);
+
+			/*
+			 * fileSizeInMB = new BigDecimal(contentBytes.length).divide(new BigDecimal(1000
+			 * * 1000)).doubleValue(); if (fileSizeInMB > 10) { throw new
+			 * BusinessException(ServiceError.Unknown,
+			 * " You cannot upload file more than 1O mb"); }
+			 */
+
+			metadata.setContentLength(contentBytes.length);
+			metadata.setContentEncoding(file.getContentType());
+			metadata.setContentType(file.getContentType());
+			metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+
+			s3client.putObject(new PutObjectRequest(bucketName, recordPath, file.getInputStream(), metadata));
+			response.setVideoUrl(imagePath + recordPath);
+
+		} catch (AmazonServiceException ase) {
+			ase.printStackTrace();
+			System.out.println("Error Message:    " + ase.getMessage() + " HTTP Status Code: " + ase.getStatusCode()
+					+ " AWS Error Code:   " + ase.getErrorCode() + " Error Type:       " + ase.getErrorType()
+					+ " Request ID:       " + ase.getRequestId());
+
+		} catch (AmazonClientException ace) {
+			ace.printStackTrace();
+			System.out.println(
+					"Caught an AmazonClientException, which means the client encountered an internal error while trying to communicate with S3, such as not being able to access the network.");
+			System.out.println("Error Message: " + ace.getMessage());
+
+		} catch (BusinessException e) {
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Error Message: " + e.getMessage());
+		}
+		return response;
+
+	}
+
+	public String saveThumbnailUrl(MultipartFile file, String path) {
+		String thumbnailUrl = "";
+
+		try {
+			String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+			BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+			AmazonS3 s3client = new AmazonS3Client(credentials);
+			S3Object object = s3client.getObject(new GetObjectRequest(bucketName, path));
+			InputStream objectData = object.getObjectContent();
+
+			BufferedImage originalImage = ImageIO.read(objectData);
+			double ratio = (double) originalImage.getWidth() / originalImage.getHeight();
+			int height = originalImage.getHeight();
+
+			int width = originalImage.getWidth();
+			int max = 120;
+			if (width == height) {
+				width = max;
+				height = max;
+			} else if (width > height) {
+				height = max;
+				width = (int) (ratio * max);
+			} else {
+				width = max;
+				height = (int) (max / ratio);
+			}
+			BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+			img.createGraphics().drawImage(originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH), 0, 0,
+					null);
+			// String fileName = fileDetails.getFileName() + "_thumb." +
+			// fileDetails.getFileExtension();
+			thumbnailUrl = "thumb_" + path;
+
+			originalImage.flush();
+			originalImage = null;
+
+			ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+			ImageIO.write(img, fileExtension, outstream);
+			byte[] buffer = outstream.toByteArray();
+			objectData = new ByteArrayInputStream(buffer);
+
+			String contentType = URLConnection.guessContentTypeFromStream(objectData);
+			ObjectMetadata metadata = new ObjectMetadata();
+			metadata.setContentLength(buffer.length);
+			metadata.setContentEncoding(fileExtension);
+			metadata.setContentType(contentType);
+			metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+			s3client.putObject(new PutObjectRequest(bucketName, thumbnailUrl, objectData, metadata));
+		} catch (AmazonServiceException ase) {
+			System.out.println("Error Message: " + ase.getMessage() + " HTTP Status Code: " + ase.getStatusCode()
+					+ " AWS Error Code:   " + ase.getErrorCode() + " Error Type:       " + ase.getErrorType()
+					+ " Request ID:       " + ase.getRequestId());
+		} catch (AmazonClientException ace) {
+			System.out.println(
+					"Caught an AmazonClientException, which means the client encountered an internal error while trying to communicate with S3, such as not being able to access the network.");
+			System.out.println("Error Message: " + ace.getMessage());
+		} catch (Exception e) {
+			System.out.println("Error Message: " + e.getMessage());
+		}
+		return thumbnailUrl;
+	}
 }

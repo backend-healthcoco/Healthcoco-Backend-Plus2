@@ -90,8 +90,8 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 
 	@Override
 	public Response<Object> search(String type, String range, int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
-		
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm, String ratelistId) {
+
 		Response<Object> response = new Response<Object>();
 		List<?> dataList = new ArrayList<Object>();
 
@@ -101,15 +101,16 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 			switch (Range.valueOf(range.toUpperCase())) {
 
 			case GLOBAL:
-				response = getGlobalTreatmentServices(page, size, doctorId, updatedTime, discarded, searchTerm);
+				response = getGlobalTreatmentServices(page, size, doctorId, updatedTime, discarded, searchTerm,
+						ratelistId);
 				break;
 			case CUSTOM:
 				response = getCustomTreatmentServices(page, size, doctorId, locationId, hospitalId, updatedTime,
-						discarded, searchTerm);
+						discarded, searchTerm, ratelistId);
 				break;
 			case BOTH:
 				response = getCustomGlobalTreatmentServices(page, size, doctorId, locationId, hospitalId, updatedTime,
-						discarded, searchTerm);
+						discarded, searchTerm, ratelistId);
 				break;
 			default:
 				break;
@@ -130,7 +131,7 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 
 	@SuppressWarnings("unchecked")
 	private Response<Object> getGlobalTreatmentServices(int page, int size, String doctorId, String updatedTime,
-			Boolean discarded, String searchTerm) {
+			Boolean discarded, String searchTerm, String ratelistId) {
 		Response<Object> response = new Response<Object>();
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
@@ -163,12 +164,18 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 					}
 				}
 			}
-
-			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.TREATMENTSERVICE, page, size,
-					updatedTime, discarded, null, searchTerm, specialities, null, null, "name");
-			
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESTreatmentServiceDocument.class);
-			if(count > 0) {
+			SearchQuery searchQuery = null;
+			if (!DPDoctorUtils.anyStringEmpty(ratelistId)) {
+				searchQuery = DPDoctorUtils.createGlobalQueryForRatelist(Resource.TREATMENTSERVICE, page, size,
+						updatedTime, discarded, null, searchTerm, ratelistId, specialities, null, null, "name");
+			} else {
+				searchQuery = DPDoctorUtils.createGlobalQuery(Resource.TREATMENTSERVICE, page, size, updatedTime,
+						discarded, null, searchTerm, specialities, null, null, "name");
+			}
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESTreatmentServiceDocument.class);
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class));
 			}
@@ -181,13 +188,21 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 	}
 
 	private Response<Object> getCustomTreatmentServices(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm, String ratelistId) {
 		Response<Object> response = new Response<Object>();
 		try {
-			SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
-					updatedTime, discarded, "rankingCount", searchTerm, null, null, "name");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESTreatmentServiceDocument.class);
-			if(count > 0) {
+			SearchQuery searchQuery = null;
+			if (!DPDoctorUtils.anyStringEmpty(ratelistId)) {
+				searchQuery = DPDoctorUtils.createCustomQueryForRatelist(page, size, doctorId, locationId, hospitalId,
+						updatedTime, discarded, "rankingCount", searchTerm, ratelistId, null, null, "name");
+			} else {
+				searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded, "rankingCount", searchTerm, null, null, "name");
+			}
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESTreatmentServiceDocument.class);
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class));
 			}
@@ -201,7 +216,7 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 
 	@SuppressWarnings("unchecked")
 	private Response<Object> getCustomGlobalTreatmentServices(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm, String ratelistId) {
 		Response<Object> response = new Response<Object>();
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
@@ -237,12 +252,20 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 					}
 				}
 			}
-
-			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.TREATMENTSERVICE, page, 0,
-					doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null,
-					null, "name");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESTreatmentServiceDocument.class);
-			if(count > 0) {
+			SearchQuery searchQuery = null;
+			if (!DPDoctorUtils.anyStringEmpty(ratelistId)) {
+				searchQuery = DPDoctorUtils.createCustomGlobalQueryForRatelist(Resource.TREATMENTSERVICE, page, 0,
+						doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, ratelistId,
+						specialities, null, null, "name");
+			} else {
+				searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.TREATMENTSERVICE, page, 0, doctorId,
+						locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
+						"name");
+			}
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESTreatmentServiceDocument.class);
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class));
 			}
@@ -306,18 +329,16 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)));
 
 		if (!DPDoctorUtils.anyStringEmpty(doctorId))
-			boolQueryBuilder.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("doctorId")))
-					 .should(QueryBuilders.termQuery("doctorId", doctorId))
-					 .minimumShouldMatch(1));
+			boolQueryBuilder
+					.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("doctorId")))
+							.should(QueryBuilders.termQuery("doctorId", doctorId)).minimumShouldMatch(1));
 
 		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			boolQueryBuilder
-			.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")))
-					 .should(QueryBuilders.termQuery("locationId", locationId))
-					 .minimumShouldMatch(1))
-			.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")))
-					 .should(QueryBuilders.termQuery("hospitalId", hospitalId))
-					 .minimumShouldMatch(1));
+					.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")))
+							.should(QueryBuilders.termQuery("locationId", locationId)).minimumShouldMatch(1))
+					.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")))
+							.should(QueryBuilders.termQuery("hospitalId", hospitalId)).minimumShouldMatch(1));
 		}
 
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))
@@ -335,14 +356,14 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 		if (!DPDoctorUtils.anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(PageRequest.of((int)page, size, Direction.ASC, sortBy)).build();
+						.withPageable(PageRequest.of((int) page, size, Direction.ASC, sortBy)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
 		} else {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(PageRequest.of((int)page, size, Direction.DESC, "updatedTime")).build();
+						.withPageable(PageRequest.of((int) page, size, Direction.DESC, "updatedTime")).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
@@ -373,14 +394,14 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 		if (!DPDoctorUtils.anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(PageRequest.of((int)page, size, Direction.ASC, sortBy)).build();
+						.withPageable(PageRequest.of((int) page, size, Direction.ASC, sortBy)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
 		} else {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(PageRequest.of((int)page, size, Direction.DESC, "updatedTime")).build();
+						.withPageable(PageRequest.of((int) page, size, Direction.DESC, "updatedTime")).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();

@@ -40,12 +40,13 @@ public class ESTreatmentAPI {
     public Response<Object> search(@PathParam("type") String type, @PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm,
+	    @QueryParam(value = "ratelistId") String ratelistId) {
     	if (DPDoctorUtils.anyStringEmpty(type, range, locationId, hospitalId)) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
-    	Response<Object> response = esTreatmentService.search(type, range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+    	Response<Object> response = esTreatmentService.search(type, range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm,ratelistId);
 		return response;
     }
 

@@ -1094,7 +1094,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 	@Override
 	public List<?> getServices(String type, String range, long page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded) {
+			String hospitalId, String updatedTime, Boolean discarded, String ratelistId) {
 		List<?> response = new ArrayList<Object>();
 
 		switch (PatientTreatmentService.valueOf(type.toUpperCase())) {
@@ -1104,14 +1104,15 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			switch (Range.valueOf(range.toUpperCase())) {
 
 			case GLOBAL:
-				response = getGlobalServices(page, size, doctorId, updatedTime, discarded);
+				response = getGlobalServices(page, size, doctorId, updatedTime, discarded, ratelistId);
 				break;
 			case CUSTOM:
-				response = getCustomServices(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomServices(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+						ratelistId);
 				break;
 			case BOTH:
-				response = getCustomGlobalServices(page, size, doctorId, locationId, hospitalId, updatedTime,
-						discarded);
+				response = getCustomGlobalServices(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+						ratelistId);
 				break;
 			default:
 				break;
@@ -1207,7 +1208,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 	@SuppressWarnings("unchecked")
 	private List<?> getCustomGlobalServices(long page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
+			String updatedTime, Boolean discarded, String ratelistId) {
 		List<TreatmentService> response = null;
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -1239,7 +1240,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	}
 
 	private List<?> getCustomServices(long page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
+			String updatedTime, Boolean discarded, String ratelistId) {
 		List<TreatmentService> response = null;
 		try {
 			AggregationResults<TreatmentService> results = mongoTemplate
@@ -1257,24 +1258,31 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<?> getGlobalServices(long page, int size, String doctorId, String updatedTime, Boolean discarded) {
+	private List<?> getGlobalServices(long page, int size, String doctorId, String updatedTime, Boolean discarded,
+			String ratelistId) {
 		List<TreatmentService> response = null;
 		try {
+			Aggregation aggregation = null;
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
 			if (doctorCollection == null) {
 				logger.warn("No Doctor Found");
 				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
 			}
 			Collection<String> specialities = null;
-			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+			if (!DPDoctorUtils.anyStringEmpty(ratelistId)) {
+				aggregation = DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded,
+						ratelistId);
+			} else if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
 				specialities = CollectionUtils.collect(
 						(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 						new BeanToPropertyValueTransformer("speciality"));
 				specialities.add("ALL");
 				specialities.add(null);
+
+				aggregation = DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null,
+						specialities, null);
 			}
-			AggregationResults<TreatmentService> results = mongoTemplate.aggregate(DPDoctorUtils
-					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
+			AggregationResults<TreatmentService> results = mongoTemplate.aggregate(aggregation,
 					TreatmentServicesCollection.class, TreatmentService.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
@@ -1801,6 +1809,22 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		Aggregation aggregation = null;
 		Criteria criteria = new Criteria().and("speciality").in(speciality);
 		criteria.and("category").exists(true);
+		criteria.and("ratelistId").is(null);
+		aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+				Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+		AggregationResults<TreatmentService> aggregationResults = mongoTemplate.aggregate(aggregation,
+				TreatmentServicesCollection.class, TreatmentService.class);
+		response = aggregationResults.getMappedResults();
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public List<TreatmentService> getServicesByRatelist(String ratelistId) {
+		List<TreatmentService> response = null;
+		Aggregation aggregation = null;
+		Criteria criteria = new Criteria().and("ratelistId").is(new ObjectId(ratelistId));
+//		criteria.and("category").exists(true);
 		aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 				Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 		AggregationResults<TreatmentService> aggregationResults = mongoTemplate.aggregate(aggregation,

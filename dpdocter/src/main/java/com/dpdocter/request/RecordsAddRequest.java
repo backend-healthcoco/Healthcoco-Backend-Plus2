@@ -1,8 +1,11 @@
 package com.dpdocter.request;
 
 import java.util.Date;
+import java.util.List;
 
 import com.dpdocter.beans.FileDetails;
+import com.dpdocter.beans.RecordsUrlData;
+import com.dpdocter.webservices.PathProxy.RecordsUrls;
 
 public class RecordsAddRequest {
 
@@ -15,7 +18,9 @@ public class RecordsAddRequest {
 	private String explanation;
 
 	private FileDetails fileDetails;
-
+	
+	private List<RecordsUrlData> recordsUrls;
+	
 	private String locationId;
 
 	private String hospitalId;
@@ -199,8 +204,14 @@ public class RecordsAddRequest {
 	public void setMobileNumber(String mobileNumber) {
 		this.mobileNumber = mobileNumber;
 	}
-	
-	
+
+	public List<RecordsUrlData> getRecordsUrls() {
+		return recordsUrls;
+	}
+
+	public void setRecordsUrls(List<RecordsUrlData> recordsUrls) {
+		this.recordsUrls = recordsUrls;
+	}
 
 	public String getAppointmentId() {
 		return appointmentId;

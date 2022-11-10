@@ -173,8 +173,10 @@ public class PatientTreamentAPI {
 	@GET
 	@ApiOperation(value = PathProxy.PatientTreatmentURLs.GET_SERVICES, notes = PathProxy.PatientTreatmentURLs.GET_SERVICES)
 	public Response<Object> getServices(@PathParam("type") String type, @PathParam("range") String range,
-			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
-			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@QueryParam("page") long page, @QueryParam("size") int size,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId,
+			@QueryParam(value = "ratelistId") String ratelistId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
@@ -184,7 +186,7 @@ public class PatientTreamentAPI {
 		}
 
 		List<?> objects = patientTreatmentServices.getServices(type, range, page, size, doctorId, locationId,
-				hospitalId, updatedTime, discarded);
+				hospitalId, updatedTime, discarded,ratelistId);
 
 		Response<Object> response = new Response<Object>();
 		response.setDataList(objects);
@@ -257,7 +259,7 @@ public class PatientTreamentAPI {
 		response.setData(deletePatientTreatmentResponse);
 		return response;
 	}
-	
+
 	@Path(PathProxy.PatientTreatmentURLs.DELETE_PATIENT_TREATMENT_WEB)
 	@DELETE
 	@ApiOperation(value = PathProxy.PatientTreatmentURLs.DELETE_PATIENT_TREATMENT_WEB, notes = PathProxy.PatientTreatmentURLs.DELETE_PATIENT_TREATMENT_WEB)
@@ -354,7 +356,7 @@ public class PatientTreamentAPI {
 		response.setData(true);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PatientTreatmentURLs.EMAIL_PATIENT_TREATMENT_WEB)
 	@GET
 	@ApiOperation(value = PathProxy.PatientTreatmentURLs.EMAIL_PATIENT_TREATMENT_WEB, notes = PathProxy.PatientTreatmentURLs.EMAIL_PATIENT_TREATMENT_WEB)
@@ -364,8 +366,7 @@ public class PatientTreamentAPI {
 			@PathParam(value = "emailAddress") String emailAddress) {
 
 		if (DPDoctorUtils.anyStringEmpty(treatmentId, emailAddress)) {
-			logger.warn(
-					"Invalid Input. Patient Treatment Id, EmailAddress Cannot Be Empty");
+			logger.warn("Invalid Input. Patient Treatment Id, EmailAddress Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Invalid Input. Patient Treatment Id, EmailAddress Cannot Be Empty");
 		}
@@ -438,7 +439,7 @@ public class PatientTreamentAPI {
 		response.setData(treatmentServiceResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PatientTreatmentURLs.GET_TREATMENT_SERVICES_BY_SPECIALITY)
 	@GET
 	@ApiOperation(value = PathProxy.PatientTreatmentURLs.GET_TREATMENT_SERVICES_BY_SPECIALITY, notes = PathProxy.PatientTreatmentURLs.GET_TREATMENT_SERVICES_BY_SPECIALITY)
@@ -448,9 +449,24 @@ public class PatientTreamentAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		List<TreatmentService> treatmentServiceResponse = patientTreatmentServices.getListBySpeciality(speciality);
-		
+
 		Response<TreatmentService> response = new Response<TreatmentService>();
-		response.setDataList(treatmentServiceResponse);;
+		response.setDataList(treatmentServiceResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.PatientTreatmentURLs.GET_TREATMENT_SERVICES_BY_RATELIST)
+	@GET
+	@ApiOperation(value = PathProxy.PatientTreatmentURLs.GET_TREATMENT_SERVICES_BY_RATELIST, notes = PathProxy.PatientTreatmentURLs.GET_TREATMENT_SERVICES_BY_RATELIST)
+	public Response<TreatmentService> getServicesByRatelist(@QueryParam("ratelistId") String ratelistId) {
+		if (DPDoctorUtils.anyStringEmpty(ratelistId)) {
+			logger.error("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<TreatmentService> treatmentServiceResponse = patientTreatmentServices.getServicesByRatelist(ratelistId);
+
+		Response<TreatmentService> response = new Response<TreatmentService>();
+		response.setDataList(treatmentServiceResponse);
 		return response;
 	}
 }
