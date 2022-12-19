@@ -2,10 +2,7 @@ package com.dpdocter.beans;
 
 public class RecordsUrlData {
 	private String recordsUrl;
-	private String explanation;
-	private String recordsLabel;
-	private String recordsState;
-	private String recordsType;
+	private String recordsThumbnailUrl;
 
 	public String getRecordsUrl() {
 		return recordsUrl;
@@ -15,36 +12,12 @@ public class RecordsUrlData {
 		this.recordsUrl = recordsUrl;
 	}
 
-	public String getExplanation() {
-		return explanation;
+	public String getRecordsThumbnailUrl() {
+		return recordsThumbnailUrl;
 	}
 
-	public void setExplanation(String explanation) {
-		this.explanation = explanation;
-	}
-
-	public String getRecordsLabel() {
-		return recordsLabel;
-	}
-
-	public void setRecordsLabel(String recordsLabel) {
-		this.recordsLabel = recordsLabel;
-	}
-
-	public String getRecordsState() {
-		return recordsState;
-	}
-
-	public void setRecordsState(String recordsState) {
-		this.recordsState = recordsState;
-	}
-
-	public String getRecordsType() {
-		return recordsType;
-	}
-
-	public void setRecordsType(String recordsType) {
-		this.recordsType = recordsType;
+	public void setRecordsThumbnailUrl(String recordsThumbnailUrl) {
+		this.recordsThumbnailUrl = recordsThumbnailUrl;
 	}
 
 }

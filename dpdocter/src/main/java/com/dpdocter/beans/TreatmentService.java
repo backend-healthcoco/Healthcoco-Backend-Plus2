@@ -33,6 +33,7 @@ public class TreatmentService extends GenericCollection {
 	private List<String> fieldsRequired;
 
 	private Double count = 0.0;
+	private String ratelistId;
 
 	public String getId() {
 		return id;
@@ -136,6 +137,14 @@ public class TreatmentService extends GenericCollection {
 
 	public void setCount(Double count) {
 		this.count = count;
+	}
+
+	public String getRatelistId() {
+		return ratelistId;
+	}
+
+	public void setRatelistId(String ratelistId) {
+		this.ratelistId = ratelistId;
 	}
 
 	@Override

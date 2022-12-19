@@ -166,6 +166,8 @@ public class DoctorClinicProfile {
 
 	private Boolean isShowDoctorInCalender = true;
 
+	private String ratelistId;
+
 	public Boolean getIsShowDoctorInCalender() {
 		return isShowDoctorInCalender;
 	}
@@ -781,6 +783,14 @@ public class DoctorClinicProfile {
 
 	public void setIsOnlineConsultationAvailable(Boolean isOnlineConsultationAvailable) {
 		this.isOnlineConsultationAvailable = isOnlineConsultationAvailable;
+	}
+
+	public String getRatelistId() {
+		return ratelistId;
+	}
+
+	public void setRatelistId(String ratelistId) {
+		this.ratelistId = ratelistId;
 	}
 
 	@Override
