@@ -15,6 +15,7 @@ import com.dpdocter.elasticsearch.document.ESMenstrualHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESNeckExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESNoseExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESNotesDocument;
+import com.dpdocter.elasticsearch.document.ESNursingCareExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
 import com.dpdocter.elasticsearch.document.ESObstetricHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESOralCavityAndThroatExaminationDocument;
@@ -195,5 +196,10 @@ public interface ESClinicalNotesService {
 
 	Response<ESEarsExaminationDocument> searchEarsExam(String range, int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+	
+	boolean addNursingCareExam(ESNursingCareExaminationDocument nursingCareExaminationDocument);
+
+	Response<ESNursingCareExaminationDocument> searchNursingCareExam(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
 }

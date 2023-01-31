@@ -276,20 +276,20 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					patientCard.setUser(null);
 					
 					//calculate age of patient upto today
-					if (patientCard.getDob() != null) {
-						if(patientCard.getDob().getDays() > 0 && patientCard.getDob().getMonths() > 0 && patientCard.getDob().getYears() > 0) {
-						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
-						LocalDate today = LocalDate.now();
-						LocalDate birthday = LocalDate.parse(patientCard.getDob().getDays()+"/"+patientCard.getDob().getMonths()
-								+"/"+patientCard.getDob().getYears(), formatter);
-
-						Period p = Period.between(birthday, today);
-										
-						patientCard.getDob().getAge().setDays(p.getDays());
-						patientCard.getDob().getAge().setMonths(p.getMonths());
-						patientCard.getDob().getAge().setYears(p.getYears());
-						}
-					}
+//					if (patientCard.getDob() != null) {
+//						if(patientCard.getDob().getDays() > 0 && patientCard.getDob().getMonths() > 0 && patientCard.getDob().getYears() > 0) {
+//						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+//						LocalDate today = LocalDate.now();
+//						LocalDate birthday = LocalDate.parse(patientCard.getDob().getDays()+"/"+patientCard.getDob().getMonths()
+//								+"/"+patientCard.getDob().getYears(), formatter);
+//
+//						Period p = Period.between(birthday, today);
+//										
+//						patientCard.getDob().getAge().setDays(p.getDays());
+//						patientCard.getDob().getAge().setMonths(p.getMonths());
+//						patientCard.getDob().getAge().setYears(p.getYears());
+//						}
+//					}
 				}
 				response = new DoctorContactsResponse();
 				response.setPatientCards(patientCards);
@@ -497,7 +497,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Override
 	@Transactional
-	public List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId,
+	public List<PatientVisitResponse> getVisitOLDCODE(String doctorId, String locationId, String hospitalId, String patientId,
 			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor,String from,String to, Boolean discarded) {
 		List<PatientVisitResponse> response = null;
 		List<PatientVisitLookupBean> patientVisitlookupbeans = null;
@@ -658,9 +658,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		return response;
 	}
 	
-//	@Override
+	@Override
 	@Transactional
-	public List<PatientVisitResponse> getVisitNew(String doctorId, String locationId, String hospitalId, String patientId,
+	public List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId,
 			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor,String from,String to, Boolean discarded) {
 		List<PatientVisitResponse> response = null;
 		try {
@@ -697,7 +697,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			
 			
 
-			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimestamp)).and("patientId")
+			Criteria criteria = new Criteria("createdTime").gte(new Date(createdTimestamp)).and("patientId")
 					.is(patientObjectId).and("visitedFor").in(visitedFors).and("isPatientDiscarded").ne(true);
 
 			if (discarded !=null)
@@ -889,11 +889,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 								new BasicDBObject("path", "$treatmentId").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("patient_treatment_cl", "treatmentId", "_id", "patientTreatment"),
 						new CustomAggregationOperation(new Document("$unwind",
-								new BasicDBObject("path", "$patientTreatment").append("preserveNullAndEmptyArrays",
-										true))),
+								new BasicDBObject("path", "$patientTreatment")
+								.append("preserveNullAndEmptyArrays",true)
+								)),
 						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$patientTreatment.treatments")
-										.append("preserveNullAndEmptyArrays", true).append("includeArrayIndex",
+										.append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex",
 												"arrayIndex7"))),
 						Aggregation.lookup("treatment_services_cl", "patientTreatment.treatments.treatmentServiceId",
 								"_id", "treatmentService"),
@@ -930,14 +932,18 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					if (!patientVisitResponse.getVisitedFor().contains(VisitedFor.TREATMENT)) {
 						patientVisitResponse.setPatientTreatment(null);
 					}
-					if (patientVisitResponse.getPatientTreatment() != null && !patientVisitResponse.getPatientTreatment().isEmpty()) {
+					if (patientVisitResponse.getPatientTreatment()!= null && !patientVisitResponse.getPatientTreatment().isEmpty()) {
+					//	if(patientVisitResponse.getPatientTreatment().get(0).getTreatments().get(0).getTreatmentService()!=null)
+					//	{
 						for(PatientTreatment patientTreatment : patientVisitResponse.getPatientTreatment()) {
 							if(!DPDoctorUtils.anyStringEmpty(patientTreatment.getId())) {
 								patientTreatment.setVisitId(patientVisitResponse.getId());
 							}
 						}
 					}
-					
+					//	else
+					//		patientVisitResponse.setPatientTreatment(null);
+					//}
 					if (!patientVisitResponse.getVisitedFor().contains(VisitedFor.CLINICAL_NOTES)) {
 						patientVisitResponse.setClinicalNotes(null);
 					}
@@ -947,13 +953,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							if(patientVisitResponse.getClinicalNotesDiagrams() != null && !patientVisitResponse.getClinicalNotesDiagrams().isEmpty()) {
 								List<Diagram> diagrams = null;
 								for (Diagram diagram : patientVisitResponse.getClinicalNotesDiagrams()) {
-//									if (diagram.getId() != null
-//											&& diagram.getClinicalNotesId().equalsIgnoreCase(clinicalNote.getId())) {
+									if (diagram.getId() != null) {
 										if (diagrams == null)
 											diagrams = new ArrayList<Diagram>();
 										diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
 										diagrams.add(diagram);
-//									}
+									}
 								}
 								clinicalNote.setDiagrams(diagrams);
 							}
@@ -1011,6 +1016,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				.append("prescriptionscreatedBy", "$prescriptions.createdBy")
 				.append("prescriptionsupdatedTime", "$prescriptions.updatedTime")
 				.append("prescriptionsitems.drug", "$drug")
+				
+				.append("prescriptionsitems.drugName", "$prescriptions.items.drugName")
+				.append("prescriptionsitems.drugType", "$prescriptions.items.drugType")
+				.append("prescriptionsitems.genericNames", "$prescriptions.items.genericNames")
+
+				
 				.append("prescriptionsitems.duration", "$prescriptions.items.duration")
 				.append("prescriptionsitems.durationValue", "$prescriptions.items.duration.value")
 				.append("prescriptionsitems.durationUnit", "$prescriptions.items.duration.durationUnit.unit")
@@ -1363,13 +1374,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				.append("patientTreatmentpatientId", new BasicDBObject("$first", "$patientTreatmentpatientId"))
 				.append("patientTreatmenttotalCost", new BasicDBObject("$first", "$patientTreatmenttotalCost"))
 				.append("patientTreatmenttotalDiscount", new BasicDBObject("$first", "$patientTreatmenttotalDiscount"))
-				.append("patientTreatmenttotalgrandTotal", new BasicDBObject("$first", "$patientTreatmentgrandTotal"))
+				.append("patientTreatmenttotalgrandTotal", new BasicDBObject("$first", "$patientTreatmenttotalgrandTotal"))
 				.append("patientTreatmentappointmentId", new BasicDBObject("$first", "$patientTreatmentappointmentId"))
 				.append("patientTreatmentvisitId", new BasicDBObject("$first", "$patientTreatmentvisitId"))
 				.append("patientTreatmentcreatedTime", new BasicDBObject("$first", "$patientTreatmentcreatedTime"))
 				.append("patientTreatmentcreatedBy", new BasicDBObject("$first", "$patientTreatmentcreatedBy"))
 				.append("patientTreatmentupdatedTime", new BasicDBObject("$first", "$patientTreatmentupdatedTime"))
-				.append("treatments", new BasicDBObject("$push", "$treatments"))
+				.append("treatments", new BasicDBObject("$addToSet", "$treatments"))
 				.append("recordId", new BasicDBObject("$first", "$recordId"))
 				.append("eyePrescriptionId", new BasicDBObject("$first", "$eyePrescriptionId"))
 				.append("fromDate", new BasicDBObject("$first", "$fromDate"))
@@ -1405,7 +1416,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("patientTreatment.patientId", "$patientTreatmentpatientId")
 						.append("patientTreatment.totalCost", "$patientTreatmenttotalCost")
 						.append("patientTreatment.totalDiscount", "$patientTreatmenttotalDiscount")
-						.append("patientTreatment.totalgrandTotal", "$patientTreatmentgrandTotal")
+						.append("patientTreatment.totalgrandTotal", "$patientTreatmenttotalgrandTotal")
+
 						.append("patientTreatment.appointmentId", "$patientTreatmentappointmentId")
 						.append("patientTreatment.visitId", "$patientTreatmentvisitId")
 						.append("adminCreatedTime", "$adminCreatedTime")
@@ -1428,7 +1440,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("prescriptions", new BasicDBObject("$first", "$prescriptions"))
 						.append("clinicalNotes", new BasicDBObject("$first", "$clinicalNotes"))
 						.append("clinicalNotesDiagrams", new BasicDBObject("$first", "$clinicalNotesDiagrams"))
-						.append("patientTreatment", new BasicDBObject("$push", "$patientTreatment"))
+						.append("patientTreatment", new BasicDBObject("$addToSet", "$patientTreatment"))
 						.append("recordId", new BasicDBObject("$first", "$recordId"))
 						.append("eyePrescriptionId", new BasicDBObject("$first", "$eyePrescriptionId"))
 						.append("fromDate", new BasicDBObject("$first", "$fromDate"))

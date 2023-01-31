@@ -7,6 +7,8 @@ import static com.dpdocter.enums.VisitedFor.REPORTS;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,6 +42,7 @@ import com.dpdocter.beans.Age;
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.ClinicalNotesJasperDetails;
+import com.dpdocter.beans.ClinicalNotesResponseFieldWise;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.Diagram;
@@ -70,6 +73,7 @@ import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DiagramsCollection;
 import com.dpdocter.collections.DiseasesCollection;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.EyePrescriptionCollection;
@@ -103,9 +107,11 @@ import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.repository.DiagramsRepository;
 import com.dpdocter.repository.DiseasesRepository;
+import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.EyePrescriptionRepository;
 import com.dpdocter.repository.HistoryRepository;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientTreamentRepository;
 import com.dpdocter.repository.PatientVisitRepository;
@@ -269,6 +275,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Autowired
 	private ContactsService contactsService;
 
+	@Autowired
+	private DoctorClinicProfileRepository doctorClinicProfileRepository;
+
+	@Autowired
+	private LocationRepository locationRepository;
+
 	@Override
 	@Transactional
 	public String addRecord(Object details, VisitedFor visitedFor, String visitId) {
@@ -341,7 +353,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					treatmentId.add(id);
 					patientVisitCollection.setTreatmentId(treatmentId);
 				} else {
-					if (!patientVisitCollection.getTreatmentId().add(id))
+					if (!patientVisitCollection.getTreatmentId().contains(id))
 						patientVisitCollection.getTreatmentId().add(id);
 				}
 			}
@@ -352,7 +364,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 			}
 			patientVisitCollection.setUpdatedTime(new Date());
-			patientVisitCollection.setCreatedTime(new Date());
+			patientVisitCollection.setCreatedTime(patientVisitCollection.getCreatedTime());
 			patientVisitCollection = patientVisitRepository.save(patientVisitCollection);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -836,14 +848,18 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 
 			if (request.getRecord() != null) {
-
+				request.getRecord().setCreatedTime(request.getCreatedTime());
 				addRecords(request, response, patientVisitCollection, visitId, appointment,
 						patientVisitCollection.getCreatedBy());
 			}
+
 			if (request.getTreatmentRequest() != null) {
-				request.getTreatmentRequest().setCreatedTime(request.getCreatedTime());
-				addTreatments(request, response, patientVisitCollection, visitId, appointment,
-						patientVisitCollection.getCreatedBy());
+				if (request.getTreatmentRequest().getTreatments() != null
+						&& !request.getTreatmentRequest().getTreatments().isEmpty()) {
+					request.getTreatmentRequest().setCreatedTime(request.getCreatedTime());
+					addTreatments(request, response, patientVisitCollection, visitId, appointment,
+							patientVisitCollection.getCreatedBy());
+				}
 			}
 			patientVisitCollection.setVisitedTime(new Date());
 			patientVisitCollection = patientVisitRepository.save(patientVisitCollection);
@@ -2187,9 +2203,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							} else {
 								patientTreatments.setStatus("--");
 							}
-							String serviceName = treatmentServicesCollection.getName() != null
-									? treatmentServicesCollection.getName()
-									: "";
+							String serviceName = "";
+							if (treatmentServicesCollection != null) {
+								serviceName = treatmentServicesCollection.getName() != null
+										? treatmentServicesCollection.getName()
+										: "";
+							}
 							String fieldName = "";
 							if (treatment.getTreatmentFields() != null && !treatment.getTreatmentFields().isEmpty()) {
 								String key = "";
@@ -2536,6 +2555,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			if (patientCard != null && patientCard.getDob() != null && patientCard.getDob().getAge() != null) {
 				Age ageObj = patientCard.getDob().getAge();
+				LocalDate dob = null;
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+				if (patientCard.getDob().getDays() > 0 && patientCard.getDob().getMonths() > 0
+						&& patientCard.getDob().getYears() > 0) {
+					dob = LocalDate.parse(patientCard.getDob().getDays() + "/" + patientCard.getDob().getMonths() + "/"
+							+ patientCard.getDob().getYears(), formatter);
+				}
+
 				if (ageObj.getYears() > 14)
 					age = ageObj.getYears() + "yrs";
 				else {
@@ -2561,11 +2588,20 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 				if (patientDetails.getShowDOB()) {
 					if (!DPDoctorUtils.anyStringEmpty(age, gender))
-						patientDetailList.add("<b>Age | Gender: </b>" + age + " | " + gender);
+						patientDetailList.add("<b>DOB(Age) | Gender: </b>" + dob + " (" + age + ")" + " | " + gender);
 					else if (!DPDoctorUtils.anyStringEmpty(age))
-						patientDetailList.add("<b>Age | Gender: </b>" + age + " | --");
+						patientDetailList.add("<b>DOB(Age) | Gender: </b>" + dob + " (" + age + ")" + " | --");
 					else if (!DPDoctorUtils.anyStringEmpty(gender))
-						patientDetailList.add("<b>Age | Gender: </b>-- | " + gender);
+						patientDetailList.add("<b>DOB(Age) | Gender: </b>-- | " + gender);
+				}
+			}
+			LocationCollection locationCollection = locationRepository.findById(patientCard.getLocationId())
+					.orElse(null);
+			if (locationCollection != null && locationCollection.getIsDentalChain()) {
+				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+						.findByDoctorIdAndLocationId(patientCard.getDoctorId(), patientCard.getLocationId());
+				if (doctorClinicProfileCollection != null && !doctorClinicProfileCollection.getIsShowPatientNumber()) {
+					mobileNumber = mobileNumber.replaceAll("\\w(?=\\w{4})", "*");
 				}
 			}
 			if (!DPDoctorUtils.anyStringEmpty(uniqueEMRId))
@@ -2774,6 +2810,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 								else
 									vitalSigns = bsa;
 							}
+
+							// new field
+							String pefr = clinicalNotesCollection.getVitalSigns().getPefr();
+							pefr = (pefr != null && !pefr.isEmpty()
+									? "PEFR: " + pefr + " " + VitalSignsUnit.PEFR.getUnit()
+									: "");
+							if (!DPDoctorUtils.allStringsEmpty(pefr))
+								vitalSigns = pefr;
+
 							clinicalNotesJasperDetails
 									.setVitalSigns(vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
 						}
@@ -2782,7 +2827,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						clinicalNotesJasperDetails.setNotes(clinicalNotesCollection.getNote());
 						clinicalNotesJasperDetails.setInvestigations(clinicalNotesCollection.getInvestigation());
 						clinicalNotesJasperDetails.setDiagnosis(clinicalNotesCollection.getDiagnosis());
-
+						clinicalNotesJasperDetails
+								.setVaccinationHistory(clinicalNotesCollection.getVaccinationHistory());
 						clinicalNotesJasperDetails.setComplaints(clinicalNotesCollection.getComplaint());
 						clinicalNotesJasperDetails.setPresentComplaint(clinicalNotesCollection.getPresentComplaint());
 						clinicalNotesJasperDetails
@@ -3391,15 +3437,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 										drugName = (drugType + drugName) == "" ? "--"
 												: drugType + " " + drugName + genericName;
 									}
-//									String drugQuantity = "";
-//									if (prescriptionItem.getInventoryQuantity() != null
-//											&& prescriptionItem.getInventoryQuantity() > 0) {
-//										showDrugQty = true;
-//										drugQuantity = "" + prescriptionItem.getInventoryQuantity().toString();
-//										System.out.println("drugqty" + drugQuantity);
-//										drugName = drugName + "<br>" + "<b>QTY: </b>" + drugQuantity;
-//										System.out.println("drugName" + drugName);
-//									}
+
+									String drugQuantity = "";
+									if (prescriptionItem.getInventoryQuantity() != null
+											&& Long.valueOf(prescriptionItem.getInventoryQuantity()) > 1) {
+										showDrugQty = true;
+										drugQuantity = ""
+												+ Long.valueOf(prescriptionItem.getInventoryQuantity()).toString();
+										drugName = drugName + "<br>" + "<b>QTY: </b>" + drugQuantity;
+									}
 									String durationValue = prescriptionItem.getDuration() != null
 											? (prescriptionItem.getDuration().getValue() != null
 													? prescriptionItem.getDuration().getValue()
@@ -4073,6 +4119,124 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					"Error while geting patient last Visit : " + e.getCause().getMessage());
 		}
 		return response;
+	}
+
+	@Override
+	public PatientVisitResponse getPatientFirstVisit(String doctorId, String locationId, String hospitalId,
+			String patientId) {
+		PatientVisitResponse response = null;
+		try {
+
+			ObjectId patientObjectId = new ObjectId(patientId), doctorObjectId = new ObjectId(doctorId),
+					locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
+
+			Criteria criteria = new Criteria("patientId").is(patientObjectId).and("doctorId").is(doctorObjectId)
+					.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId)
+					.and("isPatientDiscarded").ne(true);
+
+//			Aggregation aggregation = null;
+//			if(type.equalsIgnoreCase("first")){
+//			 aggregation = Aggregation.newAggregation(Aggregation.match(criteria),					
+//					Aggregation.sort(new Sort(Sort.Direction.ASC, "createdTime")), Aggregation.limit(1));
+//			}else {
+//				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),					
+//						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.limit(1));
+//			}
+//			List<ClinicalNotesResponseFieldWise> patientVisitlookupbeans = mongoTemplate
+//					.aggregate(aggregation, ClinicalNotesCollection.class, ClinicalNotesResponseFieldWise.class)
+//					.getMappedResults();
+//			
+//			if (patientVisitlookupbeans != null && !patientVisitlookupbeans.isEmpty()) {
+//				for (ClinicalNotesResponseFieldWise patientVisitlookupBean : patientVisitlookupbeans) {
+//					response = new ClinicalNotesResponseFieldWise();
+//					BeanUtil.map(patientVisitlookupBean, response);
+//				}
+//			}
+
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
+					new CustomAggregationOperation(new Document("$unwind",
+							new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
+									true))),
+					Aggregation.sort(new Sort(Sort.Direction.ASC, "createdTime")), Aggregation.limit(1));
+
+			List<PatientVisitLookupBean> patientVisitlookupbeans = mongoTemplate
+					.aggregate(aggregation, PatientVisitCollection.class, PatientVisitLookupBean.class)
+					.getMappedResults();
+
+			if (patientVisitlookupbeans != null && !patientVisitlookupbeans.isEmpty()) {
+				for (PatientVisitLookupBean patientVisitlookupBean : patientVisitlookupbeans) {
+					response = new PatientVisitResponse();
+					BeanUtil.map(patientVisitlookupBean, response);
+
+					if (patientVisitlookupBean.getPrescriptionId() != null) {
+						List<Prescription> prescriptions = prescriptionServices.getPrescriptionsByIds(
+								patientVisitlookupBean.getPrescriptionId(), patientVisitlookupBean.getId());
+						response.setPrescriptions(prescriptions);
+					}
+
+					if (patientVisitlookupBean.getClinicalNotesId() != null) {
+						List<ClinicalNotes> clinicalNotes = new ArrayList<ClinicalNotes>();
+						for (ObjectId clinicalNotesId : patientVisitlookupBean.getClinicalNotesId()) {
+							ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(clinicalNotesId.toString(),
+									patientVisitlookupBean.getId());
+							if (clinicalNote != null) {
+								if (clinicalNote.getDiagrams() != null && !clinicalNote.getDiagrams().isEmpty()) {
+									clinicalNote.setDiagrams(getFinalDiagrams(clinicalNote.getDiagrams()));
+								}
+								clinicalNotes.add(clinicalNote);
+							}
+						}
+						response.setClinicalNotes(clinicalNotes);
+					}
+
+					if (patientVisitlookupBean.getRecordId() != null) {
+						List<Records> records = recordsService.getRecordsByIds(patientVisitlookupBean.getRecordId(),
+								patientVisitlookupBean.getId());
+						response.setRecords(records);
+					}
+
+					if (patientVisitlookupBean.getTreatmentId() != null) {
+						List<PatientTreatment> patientTreatment = patientTreatmentServices.getPatientTreatmentByIds(
+								patientVisitlookupBean.getTreatmentId(), patientVisitlookupBean.getId());
+						response.setPatientTreatment(patientTreatment);
+					}
+
+					if (patientVisitlookupBean.getEyePrescriptionId() != null) {
+						EyePrescription eyePrescription = prescriptionServices
+								.getEyePrescription(String.valueOf(patientVisitlookupBean.getEyePrescriptionId()));
+						response.setEyePrescription(eyePrescription);
+
+					}
+					break;
+				}
+			} else {
+				throw new BusinessException(ServiceError.NotFound,
+						"Error while geting patient first Visit : first Visit not found");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while geting patient  Visit : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while geting patient  Visit : " + e.getCause().getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Integer getPatientFirstVisitCount(String doctorId, String locationId, String hospitalId, String patientId) {
+
+		ObjectId patientObjectId = new ObjectId(patientId), doctorObjectId = new ObjectId(doctorId),
+				locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
+
+		Criteria criteria = new Criteria("patientId").is(patientObjectId).and("doctorId").is(doctorObjectId)
+				.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("isPatientDiscarded")
+				.ne(true);
+
+		Integer count = (int) mongoTemplate.count(new Query(criteria), ClinicalNotesCollection.class);
+
+		return count;
 	}
 
 }

@@ -42,4 +42,6 @@ public interface SMSServices {
 
 	String getBulkSMSResponse(List<String> mobileNumbers, String message, String doctorId, String locationId, long subCredits);
 
+	Boolean sendDentalChainSMS(SMSTrackDetail smsTrackDetail, boolean b);
+
 }

@@ -539,11 +539,10 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			ObjectId hospitalIdObj = new ObjectId(hospitalId);
 			ObjectId doctorIdObj = new ObjectId(doctorId);
 
-			System.out.println("done");
+
 			PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(patientIdObj, locationIdObj, hospitalIdObj);
 
 			if (patient != null) {
-				System.out.println(patient);
 				UserCollection user = userRepository.findById(patientIdObj).orElse(null);
 
 				JasperReportResponse jasperReportResponse = createJasper(patientIdObj,doctorIdObj,hospitalIdObj,locationIdObj, patient,user,PrintSettingType.EMR.getType());

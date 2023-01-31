@@ -46,6 +46,37 @@ public class Doctor {
 	private Integer reportCount = 0;
 
 	private Boolean isGetDiscardedEMR = false;
+	
+	private Boolean isDentalChain = false;
+	
+	private Boolean isShowPatientNumber = false;
+
+	private Boolean isShowDoctorInCalender = true;
+	
+
+	public Boolean getIsDentalChain() {
+		return isDentalChain;
+	}
+
+	public void setIsDentalChain(Boolean isDentalChain) {
+		this.isDentalChain = isDentalChain;
+	}
+
+	public Boolean getIsShowPatientNumber() {
+		return isShowPatientNumber;
+	}
+
+	public void setIsShowPatientNumber(Boolean isShowPatientNumber) {
+		this.isShowPatientNumber = isShowPatientNumber;
+	}
+
+	public Boolean getIsShowDoctorInCalender() {
+		return isShowDoctorInCalender;
+	}
+
+	public void setIsShowDoctorInCalender(Boolean isShowDoctorInCalender) {
+		this.isShowDoctorInCalender = isShowDoctorInCalender;
+	}
 
 	public String getId() {
 		return id;

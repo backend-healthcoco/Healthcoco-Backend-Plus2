@@ -24,6 +24,8 @@ public class DoctorPatientReceiptRequest {
 	
 	private ModeOfPayment modeOfPayment;
 	
+	private String paymentInfo;
+
 	private PaymentDetails paymentDetails;
 	
 	private String transactionId;
@@ -148,6 +150,16 @@ public class DoctorPatientReceiptRequest {
 
 	public void setTransactionId(String transactionId) {
 		this.transactionId = transactionId;
+	}
+	
+	
+
+	public String getPaymentInfo() {
+		return paymentInfo;
+	}
+
+	public void setPaymentInfo(String paymentInfo) {
+		this.paymentInfo = paymentInfo;
 	}
 
 	@Override

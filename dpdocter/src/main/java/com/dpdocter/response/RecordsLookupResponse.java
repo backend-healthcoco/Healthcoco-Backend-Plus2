@@ -1,6 +1,9 @@
 package com.dpdocter.response;
 
+import java.util.List;
+
 import com.dpdocter.beans.PatientVisit;
+import com.dpdocter.beans.RecordsUrlData;
 import com.dpdocter.collections.GenericCollection;
 
 public class RecordsLookupResponse extends GenericCollection {
@@ -51,6 +54,8 @@ public class RecordsLookupResponse extends GenericCollection {
 
 	private Boolean shareWithPatient = false;
 	
+	private List<RecordsUrlData> recordsUrls;
+
 	
 
 	public Boolean getShareWithPatient() {
@@ -235,6 +240,14 @@ public class RecordsLookupResponse extends GenericCollection {
 
 	public void setPatientVisit(PatientVisit patientVisit) {
 		this.patientVisit = patientVisit;
+	}
+
+	public List<RecordsUrlData> getRecordsUrls() {
+		return recordsUrls;
+	}
+
+	public void setRecordsUrls(List<RecordsUrlData> recordsUrls) {
+		this.recordsUrls = recordsUrls;
 	}
 
 	@Override

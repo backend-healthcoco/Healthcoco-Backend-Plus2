@@ -12,6 +12,18 @@ public class DoctorPatientReceiptAddEditResponse {
 	private Double totalRemainingAdvanceAmount = 0.0;
 	
 	private Double totalDueAmount = 0.0;
+	
+	private String paymentInfo;
+
+	
+
+	public String getPaymentInfo() {
+		return paymentInfo;
+	}
+
+	public void setPaymentInfo(String paymentInfo) {
+		this.paymentInfo = paymentInfo;
+	}
 
 	public DoctorPatientReceipt getDoctorPatientReceipt() {
 		return doctorPatientReceipt;

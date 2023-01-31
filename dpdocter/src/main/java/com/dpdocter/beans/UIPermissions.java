@@ -22,6 +22,12 @@ public class UIPermissions {
 	private Boolean isIPDIvoice=false;
 	private Boolean isIPDSection= true;
 	
+	// IPD Module
+	private List<String> nursingAdmissionFormPermissions = new ArrayList<String>();
+	private List<String> preOperationAssessmentFormPerimissions = new ArrayList<String>();
+	private List<String> initialAssessmentFormPermissions = new ArrayList<String>();
+
+	
 	public List<String> getTabPermissions() {
 		return tabPermissions;
 	}
@@ -127,6 +133,31 @@ public class UIPermissions {
 
 	public void setIsIPDSection(Boolean isIPDSection) {
 		this.isIPDSection = isIPDSection;
+	}
+
+	
+	public List<String> getNursingAdmissionFormPermissions() {
+		return nursingAdmissionFormPermissions;
+	}
+
+	public void setNursingAdmissionFormPermissions(List<String> nursingAdmissionFormPermissions) {
+		this.nursingAdmissionFormPermissions = nursingAdmissionFormPermissions;
+	}
+
+	public List<String> getPreOperationAssessmentFormPerimissions() {
+		return preOperationAssessmentFormPerimissions;
+	}
+
+	public void setPreOperationAssessmentFormPerimissions(List<String> preOperationAssessmentFormPerimissions) {
+		this.preOperationAssessmentFormPerimissions = preOperationAssessmentFormPerimissions;
+	}
+
+	public List<String> getInitialAssessmentFormPermissions() {
+		return initialAssessmentFormPermissions;
+	}
+
+	public void setInitialAssessmentFormPermissions(List<String> initialAssessmentFormPermissions) {
+		this.initialAssessmentFormPermissions = initialAssessmentFormPermissions;
 	}
 
 	@Override

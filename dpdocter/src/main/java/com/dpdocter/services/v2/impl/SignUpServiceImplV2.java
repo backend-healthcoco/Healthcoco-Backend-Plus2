@@ -82,63 +82,63 @@ import com.mongodb.DuplicateKeyException;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.LoginUtils;
+
 @Service
-public class SignUpServiceImplV2 implements SignUpService{
-	
+public class SignUpServiceImplV2 implements SignUpService {
+
 	private static Logger logger = Logger.getLogger(SignUpServiceImplV2.class.getName());
-	
+
 	@Autowired
 	private RoleRepository roleRepository;
-	
+
 	@Autowired
 	private CustomPasswordEncoder passwordEncoder;
-	
+
 	@Autowired
 	private AccessControlServices accessControlServices;
-	
+
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private SpecialityRepository specialityRepository;
-	
+
 	@Autowired
 	private PCUserRepository pcUserRepository;
-	
+
 	@Autowired
 	private DoctorRepository doctorRepository;
-	
+
 	@Autowired
 	private HospitalRepository hospitalRepository;
-	
+
 	@Autowired
 	private LocationRepository locationRepository;
-	
+
 	@Autowired
 	private DoctorClinicProfileRepository doctorClinicProfileRepository;
-	
+
 	@Autowired
 	private UserRoleRepository userRoleRepository;
 
 	@Autowired
 	private TokenRepository tokenRepository;
-	
+
 	@Autowired
 	private ForgotPasswordService forgotPasswordService;
-	
+
 	@Autowired
 	private DoctorOtpSignUpRepository doctorOtpSignUpRepository;
 
-
 	@Autowired
 	private OTPRepository otpRepository;
-	
+
 	@Autowired
 	private SMSServices smsServices;
 
 	@Autowired
 	PushNotificationServices pushNotificationServices;
-	
+
 	@Autowired
 	OTPService otpServices;
 
@@ -153,56 +153,53 @@ public class SignUpServiceImplV2 implements SignUpService{
 
 	@Value(value = "${mail.signup.request.subject}")
 	private String signupRequestSubject;
-	
+
 	@Autowired
 	private MongoTemplate mongoTemplate;
-	
 
 	@Override
 	public DoctorRegisterResponse DoctorRegister(DoctorOtpRequest request) {
-		DoctorRegisterResponse response=null;
+		DoctorRegisterResponse response = null;
 		try {
-		
-		DoctorOtpSignUpCollection doctorOtpSignUCollection=new DoctorOtpSignUpCollection();
-		doctorOtpSignUCollection.setCreatedTime(new Date());
-		doctorOtpSignUCollection.setMobileNumber(request.getMobileNumber());
-		doctorOtpSignUCollection.setCountryCode(request.getCountryCode());
-		doctorOtpSignUpRepository.save(doctorOtpSignUCollection);
-			
-				 response=new DoctorRegisterResponse();
-				 BeanUtil.map(doctorOtpSignUCollection, response);
-				 
-				 System.out.println(doctorOtpSignUCollection);
-				 otpGenerator(request.getMobileNumber(),request.getCountryCode());
-				 
-			 
+
+			DoctorOtpSignUpCollection doctorOtpSignUCollection = new DoctorOtpSignUpCollection();
+			doctorOtpSignUCollection.setCreatedTime(new Date());
+			doctorOtpSignUCollection.setMobileNumber(request.getMobileNumber());
+			doctorOtpSignUCollection.setCountryCode(request.getCountryCode());
+			doctorOtpSignUpRepository.save(doctorOtpSignUCollection);
+
+			response = new DoctorRegisterResponse();
+			BeanUtil.map(doctorOtpSignUCollection, response);
+			otpGenerator(request.getMobileNumber(), request.getCountryCode());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while generating otp through mobile number");
+			throw new BusinessException(ServiceError.Unknown,
+					"Error occured while generating mobile number " + e.getMessage());
 		}
-	 catch (Exception e) {
-		e.printStackTrace();
-		logger.error(e + " Error occured while generating otp through mobile number");
-		throw new BusinessException(ServiceError.Unknown, "Error occured while generating mobile number "+e.getMessage());
-	}
 		return response;
 	}
-	
-	  public Boolean otpGenerator(String mobileNumber,String countryCode) {
-	    	Boolean response = false;
+
+	public Boolean otpGenerator(String mobileNumber, String countryCode) {
+		Boolean response = false;
 		String OTP = null;
 		try {
-		    OTP = LoginUtils.generateOTP();
-		    SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-			
+			OTP = LoginUtils.generateOTP();
+			SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+
 			smsTrackDetail.setType(ComponentType.SIGNED_UP.getType());
 			SMSDetail smsDetail = new SMSDetail();
-			
-		//	smsDetail.setUserName(doctorContactUs.getFirstName());
-			SMS sms = new SMS();
-		
-		//	String link = welcomeLink + "/" + tokenCollection.getId()+"/";
-		//	String shortUrl = DPDoctorUtils.urlShortner(link);
-			sms.setSmsText(OTP+" is your Healthcoco OTP. Code is valid for 30 minutes only, one time use. Stay Healthy and Happy! OTPVerification");
 
-				SMSAddress smsAddress = new SMSAddress();
+			// smsDetail.setUserName(doctorContactUs.getFirstName());
+			SMS sms = new SMS();
+			sms.setOtp(OTP);
+			// String link = welcomeLink + "/" + tokenCollection.getId()+"/";
+			// String shortUrl = DPDoctorUtils.urlShortner(link);
+			sms.setSmsText(OTP
+					+ " is your Healthcoco OTP. Code is valid for 30 minutes only, one time use. Stay Healthy and Happy! OTPVerification");
+
+			SMSAddress smsAddress = new SMSAddress();
 			smsAddress.setRecipient(mobileNumber);
 			sms.setSmsAddress(smsAddress);
 			smsDetail.setSms(sms);
@@ -213,24 +210,22 @@ public class SignUpServiceImplV2 implements SignUpService{
 			smsTrackDetail.setTemplateId("1307161191067443701");
 			smsServices.sendOTPSMS(smsTrackDetail, true);
 
-		    OTPCollection otpCollection = new OTPCollection();
-		    otpCollection.setCreatedTime(new Date());
-		    otpCollection.setOtpNumber(OTP);
-		    otpCollection.setGeneratorId(mobileNumber);
-		    otpCollection.setMobileNumber(mobileNumber);
-		    otpCollection.setCountryCode(countryCode);
-		    otpCollection.setCreatedBy(mobileNumber);
-		    otpCollection = otpRepository.save(otpCollection);
+			OTPCollection otpCollection = new OTPCollection();
+			otpCollection.setCreatedTime(new Date());
+			otpCollection.setOtpNumber(OTP);
+			otpCollection.setGeneratorId(mobileNumber);
+			otpCollection.setMobileNumber(mobileNumber);
+			otpCollection.setCountryCode(countryCode);
+			otpCollection.setCreatedBy(mobileNumber);
+			otpCollection = otpRepository.save(otpCollection);
 
 		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e + " Error While Generating OTP");
-		    throw new BusinessException(ServiceError.Unknown, "Error While Generating OTP "+e.getMessage());
+			e.printStackTrace();
+			logger.error(e + " Error While Generating OTP");
+			throw new BusinessException(ServiceError.Unknown, "Error While Generating OTP " + e.getMessage());
 		}
 		return response;
-	    }
-
-	
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -239,23 +234,25 @@ public class SignUpServiceImplV2 implements SignUpService{
 		DoctorSignUp response = null;
 		PCUserCollection pcUserCollection = null;
 		try {
-			List<UserCollection>userCollections=userRepository.findByEmailAddressIgnoreCase(request.getEmailAddress());
-			
-			if(userCollections!=null && !userCollections.isEmpty())
-				if(userCollections.get(0).getEmailAddress() !=null && userCollections.get(0).getPassword()!=null)
-				{
+			List<UserCollection> userCollections = userRepository
+					.findByEmailAddressIgnoreCase(request.getEmailAddress());
+
+			if (userCollections != null && !userCollections.isEmpty())
+				if (userCollections.get(0).getEmailAddress() != null && userCollections.get(0).getPassword() != null) {
 					throw new BusinessException(ServiceError.Unknown,
-							"Account with this emailId "+ userCollections.get(0).getEmailAddress()+" already exists,Please login or use forgot password.");
-			
+							"Account with this emailId " + userCollections.get(0).getEmailAddress()
+									+ " already exists,Please login or use forgot password.");
+
 				}
 			if (DPDoctorUtils.anyStringEmpty(request.getEmailAddress())) {
 				logger.warn("Email Address cannot be null");
 				throw new BusinessException(ServiceError.InvalidInput, "Email Address cannot be null");
 			}
 
-			List<RoleCollection> roleCollections = roleRepository
-					.findByRoleInAndLocationIdAndHospitalId(Arrays.asList(RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
-							RoleEnum.DOCTOR.getRole(), RoleEnum.SUPER_ADMIN.getRole()), null, null);
+			List<RoleCollection> roleCollections = roleRepository.findByRoleInAndLocationIdAndHospitalId(
+					Arrays.asList(RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
+							RoleEnum.DOCTOR.getRole(), RoleEnum.SUPER_ADMIN.getRole()),
+					null, null);
 			if (roleCollections == null || roleCollections.isEmpty() || roleCollections.size() < 4) {
 				logger.warn("Role Collection in database is either empty or not defind properly");
 				throw new BusinessException(ServiceError.NoRecord,
@@ -279,8 +276,8 @@ public class SignUpServiceImplV2 implements SignUpService{
 
 			userCollection.setUserState(UserState.NOTVERIFIED);
 			userCollection.setIsVerified(false);
-			if(request.getPassword()!=null&&request.getPassword().length>0)
-			userCollection.setPassword(passwordEncoder.encode(String.valueOf(request.getPassword())).toCharArray());
+			if (request.getPassword() != null && request.getPassword().length > 0)
+				userCollection.setPassword(passwordEncoder.encode(String.valueOf(request.getPassword())).toCharArray());
 //			userCollection.setPassword(request.getPassword());
 			userCollection.setIsPasswordSet(true);
 			userCollection.setSignedUp(true);
@@ -359,7 +356,7 @@ public class SignUpServiceImplV2 implements SignUpService{
 
 			locationCollection = locationRepository.save(locationCollection);
 			// save user location.
-			
+
 			DoctorClinicProfileCollection doctorClinicProfileCollection = new DoctorClinicProfileCollection();
 			doctorClinicProfileCollection.setDoctorId(userCollection.getId());
 			doctorClinicProfileCollection.setLocationId(locationCollection.getId());
@@ -367,15 +364,19 @@ public class SignUpServiceImplV2 implements SignUpService{
 			doctorClinicProfileCollection.setIsSuperAdmin(true);
 			doctorClinicProfileCollection.setIsActivate(true);
 			doctorClinicProfileCollection.setCreatedTime(new Date());
-			if(request.getMrCode() != null){
+			if (request.getMrCode() != null) {
 				pcUserCollection = pcUserRepository.findByMrCode(request.getMrCode());
-				if(pcUserCollection != null){
+				if (pcUserCollection != null) {
 					doctorClinicProfileCollection.setDivisionIds(pcUserCollection.getDivisionId());
 					doctorClinicProfileCollection.setMrCode(pcUserCollection.getMrCode());
 				}
 			}
-			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			if (doctorClinicProfileCollection.getIsSuperAdmin()) {
+				doctorClinicProfileCollection.setIsShowDoctorInCalender(true);
+				doctorClinicProfileCollection.setIsShowPatientNumber(true);
+			}
 			Collection<ObjectId> roleIds = CollectionUtils.collect(roleCollections,
 					new BeanToPropertyValueTransformer("id"));
 			List<UserRoleCollection> userRoleCollections = new ArrayList<>();
@@ -385,27 +386,24 @@ public class SignUpServiceImplV2 implements SignUpService{
 				userRoleCollection.setCreatedTime(new Date());
 				userRoleCollections.add(userRoleCollection);
 			}
-			
-					userRoleRepository.saveAll(userRoleCollections);
 
-			
+			userRoleRepository.saveAll(userRoleCollections);
+
 			// save token
 			TokenCollection tokenCollection = new TokenCollection();
 			tokenCollection.setResourceId(doctorClinicProfileCollection.getId());
 			tokenCollection.setCreatedTime(new Date());
 			tokenCollection = tokenRepository.save(tokenCollection);
 
-			
-			//verify user
-			
-			
+			// verify user
+
 			// send activation email
-			String body = mailBodyGenerator.verifyEmailBody(
-					(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")+ userCollection.getFirstName(),
-					tokenCollection.getId(), "verifyDoctor.vm");
-	Boolean mail=	mailService.sendEmail(userCollection.getEmailAddress(),signupRequestSubject, body, null);
+			String body = mailBodyGenerator
+					.verifyEmailBody((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+							+ userCollection.getFirstName(), tokenCollection.getId(), "verifyDoctor.vm");
+			Boolean mail = mailService.sendEmail(userCollection.getEmailAddress(), signupRequestSubject, body, null);
 			System.out.println(mail);
-			
+
 			response = new DoctorSignUp();
 			User user = new User();
 			userCollection.setPassword(null);
@@ -445,22 +443,20 @@ public class SignUpServiceImplV2 implements SignUpService{
 //			pushNotificationServices.notifyUser(userCollection.getId().toString(),
 //					"Your emailId has been verified successfully.", ComponentType.EMAIL_VERIFICATION.getType(), null, null);
 
-			List<User>users=notificationToAdmin();
-			System.out.println("usersAdmin"+users);
-				for(User userr:users)
-				{
-					pushNotificationServices.notifyUser(userr.getId().toString(),
-							"NEW Doctor has been Signed up ", ComponentType.SIGNED_UP.getType(), null, null);
+			List<User> users = notificationToAdmin();
+			System.out.println("usersAdmin" + users);
+			for (User userr : users) {
+				pushNotificationServices.notifyUser(userr.getId().toString(), "NEW Doctor has been Signed up ",
+						ComponentType.SIGNED_UP.getType(), null, null);
 
-							}
-			
-			
+			}
+
 		} catch (DuplicateKeyException de) {
 			logger.error(de);
 			throw new BusinessException(ServiceError.Unknown, "Email address already registerd. Please login");
 		} catch (BusinessException be) {
 			logger.error(be);
-			//throw be;
+			// throw be;
 			be.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, be.getMessage());
 		} catch (Exception e) {
@@ -471,19 +467,16 @@ public class SignUpServiceImplV2 implements SignUpService{
 		return response;
 	}
 
-	
-	List<User> notificationToAdmin()
-	{
-		
+	List<User> notificationToAdmin() {
+
 		Criteria criteria = new Criteria("userState").is("ADMIN");
 		criteria.and("isAnonymousAppointment").is(true);
-	//	criteria.and("signedUp").is(true);
-		
+		// criteria.and("signedUp").is(true);
+
 		Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 				Aggregation.sort(Sort.Direction.DESC, "createdTime"));
-		
-		System.out.println("AdminAggregation"+aggregation);
-		List<User> user=mongoTemplate.aggregate(aggregation, UserCollection.class, User.class).getMappedResults();
+
+		List<User> user = mongoTemplate.aggregate(aggregation, UserCollection.class, User.class).getMappedResults();
 		return user;
 
 	}
@@ -507,7 +500,8 @@ public class SignUpServiceImplV2 implements SignUpService{
 				if (doctorClinicProfileRepository == null) {
 					return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification email that we sent you.";
 				}
-				UserCollection userCollection = userRepository.findById(doctorClinicProfileCollection.getDoctorId()).orElse(null);
+				UserCollection userCollection = userRepository.findById(doctorClinicProfileCollection.getDoctorId())
+						.orElse(null);
 				userCollection.setIsVerified(true);
 				userCollection.setUserState(UserState.NOTACTIVATED);
 				userRepository.save(userCollection);
@@ -516,15 +510,13 @@ public class SignUpServiceImplV2 implements SignUpService{
 				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 				tokenCollection.setIsUsed(true);
 				tokenRepository.save(tokenCollection);
-				
+
 				pushNotificationServices.notifyUser(userCollection.getId().toString(),
-						"Your Email has been verified by healthcoco", ComponentType.EMAIL_VERIFICATION.getType(), null, null);
+						"Your Email has been verified by healthcoco", ComponentType.EMAIL_VERIFICATION.getType(), null,
+						null);
 
-
-				
 				return "You have successfully verified your email address."
-						+ "Download the Healthcoco+ app - Every Doctor's Pocket Clinic."
-						+ "Stay Healthy and Happy!";
+						+ "Download the Healthcoco+ app - Every Doctor's Pocket Clinic." + "Stay Healthy and Happy!";
 			}
 		} catch (IllegalArgumentException argumentException) {
 			return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification email that we sent you.";
@@ -538,7 +530,7 @@ public class SignUpServiceImplV2 implements SignUpService{
 		}
 
 	}
-	
+
 	@Override
 	@Transactional
 	public Boolean resendVerificationEmail(String emailaddress) {
@@ -565,11 +557,14 @@ public class SignUpServiceImplV2 implements SignUpService{
 					tokenCollection = tokenRepository.save(tokenCollection);
 
 					// send activation email
-					String body = mailBodyGenerator.verifyEmailBody(
-							(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")+ userCollection.getFirstName(),
-							tokenCollection.getId(), "verifyDoctor.vm");
-			Boolean mail=	mailService.sendEmail(userCollection.getEmailAddress(),signupRequestSubject, body, null);
-					System.out.println(mail);
+					String body = mailBodyGenerator
+							.verifyEmailBody(
+									(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+											+ userCollection.getFirstName(),
+									tokenCollection.getId(), "verifyDoctor.vm");
+					Boolean mail = mailService.sendEmail(userCollection.getEmailAddress(), signupRequestSubject, body,
+							null);
+
 					response = true;
 				}
 
@@ -585,6 +580,4 @@ public class SignUpServiceImplV2 implements SignUpService{
 		return response;
 	}
 
-
-	
 }

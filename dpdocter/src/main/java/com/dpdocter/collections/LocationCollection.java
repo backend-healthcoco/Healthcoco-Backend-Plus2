@@ -166,6 +166,20 @@ public class LocationCollection extends GenericCollection {
 	
 	@Field
 	private ObjectId defaultLocationId;
+	
+	@Field
+	private Boolean isDentalChain = false;
+	
+	@Field
+	private ObjectId ratelistId;
+
+	public Boolean getIsDentalChain() {
+		return isDentalChain;
+	}
+
+	public void setIsDentalChain(Boolean isDentalChain) {
+		this.isDentalChain = isDentalChain;
+	}
 
 	public Integer getNoOfClinicReview() {
 		return noOfClinicReview;
@@ -559,7 +573,14 @@ public class LocationCollection extends GenericCollection {
 		this.smsCode = smsCode;
 	}
 	
-	
+
+	public ObjectId getRatelistId() {
+		return ratelistId;
+	}
+
+	public void setRatelistId(ObjectId ratelistId) {
+		this.ratelistId = ratelistId;
+	}
 
 	public Boolean getIsDefaultClinic() {
 		return isDefaultClinic;

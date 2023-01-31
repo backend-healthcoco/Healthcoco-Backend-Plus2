@@ -2054,4 +2054,72 @@ public class ReportsServiceImpl implements ReportsService {
 		}
 		return response;
 	}
+
+	@Override
+	public Boolean deleteIPDReportById(String reportId,Boolean discarded) {
+		Boolean response = false;
+		try {
+			IPDReportsCollection ipdReportsCollection = ipdReportsRepository.findById(new ObjectId(reportId))
+					.orElse(null);
+			if (ipdReportsCollection != null) {
+				ipdReportsCollection.setDiscarded(discarded);
+				ipdReportsCollection.setUpdatedTime(new Date());
+				ipdReportsRepository.save(ipdReportsCollection);
+				response = true;
+			}else {
+				logger.warn("Report not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Report not found!");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean deleteDeliveryReportById(String reportId, Boolean discarded) {
+		Boolean response = false;
+
+		try {
+			DeliveryReportsCollection deliveryReportsCollection = deliveryReportsRepository
+					.findById(new ObjectId(reportId)).orElse(null);
+			if (deliveryReportsCollection != null) {
+				deliveryReportsCollection.setDiscarded(discarded);
+				deliveryReportsCollection.setUpdatedTime(new Date());
+				deliveryReportsRepository.save(deliveryReportsCollection);
+				response = true;
+			}else {
+				logger.warn("Report not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Report not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean deleteOTReportById(String reportId, Boolean discarded) {
+		Boolean response = false;
+
+		try {
+			OTReportsCollection otReportsCollection = otReportsRepository.findById(new ObjectId(reportId)).orElse(null);
+			if (otReportsCollection != null) {
+				otReportsCollection.setDiscarded(discarded);
+				otReportsCollection.setUpdatedTime(new Date());
+				response = true;
+				otReportsRepository.save(otReportsCollection);
+			}else {
+				logger.warn("Report not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Report not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
 }

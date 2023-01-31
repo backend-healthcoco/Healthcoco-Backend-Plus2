@@ -2,6 +2,8 @@ package com.dpdocter.request;
 
 import java.util.Date;
 
+import com.dpdocter.beans.VitalSigns;
+
 public class AdmitCardRequest {
 
 	private String id;
@@ -30,6 +32,12 @@ public class AdmitCardRequest {
 	private String timeOfOperation;
 	private String ip;
 	private String address;
+	
+	private VitalSigns vitalSigns;
+	private String preOprationalOrders;
+	private String nursingCare;
+	private String ipdNumber;
+
 	public String getIp() {
 		return ip;
 	}
@@ -237,6 +245,41 @@ public class AdmitCardRequest {
 
 	public void setTimeOfOperation(String timeOfOperation) {
 		this.timeOfOperation = timeOfOperation;
+	}
+
+	
+	public VitalSigns getVitalSigns() {
+		return vitalSigns;
+	}
+
+	public void setVitalSigns(VitalSigns vitalSigns) {
+		this.vitalSigns = vitalSigns;
+	}
+
+	public String getPreOprationalOrders() {
+		return preOprationalOrders;
+	}
+
+	public void setPreOprationalOrders(String preOprationalOrders) {
+		this.preOprationalOrders = preOprationalOrders;
+	}
+
+	public String getNursingCare() {
+		return nursingCare;
+	}
+
+	public void setNursingCare(String nursingCare) {
+		this.nursingCare = nursingCare;
+	}
+
+	
+
+	public String getIpdNumber() {
+		return ipdNumber;
+	}
+
+	public void setIpdNumber(String ipdNumber) {
+		this.ipdNumber = ipdNumber;
 	}
 
 	@Override

@@ -153,7 +153,18 @@ public class AppointmentCollection extends GenericCollection {
 	private Boolean isAnonymousAppointment = false;
 	@Field
 	private ObjectId specialityId;
+	@Field
+	private Boolean isDentalChainAppointment = false;
+
 	
+
+	public Boolean getIsDentalChainAppointment() {
+		return isDentalChainAppointment;
+	}
+
+	public void setIsDentalChainAppointment(Boolean isDentalChainAppointment) {
+		this.isDentalChainAppointment = isDentalChainAppointment;
+	}
 
 	public String getCancelledByProfile() {
 		return cancelledByProfile;

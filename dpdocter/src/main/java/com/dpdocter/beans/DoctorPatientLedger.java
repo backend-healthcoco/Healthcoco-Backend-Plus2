@@ -23,6 +23,8 @@ public class DoctorPatientLedger {
 	private DoctorPatientInvoice invoice;
 	
 	private DoctorPatientReceipt receipt;
+	
+	private Double balance=0.0;
 
 	private Boolean discarded = false;
 	
@@ -125,6 +127,14 @@ public class DoctorPatientLedger {
 	}
 	
 	
+
+	public Double getBalance() {
+		return balance;
+	}
+
+	public void setBalance(Double balance) {
+		this.balance = balance;
+	}
 
 	public String getType() {
 		return type;

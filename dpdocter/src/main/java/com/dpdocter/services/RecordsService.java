@@ -3,9 +3,11 @@ package com.dpdocter.services;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.FlexibleCounts;
+import com.dpdocter.beans.MultipartUploadFile;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.beans.Tags;
@@ -94,5 +96,7 @@ public interface RecordsService {
 
 	Integer getUserRecordsByuserIdCount(String patientId, String doctorId, String locationId, String hospitalId,
 			long page, int size, String updatedTime, Boolean discarded);
+
+	MultipartUploadFile uploadImage(FormDataBodyPart file);
 
 }

@@ -20,8 +20,12 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.FlexibleCounts;
+import com.dpdocter.beans.MultipartUploadFile;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.beans.Tags;
@@ -76,7 +80,7 @@ public class RecordsApi {
 	@ApiOperation(value = PathProxy.RecordsUrls.ADD_RECORDS, notes = PathProxy.RecordsUrls.ADD_RECORDS)
 	public Response<Records> addRecords(RecordsAddRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
-				request.getHospitalId(), request.getPatientId()) || request.getFileDetails() == null) {
+				request.getHospitalId(), request.getPatientId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -368,12 +372,24 @@ public class RecordsApi {
 		response.setData(records);
 		return response;
 	}
+	
+	@POST
+	@Path(value = PathProxy.RecordsUrls.UPLOAD_IMAGE)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@ApiOperation(value = PathProxy.RecordsUrls.UPLOAD_IMAGE, notes = PathProxy.RecordsUrls.UPLOAD_IMAGE)
+	public Response<MultipartUploadFile> saveImage(@FormDataParam(value = "file") FormDataBodyPart file) {
+
+		MultipartUploadFile mindfulness = recordsService.uploadImage(file);
+		Response<MultipartUploadFile> response = new Response<MultipartUploadFile>();
+		response.setData(mindfulness);
+		return response;
+	}
 
 	@POST
 	@Path(value = PathProxy.RecordsUrls.SAVE_RECORDS_IMAGE)
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
 	@ApiOperation(value = PathProxy.RecordsUrls.SAVE_RECORDS_IMAGE, notes = PathProxy.RecordsUrls.SAVE_RECORDS_IMAGE)
-	public Response<String> saveRecordsImage(@FormDataParam("file") FormDataBodyPart file,
+	public Response<String> saveRecordsImage(@FormDataParam(value = "file") FormDataBodyPart file,
 			@FormDataParam("patientId") FormDataBodyPart patientId) {
 		patientId.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		String patientIdString = patientId.getValueAs(String.class);

@@ -137,6 +137,9 @@ public class PatientCollection extends GenericCollection {
 
 	@Field
 	private Boolean isChild = false;
+	@Field
+	private String language;
+
 
 	public ObjectId getId() {
 		return id;
@@ -453,6 +456,15 @@ public class PatientCollection extends GenericCollection {
 
 	public void setLandlineNumber(String landlineNumber) {
 		this.landlineNumber = landlineNumber;
+	}
+
+	
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
 	}
 
 	@Override

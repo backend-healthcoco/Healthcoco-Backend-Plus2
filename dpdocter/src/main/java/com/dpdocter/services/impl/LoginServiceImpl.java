@@ -273,7 +273,21 @@ public class LoginServiceImpl implements LoginService {
 												otherRoleCollection.getRoleCollection().getId(),
 												otherRoleCollection.getRoleCollection().getLocationId(),
 												otherRoleCollection.getRoleCollection().getHospitalId());
+									
+										// set is show patient number true for super admin
+										if (doctorClinicProfileLookupResponse.getIsSuperAdmin()) {
+											user.setIsShowPatientNumber(true);
+											user.setIsShowDoctorInCalender(true);
 
+										} else {
+											user.setIsShowPatientNumber(
+													doctorClinicProfileLookupResponse.getIsShowPatientNumber());
+											user.setIsShowDoctorInCalender(
+													doctorClinicProfileLookupResponse.getIsShowDoctorInCalender());
+
+										}
+										
+										
 										Role role = new Role();
 										BeanUtil.map(otherRoleCollection.getRoleCollection(), role);
 										role.setAccessModules(accessControl.getAccessModules());

@@ -18,7 +18,12 @@ public class MonitoringChartJasperBean {
     
     private String  anySpecialEventsAndStatDrugs;
     
-    
+    private String diagnosis;	
+	private String referanceDone;	
+	private String nurseName;
+	
+	private String examination = " ";
+
 
 	public MonitoringChartJasperBean() {
 		super();
@@ -100,7 +105,57 @@ public class MonitoringChartJasperBean {
 	public void setAnySpecialEventsAndStatDrugs(String anySpecialEventsAndStatDrugs) {
 		this.anySpecialEventsAndStatDrugs = anySpecialEventsAndStatDrugs;
 	}
+
+	public String getDiagnosis() {
+		return diagnosis;
+	}
+
+	public void setDiagnosis(String diagnosis) {
+		this.diagnosis = diagnosis;
+	}
+
+	public String getReferanceDone() {
+		return referanceDone;
+	}
+
+	public void setReferanceDone(String referanceDone) {
+		this.referanceDone = referanceDone;
+	}
+
+	public String getNurseName() {
+		return nurseName;
+	}
+
+	public void setNurseName(String nurseName) {
+		this.nurseName = nurseName;
+	}
+
+	public MonitoringChartJasperBean(Integer no, String time, String intake, String outputDrain, String bP, String hR,
+			String sPO2, String anySpecialEventsAndStatDrugs, String diagnosis, String referanceDone,
+			String nurseName) {
+		super();
+		this.no = no;
+		this.time = time;
+		this.intake = intake;
+		this.outputDrain = outputDrain;
+		this.bP = bP;
+		this.hR = hR;
+		this.sPO2 = sPO2;
+		this.anySpecialEventsAndStatDrugs = anySpecialEventsAndStatDrugs;
+		this.diagnosis = diagnosis;
+		this.referanceDone = referanceDone;
+		this.nurseName = nurseName;
+	}
+
+	public String getExamination() {
+		return examination;
+	}
+
+	public void setExamination(String examination) {
+		this.examination = examination;
+	}
     
+	
     
     
 }

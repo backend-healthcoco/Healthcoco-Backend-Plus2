@@ -168,6 +168,15 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Field
 	private AppointmentSlot onlineConsultationSlot;
 	
+	@Field
+	private Boolean isPatientWelcomeMessageOn = false;
+	
+	@Field
+	private Boolean isShowPatientNumber = false;
+	
+	@Field
+	private Boolean isShowDoctorInCalender = true;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -554,6 +563,30 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setClinicOwnershipImageUrl(String clinicOwnershipImageUrl) {
 		this.clinicOwnershipImageUrl = clinicOwnershipImageUrl;
+	}
+
+	public Boolean getIsPatientWelcomeMessageOn() {
+		return isPatientWelcomeMessageOn;
+	}
+
+	public void setIsPatientWelcomeMessageOn(Boolean isPatientWelcomeMessageOn) {
+		this.isPatientWelcomeMessageOn = isPatientWelcomeMessageOn;
+	}
+
+	public Boolean getIsShowPatientNumber() {
+		return isShowPatientNumber;
+	}
+
+	public void setIsShowPatientNumber(Boolean isShowPatientNumber) {
+		this.isShowPatientNumber = isShowPatientNumber;
+	}
+
+	public Boolean getIsShowDoctorInCalender() {
+		return isShowDoctorInCalender;
+	}
+
+	public void setIsShowDoctorInCalender(Boolean isShowDoctorInCalender) {
+		this.isShowDoctorInCalender = isShowDoctorInCalender;
 	}
 
 	@Override

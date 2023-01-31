@@ -215,10 +215,20 @@ public class ClinicalNotesCollection extends GenericCollection {
 	
 	@Field
 	private PhysioExamination physioExamination;
-	
+	@Field
+	private String vaccinationHistory;
+
 	
 	//  @Field private List<Observation> treatmentObservation;
 	 
+
+	public String getVaccinationHistory() {
+		return vaccinationHistory;
+	}
+
+	public void setVaccinationHistory(String vaccinationHistory) {
+		this.vaccinationHistory = vaccinationHistory;
+	}
 
 	public String getProcedureNote() {
 		return procedureNote;

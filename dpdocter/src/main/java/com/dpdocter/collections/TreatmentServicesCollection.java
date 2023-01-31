@@ -47,6 +47,9 @@ public class TreatmentServicesCollection extends GenericCollection {
 
 	@Field
 	private List<String> fieldsRequired;
+	
+	@Field
+	private ObjectId ratelistId;
 
 	public ObjectId getId() {
 		return id;
@@ -142,6 +145,14 @@ public class TreatmentServicesCollection extends GenericCollection {
 
 	public void setFieldsRequired(List<String> fieldsRequired) {
 		this.fieldsRequired = fieldsRequired;
+	}
+
+	public ObjectId getRatelistId() {
+		return ratelistId;
+	}
+
+	public void setRatelistId(ObjectId ratelistId) {
+		this.ratelistId = ratelistId;
 	}
 
 	@Override

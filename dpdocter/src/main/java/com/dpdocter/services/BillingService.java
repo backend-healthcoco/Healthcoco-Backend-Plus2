@@ -46,7 +46,7 @@ public interface BillingService {
 	Double getTotalDueAmount(String doctorId, String locationId, String hospitalId, String patientId);
 
 	DoctorPatientLedgerResponse getLedger(String doctorId, String locationId, String hospitalId, String patientId,
-			String from, String to, long page, int size, String updatedTime);
+			String from, String to, long page, int size, String updatedTime,String type);
 
 	AmountResponse getTotalDueAndAdvanceAmount(String doctorId, String locationId, String hospitalId, String patientId);
 

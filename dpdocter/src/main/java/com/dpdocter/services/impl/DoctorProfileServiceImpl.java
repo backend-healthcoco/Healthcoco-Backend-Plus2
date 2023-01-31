@@ -144,7 +144,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	@Autowired
 	private SpecialityRepository specialityRepository;
-	
+
 	@Autowired
 	private ServicesRepository servicesRepository;
 
@@ -174,16 +174,16 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	@Autowired
 	private UserResourceFavouriteRepository userResourceFavouriteRepository;
-	
+
 	@Value(value = "${image.path}")
 	private String imagePath;
-	
+
 	@Autowired
 	ESDoctorRepository esdoctorRepository;
 
 	@Autowired
 	SubscriptionRepository subscriptionRepository;
-	
+
 	@Override
 	@Transactional
 	public DoctorNameAddEditRequest addEditName(DoctorNameAddEditRequest request) {
@@ -325,18 +325,26 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 						doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
 						if (oldSpecialities != null && !oldSpecialities.isEmpty()) {
 							removeOldSpecialityPermissions(specialityIds, oldSpecialities, request.getDoctorId());
-							List<ServicesCollection> servicesCollections = servicesRepository.findBySpecialityIdsIn(oldSpecialities);
-							List<ObjectId> servicesIds = (List<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
+							List<ServicesCollection> servicesCollections = servicesRepository
+									.findBySpecialityIdsIn(oldSpecialities);
+							List<ObjectId> servicesIds = (List<ObjectId>) CollectionUtils.collect(servicesCollections,
+									new BeanToPropertyValueTransformer("id"));
 							Set<ObjectId> services = new HashSet<>(servicesIds);
-							if(doctorCollection.getServices()!= null)doctorCollection.getServices().removeAll(services);
+							if (doctorCollection.getServices() != null)
+								doctorCollection.getServices().removeAll(services);
 						}
-						if(doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
-							List<ServicesCollection> servicesCollections = servicesRepository.findBySpecialityIdsIn(doctorCollection.getSpecialities());
-							List<ObjectId> services = (List<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
+						if (doctorCollection.getSpecialities() != null
+								&& !doctorCollection.getSpecialities().isEmpty()) {
+							List<ServicesCollection> servicesCollections = servicesRepository
+									.findBySpecialityIdsIn(doctorCollection.getSpecialities());
+							List<ObjectId> services = (List<ObjectId>) CollectionUtils.collect(servicesCollections,
+									new BeanToPropertyValueTransformer("id"));
 							Set<ObjectId> serviceIds = new HashSet<>(services);
-							
-							if(doctorCollection.getServices()!= null)doctorCollection.getServices().addAll(services);
-							else doctorCollection.setServices(serviceIds);
+
+							if (doctorCollection.getServices() != null)
+								doctorCollection.getServices().addAll(services);
+							else
+								doctorCollection.setServices(serviceIds);
 						}
 					} else {
 						doctorCollection.setSpecialities(null);
@@ -620,6 +628,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 				BeanUtil.map(doctorCollection, doctorProfile);
 
+				doctorProfile.setIsTransactionalSms(doctorCollection.getIsTransactionalSms());
 				doctorProfile.setDoctorId(doctorCollection.getUserId().toString());
 				// set specialities using speciality ids
 				if (doctorCollection.getSpecialities() != null) {
@@ -667,17 +676,18 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 				// set clinic profile details
 				doctorProfile.setClinicProfile(clinicProfile);
-			//	doctorProfile.setConsultationType(clinicProfile.get(0).getConsultationType());
-			//	doctorProfile.setOnlineWorkingSchedules(clinicProfile.get(0).getOnlineWorkingSchedules());
-			//	doctorProfile.setOnlineConsultationType(clinicProfile.get(0).getOnlineConsultationType());
+				// doctorProfile.setConsultationType(clinicProfile.get(0).getConsultationType());
+				// doctorProfile.setOnlineWorkingSchedules(clinicProfile.get(0).getOnlineWorkingSchedules());
+				// doctorProfile.setOnlineConsultationType(clinicProfile.get(0).getOnlineConsultationType());
 
-				//set subscription Detail
-				SubscriptionCollection subscriptionCollection  = subscriptionRepository.findByDoctorId(new ObjectId(doctorId));	
-			 if(subscriptionCollection != null) {
-				BeanUtil.map(subscriptionCollection, subscription);
-				doctorProfile.setSubscriptionDetail(subscription);
-				doctorProfile.setPackageType(subscriptionCollection.getPackageName().toString());
-			 }
+				// set subscription Detail
+				SubscriptionCollection subscriptionCollection = subscriptionRepository
+						.findByDoctorId(new ObjectId(doctorId));
+				if (subscriptionCollection != null) {
+					BeanUtil.map(subscriptionCollection, subscription);
+					doctorProfile.setSubscriptionDetail(subscription);
+					doctorProfile.setPackageType(subscriptionCollection.getPackageName().toString());
+				}
 			}
 		} catch (BusinessException be) {
 			logger.error(be);
@@ -737,7 +747,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					.is(locationCollection.getHospitalId());
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("treatment_services_cl", "treatmentServiceId", "_id", "treatmentServicesList"),
-					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((long)(0) * 5),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((long) (0) * 5),
 					Aggregation.limit(5));
 
 			AggregationResults<TreatmentServiceCost> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -747,13 +757,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinic.setNoOfServices(
 					(int) mongoTemplate.count(new Query(criteria), TreatmentServicesCostCollection.class));
 
-			List<Feedback> feedbacks = mongoTemplate
-					.aggregate(
-							Aggregation.newAggregation(Aggregation.match(criteria.and("isVisible").is(true)),
-									Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
-									Aggregation.skip((long)(0) * 5), Aggregation.limit(5)),
-							FeedbackCollection.class, Feedback.class)
-					.getMappedResults();
+			List<Feedback> feedbacks = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(criteria.and("isVisible").is(true)),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+							Aggregation.skip((long) (0) * 5), Aggregation.limit(5)),
+					FeedbackCollection.class, Feedback.class).getMappedResults();
 			doctorClinic.setFeedbacks(feedbacks);
 			doctorClinic.setNoOfFeedbacks((int) mongoTemplate.count(new Query(criteria), FeedbackCollection.class));
 
@@ -792,7 +800,16 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				if (otherRoleCollection != null) {
 					AccessControl accessControl = accessControlServices.getAccessControls(otherRoleCollection.getId(),
 							otherRoleCollection.getLocationId(), otherRoleCollection.getHospitalId());
-
+//					 set is show patient number true for super admin
+					if (doctorClinicProfileLookupResponse.getIsSuperAdmin()) {
+						doctorClinic.setIsShowPatientNumber(true);
+						doctorClinic.setIsShowDoctorInCalender(true);
+					}
+//					} else {
+//						doctorClinic.setIsShowPatientNumber(doctorClinicProfileLookupResponse.getIsShowPatientNumber());
+//						doctorClinic.setIsShowDoctorInCalender(
+//								doctorClinicProfileLookupResponse.getIsShowDoctorInCalender());
+//					}
 					Role role = new Role();
 					BeanUtil.map(otherRoleCollection, role);
 					role.setLocationId(roleLookupResponse.getLocationId());
@@ -1131,7 +1148,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				if (!DPDoctorUtils.anyStringEmpty(request.getGender())) {
 					doctorCollection.setGender(request.getGender());
 				}
-				
+
 				if (!DPDoctorUtils.anyStringEmpty(request.getFreshchatRestoreId())) {
 					doctorCollection.setFreshchatRestoreId(request.getFreshchatRestoreId());
 				}
@@ -1166,18 +1183,26 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 							parentSpecialitiesresponse.addAll(parentSpecialities);
 							if (oldSpecialities != null && !oldSpecialities.isEmpty()) {
 								removeOldSpecialityPermissions(specialityIds, oldSpecialities, request.getDoctorId());
-								List<ServicesCollection> servicesCollections = servicesRepository.findBySpecialityIdsIn(oldSpecialities);
-								List<ObjectId> servicesIds = (List<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
+								List<ServicesCollection> servicesCollections = servicesRepository
+										.findBySpecialityIdsIn(oldSpecialities);
+								List<ObjectId> servicesIds = (List<ObjectId>) CollectionUtils
+										.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
 								Set<ObjectId> services = new HashSet<>(servicesIds);
-								if(doctorCollection.getServices()!= null)doctorCollection.getServices().removeAll(services);
-						}
-						if(doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
-							List<ServicesCollection> servicesCollections = servicesRepository.findBySpecialityIdsIn(doctorCollection.getSpecialities());
-							List<ObjectId> servicesIds = (List<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
-							Set<ObjectId> services = new HashSet<>(servicesIds);
-							if(doctorCollection.getServices()!= null)doctorCollection.getServices().addAll(services);
-							else doctorCollection.setServices(services);
-						}
+								if (doctorCollection.getServices() != null)
+									doctorCollection.getServices().removeAll(services);
+							}
+							if (doctorCollection.getSpecialities() != null
+									&& !doctorCollection.getSpecialities().isEmpty()) {
+								List<ServicesCollection> servicesCollections = servicesRepository
+										.findBySpecialityIdsIn(doctorCollection.getSpecialities());
+								List<ObjectId> servicesIds = (List<ObjectId>) CollectionUtils
+										.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
+								Set<ObjectId> services = new HashSet<>(servicesIds);
+								if (doctorCollection.getServices() != null)
+									doctorCollection.getServices().addAll(services);
+								else
+									doctorCollection.setServices(services);
+							}
 						} else {
 							doctorCollection.setSpecialities(null);
 							assignDefaultUIPermissions(request.getDoctorId());
@@ -1438,7 +1463,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 		DoctorClinicProfile response = null;
 		try {
-			doctorClinicProfileCollection = doctorClinicProfileRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findById(new ObjectId(request.getDoctorId()))
+					.orElse(null);
 			doctorClinicProfileCollection.setRegularCheckUpMonths(request.getRegularCheckUpMonths());
 			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 			response = new DoctorClinicProfile();
@@ -1724,7 +1750,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					@SuppressWarnings("unchecked")
 					List<ObjectId> serviceIds = (List<ObjectId>) CollectionUtils.collect(servicesCollections,
 							new BeanToPropertyValueTransformer("id"));
-					
+
 					Set<ObjectId> services = new HashSet<>(serviceIds);
 					if (services != null && !services.isEmpty()) {
 						doctorCollection.setServices(services);
@@ -1746,25 +1772,25 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public Boolean addEditDrugTypePlacement(String doctorId , String drugTypePlacement) {
-			Boolean response = false;
-			DoctorCollection doctorCollection = null;
-			try {
-				doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
-				if (doctorCollection != null) {
-					doctorCollection.setDrugTypePlacement(drugTypePlacement);
-					doctorRepository.save(doctorCollection);
-					response = true;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				logger.error(e + " Error Editing Drug type placement");
-				throw new BusinessException(ServiceError.Unknown, "Error Editing Drug type placement");
+	public Boolean addEditDrugTypePlacement(String doctorId, String drugTypePlacement) {
+		Boolean response = false;
+		DoctorCollection doctorCollection = null;
+		try {
+			doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection != null) {
+				doctorCollection.setDrugTypePlacement(drugTypePlacement);
+				doctorRepository.save(doctorCollection);
+				response = true;
 			}
-			return response;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Editing Drug type placement");
+			throw new BusinessException(ServiceError.Unknown, "Error Editing Drug type placement");
+		}
+		return response;
 	}
 
 	@Override
@@ -1795,8 +1821,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		return response;
 	}
-	
-	
+
 	@Override
 	public Services addEditServices(Services request) {
 		Services response = null;
@@ -1830,7 +1855,6 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		return response;
 	}
 
-
 	@Override
 	@Transactional
 //<<<<<<< Updated upstream
@@ -1838,22 +1862,21 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		List<DoctorClinicProfileCollection> doctorClinicProfileCollections = null;
 		Boolean response = false;
 		try {
-			doctorClinicProfileCollections = doctorClinicProfileRepository.findByDoctorId(new ObjectId(request.getDoctorId()));
-			
-			List<ESDoctorDocument> doctorDocuments=esdoctorRepository.findByUserId(request.getDoctorId());
-			if(doctorDocuments!=null)
-				for(ESDoctorDocument doctorDocument:doctorDocuments)	
-				{
+			doctorClinicProfileCollections = doctorClinicProfileRepository
+					.findByDoctorId(new ObjectId(request.getDoctorId()));
+
+			List<ESDoctorDocument> doctorDocuments = esdoctorRepository.findByUserId(request.getDoctorId());
+			if (doctorDocuments != null)
+				for (ESDoctorDocument doctorDocument : doctorDocuments) {
 					doctorDocument.setOnlineWorkingSchedules(request.getOnlineWorkingSchedules());
 					esdoctorRepository.save(doctorDocument);
 				}
-			
-			
+
 			if (doctorClinicProfileCollections != null) {
-				for(DoctorClinicProfileCollection clinicProfileCollection : doctorClinicProfileCollections) {
+				for (DoctorClinicProfileCollection clinicProfileCollection : doctorClinicProfileCollections) {
 					clinicProfileCollection.setOnlineWorkingSchedules(request.getOnlineWorkingSchedules());
-				//	clinicProfileCollection.setIsOnlineConsultationAvailable(request.getIsOnlineConsultationAvailable());
-				//	clinicProfileCollection.setConsultationType(request.getConsultationType());
+					// clinicProfileCollection.setIsOnlineConsultationAvailable(request.getIsOnlineConsultationAvailable());
+					// clinicProfileCollection.setConsultationType(request.getConsultationType());
 					clinicProfileCollection.setUpdatedTime(new Date());
 					doctorClinicProfileRepository.save(clinicProfileCollection);
 					response = true;
@@ -1867,87 +1890,84 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	public DoctorOnlineWorkingTimeRequest getOnlineWorkTiming(String doctorId) {
 		DoctorOnlineWorkingTimeRequest response = null;
-	
+
 		try {
-			List<DoctorClinicProfileCollection> doctorClinicProfileCollections=doctorClinicProfileRepository.findByDoctorId(new ObjectId(doctorId));
-		
-		 if(doctorClinicProfileCollections==null)
-		    {
-		    	throw new BusinessException(ServiceError.NotFound,"Error no such id");
-		    }
-			
-		 response=new DoctorOnlineWorkingTimeRequest();
-		 DoctorClinicProfileCollection doctorClinicProfileCollection=new DoctorClinicProfileCollection();
-		 
-		 if(doctorClinicProfileCollections !=null)
-			 doctorClinicProfileCollection=doctorClinicProfileCollections.get(0);
-		
+			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+					.findByDoctorId(new ObjectId(doctorId));
+
+			if (doctorClinicProfileCollections == null) {
+				throw new BusinessException(ServiceError.NotFound, "Error no such id");
+			}
+
+			response = new DoctorOnlineWorkingTimeRequest();
+			DoctorClinicProfileCollection doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+
+			if (doctorClinicProfileCollections != null)
+				doctorClinicProfileCollection = doctorClinicProfileCollections.get(0);
+
 			BeanUtil.map(doctorClinicProfileCollection, response);
-		
-		}
-		catch (BusinessException e) {
-			logger.error("Error while searching the id "+e.getMessage());
-			throw new BusinessException(ServiceError.Unknown,"Error while searching the id");
+
+		} catch (BusinessException e) {
+			logger.error("Error while searching the id " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while searching the id");
 		}
 		return response;
 
 	}
-	
-	 @Override
-		public Integer countOnlineTiming(Boolean discarded, String searchTerm) {
-			Integer response=null;
-			try {
-				Criteria criteria = new Criteria("discarded").is(discarded);
+
+	@Override
+	public Integer countOnlineTiming(Boolean discarded, String searchTerm) {
+		Integer response = null;
+		try {
+			Criteria criteria = new Criteria("discarded").is(discarded);
 //			    criteria = criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
 //					new Criteria("name").regex("^" + searchTerm));
 
-		response = (int) mongoTemplate.count(new Query(criteria), DoctorClinicProfileCollection.class);
-	} catch (BusinessException e) {
-		logger.error("Error while counting online timing " + e.getMessage());
-		e.printStackTrace();
-		throw new BusinessException(ServiceError.Unknown, "Error while counting online timing " + e.getMessage());
+			response = (int) mongoTemplate.count(new Query(criteria), DoctorClinicProfileCollection.class);
+		} catch (BusinessException e) {
+			logger.error("Error while counting online timing " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while counting online timing " + e.getMessage());
 
-	}
-			return response;
 		}
+		return response;
+	}
 
 	@Override
 	public DoctorOnlineConsultationFees addEditOnlineConsultingFees(DoctorOnlineConsultationFees request) {
 		List<DoctorClinicProfileCollection> doctorClinicProfileCollections = new ArrayList<DoctorClinicProfileCollection>();
 		DoctorOnlineConsultationFees response = null;
-		DoctorClinicProfileCollection oldDoctorClinicProfileCollection=new DoctorClinicProfileCollection();
-		
+		DoctorClinicProfileCollection oldDoctorClinicProfileCollection = new DoctorClinicProfileCollection();
+
 		try {
-			doctorClinicProfileCollections = doctorClinicProfileRepository.findByDoctorId(
-					new ObjectId(request.getDoctorId()));
-			List<ESDoctorDocument> doctorDocuments=esdoctorRepository.findByUserId(request.getDoctorId());
-			if(doctorDocuments!=null)
-				for(ESDoctorDocument doctorDocument:doctorDocuments)	
-				{
+			doctorClinicProfileCollections = doctorClinicProfileRepository
+					.findByDoctorId(new ObjectId(request.getDoctorId()));
+			List<ESDoctorDocument> doctorDocuments = esdoctorRepository.findByUserId(request.getDoctorId());
+			if (doctorDocuments != null)
+				for (ESDoctorDocument doctorDocument : doctorDocuments) {
 					doctorDocument.setConsultationType(request.getConsultationType());
 					esdoctorRepository.save(doctorDocument);
 				}
-			if (doctorClinicProfileCollections != null) 
-			for(DoctorClinicProfileCollection doctorClinicProfileCollection:doctorClinicProfileCollections)
-			{
-				doctorClinicProfileCollection.setDoctorId(doctorClinicProfileCollection.getDoctorId());
-		
-			
-			doctorClinicProfileCollection.setConsultationType(request.getConsultationType());
-			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-			}
+			if (doctorClinicProfileCollections != null)
+				for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
+					doctorClinicProfileCollection.setDoctorId(doctorClinicProfileCollection.getDoctorId());
+
+					doctorClinicProfileCollection.setConsultationType(request.getConsultationType());
+					doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+				}
 			response = new DoctorOnlineConsultationFees();
-			//BeanUtil.map(doctorClinicProfileCollections, oldDoctorClinicProfileCollection);
-			if(doctorClinicProfileCollections!=null)
-				oldDoctorClinicProfileCollection=doctorClinicProfileCollections.get(0);
-			
-			BeanUtil.map(oldDoctorClinicProfileCollection,response);
-			
-	//		response.setDoctorId(doctorClinicProfileCollection.getDoctorId().toString());
+			// BeanUtil.map(doctorClinicProfileCollections,
+			// oldDoctorClinicProfileCollection);
+			if (doctorClinicProfileCollections != null)
+				oldDoctorClinicProfileCollection = doctorClinicProfileCollections.get(0);
+
+			BeanUtil.map(oldDoctorClinicProfileCollection, response);
+
+			// response.setDoctorId(doctorClinicProfileCollection.getDoctorId().toString());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1960,53 +1980,48 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	@Override
 	public DoctorOnlineConsultationFees getOnlineConsultingfees(String doctorId) {
-		DoctorOnlineConsultationFees response=null;
+		DoctorOnlineConsultationFees response = null;
 		try {
-			List<DoctorClinicProfileCollection> doctorClinicProfileCollections=doctorClinicProfileRepository.findByDoctorId(new ObjectId(doctorId));
-		
-		 if(doctorClinicProfileCollections==null)
-		    {
-		    	throw new BusinessException(ServiceError.NotFound,"Error no such id");
-		    }
-			
-		 response=new DoctorOnlineConsultationFees();
-		 DoctorClinicProfileCollection doctorClinicProfileCollection=new DoctorClinicProfileCollection();
-		 
-		 if(doctorClinicProfileCollections !=null)
-			 doctorClinicProfileCollection=doctorClinicProfileCollections.get(0);
-		 
-		 BeanUtil.map(doctorClinicProfileCollection, response);
-		
-		}
-		catch (BusinessException e) {
-			logger.error("Error while searching the id "+e.getMessage());
-			throw new BusinessException(ServiceError.Unknown,"Error while searching the id");
+			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+					.findByDoctorId(new ObjectId(doctorId));
+
+			if (doctorClinicProfileCollections == null) {
+				throw new BusinessException(ServiceError.NotFound, "Error no such id");
+			}
+
+			response = new DoctorOnlineConsultationFees();
+			DoctorClinicProfileCollection doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+
+			if (doctorClinicProfileCollections != null)
+				doctorClinicProfileCollection = doctorClinicProfileCollections.get(0);
+
+			BeanUtil.map(doctorClinicProfileCollection, response);
+
+		} catch (BusinessException e) {
+			logger.error("Error while searching the id " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while searching the id");
 		}
 		return response;
-	}	
-
-
-	
+	}
 
 	@Override
 	public Integer countOnlineConsultingfees(Boolean discarded, String searchTerm) {
-		Integer response=null;
+		Integer response = null;
 		try {
 			Criteria criteria = new Criteria("discarded").is(discarded);
 //		    criteria = criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
 //				new Criteria("name").regex("^" + searchTerm));
 
-	response = (int) mongoTemplate.count(new Query(criteria), DoctorClinicProfileCollection.class);
-} catch (BusinessException e) {
-	logger.error("Error while counting online consulting fees " + e.getMessage());
-	e.printStackTrace();
-	throw new BusinessException(ServiceError.Unknown, "Error while counting online fees " + e.getMessage());
+			response = (int) mongoTemplate.count(new Query(criteria), DoctorClinicProfileCollection.class);
+		} catch (BusinessException e) {
+			logger.error("Error while counting online consulting fees " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while counting online fees " + e.getMessage());
 
-}
+		}
 		return response;
 	}
-	
-	
+
 	@Override
 	@Transactional
 	public String uploadRegistrationDetails(DoctorRegistrationDetails request) {
@@ -2014,33 +2029,37 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		String response = "";
 		try {
 			doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
-			DoctorClinicProfileCollection doctorclinic=doctorClinicProfileRepository.findByDoctorIdAndLocationId(new ObjectId(request.getDoctorId()),new ObjectId(request.getLocationId()));
-			
+			DoctorClinicProfileCollection doctorclinic = doctorClinicProfileRepository.findByDoctorIdAndLocationId(
+					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
+
 			if (request.getImage() != null) {
 				String path = "registration-Docs";
 				// save image
 				request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
 				ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path,
 						true);
-				if(request.getType()!=null && request.getType().getType().equalsIgnoreCase(RegistrationType.REGISTRATION_DETAILS.getType())) {
+				if (request.getType() != null && request.getType().getType()
+						.equalsIgnoreCase(RegistrationType.REGISTRATION_DETAILS.getType())) {
 					doctorCollection.setRegistrationImageUrl(imageURLResponse.getImageUrl());
 					doctorCollection.setRegistrationThumbnailUrl(imageURLResponse.getThumbnailUrl());
 					response = doctorCollection.getRegistrationImageUrl();
 				}
-				if(request.getType()!=null && request.getType().getType().equalsIgnoreCase(RegistrationType.CLINIC_OWNERSHIP.getType())) {
+				if (request.getType() != null
+						&& request.getType().getType().equalsIgnoreCase(RegistrationType.CLINIC_OWNERSHIP.getType())) {
 					doctorclinic.setClinicOwnershipImageUrl(imageURLResponse.getImageUrl());
 					doctorClinicProfileRepository.save(doctorclinic);
-					response =doctorclinic.getClinicOwnershipImageUrl();
-					
-					}
-				if(request.getType()!=null && request.getType().getType().equalsIgnoreCase(RegistrationType.PHOTOID_PROOF.getType())) {
+					response = doctorclinic.getClinicOwnershipImageUrl();
+
+				}
+				if (request.getType() != null
+						&& request.getType().getType().equalsIgnoreCase(RegistrationType.PHOTOID_PROOF.getType())) {
 					doctorCollection.setPhotoIdImageUrl(imageURLResponse.getImageUrl());
 					response = doctorCollection.getPhotoIdImageUrl();
-					
-					}
-				
-				doctorCollection= doctorRepository.save(doctorCollection);
-		
+
+				}
+
+				doctorCollection = doctorRepository.save(doctorCollection);
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2049,7 +2068,5 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		return response;
 	}
-
-
 
 }

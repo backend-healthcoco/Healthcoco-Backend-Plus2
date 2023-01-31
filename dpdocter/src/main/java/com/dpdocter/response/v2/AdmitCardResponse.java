@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.beans.v2.PatientCard;
 import com.dpdocter.collections.GenericCollection;
 
@@ -36,6 +37,11 @@ public class AdmitCardResponse extends GenericCollection {
 	private String ip;
 	private String address;
 	
+	private VitalSigns vitalSigns;
+	private String preOprationalOrders;
+	private String nursingCare;
+	private String ipdNumber;
+
 	public String getIp() {
 		return ip;
 	}
@@ -242,6 +248,40 @@ public class AdmitCardResponse extends GenericCollection {
 
 	public void setTimeOfOperation(String timeOfOperation) {
 		this.timeOfOperation = timeOfOperation;
+	}
+
+	
+	public VitalSigns getVitalSigns() {
+		return vitalSigns;
+	}
+
+	public void setVitalSigns(VitalSigns vitalSigns) {
+		this.vitalSigns = vitalSigns;
+	}
+
+	public String getPreOprationalOrders() {
+		return preOprationalOrders;
+	}
+
+	public void setPreOprationalOrders(String preOprationalOrders) {
+		this.preOprationalOrders = preOprationalOrders;
+	}
+
+	public String getNursingCare() {
+		return nursingCare;
+	}
+
+	public void setNursingCare(String nursingCare) {
+		this.nursingCare = nursingCare;
+	}
+
+	
+	public String getIpdNumber() {
+		return ipdNumber;
+	}
+
+	public void setIpdNumber(String ipdNumber) {
+		this.ipdNumber = ipdNumber;
 	}
 
 	@Override

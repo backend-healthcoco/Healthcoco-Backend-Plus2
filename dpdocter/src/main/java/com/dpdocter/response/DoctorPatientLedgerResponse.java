@@ -8,6 +8,10 @@ public class DoctorPatientLedgerResponse {
 
 	private List<DoctorPatientLedger> doctorPatientLedgers;
 	
+	private Double totalDebitAmount=0.0;
+	
+	private Double totalCreditAmount=0.0;
+	
 	//private Double totalDueAmount;
 
 	public List<DoctorPatientLedger> getDoctorPatientLedgers() {
@@ -16,6 +20,24 @@ public class DoctorPatientLedgerResponse {
 
 	public void setDoctorPatientLedgers(List<DoctorPatientLedger> doctorPatientLedgers) {
 		this.doctorPatientLedgers = doctorPatientLedgers;
+	}
+	
+	
+
+	public Double getTotalDebitAmount() {
+		return totalDebitAmount;
+	}
+
+	public void setTotalDebitAmount(Double totalDebitAmount) {
+		this.totalDebitAmount = totalDebitAmount;
+	}
+
+	public Double getTotalCreditAmount() {
+		return totalCreditAmount;
+	}
+
+	public void setTotalCreditAmount(Double totalCreditAmount) {
+		this.totalCreditAmount = totalCreditAmount;
 	}
 
 	@Override

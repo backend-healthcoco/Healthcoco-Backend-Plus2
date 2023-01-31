@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Email Template</title>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        header {
+            background-color: #024ab9;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .content {
+            padding: 2% 5%;
+            background-color: #e5eefc;
+        }
+
+        .bottom {
+            display: flex;
+            padding: 2%;
+            background-color: #024ab9;
+            border-radius: 10px;
+
+        }
+
+        footer {
+            padding: 2%;
+
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .socialicon {
+            margin-top: 15px;
+
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <a><img height="60px" width="auto"
+                src="https://d12gvn78jkew5f.cloudfront.net/Smilebird/logo_smilebird (2)1652170692304.png"
+                alt="smilebird logo" /></a>
+        <img height="60px" width="auto" style="float: right;"
+            src="https://d12gvn78jkew5f.cloudfront.net/Smilebird/2 (2)1652169384322.png" alt="side img" />
+    </header>
+    <div class="container body-content">
+        <div class="content">
+            <h3>
+              Your have appointment rescheduled
+            </h3>
+            <div>
+                <img width="200px" style="margin: auto;display: block;"
+                    src="https://d12gvn78jkew5f.cloudfront.net/Smilebird/Reschedule1652176113112.png"
+                    alt="reschedule appointment" />
+            </div>
+            <div>
+                <p> ${emailBody}</p>
+
+                <p>Warm regards,</p>
+                <p>Team Smilebird </p>
+            </div>
+        </div>
+        <div class="bottom">
+            <img style="width: 25%;padding: 10% 25%"
+                src="https://d12gvn78jkew5f.cloudfront.net/Smilebird/text1652170785017.png" />
+            <img style="width: 20%;" src="https://d12gvn78jkew5f.cloudfront.net/Smilebird/boy1652171325936.png" />
+        </div>
+    </div>
+    <footer>
+        <a><img height="60px" width="auto"
+                src="https://d12gvn78jkew5f.cloudfront.net/Smilebird/logo_join1652170326166.png"
+                alt="smilebird dental studiologo" /></a>
+        <div class="socialicon">
+            <a href="https://www.instagram.com/smilebirdco/"><img style="width: 40px; border-radius: 10px"
+                    src="https://d12gvn78jkew5f.cloudfront.net/Smilebird/smileinsta1652172221727.jpeg"
+                    alt="smilebird instagram"></a>
+            <!-- <a href=""><img style="width: 60px;" src="https://d12gvn78jkew5f.cloudfront.net/Smilebird/smileyou1652172141772.jpeg" alt="smilebird youtube"></a> -->
+            <!-- <a href=""><img style="width: 60px;" src="https://d12gvn78jkew5f.cloudfront.net/Smilebird/smiletwi1652172066319.jpeg" alt="smilebird twitter"></a> -->
+            <a href="https://www.facebook.com/smilebirdco"><img style="width: 40px;"
+                    src="https://d12gvn78jkew5f.cloudfront.net/Smilebird/smilefb1652172043143.jpeg"
+                    alt="smilebird facebook"></a>
+        </div>
+    </footer>
+</body>
+
+</html>

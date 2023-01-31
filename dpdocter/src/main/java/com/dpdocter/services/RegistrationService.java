@@ -145,7 +145,7 @@ public interface RegistrationService {
 	List<ConsentForm> getConcentForm(long page, int size, String patientId, String doctorId, String locationId,
 			String hospitalId, String PID, String searchTerm, boolean discarded, long updatedTime);
 
-	ConsentForm deleteConcentForm(String consentFormId, boolean discarded);
+	Boolean deleteConcentForm(String consentFormId, boolean discarded);
 
 	String downloadConcentForm(String consentFormId);
 
@@ -200,4 +200,11 @@ public interface RegistrationService {
 
 	DoctorCalendarView getDoctorCalendarView(String doctorId, String locationId);
 
+<<<<<<< HEAD
+=======
+	Boolean updateShowPatient(String doctorId, Boolean isShowPatientNumber, String locationId);
+	
+	Boolean updateIsShowDoctorInCalender(String doctorId, Boolean isShowDoctorInCalender, String locationId);
+
+>>>>>>> release-4.6
 }

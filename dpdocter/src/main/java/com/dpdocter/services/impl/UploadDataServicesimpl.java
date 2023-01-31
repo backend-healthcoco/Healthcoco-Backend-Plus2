@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,6 +34,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -60,7 +63,9 @@ import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Duration;
 import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.InvoiceItem;
+import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.OPDReports;
+import com.dpdocter.beans.PatientDownloadData;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.Quantity;
 import com.dpdocter.beans.Records;
@@ -98,6 +103,7 @@ import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.repository.ESPatientRepository;
@@ -105,6 +111,7 @@ import com.dpdocter.elasticsearch.repository.ESTreatmentServiceRepository;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.elasticsearch.services.ESTreatmentService;
 import com.dpdocter.enums.AppointmentState;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.InvoiceItemType;
 import com.dpdocter.enums.ModeOfPayment;
 import com.dpdocter.enums.QuantityEnum;
@@ -160,6 +167,7 @@ import com.dpdocter.services.ReportsService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.services.UploadDateService;
 import com.mongodb.BasicDBObject;
+import com.opencsv.CSVWriter;
 
 import common.util.web.CSVUtils;
 import common.util.web.DPDoctorUtils;
@@ -3738,4 +3746,6 @@ public class UploadDataServicesimpl implements UploadDateService {
 		}	
 		return response;
 	}
+	
+	
 }

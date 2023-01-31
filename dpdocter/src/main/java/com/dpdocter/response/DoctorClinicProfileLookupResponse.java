@@ -4,6 +4,7 @@ package com.dpdocter.response;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
@@ -101,6 +102,18 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	
 	private AppointmentSlot onlineConsultationSlot;
 	
+	private Boolean isShowPatientNumber = false;
+
+	private Boolean isShowDoctorInCalender;
+	
+	public Boolean getIsShowPatientNumber() {
+		return isShowPatientNumber;
+	}
+
+	public void setIsShowPatientNumber(Boolean isShowPatientNumber) {
+		this.isShowPatientNumber = isShowPatientNumber;
+	}
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -424,6 +437,14 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 
 	public void setClinicOwnershipImageUrl(String clinicOwnershipImageUrl) {
 		this.clinicOwnershipImageUrl = clinicOwnershipImageUrl;
+	}
+
+	public Boolean getIsShowDoctorInCalender() {
+		return isShowDoctorInCalender;
+	}
+
+	public void setIsShowDoctorInCalender(Boolean isShowDoctorInCalender) {
+		this.isShowDoctorInCalender = isShowDoctorInCalender;
 	}
 
 	@Override

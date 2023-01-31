@@ -487,6 +487,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Autowired
 	private DoctorCalendarViewRepository doctorCalendarViewRepository;
 
+
+	@Value(value = "${healthcoco.support.number}")
+	private String healthcocoSupportNumber;
+
 	@Override
 	@Transactional
 	public User checkIfPatientExist(PatientRegistrationRequest request) {
@@ -582,6 +586,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				PatientCollection patientCollection = new PatientCollection();
 				patientCollection.setCreatedTime(new Date());
 				patientCollection.setFirstName(request.getLocalPatientName());
+				patientCollection.setLanguage(request.getLanguage());
 				patientCollection.setLocalPatientName(request.getLocalPatientName());
 				patientCollection.setUserId(userCollection.getId());
 				patientCollection.setRegistrationDate(request.getRegistrationDate());
@@ -590,6 +595,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			// save Patient Info
 			PatientCollection patientCollection = new PatientCollection();
 			BeanUtil.map(request, patientCollection);
+			patientCollection.setLanguage(request.getLanguage());
 			patientCollection.setFirstName(request.getLocalPatientName());
 			patientCollection.setUserId(userCollection.getId());
 			patientCollection.setIsChild(request.getIsChild());
@@ -712,6 +718,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 			registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
 			registeredPatientDetails.setImageUrl(patientCollection.getImageUrl());
 			registeredPatientDetails.setThumbnailUrl(patientCollection.getThumbnailUrl());
+
+			registeredPatientDetails.setLanguage(patientCollection.getLanguage());
 			if (referencesCollection != null) {
 				Reference reference = new Reference();
 				BeanUtil.map(referencesCollection, reference);
@@ -752,12 +760,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 				 * sendReferenceMessage(patientCollection, locationCollection.getLocationName(),
 				 * referencesCollection.getMobileNumber()); } }
 				 */
-
-				if (locationCollection.getIsPatientWelcomeMessageOn() != null) {
-					if (locationCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE)) {
+				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+						.findByDoctorIdAndLocationId(new ObjectId(request.getDoctorId()),
+								new ObjectId(request.getLocationId()));
+				if (doctorClinicProfileCollection != null) {
+					if (doctorClinicProfileCollection.getIsPatientWelcomeMessageOn()) {
 						sendWelcomeMessageToPatient(patientCollection, locationCollection, request.getMobileNumber());
 					}
 				}
+//				if (locationCollection.getIsPatientWelcomeMessageOn() != null) {
+//					if (locationCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE)) {
+//						sendWelcomeMessageToPatient(patientCollection, locationCollection, request.getMobileNumber());
+//					}
+//				}
 
 				pushNotificationServices.notifyUser(request.getDoctorId(), "New patient created.",
 						ComponentType.PATIENT_REFRESH.getType(), null, null);
@@ -912,6 +927,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 					if (!DPDoctorUtils.anyStringEmpty(request.getPID())) {
 						patientCollection.setPID(request.getPID());
+					}
+
+					if (!DPDoctorUtils.anyStringEmpty(request.getLanguage())) {
+						patientCollection.setLanguage(request.getLanguage());
 					}
 
 					if (!DPDoctorUtils.anyStringEmpty(request.getFatherName())) {
@@ -1188,7 +1207,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (request.getLocationId() != null) {
 				LocationCollection locationCollection = locationRepository
 						.findById(new ObjectId(request.getLocationId())).orElse(null);
-				if (locationCollection.getIsPatientWelcomeMessageOn() != null) {
+				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+						.findByDoctorIdAndLocationId(new ObjectId(request.getDoctorId()),
+								new ObjectId(request.getLocationId()));
+				if (doctorClinicProfileCollection != null) {
 					if (locationCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE)) {
 						sendWelcomeMessageToPatient(patientCollection, locationCollection, request.getMobileNumber());
 					}
@@ -1209,7 +1231,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return registeredPatientDetails;
 	}
 
-	@Scheduled(cron = "0 30 12 * * ?", zone = "IST")
+
+	// @Scheduled(cron = "0 30 12 * * ?", zone = "IST")
 	@Override
 	public Boolean updatePatientAge() {
 		PatientCollection patientCollection = null;
@@ -1251,7 +1274,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	}
 
-	@Scheduled(cron = "0 30 12 * * ?", zone = "IST")
+
+//	@Scheduled(cron = "0 30 12 * * ?", zone = "IST")
 	@Override
 	public Boolean updateDoctorAge() {
 		DoctorCollection doctorCollection = null;
@@ -1595,23 +1619,24 @@ public class RegistrationServiceImpl implements RegistrationService {
 				registeredPatientDetails.setAddress(patientCard.getAddress());
 				registeredPatientDetails.setBackendPatientId(patientCard.getId());
 				// calculate age of patient upto today
-				if (registeredPatientDetails.getDob() != null) {
-					if (registeredPatientDetails.getDob().getDays() > 0
-							&& registeredPatientDetails.getDob().getMonths() > 0
-							&& registeredPatientDetails.getDob().getYears() > 0) {
-						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
-						LocalDate today = LocalDate.now();
-						LocalDate birthday = LocalDate.parse(registeredPatientDetails.getDob().getDays() + "/"
-								+ registeredPatientDetails.getDob().getMonths() + "/"
-								+ registeredPatientDetails.getDob().getYears(), formatter);
 
-						Period p = Period.between(birthday, today);
-
-						registeredPatientDetails.getDob().getAge().setDays(p.getDays());
-						registeredPatientDetails.getDob().getAge().setMonths(p.getMonths());
-						registeredPatientDetails.getDob().getAge().setYears(p.getYears());
-					}
-				}
+//				if (registeredPatientDetails.getDob() != null) {
+//					if (registeredPatientDetails.getDob().getDays() > 0
+//							&& registeredPatientDetails.getDob().getMonths() > 0
+//							&& registeredPatientDetails.getDob().getYears() > 0) {
+//						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+//						LocalDate today = LocalDate.now();
+//						LocalDate birthday = LocalDate.parse(registeredPatientDetails.getDob().getDays() + "/"
+//								+ registeredPatientDetails.getDob().getMonths() + "/"
+//								+ registeredPatientDetails.getDob().getYears(), formatter);
+//
+//						Period p = Period.between(birthday, today);
+//
+//						registeredPatientDetails.getDob().getAge().setDays(p.getDays());
+//						registeredPatientDetails.getDob().getAge().setMonths(p.getMonths());
+//						registeredPatientDetails.getDob().getAge().setYears(p.getYears());
+//					}
+//				}
 
 				@SuppressWarnings("unchecked")
 				Collection<ObjectId> groupIds = CollectionUtils.collect(patientCard.getPatientGroupCollections(),
@@ -3100,6 +3125,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 						clinicDoctorResponse.setIsActivate(doctorClinicProfileLookupResponse.getIsActivate());
 						clinicDoctorResponse.setHasLoginAccess(doctorClinicProfileLookupResponse.getHasLoginAccess());
 						clinicDoctorResponse.setDiscarded(doctorClinicProfileLookupResponse.getDiscarded());
+						clinicDoctorResponse.setIsSuperAdmin(doctorClinicProfileLookupResponse.getIsSuperAdmin());
 
 						if (doctorClinicProfileLookupResponse.getDoctor() != null)
 							clinicDoctorResponse.setRegisterNumber(
@@ -3175,6 +3201,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 									clinicDoctorResponse.setWebRole(clinicDoctorResponse.getRole().get(0).getRole());
 								}
 							}
+							clinicDoctorResponse
+									.setIsShowPatientNumber(doctorClinicProfileLookupResponse.getIsShowPatientNumber());
+							clinicDoctorResponse.setIsShowDoctorInCalender(
+									doctorClinicProfileLookupResponse.getIsShowDoctorInCalender());
 							response.add(clinicDoctorResponse);
 						}
 					}
@@ -3237,6 +3267,18 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (doctorClinicProfileCollection != null) {
 				doctorClinicProfileCollection.setIsActivate(isActivate);
 				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+				UserCollection userCollection = userRepository.findById(new ObjectId(userId)).orElse(null);
+				if (userCollection != null) {
+					if (isActivate == false)
+						pushNotificationServices.notifyUser(userCollection.getId().toString(),
+								" Your Healthcoco+ account has been deactivated", ComponentType.DEACTIVATED.getType(),
+								null, null);
+					else
+						pushNotificationServices.notifyUser(userCollection.getId().toString(),
+								" Your Healthcoco+ account has been activated", ComponentType.SIGNED_UP.getType(), null,
+								null);
+
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3256,6 +3298,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 				doctorClinicProfileCollection.setHasLoginAccess(hasLoginAccess);
 				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+				UserCollection userCollection = userRepository.findById(new ObjectId(userId)).orElse(null);
+				if (userCollection != null) {
+					if (hasLoginAccess == false)
+						pushNotificationServices.notifyUser(userCollection.getId().toString(),
+								" Your Healthcoco+ clinic login access has been removed",
+								ComponentType.DEACTIVATED.getType(), null, null);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3853,8 +3902,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	@Override
-	public ConsentForm deleteConcentForm(String consentFormId, boolean discarded) {
-		ConsentForm response = null;
+	public Boolean deleteConcentForm(String consentFormId, boolean discarded) {
+		Boolean response = false;
 		try {
 			ConsentFormCollection consentFormCollection = consentFormRepository.findById(new ObjectId(consentFormId))
 					.orElse(null);
@@ -3862,9 +3911,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				consentFormCollection.setDiscarded(discarded);
 				consentFormCollection.setUpdatedTime(new Date());
 				consentFormRepository.save(consentFormCollection);
-				response = new ConsentForm();
-				BeanUtil.map(consentFormCollection, response);
-				response.setSignImageURL(getFinalImageURL(response.getSignImageURL()));
+				response = true;
 			} else {
 				logger.warn("Invalid Referrence Id!");
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid consentForm Id!");
@@ -3945,9 +3992,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 		parameters.put("showPID", show);
 		show = false;
-
 		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getMobileNumber())) {
-			consentFormItemJasperdetails.setMobileNumber(consentFormCollection.getMobileNumber());
+			String mobileNumber = consentFormCollection.getMobileNumber();
+			LocationCollection locationCollection = locationRepository.findById(consentFormCollection.getLocationId())
+					.orElse(null);
+			if (locationCollection != null && locationCollection.getIsDentalChain()) {
+				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+						.findByDoctorIdAndLocationId(consentFormCollection.getDoctorId(), consentFormCollection.getLocationId());
+				if (doctorClinicProfileCollection != null && !doctorClinicProfileCollection.getIsShowPatientNumber()) {
+					mobileNumber = mobileNumber.replaceAll("\\w(?=\\w{4})", "*");
+				}
+			}
+
+			consentFormItemJasperdetails.setMobileNumber(mobileNumber);
 			show = true;
 		}
 		parameters.put("showMbno", show);
@@ -5241,9 +5298,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private void sendWelcomeMessageToPatient(PatientCollection patientCollection, LocationCollection locationCollection,
 			String mobileNumber) {
 		try {
-
 			if (patientCollection != null) {
-				String message = patientWelcomeMessage;
+				String message = "Dear " + patientCollection.getLocalPatientName() + "," + " Thank you for visiting "
+						+ locationCollection.getLocationName() + ". Call " + healthcocoSupportNumber + " for queries."
+						+ "\n" + "- Healthcoco";
 				message = StringEscapeUtils.unescapeJava(message);
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 				smsTrackDetail.setDoctorId(patientCollection.getDoctorId());
@@ -5254,9 +5312,27 @@ public class RegistrationServiceImpl implements RegistrationService {
 				smsDetail.setUserId(patientCollection.getUserId());
 				SMS sms = new SMS();
 				smsDetail.setUserName(patientCollection.getLocalPatientName());
-				message = message.replace("{patientName}", patientCollection.getLocalPatientName());
-				message = message.replace("{clinicName}", locationCollection.getLocationName());
-				message = message.replace("{clinicNumber}", locationCollection.getClinicNumber());
+				String localPatientName = "";
+				if (!DPDoctorUtils.anyStringEmpty(patientCollection.getLocalPatientName()))
+					localPatientName = patientCollection.getLocalPatientName();
+				else
+					localPatientName = "";
+
+				String locationName = "";
+				if (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocationName()))
+					locationName = locationCollection.getLocationName();
+				else
+					locationName = "";
+
+				String clinicNumber = "";
+				if (!DPDoctorUtils.anyStringEmpty(locationCollection.getClinicNumber()))
+					clinicNumber = locationCollection.getClinicNumber();
+				else
+					clinicNumber = "";
+
+				message = message.replace("{patientName}", localPatientName);
+				message = message.replace("{clinicName}", locationName);
+				message = message.replace("{clinicNumber}", clinicNumber);
 				sms.setSmsText(message);
 
 				SMSAddress smsAddress = new SMSAddress();
@@ -5272,6 +5348,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 
 	}
@@ -5288,6 +5366,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				smsTrackDetail.setLocationId(patientCollection.getLocationId());
 				smsTrackDetail.setHospitalId(patientCollection.getHospitalId());
 				smsTrackDetail.setType("DOCTOR_REFERENCE_MESSAGE");
+				smsTrackDetail.setTemplateId("1307165509461780606");
 				SMSDetail smsDetail = new SMSDetail();
 				smsDetail.setUserId(patientCollection.getUserId());
 				SMS sms = new SMS();
@@ -5643,6 +5722,32 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 		return response;
 
+	}
+
+	@Override
+	public Boolean updateShowPatient(String doctorId, Boolean isShowPatientNumber, String locationId) {
+		Boolean response = false;
+		DoctorClinicProfileCollection doctorClinicProfile = doctorClinicProfileRepository
+				.findByDoctorIdAndLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+		if (doctorClinicProfile != null) {
+			doctorClinicProfile.setIsShowPatientNumber(isShowPatientNumber);
+			doctorClinicProfile = doctorClinicProfileRepository.save(doctorClinicProfile);
+			response = true;
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean updateIsShowDoctorInCalender(String doctorId, Boolean isShowDoctorInCalender, String locationId) {
+		Boolean response = false;
+		DoctorClinicProfileCollection doctorClinicProfile = doctorClinicProfileRepository
+				.findByDoctorIdAndLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+		if (doctorClinicProfile != null) {
+			doctorClinicProfile.setIsShowDoctorInCalender(isShowDoctorInCalender);
+			doctorClinicProfile = doctorClinicProfileRepository.save(doctorClinicProfile);
+			response = true;
+		}
+		return response;
 	}
 
 }

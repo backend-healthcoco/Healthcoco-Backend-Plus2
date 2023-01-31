@@ -127,6 +127,7 @@ public interface PathProxy {
 	public interface RegistrationUrls {
 		
 		public static final String GET_USERS = "/users/{locationId}/{hospitalId}";
+		
 	}
 	
 	public static final String ADMIT_CARD_URL = BASE_URL + "/admitCard";

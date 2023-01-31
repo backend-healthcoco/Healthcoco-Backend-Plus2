@@ -161,6 +161,16 @@ public class ClinicalNotesJasperDetails {
 	private EyeVisualAcuitiesJasperResponse leftVisualAcuities;
 	private List<DBObject> eyeExamination;
 	private List<DBObject> eyeInvestigation;
+	private String vaccinationHistory;
+
+	
+	public String getVaccinationHistory() {
+		return vaccinationHistory;
+	}
+
+	public void setVaccinationHistory(String vaccinationHistory) {
+		this.vaccinationHistory = vaccinationHistory;
+	}
 
 	public String getComplaints() {
 		return complaints;

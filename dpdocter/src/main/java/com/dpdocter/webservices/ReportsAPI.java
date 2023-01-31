@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -472,6 +473,16 @@ public class ReportsAPI {
 		return response;
 	}
 
+	@Path(value = PathProxy.ReportsUrls.DELETE_IPD_REPORT)
+	@DELETE
+	@ApiOperation(value = PathProxy.ReportsUrls.DELETE_IPD_REPORT, notes = PathProxy.ReportsUrls.DELETE_IPD_REPORT)
+	public Response<Boolean> deletIPDReportById(@PathParam("id") String reportId,@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		Boolean ipdReports = reportsService.deleteIPDReportById(reportId,discarded);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(ipdReports);
+		return response;
+	}
+	
 	@Path(value = PathProxy.ReportsUrls.GET_IPD_REPORT)
 	@GET
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_IPD_REPORT, notes = PathProxy.ReportsUrls.GET_IPD_REPORT)
@@ -509,6 +520,26 @@ public class ReportsAPI {
 		DeliveryReports deliveryReports = reportsService.getDeliveryReportById(reportId);
 		Response<DeliveryReports> response = new Response<DeliveryReports>();
 		response.setData(deliveryReports);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ReportsUrls.DELETE_DELIVERY_REPORT)
+	@DELETE
+	@ApiOperation(value = PathProxy.ReportsUrls.DELETE_DELIVERY_REPORT, notes = PathProxy.ReportsUrls.DELETE_DELIVERY_REPORT)
+	public Response<Boolean> deleteDeliveryReportById(@PathParam("id") String reportId,@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		Boolean deliveryReports = reportsService.deleteDeliveryReportById(reportId,discarded);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(deliveryReports);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ReportsUrls.DELETE_OT_REPORT)
+	@GET
+	@ApiOperation(value = PathProxy.ReportsUrls.DELETE_OT_REPORT, notes = PathProxy.ReportsUrls.DELETE_OT_REPORT)
+	public Response<Boolean> deleteOTReportById(@PathParam("id") String reportId,@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		Boolean otReports = reportsService.deleteOTReportById(reportId,discarded);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(otReports);
 		return response;
 	}
 

@@ -80,6 +80,9 @@ public class PrintSettingsCollection extends GenericCollection {
 
 	@Field
 	private Boolean isPidHasDate = true;
+	
+	@Field
+	private boolean isPaymentShow = false;
 
 	public Boolean getShowPoweredBy() {
 		return showPoweredBy;
@@ -239,6 +242,14 @@ public class PrintSettingsCollection extends GenericCollection {
 
 	public void setPrintSettingType(String printSettingType) {
 		this.printSettingType = printSettingType;
+	}
+
+	public boolean getIsPaymentShow() {
+		return isPaymentShow;
+	}
+
+	public void setIsPaymentShow(boolean isPaymentShow) {
+		this.isPaymentShow = isPaymentShow;
 	}
 
 	@Override

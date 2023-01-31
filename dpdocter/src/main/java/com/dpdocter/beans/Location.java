@@ -2,6 +2,7 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.enums.LocationType;
@@ -122,6 +123,17 @@ public class Location {
     
     private String defaultLocationId;
 
+    private Boolean isDentalChain = false;
+	
+	private String ratelistId;
+
+	public Boolean getIsDentalChain() {
+		return isDentalChain;
+	}
+
+	public void setIsDentalChain(Boolean isDentalChain) {
+		this.isDentalChain = isDentalChain;
+	}
 	public Boolean getIsMobileNumberOptional() {
 		return isMobileNumberOptional;
 	}
@@ -562,6 +574,14 @@ public class Location {
 
 	public void setDefaultLocationId(String defaultLocationId) {
 		this.defaultLocationId = defaultLocationId;
+	}
+
+	public String getRatelistId() {
+		return ratelistId;
+	}
+
+	public void setRatelistId(String ratelistId) {
+		this.ratelistId = ratelistId;
 	}
 
 	@Override

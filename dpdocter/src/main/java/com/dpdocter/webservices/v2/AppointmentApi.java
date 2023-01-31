@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.v2.Appointment;
+import com.dpdocter.beans.v2.ClinicalNotes;
 import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -95,12 +96,24 @@ public class AppointmentApi {
 			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
 			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime,
 			@QueryParam(value = "status") String status, @QueryParam(value = "sortBy") String sortBy,
-			@QueryParam(value = "fromTime") String fromTime, @QueryParam(value = "toTime") String toTime ,@DefaultValue("false") @QueryParam("isRegisteredPatientRequired") Boolean isRegisteredPatientRequired,
-			@DefaultValue(value = "false") @QueryParam(value = "isWeb") Boolean isWeb, @DefaultValue("true") @QueryParam("discarded") Boolean discarded,@QueryParam("branch") String branch) {
+			@QueryParam(value = "fromTime") String fromTime, @QueryParam(value = "toTime") String toTime,
+			@DefaultValue("false") @QueryParam("isRegisteredPatientRequired") Boolean isRegisteredPatientRequired,
+			@DefaultValue(value = "false") @QueryParam(value = "isWeb") Boolean isWeb,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded, @QueryParam("branch") String branch) {
 
-		Response<Appointment> response = appointmentService.getAppointments(locationId, doctorId, patientId, from, to,
-				page, size, updatedTime, status, sortBy, fromTime, toTime, isRegisteredPatientRequired, isWeb, discarded,branch);
-		return response;
+//		if (isWeb) {
+//			Response<Appointment> response = appointmentService.getAppointmentsForWebNew(locationId, doctorId,
+//					patientId, from, to, page, size, updatedTime, status, sortBy, fromTime, toTime,
+//					isRegisteredPatientRequired, isWeb, discarded, branch);
+//
+//			return response;
+//
+//		} else {
+			Response<Appointment> response = appointmentService.getAppointments(locationId, doctorId, patientId, from,
+					to, page, size, updatedTime, status, sortBy, fromTime, toTime, isRegisteredPatientRequired, isWeb,
+					discarded, branch);
+			return response;
+//		}
 	}
 
 	@Path(value = PathProxy.AppointmentUrls.GET_PATIENT_APPOINTMENTS)
@@ -110,12 +123,12 @@ public class AppointmentApi {
 			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "patientId") String patientId,
 			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
 			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
-			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime, @QueryParam(value = "type") String type) {
+			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime,
+			@QueryParam(value = "type") String type) {
 
-		Response<Object> response = appointmentService.getPatientAppointments(locationId, doctorId, patientId, from,
-				to, page, size, updatedTime, type);
+		Response<Object> response = appointmentService.getPatientAppointments(locationId, doctorId, patientId, from, to,
+				page, size, updatedTime, type);
 		return response;
 	}
 
-	
 }

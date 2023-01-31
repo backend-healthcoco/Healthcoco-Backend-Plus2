@@ -58,7 +58,7 @@ public interface RoleRepository extends MongoRepository<RoleCollection, ObjectId
 
     public List<RoleCollection> findByLocationIdNotNullAndHospitalIdNotNull();
     
-    public List<RoleCollection> findByRoleInAndLocationIdAndHospitalId(List<String> roles, ObjectId locationId, ObjectId hospitalId);
+    public List<RoleCollection> findByRoleInAndLocationIdAndHospitalId(List<String> roles, String string, String string2);
 
 
 }

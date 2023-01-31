@@ -94,10 +94,30 @@ public class UserCollection extends GenericCollection {
 	@Field
 	private String timeZone ;
 	
+	@Field
+	private Boolean isDentalChainVerified = false;
+
+	@Field
+	private Boolean isDentalChainPatient = false;
 	
 	
 	
-	
+	public Boolean getIsDentalChainVerified() {
+		return isDentalChainVerified;
+	}
+
+	public void setIsDentalChainVerified(Boolean isDentalChainVerified) {
+		this.isDentalChainVerified = isDentalChainVerified;
+	}
+
+	public Boolean getIsDentalChainPatient() {
+		return isDentalChainPatient;
+	}
+
+	public void setIsDentalChainPatient(Boolean isDentalChainPatient) {
+		this.isDentalChainPatient = isDentalChainPatient;
+	}
+
 	public ObjectId getId() {
 		return id;
 	}

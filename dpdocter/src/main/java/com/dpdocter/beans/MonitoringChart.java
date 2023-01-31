@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 public class MonitoringChart {
 	   
 	private WorkingHours time;
@@ -15,6 +17,10 @@ public class MonitoringChart {
     private String sPO2;
     
     private String  anySpecialEventsAndStatDrugs;
+    
+	private String diagnosis;	
+	private String referanceDone;	
+	private String nurseName;
 
 	public WorkingHours getTime() {
 		return time;
@@ -70,6 +76,31 @@ public class MonitoringChart {
 
 	public void setAnySpecialEventsAndStatDrugs(String anySpecialEventsAndStatDrugs) {
 		this.anySpecialEventsAndStatDrugs = anySpecialEventsAndStatDrugs;
+	}
+
+	
+	public String getDiagnosis() {
+		return diagnosis;
+	}
+
+	public void setDiagnosis(String diagnosis) {
+		this.diagnosis = diagnosis;
+	}
+
+	public String getReferanceDone() {
+		return referanceDone;
+	}
+
+	public void setReferanceDone(String referanceDone) {
+		this.referanceDone = referanceDone;
+	}
+
+	public String getNurseName() {
+		return nurseName;
+	}
+
+	public void setNurseName(String nurseName) {
+		this.nurseName = nurseName;
 	}
 
 	@Override

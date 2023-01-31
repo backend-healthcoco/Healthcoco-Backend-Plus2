@@ -10,6 +10,8 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.FileDetails;
+import com.dpdocter.beans.RecordsUrlData;
 import com.dpdocter.enums.RecordsState;
 
 @Document(collection = "records_cl")
@@ -24,6 +26,9 @@ public class RecordsCollection extends GenericCollection {
 
 	@Field
 	private String recordsUrl;
+	
+	@Field
+	private List<RecordsUrlData> recordsUrls;
 
 	@Field
 	private String recordsPath;
@@ -282,8 +287,14 @@ public class RecordsCollection extends GenericCollection {
 	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
-	
-	
+
+	public List<RecordsUrlData> getRecordsUrls() {
+		return recordsUrls;
+	}
+
+	public void setRecordsUrls(List<RecordsUrlData> recordsUrls) {
+		this.recordsUrls = recordsUrls;
+	}
 
 	public ObjectId getAppointmentId() {
 		return appointmentId;

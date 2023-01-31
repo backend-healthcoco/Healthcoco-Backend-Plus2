@@ -47,7 +47,6 @@ public class DoctorClinicProfile {
 	private AppointmentSlot appointmentSlot;
 
 	private List<WorkingSchedule> workingSchedules;
-	
 
 	private DoctorFacility facility;
 
@@ -146,22 +145,52 @@ public class DoctorClinicProfile {
 	private Boolean isVaccinationModuleOn = false;
 
 	private String feedbackURL;
-	
+
 	private List<WorkingSchedule> onlineWorkingSchedules;
-	
+
 //<<<<<<< Updated upstream
-	private List<DoctorConsultation>  consultationType;
+	private List<DoctorConsultation> consultationType;
 
 	private Boolean isOnlineConsultationAvailable = false;
-	
+
 	private String clinicOwnershipImageUrl;
-	
+
 	private AppointmentSlot onlineConsultationSlot;
 //=======
 //	private Map<DoctorConsultation, String> onlineConsultationFees;
 
 //	private List<ConsultationType> onlineConsultationType;
 //>>>>>>> Stashed changes
+	private Boolean isDentalChain = false;
+	private Boolean isShowPatientNumber = false;
+
+	private Boolean isShowDoctorInCalender = true;
+
+	private String ratelistId;
+
+	public Boolean getIsShowDoctorInCalender() {
+		return isShowDoctorInCalender;
+	}
+
+	public void setIsShowDoctorInCalender(Boolean isShowDoctorInCalender) {
+		this.isShowDoctorInCalender = isShowDoctorInCalender;
+	}
+
+	public Boolean getIsShowPatientNumber() {
+		return isShowPatientNumber;
+	}
+
+	public void setIsShowPatientNumber(Boolean isShowPatientNumber) {
+		this.isShowPatientNumber = isShowPatientNumber;
+	}
+
+	public Boolean getIsDentalChain() {
+		return isDentalChain;
+	}
+
+	public void setIsDentalChain(Boolean isDentalChain) {
+		this.isDentalChain = isDentalChain;
+	}
 
 	public Boolean getIsSuperAdmin() {
 		return isSuperAdmin;
@@ -674,7 +703,7 @@ public class DoctorClinicProfile {
 	public void setHasBillingAccess(Boolean hasBillingAccess) {
 		this.hasBillingAccess = hasBillingAccess;
 	}
-	
+
 	public String getFeedbackURL() {
 		return feedbackURL;
 	}
@@ -690,8 +719,6 @@ public class DoctorClinicProfile {
 	public void setIsAdminNutritionist(Boolean isAdminNutritionist) {
 		this.isAdminNutritionist = isAdminNutritionist;
 	}
-	
-	
 
 	public List<WorkingSchedule> getOnlineWorkingSchedules() {
 		return onlineWorkingSchedules;
@@ -709,8 +736,6 @@ public class DoctorClinicProfile {
 	public void setConsultationType(List<DoctorConsultation> consultationType) {
 		this.consultationType = consultationType;
 
-	
-
 //	public Map<DoctorConsultation, String> getOnlineConsultationFees() {
 //		return onlineConsultationFees;
 //	}
@@ -719,7 +744,6 @@ public class DoctorClinicProfile {
 //		this.onlineConsultationFees = onlineConsultationFees;
 //	}
 
-	
 //	public List<DoctorConsultation> getOnlineConsultationType() {
 //		return onlineConsultationType;
 //	}
@@ -728,7 +752,6 @@ public class DoctorClinicProfile {
 //		this.onlineConsultationType = onlineConsultationType;
 //>>>>>>> Stashed changes
 	}
-	
 
 //	public List<ConsultationType> getOnlineConsultationType() {
 //		return onlineConsultationType;
@@ -762,6 +785,14 @@ public class DoctorClinicProfile {
 		this.isOnlineConsultationAvailable = isOnlineConsultationAvailable;
 	}
 
+	public String getRatelistId() {
+		return ratelistId;
+	}
+
+	public void setRatelistId(String ratelistId) {
+		this.ratelistId = ratelistId;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfile [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -790,8 +821,7 @@ public class DoctorClinicProfile {
 				+ isAdminNutritionist + ", isSuperAdmin=" + isSuperAdmin + ", mrCode=" + mrCode + ", divisionIds="
 				+ divisionIds + ", cityId=" + cityId + ", isVaccinationModuleOn=" + isVaccinationModuleOn
 				+ ", feedbackURL=" + feedbackURL + ", onlineWorkingSchedules=" + onlineWorkingSchedules
-				 + ", isOnlineConsultationAvailable="
-				+ isOnlineConsultationAvailable + "]";
+				+ ", isOnlineConsultationAvailable=" + isOnlineConsultationAvailable + "]";
 	}
 
 }

@@ -14,7 +14,7 @@ public interface AdmitCardService {
 	List<AdmitCardResponse> getAdmitCards(String doctorId, String locationId, String hospitalId, String patientId,
 			long page, int size, long updatedTime, Boolean discarded);
 
-	AdmitCardResponse deleteAdmitCard(String cardId, String doctorId, String hospitalId, String locationId,
+	Boolean deleteAdmitCard(String cardId, String doctorId, String hospitalId, String locationId,
 			Boolean discarded);
 
 	AdmitCardResponse addEditAdmitcard(AdmitCardRequest request);

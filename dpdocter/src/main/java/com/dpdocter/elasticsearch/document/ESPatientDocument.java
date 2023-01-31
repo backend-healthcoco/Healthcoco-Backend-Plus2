@@ -111,6 +111,9 @@ public class ESPatientDocument {
 
 	@Field(type = FieldType.Text)
 	private String motherName;
+	
+	@Field(type = FieldType.Text)
+	private String userLanguage;
 
 	public String getId() {
 		return id;
@@ -118,6 +121,14 @@ public class ESPatientDocument {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getUserLanguage() {
+		return userLanguage;
+	}
+
+	public void setUserLanguage(String userLanguage) {
+		this.userLanguage = userLanguage;
 	}
 
 	public String getUserId() {

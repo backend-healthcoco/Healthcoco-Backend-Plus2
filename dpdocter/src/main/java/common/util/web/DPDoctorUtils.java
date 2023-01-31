@@ -374,6 +374,9 @@ public class DPDoctorUtils {
 					.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")))
 							.should(QueryBuilders.termQuery("hospitalId", hospitalId)).minimumShouldMatch(1));
 		}
+		boolQueryBuilder
+				.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("ratelistId"))));
+
 		if (!DPDoctorUtils.anyStringEmpty(disease))
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("diseases", disease));
 
@@ -403,7 +406,7 @@ public class DPDoctorUtils {
 				|| resource.equals(Resource.PC_THROAT) || resource.equals(Resource.NECK_EXAM)
 				|| resource.equals(Resource.NOSE_EXAM) || resource.equals(Resource.ORAL_CAVITY_THROAT_EXAM)
 				|| resource.equals(Resource.INDIRECT_LARYGOSCOPY_EXAM) || resource.equals(Resource.EARS_EXAM)
-				|| resource.equals(Resource.DENTAL_WORKS)) {
+				|| resource.equals(Resource.DENTAL_WORKS) || resource.equals(Resource.NURSING_CAREEXAM)) {
 			if (specialities != null && !specialities.isEmpty()) {
 				BoolQueryBuilder specialityQueryBuilder = boolQuery()
 						.should(boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
@@ -882,4 +885,267 @@ public class DPDoctorUtils {
 	public static boolean isNullOrEmptyList(Map<?, ?> hashMap) {
 		return (hashMap == null || hashMap.size() <= 0) ? true : false;
 	}
+
+	public static Aggregation createGlobalAggregation(long page, int size, String updatedTime, Boolean discarded,
+			String ratelistId) {
+		long createdTimeStamp = Long.parseLong(updatedTime);
+
+		Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("doctorId").is(null)
+				.and("locationId").is(null).and("hospitalId").is(null);
+		if (!discarded)
+			criteria.and("discarded").is(discarded);
+		if (!DPDoctorUtils.anyStringEmpty(ratelistId))
+			criteria.and("ratelistId").is(new ObjectId(ratelistId));
+		Aggregation aggregation = null;
+		if (size > 0)
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip(page * size),
+					Aggregation.limit(size));
+		else
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+		return aggregation;
+	}
+
+	public static SearchQuery createGlobalQueryForRatelist(Resource resource, long page, int size, String updatedTime,
+			Boolean discarded, String sortBy, String searchTerm, String ratelistId, Collection<String> specialities,
+			String category, String disease, String... searchTermFieldName) {
+		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime))
+						.to(new Date().getTime()))
+				.mustNot(QueryBuilders.existsQuery("doctorId")).mustNot(QueryBuilders.existsQuery("locationId"))
+				.mustNot(QueryBuilders.existsQuery("hospitalId"));
+		if (!DPDoctorUtils.anyStringEmpty(disease))
+			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("diseases", disease));
+		if (!DPDoctorUtils.anyStringEmpty(searchTerm) && searchTermFieldName.length > 0) {
+
+			if (searchTermFieldName[0].equalsIgnoreCase("genericNames.name")) {
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("genericNames",
+						boolQuery().must(QueryBuilders.matchPhrasePrefixQuery("genericNames.name", searchTerm)),
+						ScoreMode.None));
+			} else {
+				if (searchTermFieldName.length == 1)
+					boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName[0], searchTerm));
+				else
+					boolQueryBuilder.must(QueryBuilders.multiMatchQuery(searchTerm, searchTermFieldName));
+			}
+		}
+
+		boolQueryBuilder.must(QueryBuilders.termQuery("ratelistId", ratelistId));
+
+		if (!discarded)
+			boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
+
+		if (resource.equals(Resource.COMPLAINT) || resource.equals(Resource.OBSERVATION)
+				|| resource.equals(Resource.INVESTIGATION) || resource.equals(Resource.DIAGNOSIS)
+				|| resource.equals(Resource.NOTES) || resource.equals(Resource.PROVISIONAL_DIAGNOSIS)
+				|| resource.equals(Resource.GENERAL_EXAMINATION) || resource.equals(Resource.SYSTEMIC_EXAMINATION)
+				|| resource.equals(Resource.PRESENT_COMPLAINT) || resource.equals(Resource.HISTORY_OF_PRESENT_COMPLAINT)
+				|| resource.equals(Resource.MENSTRUAL_HISTORY) || resource.equals(Resource.OBSTETRIC_HISTORY)
+				|| resource.equals(Resource.INDICATION_OF_USG) || resource.equals(Resource.PV)
+				|| resource.equals(Resource.ECG) || resource.equals(Resource.XRAY) || resource.equals(Resource.ECHO)
+				|| resource.equals(Resource.HOLTER) || resource.equals(Resource.TREATMENTSERVICE)
+				|| resource.equals(Resource.PC_EARS) || resource.equals(Resource.PC_NOSE)
+				|| resource.equals(Resource.PC_ORAL_CAVITY) || resource.equals(Resource.PC_THROAT)
+				|| resource.equals(Resource.NECK_EXAM) || resource.equals(Resource.NOSE_EXAM)
+				|| resource.equals(Resource.ORAL_CAVITY_THROAT_EXAM)
+				|| resource.equals(Resource.INDIRECT_LARYGOSCOPY_EXAM) || resource.equals(Resource.EARS_EXAM)) {
+			if (specialities != null && !specialities.isEmpty()) {
+				BoolQueryBuilder specialityQueryBuilder = boolQuery()
+						.should(boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
+				for (String speciality : specialities) {
+					if (!DPDoctorUtils.anyStringEmpty(speciality)) {
+						specialityQueryBuilder.should(QueryBuilders.matchQuery("speciality", speciality));
+					}
+				}
+				specialityQueryBuilder.minimumShouldMatch(1);
+				boolQueryBuilder.must(specialityQueryBuilder);
+			}
+		}
+
+		if (!DPDoctorUtils.anyStringEmpty(category)) {
+			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("categories", category));
+		}
+		SearchQuery searchQuery = null;
+		if (resource.getType().equalsIgnoreCase(Resource.DRUG.getType())) {
+			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(PageRequest.of(0, 15))
+					.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
+		} else if (anyStringEmpty(sortBy)) {
+			if (size > 0)
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withPageable(PageRequest.of((int) page, size, Direction.DESC, "updatedTime")).build();
+			else
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
+		} else {
+			if (size > 0)
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withPageable(PageRequest.of((int) page, size, Direction.ASC, sortBy)).build();
+			else
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
+		}
+
+		return searchQuery;
+	}
+
+	public static SearchQuery createCustomGlobalQueryForRatelist(Resource resource, long page, int size,
+			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String sortBy,
+			String searchTerm, String ratelistId, Collection<String> specialities, String category, String disease,
+			String... searchTermFieldName) {
+
+		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(
+				QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)).to(new Date().getTime()));
+
+		if (!DPDoctorUtils.anyStringEmpty(doctorId))
+			boolQueryBuilder
+					.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("doctorId")))
+							.should(QueryBuilders.termQuery("doctorId", doctorId)).minimumShouldMatch(1));
+
+		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+			boolQueryBuilder
+					.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")))
+							.should(QueryBuilders.termQuery("locationId", locationId)).minimumShouldMatch(1))
+					.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")))
+							.should(QueryBuilders.termQuery("hospitalId", hospitalId)).minimumShouldMatch(1));
+		}
+		if (!DPDoctorUtils.anyStringEmpty(disease))
+			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("diseases", disease));
+
+		if (!DPDoctorUtils.anyStringEmpty(searchTerm) && searchTermFieldName.length > 0) {
+			if (searchTermFieldName[0].equalsIgnoreCase("genericNames.name")) {
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("genericNames",
+						boolQuery().must(QueryBuilders.matchPhrasePrefixQuery("genericNames.name", searchTerm)),
+						ScoreMode.None));
+			} else {
+				if (searchTermFieldName.length == 1)
+					boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName[0], searchTerm));
+				else
+					boolQueryBuilder.must(QueryBuilders.multiMatchQuery(searchTerm, searchTermFieldName));
+			}
+		}
+		boolQueryBuilder.must(QueryBuilders.termQuery("ratelistId", ratelistId));
+
+		if (!discarded)
+			boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
+
+		if (resource.equals(Resource.COMPLAINT) || resource.equals(Resource.OBSERVATION)
+				|| resource.equals(Resource.INVESTIGATION) || resource.equals(Resource.DIAGNOSIS)
+				|| resource.equals(Resource.NOTES) || resource.equals(Resource.PROVISIONAL_DIAGNOSIS)
+				|| resource.equals(Resource.GENERAL_EXAMINATION) || resource.equals(Resource.SYSTEMIC_EXAMINATION)
+				|| resource.equals(Resource.PRESENT_COMPLAINT) || resource.equals(Resource.HISTORY_OF_PRESENT_COMPLAINT)
+				|| resource.equals(Resource.MENSTRUAL_HISTORY) || resource.equals(Resource.OBSTETRIC_HISTORY)
+				|| resource.equals(Resource.TREATMENTSERVICE) || resource.equals(Resource.PC_EARS)
+				|| resource.equals(Resource.PC_NOSE) || resource.equals(Resource.PC_ORAL_CAVITY)
+				|| resource.equals(Resource.PC_THROAT) || resource.equals(Resource.NECK_EXAM)
+				|| resource.equals(Resource.NOSE_EXAM) || resource.equals(Resource.ORAL_CAVITY_THROAT_EXAM)
+				|| resource.equals(Resource.INDIRECT_LARYGOSCOPY_EXAM) || resource.equals(Resource.EARS_EXAM)
+				|| resource.equals(Resource.DENTAL_WORKS) || resource.equals(Resource.NURSING_CAREEXAM)) {
+			if (specialities != null && !specialities.isEmpty()) {
+				BoolQueryBuilder specialityQueryBuilder = boolQuery()
+						.should(boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
+				for (String speciality : specialities) {
+					if (!DPDoctorUtils.anyStringEmpty(speciality)) {
+						specialityQueryBuilder.should(QueryBuilders.matchQuery("speciality", speciality));
+					}
+				}
+				specialityQueryBuilder.minimumShouldMatch(1);
+				boolQueryBuilder.must(specialityQueryBuilder);
+			}
+		}
+
+		if (!DPDoctorUtils.anyStringEmpty(category)) {
+			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("categories", category));
+		}
+		SearchQuery searchQuery = null;
+		if (resource.getType().equalsIgnoreCase(Resource.DRUG.getType())
+				|| resource.getType().equalsIgnoreCase(Resource.TREATMENTSERVICE.getType())) {
+			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(PageRequest.of(0, 15))
+					.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
+		} else if (anyStringEmpty(sortBy)) {
+			if (size > 0)
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withPageable(PageRequest.of((int) page, size, Direction.DESC, "updatedTime")).build();
+			else
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
+		} else {
+			if (size > 0)
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withPageable(PageRequest.of((int) page, size, Direction.ASC, sortBy)).build();
+			else
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
+		}
+		return searchQuery;
+	}
+
+	public static SearchQuery createCustomQueryForRatelist(long page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String sortBy, String searchTerm,
+			String ratelistId, String category, String disease, String... searchTermFieldName) {
+
+		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(
+				QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)).to(new Date().getTime()));
+		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("doctorId", doctorId));
+		}
+		if (!DPDoctorUtils.anyStringEmpty(disease)) {
+			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("diseases", disease));
+		}
+		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
+			boolQueryBuilder.must(QueryBuilders.termQuery("locationId", locationId))
+					.must(QueryBuilders.termQuery("hospitalId", hospitalId));
+		if (!DPDoctorUtils.anyStringEmpty(searchTerm) && searchTermFieldName.length > 0) {
+			if (searchTermFieldName[0].equalsIgnoreCase("genericNames.name")) {
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("genericNames",
+						boolQuery().must(QueryBuilders.matchPhrasePrefixQuery("genericNames.name", searchTerm)),
+						ScoreMode.None));
+			} else {
+				if (searchTermFieldName.length == 1)
+					boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName[0], searchTerm));
+				else
+					boolQueryBuilder.must(QueryBuilders.multiMatchQuery(searchTerm, searchTermFieldName));
+			}
+		}
+		boolQueryBuilder.must(QueryBuilders.termQuery("ratelistId", ratelistId));
+
+		if (!discarded)
+			boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
+		if (!DPDoctorUtils.anyStringEmpty(category)) {
+			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("categories", category));
+		}
+		SearchQuery searchQuery = null;
+
+		if (anyStringEmpty(sortBy)) {
+			if (size > 0)
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withPageable(PageRequest.of((int) page, size, Direction.DESC, "updatedTime")).build();
+			else
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
+		} else {
+			if (sortBy.equalsIgnoreCase("rankingCount")) {
+				if (size > 0) {
+					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+							.withPageable(PageRequest.of((int) page, size))
+							.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.DESC)).build();
+				} else {
+					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+							.withPageable(PageRequest.of(0, 15))
+							.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.DESC)).build();
+				}
+
+			} else {
+				if (size > 0)
+					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+							.withPageable(PageRequest.of((int) page, size, Direction.ASC, sortBy)).build();
+				else
+					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+							.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
+			}
+		}
+		return searchQuery;
+	}
+
 }

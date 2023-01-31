@@ -136,6 +136,7 @@ public class RegistrationApi {
 			throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
 		}
 
+		System.out.println("lang" + request.getLanguage());
 		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 		RegisteredPatientDetails registeredPatientDetails = null;
 
@@ -195,6 +196,9 @@ public class RegistrationApi {
 				throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
 			}
 		}
+
+		System.out.println("lang" + request.getLanguage());
+
 		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 		RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request,
 				infoType);
@@ -1045,9 +1049,9 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.DELETE_CONSENT_FORM)
 	@DELETE
 	@ApiOperation(value = PathProxy.RegistrationUrls.DELETE_CONSENT_FORM, notes = PathProxy.RegistrationUrls.DELETE_CONSENT_FORM)
-	public Response<ConsentForm> deleteConsentForm(@PathParam("consentFormId") String consentFormId,
+	public Response<Boolean> deleteConsentForm(@PathParam("consentFormId") String consentFormId,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-		Response<ConsentForm> response = new Response<ConsentForm>();
+		Response<Boolean> response = new Response<Boolean>();
 		response.setData(registrationService.deleteConcentForm(consentFormId, discarded));
 		return response;
 	}
@@ -1396,4 +1400,32 @@ public class RegistrationApi {
 
 	}
 
+
+	@Path(value = PathProxy.RegistrationUrls.UPDATE_SHOW_PATIENT_NUMBER)
+	@GET
+	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_SHOW_PATIENT_NUMBER, notes = PathProxy.RegistrationUrls.UPDATE_SHOW_PATIENT_NUMBER)
+	public Response<Boolean> updateShowPatient(@PathParam("doctorId") String doctorId,@PathParam("locationId") String locationId,
+			@DefaultValue("false") @QueryParam("isShowPatientNumber") Boolean isShowPatientNumber) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId,locationId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor ,location Id could not null");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(registrationService.updateShowPatient(doctorId, isShowPatientNumber,locationId));
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.UPDATE_IS_SHOW_DOCTOR_IN_CALENDER)
+	@GET
+	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_IS_SHOW_DOCTOR_IN_CALENDER, notes = PathProxy.RegistrationUrls.UPDATE_IS_SHOW_DOCTOR_IN_CALENDER)
+	public Response<Boolean> updateIsShowDoctorInCalender(@PathParam("doctorId") String doctorId,@PathParam("locationId") String locationId,
+			@DefaultValue("false") @QueryParam("isShowDoctorInCalender") Boolean isShowDoctorInCalender) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId,locationId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor ,location Id could not null");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(registrationService.updateIsShowDoctorInCalender(doctorId, isShowDoctorInCalender,locationId));
+		return response;
+	}
 }

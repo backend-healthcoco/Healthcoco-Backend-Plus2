@@ -106,6 +106,9 @@ public class PatientRegistrationRequest {
 	private String motherName;
 	
 	private String imageUrl;
+	
+	private String language;
+
 
 	public String getRecordId() {
 		return recordId;
@@ -483,6 +486,15 @@ public class PatientRegistrationRequest {
 
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
+	}
+
+	
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
 	}
 
 	@Override

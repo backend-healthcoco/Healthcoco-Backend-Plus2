@@ -23,6 +23,7 @@ import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.UserState;
@@ -40,6 +41,7 @@ import com.dpdocter.response.ForgotPasswordResponse;
 import com.dpdocter.services.ForgotPasswordService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
+import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.tokenstore.CustomPasswordEncoder;
 
@@ -98,6 +100,10 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	
 	@Value(value = "${reset.password.link}")
 	private String RESET_PASSWORD_LINK;
+	
+	@Autowired
+	PushNotificationServices pushNotificationServices;
+
 
 	@Override
 	@Transactional
@@ -112,7 +118,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			userCollection = userRepository.findByUserNameAndEmailAddress(request.getUsername(), request.getUsername());
 
 			if (userCollection != null) {
-				if (userCollection.getUserState() == UserState.USERSTATECOMPLETE) {
+		//		if (userCollection.getUserState() == UserState.USERSTATECOMPLETE ) {
 					if (userCollection.getEmailAddress().trim().equals(request.getEmailAddress().trim())) {
 						TokenCollection tokenCollection = new TokenCollection();
 						tokenCollection.setResourceId(userCollection.getId());
@@ -124,6 +130,9 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 								tokenCollection.getId());
 						mailService.sendEmail(userCollection.getEmailAddress(), forgotUsernamePasswordSub, body, null);
 						
+						pushNotificationServices.notifyUser(userCollection.getId().toString(),
+								"Your Password has been reset successfully.", ComponentType.EMAIL_VERIFICATION.getType(), null,
+								null);
 						sendForgotPasswordMessage(userCollection.getMobileNumber(), tokenCollection.getId());
 						response = new ForgotPasswordResponse(userCollection.getUserName(),
 								userCollection.getMobileNumber(), userCollection.getEmailAddress(), RoleEnum.DOCTOR);
@@ -132,10 +141,10 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 						logger.warn("Email address is empty.");
 						throw new BusinessException(ServiceError.InvalidInput, "Email address is empty.");
 					}
-				} else {
-					logger.warn("User is not activated");
-					throw new BusinessException(ServiceError.Unknown, "User is not activated");
-				}
+//				} else {
+//					logger.warn("User is not activated");
+//					throw new BusinessException(ServiceError.Unknown, "User is not activated");
+//				}
 			} else {
 				logger.warn("No account present with email address, please sign up");
 				throw new BusinessException(ServiceError.Unknown,
@@ -311,6 +320,10 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 						userCollection.getTitle() + " " + userCollection.getFirstName());
 				mailService.sendEmail(userCollection.getEmailAddress(), resetPasswordSub, body, null);
 
+				pushNotificationServices.notifyUser(userCollection.getId().toString(),
+						" You have successfully changed your password.", ComponentType.RESET_PASSWORD.getType(), null, null);
+
+				
 				return "You have successfully changed your password.";
 			}
 		} catch (IllegalArgumentException argumentException) {

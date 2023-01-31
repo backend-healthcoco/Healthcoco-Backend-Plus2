@@ -48,6 +48,9 @@ public class ESTreatmentServiceDocument {
 	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> fieldsRequired;
 
+	@Field(type = FieldType.Text)
+	private String ratelistId;
+	
 	public double getCost() {
 		return cost;
 	}
@@ -165,6 +168,14 @@ public class ESTreatmentServiceDocument {
 
 	public void setFieldsRequired(List<String> fieldsRequired) {
 		this.fieldsRequired = fieldsRequired;
+	}
+
+	public String getRatelistId() {
+		return ratelistId;
+	}
+
+	public void setRatelistId(String ratelistId) {
+		this.ratelistId = ratelistId;
 	}
 
 	@Override

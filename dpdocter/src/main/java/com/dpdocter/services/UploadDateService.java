@@ -1,5 +1,7 @@
 package com.dpdocter.services;
 
+import com.dpdocter.beans.MailAttachment;
+
 public interface UploadDateService {
 
 	Boolean uploadPatientData(String doctorId, String locationId, String hospitalId);
@@ -35,4 +37,6 @@ public interface UploadDateService {
 	Boolean updateBillingData(String locationId, String hospitalId);
 
 	Boolean upploadReports(String doctorId, String locationId, String hospitalId);
+
+	
 }

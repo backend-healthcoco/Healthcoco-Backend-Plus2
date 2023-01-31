@@ -6,6 +6,8 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.VitalSigns;
+
 @Document(collection = "admit_card_cl")
 public class AdmitCardCollection extends GenericCollection {
 	@Field
@@ -66,6 +68,15 @@ public class AdmitCardCollection extends GenericCollection {
 	
 	@Field
 	private String address;
+	@Field
+	private VitalSigns vitalSigns;
+	@Field
+	private String preOprationalOrders;
+	@Field
+	private String nursingCare;
+	@Field
+	private String ipdNumber;
+
 	
 	public String getIp() {
 		return ip;
@@ -276,6 +287,40 @@ public class AdmitCardCollection extends GenericCollection {
 
 	public void setTimeOfOperation(String timeOfOperation) {
 		this.timeOfOperation = timeOfOperation;
+	}
+
+	
+	public VitalSigns getVitalSigns() {
+		return vitalSigns;
+	}
+
+	public void setVitalSigns(VitalSigns vitalSigns) {
+		this.vitalSigns = vitalSigns;
+	}
+
+	public String getPreOprationalOrders() {
+		return preOprationalOrders;
+	}
+
+	public void setPreOprationalOrders(String preOprationalOrders) {
+		this.preOprationalOrders = preOprationalOrders;
+	}
+
+	public String getNursingCare() {
+		return nursingCare;
+	}
+
+	public void setNursingCare(String nursingCare) {
+		this.nursingCare = nursingCare;
+	}
+
+	
+	public String getIpdNumber() {
+		return ipdNumber;
+	}
+
+	public void setIpdNumber(String ipdNumber) {
+		this.ipdNumber = ipdNumber;
 	}
 
 	@Override

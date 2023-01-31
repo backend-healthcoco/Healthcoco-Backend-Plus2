@@ -214,6 +214,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 						clinicDoctorResponse.setUserId(doctorClinicProfileLookupResponse.getUser().getId().toString());
 						clinicDoctorResponse.setIsActivate(doctorClinicProfileLookupResponse.getIsActivate());
 						// clinicDoctorResponse.setDiscarded(doctorClinicProfileLookupResponse.getDiscarded());
+						clinicDoctorResponse.setIsShowDoctorInCalender(doctorClinicProfileLookupResponse.getIsShowDoctorInCalender());
+						clinicDoctorResponse.setIsShowPatientNumber(doctorClinicProfileLookupResponse.getIsShowPatientNumber());
 
 						Criteria roleCriteria = new Criteria();
 
@@ -298,5 +300,4 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 		return response;
 	}
-
 }

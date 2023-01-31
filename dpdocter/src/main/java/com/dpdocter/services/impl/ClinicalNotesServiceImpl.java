@@ -4118,6 +4118,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("observations", clinicalNotesCollection.getObservation());
 		parameters.put("notes", clinicalNotesCollection.getNote());
 		parameters.put("investigations", clinicalNotesCollection.getInvestigation());
+		parameters.put("newvaccination", clinicalNotesCollection.getVaccinationHistory());
 
 		parameters.put("diagnosis", clinicalNotesCollection.getDiagnosis());
 
@@ -4520,6 +4521,16 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					: "");
 			if (!DPDoctorUtils.allStringsEmpty(pulse))
 				vitalSigns = pulse;
+			
+			
+			//new field
+			String pefr = clinicalNotesCollection.getVitalSigns().getPefr();
+			pefr = (pefr != null && !pefr.isEmpty()
+					? "PEFR: " + pefr + " " + VitalSignsUnit.PEFR.getUnit()
+					: "");
+			if (!DPDoctorUtils.allStringsEmpty(pefr))
+				vitalSigns = pefr;
+
 
 			String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
 			temp = (temp != null && !temp.isEmpty()
@@ -8785,6 +8796,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
+			System.out.println(objectIds);
 			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository.findByIdIn(objectIds);
 			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
 				PatientCollection patient = patientRepository.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(

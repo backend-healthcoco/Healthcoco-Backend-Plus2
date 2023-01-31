@@ -141,7 +141,19 @@ public class ClinicalNotes extends GenericCollection {
 	private PhysioExamination physioExamination;	
 	
 	private TreatmentObservation TreatmentObservation;
+	
+	private String vaccinationHistory;
 
+	
+
+
+	public String getVaccinationHistory() {
+		return vaccinationHistory;
+	}
+
+	public void setVaccinationHistory(String vaccinationHistory) {
+		this.vaccinationHistory = vaccinationHistory;
+	}
 
 	public AppointmentDetails getAppointmentRequest() {
 		return appointmentRequest;

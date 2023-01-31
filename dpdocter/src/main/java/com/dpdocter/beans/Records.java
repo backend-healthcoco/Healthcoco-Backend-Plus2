@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
@@ -21,6 +23,8 @@ public class Records extends GenericCollection {
     private String appointmentId;
 
     private String recordsUrl;
+    
+	private List<RecordsUrlData> recordsUrls;
 
     private String recordsLabel;
 
@@ -229,7 +233,13 @@ public class Records extends GenericCollection {
 		this.recordsState = recordsState;
 	}
 	
-	
+	public List<RecordsUrlData> getRecordsUrls() {
+		return recordsUrls;
+	}
+
+	public void setRecordsUrls(List<RecordsUrlData> recordsUrls) {
+		this.recordsUrls = recordsUrls;
+	}
 
 	public String getAppointmentId() {
 		return appointmentId;

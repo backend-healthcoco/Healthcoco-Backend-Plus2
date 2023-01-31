@@ -91,6 +91,8 @@ public class LocationAndAccessControl {
 
     private String googleMapShortUrl;
     
+	private Boolean isDentalChain = false;
+	
 	public String getId() {
 		return id;
 	}
@@ -425,4 +427,13 @@ public class LocationAndAccessControl {
 	public void setGoogleMapShortUrl(String googleMapShortUrl) {
 		this.googleMapShortUrl = googleMapShortUrl;
 	}
+
+	public Boolean getIsDentalChain() {
+		return isDentalChain;
+	}
+
+	public void setIsDentalChain(Boolean isDentalChain) {
+		this.isDentalChain = isDentalChain;
+	}
+	
 }
