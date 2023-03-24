@@ -902,4 +902,11 @@ public class ContactsServiceImpl implements ContactsService {
 		return registeredPatientDetails;
 	}
 
+	@Override
+	public DoctorContactsResponse searchPatient(String locationId, String hospitalId, String searchTerm, int page,
+			int size, String doctorId, String role) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

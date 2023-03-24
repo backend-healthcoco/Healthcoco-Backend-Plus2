@@ -1835,15 +1835,13 @@ public class BillingServiceImpl implements BillingService {
 													new BasicDBObject("if", new BasicDBObject("$eq",
 															Arrays.asList("$payment.consultationType.consultationType",
 																	ConsultationType.CHAT.getType())))
-																			.append("then", "$amount")
-																			.append("else", 0)))
+															.append("then", "$amount").append("else", 0)))
 									.append("totalAmountReceivedByVideo",
 											new BasicDBObject("$cond",
 													new BasicDBObject("if", new BasicDBObject("$eq",
 															Arrays.asList("$payment.consultationType.consultationType",
 																	ConsultationType.VIDEO.getType())))
-																			.append("then", "$amount")
-																			.append("else", 0)))
+															.append("then", "$amount").append("else", 0)))
 
 									// .append("consultationType.consultationType",
 									// "$consultationType.consultationType")
@@ -2322,7 +2320,9 @@ public class BillingServiceImpl implements BillingService {
 			if (locationCollection != null && locationCollection.getIsDentalChain()) {
 				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
 						.findByDoctorIdAndLocationId(patientCard.getDoctorId(), patientCard.getLocationId());
-				if (doctorClinicProfileCollection != null && !doctorClinicProfileCollection.getIsShowPatientNumber()) {
+				if (!DPDoctorUtils.anyStringEmpty(mobileNumber) && doctorClinicProfileCollection != null
+						&& doctorClinicProfileCollection.getIsShowPatientNumber() != null
+						&& !doctorClinicProfileCollection.getIsShowPatientNumber()) {
 					mobileNumber = mobileNumber.replaceAll("\\w(?=\\w{4})", "*");
 				}
 			}
@@ -2864,11 +2864,12 @@ public class BillingServiceImpl implements BillingService {
 											true))),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							Aggregation.unwind("patient"),
-							new CustomAggregationOperation(new Document("$redact", new BasicDBObject("$cond",
-									new BasicDBObject("if",
-											new BasicDBObject("$eq",
-													Arrays.asList("$patient.locationId", "$locationId")))
-															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+							new CustomAggregationOperation(new Document("$redact",
+									new BasicDBObject("$cond",
+											new BasicDBObject("if",
+													new BasicDBObject("$eq",
+															Arrays.asList("$patient.locationId", "$locationId")))
+													.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
 							Aggregation.unwind("patientUser"),
 							Aggregation.sort(new Sort(Direction.ASC, "receivedDate"))),
@@ -3048,11 +3049,12 @@ public class BillingServiceImpl implements BillingService {
 											true))),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							Aggregation.unwind("patient"),
-							new CustomAggregationOperation(new Document("$redact", new BasicDBObject("$cond",
-									new BasicDBObject("if",
-											new BasicDBObject("$eq",
-													Arrays.asList("$patient.locationId", "$locationId")))
-															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+							new CustomAggregationOperation(new Document("$redact",
+									new BasicDBObject("$cond",
+											new BasicDBObject("if",
+													new BasicDBObject("$eq",
+															Arrays.asList("$patient.locationId", "$locationId")))
+													.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
 							Aggregation.unwind("patientUser"),
 							Aggregation.sort(new Sort(Direction.ASC, "receivedDate"))),
@@ -3312,8 +3314,8 @@ public class BillingServiceImpl implements BillingService {
 									new CustomAggregationOperation(new Document("$group",
 											new BasicDBObject("_id",
 													new BasicDBObject("locationId", "$locationId").append("hospitalId",
-															"hospitalId")).append("cost",
-																	new BasicDBObject("$sum", "$cost"))))),
+															"hospitalId"))
+													.append("cost", new BasicDBObject("$sum", "$cost"))))),
 							DoctorExpenseCollection.class, DoctorExpense.class)
 					.getUniqueMappedResult();
 			if (doctorExpense != null) {

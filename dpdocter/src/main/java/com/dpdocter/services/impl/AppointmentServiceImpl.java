@@ -2428,8 +2428,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 												Aggregation.unwind("location"),
 
 												Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-												new CustomAggregationOperation(new Document(
-														"$unwind",
+												new CustomAggregationOperation(new Document("$unwind",
 														new BasicDBObject("path", "$patientCard")
 																.append("preserveNullAndEmptyArrays", true))),
 												new CustomAggregationOperation(
@@ -2438,10 +2437,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 																		new BasicDBObject("if", new BasicDBObject("$eq",
 																				Arrays.asList("$patientCard.locationId",
 																						"$locationId")))
-																								.append("then",
-																										"$$KEEP")
-																								.append("else",
-																										"$$PRUNE")))),
+																				.append("then", "$$KEEP")
+																				.append("else", "$$PRUNE")))),
 
 												Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
 												Aggregation.unwind("patientCard.user"), sortOperation,
@@ -2457,8 +2454,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 												Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 												Aggregation.unwind("location"),
 												Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-												new CustomAggregationOperation(new Document(
-														"$unwind",
+												new CustomAggregationOperation(new Document("$unwind",
 														new BasicDBObject("path", "$patientCard")
 																.append("preserveNullAndEmptyArrays", true))),
 												new CustomAggregationOperation(
@@ -2467,10 +2463,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 																		new BasicDBObject("if", new BasicDBObject("$eq",
 																				Arrays.asList("$patientCard.locationId",
 																						"$locationId")))
-																								.append("then",
-																										"$$KEEP")
-																								.append("else",
-																										"$$PRUNE")))),
+																				.append("then", "$$KEEP")
+																				.append("else", "$$PRUNE")))),
 
 												Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
 												Aggregation.unwind("patientCard.user"), sortOperation)
@@ -2666,18 +2660,17 @@ public class AppointmentServiceImpl implements AppointmentService {
 							.append("patient.imageUrl", new BasicDBObject("$cond",
 									new BasicDBObject(
 											"if", new BasicDBObject("eq", Arrays.asList("$patientCard.imageUrl", null)))
-													.append("then",
-															new BasicDBObject("$concat",
-																	Arrays.asList(imagePath, "$patientCard.imageUrl")))
-													.append("else", null)))
-							.append("patient.thumbnailUrl",
-									new BasicDBObject("$cond", new BasicDBObject("if",
+											.append("then",
+													new BasicDBObject("$concat",
+															Arrays.asList(imagePath, "$patientCard.imageUrl")))
+											.append("else", null)))
+							.append("patient.thumbnailUrl", new BasicDBObject("$cond",
+									new BasicDBObject("if",
 											new BasicDBObject("eq", Arrays.asList("$patientCard.thumbnailUrl", null)))
-													.append("then",
-															new BasicDBObject("$concat",
-																	Arrays.asList(imagePath,
-																			"$patientCard.thumbnailUrl")))
-													.append("else", null)))
+											.append("then",
+													new BasicDBObject("$concat",
+															Arrays.asList(imagePath, "$patientCard.thumbnailUrl")))
+											.append("else", null)))
 							.append("patient.mobileNumber", "$patientUser.mobileNumber")
 							.append("patient.colorCode", "$patientUser.colorCode")));
 
@@ -2731,8 +2724,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 												Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 												Aggregation.unwind("doctor"),
 												Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-												new CustomAggregationOperation(new Document(
-														"$unwind",
+												new CustomAggregationOperation(new Document("$unwind",
 														new BasicDBObject("path", "$patientCard")
 																.append("preserveNullAndEmptyArrays", true))),
 												new CustomAggregationOperation(
@@ -2741,10 +2733,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 																		new BasicDBObject("if", new BasicDBObject("$eq",
 																				Arrays.asList("$patientCard.locationId",
 																						"$locationId")))
-																								.append("then",
-																										"$$KEEP")
-																								.append("else",
-																										"$$PRUNE")))),
+																				.append("then", "$$KEEP")
+																				.append("else", "$$PRUNE")))),
 
 												Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
 												Aggregation.unwind("patientUser"), projectOperation, groupOperation,
@@ -2760,8 +2750,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 												Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 												Aggregation.unwind("doctor"),
 												Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-												new CustomAggregationOperation(new Document(
-														"$unwind",
+												new CustomAggregationOperation(new Document("$unwind",
 														new BasicDBObject("path", "$patientCard")
 																.append("preserveNullAndEmptyArrays", true))),
 												new CustomAggregationOperation(
@@ -2770,10 +2759,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 																		new BasicDBObject("if", new BasicDBObject("$eq",
 																				Arrays.asList("$patientCard.locationId",
 																						"$locationId")))
-																								.append("then",
-																										"$$KEEP")
-																								.append("else",
-																										"$$PRUNE")))),
+																				.append("then", "$$KEEP")
+																				.append("else", "$$PRUNE")))),
 
 												Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
 												Aggregation.unwind("patientUser"), projectOperation, groupOperation,
@@ -3175,39 +3162,34 @@ public class AppointmentServiceImpl implements AppointmentService {
 								.aggregate(
 										Aggregation
 												.newAggregation(
-														Aggregation
-																.match(new Criteria("locationId").is(locationObjectId)
-																		.andOperator(new Criteria().orOperator(
-																				new Criteria("doctorId").is(
-																						doctorObjectId).and("type")
-																						.is(AppointmentType.APPOINTMENT
-																								.name()),
-																				new Criteria("doctorIds")
-																						.in(Arrays.asList(
-																								doctorObjectId))
-																						.and("type")
-																						.is(AppointmentType.EVENT
-																								.name())),
-																				new Criteria().orOperator(
-																						new Criteria("fromDate")
-																								.gte(new Date(start
-																										.getMillis()))
-																								.and("toDate")
-																								.lte(new Date(end
-																										.getMillis())),
-																						new Criteria("fromDate")
-																								.lte(new Date(start
-																										.getMillis()))
-																								.and("toDate")
-																								.gte(new Date(start
-																										.getMillis())),
-																						new Criteria("fromDate")
-																								.lte(new Date(end
-																										.getMillis()))
-																								.and("toDate")
-																								.gte(new Date(end
-																										.getMillis()))))
-																		.and("isPatientDiscarded").ne(true)),
+														Aggregation.match(new Criteria("locationId")
+																.is(locationObjectId)
+																.andOperator(new Criteria().orOperator(
+																		new Criteria("doctorId").is(doctorObjectId)
+																				.and("type")
+																				.is(AppointmentType.APPOINTMENT.name()),
+																		new Criteria("doctorIds")
+																				.in(Arrays.asList(doctorObjectId))
+																				.and("type")
+																				.is(AppointmentType.EVENT.name())),
+																		new Criteria().orOperator(
+																				new Criteria("fromDate")
+																						.gte(new Date(
+																								start.getMillis()))
+																						.and("toDate")
+																						.lte(new Date(end.getMillis())),
+																				new Criteria("fromDate")
+																						.lte(new Date(
+																								start.getMillis()))
+																						.and("toDate")
+																						.gte(new Date(
+																								start.getMillis())),
+																				new Criteria("fromDate")
+																						.lte(new Date(end.getMillis()))
+																						.and("toDate")
+																						.gte(new Date(
+																								end.getMillis()))))
+																.and("isPatientDiscarded").ne(true)),
 														Aggregation.sort(new Sort(Direction.ASC, "time.fromTime"))),
 										AppointmentBookedSlotCollection.class, AppointmentBookedSlotCollection.class)
 								.getMappedResults();
@@ -3637,6 +3619,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 								clinicGoogleMapShortUrl = locationCollection.getGoogleMapShortUrl() != null
 										? locationCollection.getGoogleMapShortUrl()
 										: "";
+						UserCollection userCollection = userRepository.findById(new ObjectId(patient.getId()))
+								.orElse(null);
 
 						if (locationCollection.getIsDentalChain()) {
 							sendSmilebirdMsg(SMSFormatType.APPOINTMENT_REMINDER.getType(),
@@ -3647,13 +3631,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 									appointmentLookupResponse.getPatientId().toString(), patient.getMobileNumber(),
 									patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum,
 									appointmentLookupResponse.getBranch(), clinicGoogleMapShortUrl, null, null);
-							sendWhatsapp("APPOINTMENT_REMINDER_TO_PATIENT",
+							sendSmilebirdWhatsapp("APPOINTMENT_REMINDER_TO_PATIENT",
 									appointmentLookupResponse.getDoctorId().toString(),
 									appointmentLookupResponse.getLocationId().toString(),
 									appointmentLookupResponse.getHospitalId().toString(),
 									appointmentLookupResponse.getPatientId().toString(), patient.getMobileNumber(),
 									patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum,
-									clinicGoogleMapShortUrl);
+									clinicGoogleMapShortUrl, userCollection.getLanguage());
 						} else {
 							sendMsg(SMSFormatType.APPOINTMENT_REMINDER.getType(), "APPOINTMENT_REMINDER_TO_PATIENT",
 									appointmentLookupResponse.getDoctorId().toString(),
@@ -3677,9 +3661,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return response;
 	}
 
-	private void sendWhatsapp(String type, String doctorId, String locationId, String hospitalId, String userId,
-			String mobileNumber, String patientName, String appointmentId, String dateTime, String doctorName,
-			String clinicName, String clinicContactNum, String clinicGoogleMapShortUrl) {
+	private void sendSmilebirdWhatsapp(String type, String doctorId, String locationId, String hospitalId,
+			String userId, String mobileNumber, String patientName, String appointmentId, String dateTime,
+			String doctorName, String clinicName, String clinicContactNum, String clinicGoogleMapShortUrl,
+			String patientLanguage) {
 		try {
 			JSONObject requestObject1 = new JSONObject();
 			JSONObject requestObject2 = new JSONObject();
@@ -3709,7 +3694,28 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			switch (type) {
 			case "APPOINTMENT_REMINDER_TO_PATIENT": {
-				requestObject2.put("name", "appointment_reminder_to_patient_new");
+				switch (patientLanguage) {
+				case "English":
+					requestObject2.put("languageCode", "en");
+					requestObject2.put("name", "appointment_reminder_to_patient_new");
+					break;
+				case "Marathi":
+					requestObject2.put("languageCode", "mr");
+					requestObject2.put("name", "appointment_reminder_sms_to_patient_marathi");
+					break;
+				case "Hindi":
+					requestObject2.put("languageCode", "hi");
+					requestObject2.put("name", "appointment_reminder_sms_to_patient_hindi");
+					break;
+				case "Hinglish":
+					requestObject2.put("languageCode", "en");
+					requestObject2.put("name", "appointment_reminder_sms_to_patient_hinglish");
+					break;
+				default:
+					requestObject2.put("languageCode", "en");
+					requestObject2.put("name", "appointment_reminder_to_patient_new");
+					break;
+				}
 				requestObject3.put(patientName);
 				requestObject3.put(appointmentId);
 				requestObject3.put(dateTime);
@@ -3722,7 +3728,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 				break;
 			}
 
-			requestObject2.put("languageCode", "en");
 			requestObject2.put("bodyValues", requestObject3);
 			requestObject1.put("template", requestObject2);
 
@@ -4228,7 +4233,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 							Aggregation
 									.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 							Aggregation.unwind("treatmentService"),
-							new CustomAggregationOperation(new Document("$unwind",
+							new CustomAggregationOperation(new Document(
+									"$unwind",
 									new BasicDBObject("path", "$appointmentRequest")
 											.append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("patient_visit_cl", "_id", "treatmentId", "patientVisit"),
@@ -5592,7 +5598,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 										new BasicDBObject("if",
 												new BasicDBObject("$eq",
 														Arrays.asList("$patientCard.locationId", "$locationId")))
-																.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+												.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 						Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
 
 						Aggregation
@@ -5627,7 +5633,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 										new BasicDBObject("if",
 												new BasicDBObject("$eq",
 														Arrays.asList("$patientCard.locationId", "$locationId")))
-																.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+												.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 						Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
 
 						Aggregation.lookup("patient_treatment_cl", "visitId", "visitId", "patientTreatment"),
@@ -6097,33 +6103,28 @@ public class AppointmentServiceImpl implements AppointmentService {
 							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 
 			response = mongoTemplate
-					.aggregate(
-							Aggregation.newAggregation(Aggregation.match(new Criteria("_id").is(new ObjectId(eventId))),
-									new CustomAggregationOperation(new Document("$unwind",
-											new BasicDBObject("path", "$doctorIds").append("preserveNullAndEmptyArrays",
-													true))),
-									Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
-									new CustomAggregationOperation(new Document(
-											"$unwind",
-											new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
-													true))),
+					.aggregate(Aggregation.newAggregation(
+							Aggregation.match(new Criteria("_id").is(new ObjectId(eventId))),
+							new CustomAggregationOperation(new Document("$unwind",
+									new BasicDBObject("path", "$doctorIds")
+											.append("preserveNullAndEmptyArrays", true))),
+							Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
+							new CustomAggregationOperation(new Document("$unwind",
+									new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 
-									Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-									new CustomAggregationOperation(new Document("$unwind",
-											new BasicDBObject("path", "$patientCard")
-													.append("preserveNullAndEmptyArrays", true))),
-									new CustomAggregationOperation(new Document("$redact",
-											new BasicDBObject("$cond", new BasicDBObject("if",
-													new BasicDBObject("$ne", Arrays.asList("$patientCard", null)))
-															.append("then", new BasicDBObject("$cond",
-																	new BasicDBObject("if", new BasicDBObject("$eq",
-																			Arrays.asList("$patientCard.locationId",
-																					"$locationId")))
-																							.append("then", "$$KEEP")
-																							.append("else", "$$PRUNE")))
-															.append("else", "$$KEEP")))),
-									project, group),
-							AppointmentCollection.class, Event.class)
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+							new CustomAggregationOperation(new Document("$unwind",
+									new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays",
+											true))),
+							new CustomAggregationOperation(new Document("$redact",
+									new BasicDBObject("$cond", new BasicDBObject("if",
+											new BasicDBObject("$ne", Arrays.asList("$patientCard", null)))
+											.append("then", new BasicDBObject("$cond", new BasicDBObject("if",
+													new BasicDBObject("$eq",
+															Arrays.asList("$patientCard.locationId", "$locationId")))
+													.append("then", "$$KEEP").append("else", "$$PRUNE")))
+											.append("else", "$$KEEP")))),
+							project, group), AppointmentCollection.class, Event.class)
 					.getUniqueMappedResult();
 		} catch (Exception e) {
 			e.printStackTrace();

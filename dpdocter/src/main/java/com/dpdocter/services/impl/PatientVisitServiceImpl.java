@@ -467,7 +467,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 									new BasicDBObject("$eq", Arrays.asList("$patient.hospitalId", hospitalObjectId)),
 									new BasicDBObject("$eq",
 											Arrays.asList("$patient.consultantDoctorIds", doctorObjectId)))))
-													.append("then", "$$KEEP").append("else", "$$PRUNE"))));
+									.append("then", "$$KEEP").append("else", "$$PRUNE"))));
 					criteria2.and("consultantDoctorIds").is(doctorObjectId);
 				} else {
 					redactOperations = new CustomAggregationOperation(new Document("$redact",
@@ -475,7 +475,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 									new BasicDBObject("$eq", Arrays.asList("$patient.locationId", locationObjectId)),
 									new BasicDBObject("$eq", Arrays.asList("$patient.hospitalId", hospitalObjectId)),
 									new BasicDBObject("$eq", Arrays.asList("$patient.doctorId", doctorObjectId)))))
-											.append("then", "$$KEEP").append("else", "$$PRUNE"))));
+									.append("then", "$$KEEP").append("else", "$$PRUNE"))));
 					criteria2.and("doctorId").is(doctorObjectId);
 				}
 			} else {
@@ -483,7 +483,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$and", Arrays.asList(
 								new BasicDBObject("$eq", Arrays.asList("$patient.locationId", locationObjectId)),
 								new BasicDBObject("$eq", Arrays.asList("$patient.hospitalId", hospitalObjectId)))))
-										.append("then", "$$KEEP").append("else", "$$PRUNE"))));
+								.append("then", "$$KEEP").append("else", "$$PRUNE"))));
 			}
 
 			CustomAggregationOperation projectOperations = new CustomAggregationOperation(new Document("$project",
@@ -632,7 +632,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 									new BasicDBObject("$eq", Arrays.asList("$patient.hospitalId", hospitalObjectId)),
 									new BasicDBObject("$eq",
 											Arrays.asList("$patient.consultantDoctorIds", doctorObjectId)))))
-													.append("then", "$$KEEP").append("else", "$$PRUNE"))));
+									.append("then", "$$KEEP").append("else", "$$PRUNE"))));
 					criteria2.and("consultantDoctorIds").is(doctorObjectId);
 				} else {
 					redactOperations = new CustomAggregationOperation(new Document("$redact",
@@ -640,7 +640,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 									new BasicDBObject("$eq", Arrays.asList("$patient.locationId", locationObjectId)),
 									new BasicDBObject("$eq", Arrays.asList("$patient.hospitalId", hospitalObjectId)),
 									new BasicDBObject("$eq", Arrays.asList("$patient.doctorId", doctorObjectId)))))
-											.append("then", "$$KEEP").append("else", "$$PRUNE"))));
+									.append("then", "$$KEEP").append("else", "$$PRUNE"))));
 					criteria2.and("doctorId").is(doctorObjectId);
 				}
 			} else {
@@ -648,7 +648,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$and", Arrays.asList(
 								new BasicDBObject("$eq", Arrays.asList("$patient.locationId", locationObjectId)),
 								new BasicDBObject("$eq", Arrays.asList("$patient.hospitalId", hospitalObjectId)))))
-										.append("then", "$$KEEP").append("else", "$$PRUNE"))));
+								.append("then", "$$KEEP").append("else", "$$PRUNE"))));
 			}
 
 			CustomAggregationOperation projectOperations = new CustomAggregationOperation(new Document("$project",
@@ -1827,11 +1827,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							new CustomAggregationOperation(new Document(
 									"$unwind",
 									new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
-							new CustomAggregationOperation(new Document("$redact", new BasicDBObject("$cond",
-									new BasicDBObject("if",
-											new BasicDBObject("$eq",
-													Arrays.asList("$patient.locationId", "$locationId")))
-															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+							new CustomAggregationOperation(new Document("$redact",
+									new BasicDBObject("$cond",
+											new BasicDBObject("if",
+													new BasicDBObject("$eq",
+															Arrays.asList("$patient.locationId", "$locationId")))
+													.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 
 							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
 							Aggregation.unwind("patientUser")),
@@ -2600,7 +2601,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (locationCollection != null && locationCollection.getIsDentalChain()) {
 				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
 						.findByDoctorIdAndLocationId(patientCard.getDoctorId(), patientCard.getLocationId());
-				if (doctorClinicProfileCollection != null && !doctorClinicProfileCollection.getIsShowPatientNumber()) {
+				if (!DPDoctorUtils.anyStringEmpty(mobileNumber) && doctorClinicProfileCollection != null
+						&& doctorClinicProfileCollection.getIsShowPatientNumber() != null
+						&& !doctorClinicProfileCollection.getIsShowPatientNumber()) {
 					mobileNumber = mobileNumber.replaceAll("\\w(?=\\w{4})", "*");
 				}
 			}

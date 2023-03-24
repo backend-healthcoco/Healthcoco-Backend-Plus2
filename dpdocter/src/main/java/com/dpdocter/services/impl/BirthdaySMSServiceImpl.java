@@ -50,6 +50,8 @@ import com.dpdocter.services.BirthdaySMSServices;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.SMSServices;
 
+import common.util.web.DPDoctorUtils;
+
 @Service
 @Transactional
 public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
@@ -75,10 +77,9 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 
 	@Autowired
 	private LocationRepository locationRepository;
-	
+
 	@Value(value = "${interakt.secret.key}")
 	private String secretKey;
-
 
 	@Scheduled(cron = "0 15 10 * * ?", zone = "IST")
 	@Override
@@ -131,15 +132,47 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 							smsTrackDetail.setLocationId(birthdaySMSDetailsForPatient.getLocationId());
 							smsTrackDetail.setHospitalId(birthdaySMSDetailsForPatient.getHospitalId());
 							smsTrackDetail.setType("BIRTHDAY WISH TO PATIENT");
-							smsTrackDetail.setTemplateId("1307165106647920437");
 
 							SMSDetail smsDetail = new SMSDetail();
 							smsDetail.setUserId(userCollection.getId());
 							SMS sms = new SMS();
 							smsDetail.setUserName(birthdaySMSDetailsForPatient.getLocalPatientName());
-							String text = "Hi " + birthdaySMSDetailsForPatient.getLocalPatientName() + ","
-									+ "Smilebird wishes you a very Healthy and Happy Birthday. Stay Smiling!" + "\n"
-									+ "Team Smilebird";
+							String text = "";
+							if (userCollection != null && !DPDoctorUtils.anyStringEmpty(userCollection.getLanguage())) {
+								switch (userCollection.getLanguage()) {
+								case "English":
+									text = "Hi " + birthdaySMSDetailsForPatient.getLocalPatientName() + ","
+											+ "Smilebird wishes you a very Healthy and Happy Birthday. Stay Smiling!"
+											+ "\n" + "Team Smilebird";
+									smsTrackDetail.setTemplateId("1307167541660765390");
+									break;
+								case "Hindi":
+									text = "नमस्ते " + birthdaySMSDetailsForPatient.getLocalPatientName() + ","
+											+ "स्माइलबर्ड आपको जन्मदिन की बहुत-बहुत शुभकामनाएं देता है। मुस्कुराते रहो!"
+											+ "\n" + "- Smilebird";
+									smsTrackDetail.setTemplateId("1307167541056088014");
+									break;
+								case "Marathi":
+									text = "नमस्कार " + birthdaySMSDetailsForPatient.getLocalPatientName() + ","
+											+ "Smilebird तुम्हाला वाढदिवसाच्या शुभेच्छा देतो. हसत राहा!"
+											+ "\n" + "- Smilebird";
+									smsTrackDetail.setTemplateId("1307167541133054158");
+									break;
+								case "Hinglish":
+									text = "Hello " + birthdaySMSDetailsForPatient.getLocalPatientName() + ","
+											+ "Smilebird aapko birthday ki bahoot bahoot shubhkamnaye deta hai. Muskrate raho."
+											+ "\n" + "- Smilebird";
+									smsTrackDetail.setTemplateId("1307167541660765390");
+									break;
+								default:
+									break;
+								}
+							} else {
+								text = "Hi " + birthdaySMSDetailsForPatient.getLocalPatientName() + ","
+										+ "Smilebird wishes you a very Healthy and Happy Birthday. Stay Smiling!" + "\n"
+										+ "Team Smilebird";
+								smsTrackDetail.setTemplateId("1307167541660765390");
+							}
 							sms.setSmsText(text);
 
 							SMSAddress smsAddress = new SMSAddress();
