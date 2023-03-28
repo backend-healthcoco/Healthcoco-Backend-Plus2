@@ -100,6 +100,8 @@ public class UserCollection extends GenericCollection {
 	@Field
 	private Boolean isDentalChainPatient = false;
 	
+	@Field
+	private String language;
 	
 	
 	public Boolean getIsDentalChainVerified() {
@@ -406,6 +408,14 @@ public class UserCollection extends GenericCollection {
 
 	public void setIsPasswordSet(Boolean isPasswordSet) {
 		this.isPasswordSet = isPasswordSet;
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
 	}
 
 }

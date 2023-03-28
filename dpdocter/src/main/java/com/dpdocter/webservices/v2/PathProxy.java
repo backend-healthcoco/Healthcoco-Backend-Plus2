@@ -33,6 +33,8 @@ public interface PathProxy {
 		public static final String ADD_GROUP_TO_PATIENT = "/patient/addgroup";
 
 		public static final String SEND_SMS_TO_GROUP = "/group/sms";
+		
+		public static final String SEARCH_PATIENT = "searchPatient/{locationId}/{hospitalId}/{searchTerm}";
 
 	}
 	

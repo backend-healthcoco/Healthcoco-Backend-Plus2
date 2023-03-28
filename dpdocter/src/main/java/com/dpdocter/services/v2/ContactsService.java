@@ -54,4 +54,7 @@ public interface ContactsService {
 	Integer getDoctorContactsHandheldCount(String doctorId, String locationId, String hospitalId, boolean discarded,
 			String role, String searchTerm);
 
+	DoctorContactsResponse searchPatient(String locationId, String hospitalId, String searchTerm, int page, int size,
+			String doctorId, String role);
+
 }

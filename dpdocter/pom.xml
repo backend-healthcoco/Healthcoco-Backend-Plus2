@@ -1124,6 +1124,7 @@
 			<id>bippo-nexus-public</id>
 			<url>https://nexus.bippo.co.id/nexus/content/groups/public/</url>
 		</repository>
+	
 		<repository>
 			<id>jasperreports</id>
 			<url>http://jasperreports.sourceforge.net/maven2</url>
