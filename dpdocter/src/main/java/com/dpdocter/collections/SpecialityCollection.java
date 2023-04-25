@@ -7,50 +7,50 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "speciality_cl")
 public class SpecialityCollection extends GenericCollection {
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private String speciality;
+	@Field
+	private String speciality;
 
-    @Field
-    private String superSpeciality;
+	@Field
+	private String superSpeciality;
 
-    @Field
-    private String formattedSpeciality;
+	@Field
+	private String formattedSpeciality;
 
-    @Field
-    private String formattedSuperSpeciality;
-    
-    @Field
-    private Boolean toShow = true;
+	@Field
+	private String formattedSuperSpeciality;
 
-    @Field
-    private String metaTitle;
+	@Field
+	private Boolean toShow = true;
 
-    public ObjectId getId() {
-	return id;
-    }
+	@Field
+	private String metaTitle;
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public String getSpeciality() {
-	return speciality;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public void setSpeciality(String speciality) {
-	this.speciality = speciality;
-    }
+	public String getSpeciality() {
+		return speciality;
+	}
 
-    public String getSuperSpeciality() {
-	return superSpeciality;
-    }
+	public void setSpeciality(String speciality) {
+		this.speciality = speciality;
+	}
 
-    public void setSuperSpeciality(String superSpeciality) {
-	this.superSpeciality = superSpeciality;
-    }
+	public String getSuperSpeciality() {
+		return superSpeciality;
+	}
+
+	public void setSuperSpeciality(String superSpeciality) {
+		this.superSpeciality = superSpeciality;
+	}
 
 	public Boolean getToShow() {
 		return toShow;

@@ -6,28 +6,28 @@ import com.dpdocter.beans.FileDetails;
 
 public class ClinicImageAddRequest {
 
-    private String id;
+	private String id;
 
-    private List<FileDetails> images;
+	private List<FileDetails> images;
 
-    public String getId() {
-	return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public List<FileDetails> getImages() {
-	return images;
-    }
+	public List<FileDetails> getImages() {
+		return images;
+	}
 
-    public void setImages(List<FileDetails> images) {
-	this.images = images;
-    }
+	public void setImages(List<FileDetails> images) {
+		this.images = images;
+	}
 
-    @Override
-    public String toString() {
-	return "ClinicImageAddRequest [id=" + id + ", images=" + images + "]";
-    }
+	@Override
+	public String toString() {
+		return "ClinicImageAddRequest [id=" + id + ", images=" + images + "]";
+	}
 }

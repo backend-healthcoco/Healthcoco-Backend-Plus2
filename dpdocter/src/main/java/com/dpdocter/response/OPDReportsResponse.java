@@ -4,8 +4,8 @@ import java.util.List;
 
 public class OPDReportsResponse {
 
-	List<OPDReportCustomResponse> opdReports;
-	Integer count;
+	private List<OPDReportCustomResponse> opdReports;
+	private Integer count;
 
 	public List<OPDReportCustomResponse> getOpdReports() {
 		return opdReports;

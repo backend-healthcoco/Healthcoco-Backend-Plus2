@@ -3,6 +3,7 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -10,36 +11,48 @@ import com.dpdocter.response.ImageURLResponse;
 
 @Document(collection = "dental_lab_reports_cl")
 public class DentalLabReportsCollection extends GenericCollection {
-
+	@Id
 	private ObjectId id;
 
+	@Field
 	private String requestId;
 
+	@Field
 	private ObjectId patientId;
 
+	@Field
 	private ObjectId doctorId;
 
+	@Field
 	private ObjectId locationId;
 
+	@Field
 	private ObjectId hospitalId;
 
+	@Field
 	private List<ImageURLResponse> dentalLabReports;
 
+	@Field
 	private String explanation;
 
+	@Field
 	private Boolean discarded = false;
 
+	@Field
 	private ObjectId uploadedByDoctorId;
 
+	@Field
 	private ObjectId uploadedByLocationId;
 
+	@Field
 	private ObjectId uploadedByHospitalId;
 
+	@Field
 	private String recordsState;
 
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	public ObjectId getId() {
 		return id;
 	}

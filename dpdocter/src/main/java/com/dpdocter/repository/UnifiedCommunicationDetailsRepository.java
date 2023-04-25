@@ -7,8 +7,10 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.dpdocter.collections.UnifiedCommunicationDetailsCollection;
 
-public interface UnifiedCommunicationDetailsRepository extends MongoRepository<UnifiedCommunicationDetailsCollection, ObjectId> {
+public interface UnifiedCommunicationDetailsRepository
+		extends MongoRepository<UnifiedCommunicationDetailsCollection, ObjectId> {
 
-	List<UnifiedCommunicationDetailsCollection> findByUserIdAndTypeAndIsExpired(ObjectId userId, String type, boolean isExpired);
+	List<UnifiedCommunicationDetailsCollection> findByUserIdAndTypeAndIsExpired(ObjectId userId, String type,
+			boolean isExpired);
 
 }

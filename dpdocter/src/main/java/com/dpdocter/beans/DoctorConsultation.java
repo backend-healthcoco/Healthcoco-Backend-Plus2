@@ -5,9 +5,9 @@ import com.dpdocter.enums.ConsultationType;
 public class DoctorConsultation {
 
 	private ConsultationType consultationType;
-	
+
 	private Double cost;
-	
+
 	private Double healthcocoCharges;
 
 	public ConsultationType getConsultationType() {
@@ -17,14 +17,10 @@ public class DoctorConsultation {
 	public void setConsultationType(ConsultationType consultationType) {
 		this.consultationType = consultationType;
 	}
-	
-	
 
 	public Double getCost() {
 		return cost;
 	}
-
-	
 
 	public void setCost(Double cost) {
 		this.cost = cost;
@@ -40,7 +36,7 @@ public class DoctorConsultation {
 
 	@Override
 	public String toString() {
-		return "DoctorConsultation [consultationType=" + consultationType + ", cost=" + cost
-				+ ", healthcocoCharges=" + healthcocoCharges + "]";
+		return "DoctorConsultation [consultationType=" + consultationType + ", cost=" + cost + ", healthcocoCharges="
+				+ healthcocoCharges + "]";
 	}
 }

@@ -1,8 +1,8 @@
 package com.dpdocter.beans;
 
 public class Ratio {
-	private Integer numerator=0;
-	private Integer dunomenitor=0;
+	private Integer numerator = 0;
+	private Integer dunomenitor = 0;
 
 	public Integer getNumerator() {
 		return numerator;

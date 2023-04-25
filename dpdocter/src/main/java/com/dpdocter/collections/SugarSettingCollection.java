@@ -1,19 +1,29 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "sugar_setting_cl")
 public class SugarSettingCollection extends GenericCollection {
-
+	@Id
 	private ObjectId id;
+	@Field
 	private ObjectId patientId;
+	@Field
 	private String type;
+	@Field
 	private String insulinTherapy;
+	@Field
 	private Boolean pills = false;
+	@Field
 	private String bloodGlucoseUnit;
+	@Field
 	private String carbsUnit;
+	@Field
 	private String targetRanges;
+	@Field
 	private String meter;
 
 	public ObjectId getId() {

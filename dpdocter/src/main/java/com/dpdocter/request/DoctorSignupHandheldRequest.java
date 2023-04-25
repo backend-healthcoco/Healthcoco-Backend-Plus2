@@ -6,77 +6,77 @@ import java.util.List;
 import com.dpdocter.beans.DOB;
 
 public class DoctorSignupHandheldRequest {
-    private String firstName;
+	private String firstName;
 
-    private String userName;
+	private String userName;
 
-    private char[] password;
+	private char[] password;
 
-    private String emailAddress;
+	private String emailAddress;
 
-    private String mobileNumber;
+	private String mobileNumber;
 
-    private String gender;
+	private String gender;
 
-    private DOB dob;
+	private DOB dob;
 
-    private List<String> specialities;
-    
-    public String getFirstName() {
-	return firstName;
-    }
+	private List<String> specialities;
 
-    public void setFirstName(String firstName) {
-	this.firstName = firstName;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public String getUserName() {
-	return userName;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-    public void setUserName(String userName) {
-	this.userName = userName;
-    }
+	public String getUserName() {
+		return userName;
+	}
 
-    public char[] getPassword() {
-	return password;
-    }
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
 
-    public void setPassword(char[] password) {
-	this.password = password;
-    }
+	public char[] getPassword() {
+		return password;
+	}
 
-    public String getEmailAddress() {
-	return emailAddress != null ? emailAddress.toLowerCase() : emailAddress;
-    }
+	public void setPassword(char[] password) {
+		this.password = password;
+	}
 
-    public void setEmailAddress(String emailAddress) {
-	this.emailAddress = emailAddress;
-    }
+	public String getEmailAddress() {
+		return emailAddress != null ? emailAddress.toLowerCase() : emailAddress;
+	}
 
-    public String getMobileNumber() {
-	return mobileNumber;
-    }
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
 
-    public void setMobileNumber(String mobileNumber) {
-	this.mobileNumber = mobileNumber;
-    }
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
 
-    public String getGender() {
-	return gender;
-    }
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
 
-    public void setGender(String gender) {
-	this.gender = gender;
-    }
+	public String getGender() {
+		return gender;
+	}
 
-    public DOB getDob() {
-	return dob;
-    }
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
 
-    public void setDob(DOB dob) {
-	this.dob = dob;
-    }
+	public DOB getDob() {
+		return dob;
+	}
+
+	public void setDob(DOB dob) {
+		this.dob = dob;
+	}
 
 	public List<String> getSpecialities() {
 		return specialities;

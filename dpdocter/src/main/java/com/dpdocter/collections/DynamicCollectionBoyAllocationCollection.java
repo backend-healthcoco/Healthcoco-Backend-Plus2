@@ -23,7 +23,6 @@ public class DynamicCollectionBoyAllocationCollection extends GenericCollection 
 	@Field
 	private String type;
 
-
 	public ObjectId getId() {
 		return id;
 	}

@@ -9,13 +9,11 @@ public class DoctorOnlineWorkingTimeRequest {
 
 	private String id;
 
-    private String doctorId;
-    
-  //  private String locationId;
+	private String doctorId;
 
-    private List<WorkingSchedule> onlineWorkingSchedules;
+	private List<WorkingSchedule> onlineWorkingSchedules;
 
-    private List<DoctorConsultation> consultationType;
+	private List<DoctorConsultation> consultationType;
 
 	private Boolean isOnlineConsultationAvailable;
 
@@ -62,15 +60,7 @@ public class DoctorOnlineWorkingTimeRequest {
 	@Override
 	public String toString() {
 		return "DoctorOnlineWorkingTimeRequest [id=" + id + ", doctorId=" + doctorId + ", onlineWorkingSchedules="
-				+ onlineWorkingSchedules  + ", isOnlineConsultationAvailable="
-				+ isOnlineConsultationAvailable + "]";
+				+ onlineWorkingSchedules + ", isOnlineConsultationAvailable=" + isOnlineConsultationAvailable + "]";
 	}
 
-//	public String getLocationId() {
-//		return locationId;
-//	}
-//
-//	public void setLocationId(String locationId) {
-//		this.locationId = locationId;
-//	}
 }

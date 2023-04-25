@@ -118,9 +118,6 @@ public class PharmacyServiceImpl implements PharmacyService {
 	@Autowired
 	private BlockUserRepository blockUserRepository;
 
-//	@Autowired
-//	private LocaleService localeService;
-
 	@Autowired
 	private UserFavouriteService userFavouriteService;
 
@@ -128,10 +125,9 @@ public class PharmacyServiceImpl implements PharmacyService {
 	@Transactional
 	public UserSearchRequest addSearchRequest(UserSearchRequest request) {
 		/*
-		 * TODO : generate uniqueRequestId then add request in queue and
-		 * collection. write two different methods addInQueue and addInDb so
-		 * that it can be reuse or else it will be easy to change flow if
-		 * required
+		 * TODO : generate uniqueRequestId then add request in queue and collection.
+		 * write two different methods addInQueue and addInDb so that it can be reuse or
+		 * else it will be easy to change flow if required
 		 */
 		UserSearchRequest response = null;
 
@@ -250,8 +246,8 @@ public class PharmacyServiceImpl implements PharmacyService {
 
 		try {
 			SearchRequestToPharmacyCollection requestToPharmacyCollection = searchRequestToPharmacyRepository
-					.findByUniqueRequestIdAndLocaleIdAndUserId(request.getUniqueRequestId(), new ObjectId(request.getLocaleId()),
-							new ObjectId(request.getUserId()));
+					.findByUniqueRequestIdAndLocaleIdAndUserId(request.getUniqueRequestId(),
+							new ObjectId(request.getLocaleId()), new ObjectId(request.getUserId()));
 			if (!requestToPharmacyCollection.getIsAlreadyRequested()) {
 				requestToPharmacyCollection.setIsAlreadyRequested(true);
 				searchRequestToPharmacyRepository.save(requestToPharmacyCollection);
@@ -400,8 +396,8 @@ public class PharmacyServiceImpl implements PharmacyService {
 							.and("userState").is("USERSTATECOMPLETE")),
 					new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", "$mobileNumber")
-									.append("userIds", new BasicDBObject("$push", "$_id")).append("mobileNumber",
-											new BasicDBObject("$first", "$mobileNumber")))));
+									.append("userIds", new BasicDBObject("$push", "$_id"))
+									.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber")))));
 
 			PatientNumberAndUserIds user = mongoTemplate
 					.aggregate(aggregation, UserCollection.class, PatientNumberAndUserIds.class)
@@ -412,17 +408,15 @@ public class PharmacyServiceImpl implements PharmacyService {
 			criteria.and("createdTime").gt(date);
 			criteria.and("orders").size(0).and("response.replyType").is("YES").and("userId").in(user.getUserIds());
 
-			aggregation = Aggregation
-					.newAggregation(
-							Aggregation.lookup("search_request_to_pharmacy_cl", "uniqueRequestId", "uniqueRequestId",
-									"response"),
-							Aggregation.unwind("response"),
-							Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
-							Aggregation.match(criteria),
-							new CustomAggregationOperation(new Document("$group",
-									new BasicDBObject("_id", new BasicDBObject("uniqueRequestId", "$uniqueRequestId"))
-											.append("uniqueRequestId",
-													new BasicDBObject("$first", "$uniqueRequestId")))));
+			aggregation = Aggregation.newAggregation(
+					Aggregation.lookup("search_request_to_pharmacy_cl", "uniqueRequestId", "uniqueRequestId",
+							"response"),
+					Aggregation.unwind("response"),
+					Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
+					Aggregation.match(criteria),
+					new CustomAggregationOperation(new Document("$group",
+							new BasicDBObject("_id", new BasicDBObject("uniqueRequestId", "$uniqueRequestId"))
+									.append("uniqueRequestId", new BasicDBObject("$first", "$uniqueRequestId")))));
 
 			countfor24Hour = mongoTemplate
 					.aggregate(aggregation, SearchRequestFromUserCollection.class, SearchRequestFromUserResponse.class)
@@ -435,17 +429,15 @@ public class PharmacyServiceImpl implements PharmacyService {
 
 			criteria.and("orders").size(0).and("response.replyType").is("YES").and("userId").in(user.getUserIds());
 
-			aggregation = Aggregation
-					.newAggregation(
-							Aggregation.lookup("search_request_to_pharmacy_cl", "uniqueRequestId", "uniqueRequestId",
-									"response"),
-							Aggregation.unwind("response"),
-							Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
-							Aggregation.match(criteria),
-							new CustomAggregationOperation(new Document("$group",
-									new BasicDBObject("_id", new BasicDBObject("uniqueRequestId", "$uniqueRequestId"))
-											.append("uniqueRequestId",
-													new BasicDBObject("$first", "$uniqueRequestId")))));
+			aggregation = Aggregation.newAggregation(
+					Aggregation.lookup("search_request_to_pharmacy_cl", "uniqueRequestId", "uniqueRequestId",
+							"response"),
+					Aggregation.unwind("response"),
+					Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
+					Aggregation.match(criteria),
+					new CustomAggregationOperation(new Document("$group",
+							new BasicDBObject("_id", new BasicDBObject("uniqueRequestId", "$uniqueRequestId"))
+									.append("uniqueRequestId", new BasicDBObject("$first", "$uniqueRequestId")))));
 
 			countforHour = mongoTemplate
 					.aggregate(aggregation, SearchRequestFromUserCollection.class, SearchRequestFromUserResponse.class)
@@ -549,19 +541,26 @@ public class PharmacyServiceImpl implements PharmacyService {
 					Address localeAddress = drugsResponse.getLocaleAddress();
 					if (localeAddress != null) {
 						String localeFormattedAddress = (!DPDoctorUtils.anyStringEmpty(localeAddress.getStreetAddress())
-								? localeAddress.getStreetAddress() + ", " : "")
+								? localeAddress.getStreetAddress() + ", "
+								: "")
 								+ (!DPDoctorUtils.anyStringEmpty(localeAddress.getLandmarkDetails())
-										? localeAddress.getLandmarkDetails() + ", " : "")
+										? localeAddress.getLandmarkDetails() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(localeAddress.getLocality())
-										? localeAddress.getLocality() + ", " : "")
+										? localeAddress.getLocality() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(localeAddress.getCity())
-										? localeAddress.getCity() + ", " : "")
+										? localeAddress.getCity() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(localeAddress.getState())
-										? localeAddress.getState() + ", " : "")
+										? localeAddress.getState() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(localeAddress.getCountry())
-										? localeAddress.getCountry() + ", " : "")
+										? localeAddress.getCountry() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(localeAddress.getPostalCode())
-										? localeAddress.getPostalCode() : "");
+										? localeAddress.getPostalCode()
+										: "");
 
 						if (localeFormattedAddress.charAt(localeFormattedAddress.length() - 2) == ',') {
 							localeFormattedAddress = localeFormattedAddress.substring(0,
@@ -571,22 +570,30 @@ public class PharmacyServiceImpl implements PharmacyService {
 					}
 					Address pickUpAddress = (drugsResponse.getPickUpAddress() != null
 							&& drugsResponse.getPickUpAddress().getAddress() != null)
-									? drugsResponse.getPickUpAddress().getAddress() : null;
+									? drugsResponse.getPickUpAddress().getAddress()
+									: null;
 					if (pickUpAddress != null) {
 						String pickUpFormattedAddress = (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getStreetAddress())
-								? pickUpAddress.getStreetAddress() + ", " : "")
+								? pickUpAddress.getStreetAddress() + ", "
+								: "")
 								+ (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getLandmarkDetails())
-										? pickUpAddress.getLandmarkDetails() + ", " : "")
+										? pickUpAddress.getLandmarkDetails() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getLocality())
-										? pickUpAddress.getLocality() + ", " : "")
+										? pickUpAddress.getLocality() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getCity())
-										? pickUpAddress.getCity() + ", " : "")
+										? pickUpAddress.getCity() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getState())
-										? pickUpAddress.getState() + ", " : "")
+										? pickUpAddress.getState() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getCountry())
-										? pickUpAddress.getCountry() + ", " : "")
+										? pickUpAddress.getCountry() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getPostalCode())
-										? pickUpAddress.getPostalCode() : "");
+										? pickUpAddress.getPostalCode()
+										: "");
 
 						if (!DPDoctorUtils.anyStringEmpty(pickUpFormattedAddress)) {
 							if (pickUpFormattedAddress.charAt(pickUpFormattedAddress.length() - 2) == ',') {
@@ -632,62 +639,52 @@ public class PharmacyServiceImpl implements PharmacyService {
 									.append("homeDeliveryRadius", "$locale.homeDeliveryRadius")
 									.append("localeAddress", "$locale.address")
 									.append("paymentInfo", "$locale.paymentInfo")
-									.append("paymentInfos",
-											"$locale.paymentInfos")
+									.append("paymentInfos", "$locale.paymentInfos")
 									.append("isOrdered",
-											new BasicDBObject("$cond",
-													new BasicDBObject("if",
-															new BasicDBObject("$gt",
-																	Arrays.asList(new BasicDBObject("$size", "$orders"),
-																			0))).append("then", true).append("else",
-																					false)))
+											new BasicDBObject("$cond", new BasicDBObject("if",
+													new BasicDBObject("$gt",
+															Arrays.asList(new BasicDBObject("$size", "$orders"), 0)))
+													.append("then", true).append("else", false)))
 									.append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")));
 
-			CustomAggregationOperation group = new CustomAggregationOperation(
-					new Document("$group",
-							new BasicDBObject("id", "$_id").append("localeId", new BasicDBObject("$first", "$localeId"))
-									.append("userId", new BasicDBObject("$first", "$userId"))
-									.append("uniqueRequestId", new BasicDBObject("$first", "$uniqueRequestId"))
-									.append("prescriptionRequest", new BasicDBObject("$first", "$prescriptionRequest"))
-									.append("pharmacyName", new BasicDBObject("$first", "$pharmacyName"))
-									.append("location", new BasicDBObject("$first", "$location"))
-									.append("latitude", new BasicDBObject("$first", "$latitude"))
-									.append("longitude", new BasicDBObject("$first", "$longitude"))
-									.append("localeName", new BasicDBObject("$first", "$localeName"))
-									.append("isTwentyFourSevenOpen",
-											new BasicDBObject("$first", "$isTwentyFourSevenOpen"))
-									.append("pharmacyType", new BasicDBObject("$first", "$pharmacyType"))
-									.append("noOfLocaleRecommendation",
-											new BasicDBObject("$first", "$noOfLocaleRecommendation"))
-									.append("isHomeDeliveryAvailable",
-											new BasicDBObject("$first", "$isHomeDeliveryAvailable"))
-									.append("homeDeliveryRadius", new BasicDBObject("$first", "$homeDeliveryRadius"))
-									.append("localeAddress", new BasicDBObject("$first", "$localeAddress"))
-									.append("paymentInfo", new BasicDBObject("$first", "$paymentInfo"))
-									.append("paymentInfos", new BasicDBObject("$first", "$paymentInfos"))
-									.append("isOrdered", new BasicDBObject("$first", "$isOrdered"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))));
+			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
+					new BasicDBObject("id", "$_id").append("localeId", new BasicDBObject("$first", "$localeId"))
+							.append("userId", new BasicDBObject("$first", "$userId"))
+							.append("uniqueRequestId", new BasicDBObject("$first", "$uniqueRequestId"))
+							.append("prescriptionRequest", new BasicDBObject("$first", "$prescriptionRequest"))
+							.append("pharmacyName", new BasicDBObject("$first", "$pharmacyName"))
+							.append("location", new BasicDBObject("$first", "$location"))
+							.append("latitude", new BasicDBObject("$first", "$latitude"))
+							.append("longitude", new BasicDBObject("$first", "$longitude"))
+							.append("localeName", new BasicDBObject("$first", "$localeName"))
+							.append("isTwentyFourSevenOpen", new BasicDBObject("$first", "$isTwentyFourSevenOpen"))
+							.append("pharmacyType", new BasicDBObject("$first", "$pharmacyType"))
+							.append("noOfLocaleRecommendation",
+									new BasicDBObject("$first", "$noOfLocaleRecommendation"))
+							.append("isHomeDeliveryAvailable", new BasicDBObject("$first", "$isHomeDeliveryAvailable"))
+							.append("homeDeliveryRadius", new BasicDBObject("$first", "$homeDeliveryRadius"))
+							.append("localeAddress", new BasicDBObject("$first", "$localeAddress"))
+							.append("paymentInfo", new BasicDBObject("$first", "$paymentInfo"))
+							.append("paymentInfos", new BasicDBObject("$first", "$paymentInfos"))
+							.append("isOrdered", new BasicDBObject("$first", "$isOrdered"))
+							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))));
 
 			if (size > 0)
-				aggregation = Aggregation
-						.newAggregation(Aggregation.match(criteria),
-								Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
-								Aggregation.lookup("locale_cl", "localeId", "localeId", "locale"),
-								new CustomAggregationOperation(new Document("$unwind",
-										new BasicDBObject("path", "$locale").append("preserveNullAndEmptyArrays",
-												true))),
-								project, group, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
-								Aggregation.skip((page) * size), Aggregation.limit(size));
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
+						Aggregation.lookup("locale_cl", "localeId", "localeId", "locale"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$locale").append("preserveNullAndEmptyArrays", true))),
+						project, group, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+						Aggregation.skip((page) * size), Aggregation.limit(size));
 			else
-				aggregation = Aggregation
-						.newAggregation(Aggregation.match(criteria),
-								Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
-								Aggregation.lookup("locale_cl", "localeId", "localeId", "locale"),
-								new CustomAggregationOperation(new Document("$unwind",
-										new BasicDBObject("path", "$locale").append("preserveNullAndEmptyArrays",
-												true))),
-								project, group, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
+						Aggregation.lookup("locale_cl", "localeId", "localeId", "locale"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$locale").append("preserveNullAndEmptyArrays", true))),
+						project, group, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 			AggregationResults<SearchRequestFromUserResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					SearchRequestFromUserCollection.class, SearchRequestFromUserResponse.class);
@@ -703,9 +700,11 @@ public class PharmacyServiceImpl implements PharmacyService {
 					Address address = requestFromUserResponse.getLocaleAddress();
 					if (address != null) {
 						String formattedAddress = (!DPDoctorUtils.anyStringEmpty(address.getStreetAddress())
-								? address.getStreetAddress() + ", " : "")
+								? address.getStreetAddress() + ", "
+								: "")
 								+ (!DPDoctorUtils.anyStringEmpty(address.getLandmarkDetails())
-										? address.getLandmarkDetails() + ", " : "")
+										? address.getLandmarkDetails() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(address.getLocality()) ? address.getLocality() + ", "
 										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(address.getCity()) ? address.getCity() + ", " : "")

@@ -27,14 +27,14 @@ public class PrescriptionItem {
 	private String instructions;
 
 	private Integer drugQuantity;
-	
+
 	private Integer analyticsDrugQuantity = 1;
 
 	private Long inventoryQuantity;
 
 	@Transient
 	private Long arrayIndex1;
-	
+
 	private List<GenericCode> genericNames;
 
 	public PrescriptionItem() {
@@ -158,6 +158,7 @@ public class PrescriptionItem {
 	public void setAnalyticsDrugQuantity(Integer analyticsDrugQuantity) {
 		this.analyticsDrugQuantity = analyticsDrugQuantity;
 	}
+
 	public List<GenericCode> getGenericNames() {
 		return genericNames;
 	}

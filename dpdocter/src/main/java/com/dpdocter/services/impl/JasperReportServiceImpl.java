@@ -466,43 +466,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 			}
 
 		}
-		// dsr.setDataSourceExpression(new JRDesignExpression("new
-		// net.sf.jasperreports.engine.JREmptyDataSource(1)"));
-		// String logoURL = (String) parameters.get("logoURL");
-		// parameters.put("headerLeftText", "<table width='10000px'
-		// height='2000px' style='background-color:#E5DD6F;'>"
-		// + "<tr width='10000px' height='2000px' border='2px'>"+
-		// "<td width='100%' style='font-family:Noto
-		// Sans;font-size:100px;background-color:#E6E6FA;'>"
-		// + "<p><b>Dr. (Mrs.) R.K. KANDHARI</b></p>"+
-		// "<p style='text-align:right;'>M.D., D.G.O.</p>"
-		// + "<p>Consulting Obstetrician & Gynaecologist</p>"+
-		// "<p>0712 - 2286215, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		// Mob- 9822203359</p>"+
-		// "<hr><p>MVC REGD. NO. 48001 HOSPITAL REGD. NO. 195</p></td>"
-		// + "<td width='30%'><td width='30%'><img
-		// style='width:200px;height:200px;' src='"+logoURL+"'/></td>"
-		// + "<td width='100%' style='font-family:Noto
-		// Sans;font-size:100px;background-color:red;' border='1px'>"+
-		// "<p><b>KANDHARI <br>MATERNITY & <br>NURSING HOME</b></p>"
-		// + "<p>plot no.5 behind gulmohar hall</p>"+
-		// "<p>Pandey Layout, Khamla, Nagpur - 440025</p></td>"
-		// + "</tr></table>");
-		// jasperDesign.setPageHeader(createPageHeader(dsr, columnWidth));
-		// ((JRDesignSection)
-		// jasperDesign.getDetailSection()).addBand(createLine(0, columnWidth,
-		// PositionTypeEnum.FIX_RELATIVE_TO_TOP));
-		// ((JRDesignSection)
-		// jasperDesign.getDetailSection()).addBand(createPatienDetailBand(dsr,
-		// jasperDesign, columnWidth));
-		// ((JRDesignSection)
-		// jasperDesign.getDetailSection()).addBand(createLine(0, columnWidth,
-		// PositionTypeEnum.FIX_RELATIVE_TO_TOP));
 
 		return jasperDesign;
 
 	}
-
 
 	private JRBand addMonitor(Map<String, Object> parameters, Integer contentFontSize, int columnWidth, int pageWidth,
 			int pageHeight, String itemsValue, JRDesignStyle normalStyle) throws JRException {
@@ -840,8 +807,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-//			((JRDesignSection) jasperDesign.getDetailSection())
-//					.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
 
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(addMedicationItem(parameters, contentFontSize,
 					columnWidth, pageWidth, pageHeight, "$P{vaccination}", normalStyle));
@@ -1401,8 +1366,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		if ((Boolean) parameters.get("isEnableTreatmentcost")) {
-//			((JRDesignSection) jasperDesign.getDetailSection()).addBand(addTreatmentServices(parameters,
-//					contentFontSize, columnWidth, pageWidth, pageHeight, "$P{services}", normalStyle));
 			band = new JRDesignBand();
 			band.setHeight(18);
 			band.setPrintWhenExpression(
@@ -1434,8 +1397,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignLine);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		} else {
-//			((JRDesignSection) jasperDesign.getDetailSection()).addBand(addTreatmentPlan(parameters, contentFontSize,
-//					columnWidth, pageWidth, pageHeight, "$P{services}", normalStyle));
 		}
 
 		band = new JRDesignBand();
@@ -5345,7 +5306,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
 		jrDesignLine.setHeight(1);
-		jrDesignLine.setWidth((serviceWidth * 4)-20);
+		jrDesignLine.setWidth((serviceWidth * 4) - 20);
 		band.addElement(jrDesignLine);
 
 		jasperDesign.setColumnFooter(band);
@@ -9382,61 +9343,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 			tableWidth = tableWidth - 70;
 		}
 		nameWidth = tableWidth - 100;
-//		if (showMobileNo && showStatus && showGroups && showCategory) {
-//			timeWidth = 110;
-//			nameWidth = 130;
-//			mNoWidth = 70;
-//			statusWidth = 60;
-//			groupWidth = 70;
-//			categoryWidth = 60;
-//		} else if (showMobileNo && showStatus && showGroups) {
-//			timeWidth = 120;
-//			nameWidth = 130;
-//			mNoWidth = 90;
-//			statusWidth = 80;
-//			groupWidth = 80;
-//		} else if (showMobileNo && showStatus && showCategory) {
-//			timeWidth = 130;
-//			nameWidth = 170;
-//			mNoWidth = 80;
-//			statusWidth = 80;
-//			categoryWidth = 80;
-//		}else if (showMobileNo && showStatus) {
-//			timeWidth = 130;
-//			nameWidth = 170;
-//			mNoWidth = 100;
-//			statusWidth = 120;
-//		} else if (showMobileNo && showGroups) {
-//			timeWidth = 120;
-//			nameWidth = 130;
-//			mNoWidth = 100;
-//			groupWidth = 180;
-//		} else if (showStatus && showGroups) {
-//			timeWidth = 120;
-//			nameWidth = 130;
-//			statusWidth = 120;
-//			groupWidth = 160;
-//		} else if (showGroups) {
-//			timeWidth = 140;
-//			nameWidth = 160;
-//			groupWidth = 230;
-//		} else if (showStatus) {
-//			timeWidth = 140;
-//			nameWidth = 150;
-//			statusWidth = 120;
-//		} else if (showMobileNo) {
-//			timeWidth = 140;
-//			nameWidth = 160;
-//			mNoWidth = 100;
-//		} else if (showCategory) {
-//			timeWidth = 140;
-//			nameWidth = 160;
-//			categoryWidth = 100;
-//		} else {
-//			timeWidth = 230;
-//			nameWidth = 230;
-//
-//		}
 
 		Integer titleFontSize = contentFontSize;
 		if (contentFontSize > 13)
@@ -9485,21 +9391,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 			timeWidth = timeWidth + mNoWidth + 2;
 		}
-
-//		if (showGroups) {
-//			jrDesignTextField = new JRDesignTextField();
-//			jrDesignTextField.setExpression(new JRDesignExpression("$P{GroupName}"));
-//			jrDesignTextField.setX(timeWidth);
-//			jrDesignTextField.setY(0);
-//			jrDesignTextField.setHeight(18);
-//			jrDesignTextField.setWidth(groupWidth);
-//			jrDesignTextField.setStretchWithOverflow(true);
-//			jrDesignTextField.setMarkup("html");
-//			jrDesignTextField.setBold(true);
-//			jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
-//			band.addElement(jrDesignTextField);
-//			timeWidth = timeWidth + groupWidth;
-//		}
 
 		if (showCategory) {
 			jrDesignTextField = new JRDesignTextField();
@@ -9602,21 +9493,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 			timeWidth = timeWidth + mNoWidth + 2;
 		}
 
-//		if (showGroups) {
-//			jrDesignTextField = new JRDesignTextField();
-//			jrDesignTextField.setExpression(new JRDesignExpression("$F{groupName}"));
-//			jrDesignTextField.setPrintWhenExpression(
-//					new JRDesignExpression("!$F{groupName}.equals(null) && !$F{groupName}.isEmpty() "));
-//			jrDesignTextField.setX(timeWidth);
-//			jrDesignTextField.setY(0);
-//			jrDesignTextField.setHeight(18);
-//			jrDesignTextField.setWidth(groupWidth);
-//			jrDesignTextField.setStretchWithOverflow(true);
-//			jrDesignTextField.setMarkup("html");
-//			jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
-//			band.addElement(jrDesignTextField);
-//			timeWidth = timeWidth + groupWidth;
-//		}
 
 		if (showCategory) {
 			jrDesignTextField = new JRDesignTextField();
@@ -9788,8 +9664,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-//			((JRDesignSection) jasperDesign.getDetailSection())
-//					.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
 
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(addMedicationItem(parameters, contentFontSize,
 					columnWidth, pageWidth, pageHeight, "$P{vaccination}", normalStyle));
@@ -11166,21 +11040,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
-		/*
-		 * band = new JRDesignBand(); band.setPrintWhenExpression( new
-		 * JRDesignExpression("!$P{footerField}.equals(null) && !$P{footerField}.isEmpty()"
-		 * )); band.setHeight(21); band.setSplitType(SplitTypeEnum.STRETCH);
-		 * 
-		 * jrDesignTextField = new JRDesignTextField();
-		 * jrDesignTextField.setExpression(new JRDesignExpression("$P{footerField}"));
-		 * jrDesignTextField.setX(1); jrDesignTextField.setY(0);
-		 * jrDesignTextField.setHeight(20); jrDesignTextField.setWidth(columnWidth);
-		 * jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-		 * jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
-		 * jrDesignTextField.setStretchWithOverflow(true);
-		 * jrDesignTextField.setFontSize(Float.valueOf(contentFontSize));
-		 * jrDesignTextField.setMarkup("html"); band.addElement(jrDesignTextField);
-		 */
 
 		JRDesignDatasetRun dsr = new JRDesignDatasetRun();
 		dsr.setDatasetName("dataset1");

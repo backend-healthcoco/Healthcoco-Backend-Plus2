@@ -6,8 +6,8 @@ import com.dpdocter.beans.OTReports;
 
 public class OTReportsResponse {
 
-	List<OTReports> otReports;
-	Integer count;
+	private List<OTReports> otReports;
+	private Integer count;
 
 	public List<OTReports> getOtReports() {
 		return otReports;

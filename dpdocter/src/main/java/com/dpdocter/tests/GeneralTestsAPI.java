@@ -27,12 +27,6 @@ class GeneralTestsAPI {
 	@Autowired
 	private LocationServices locationServices;
 
-	// @Autowired
-	// private SolrTemplate solrTemplate;
-
-	// @Autowired
-	// private SolrLabTestRepository solrLabTestRepository;
-
 	@Autowired
 	private PushNotificationServices pushNotificationServices;
 
@@ -55,14 +49,4 @@ class GeneralTestsAPI {
 		return response;
 	}
 
-	// @Path(value = "pushIOS")
-	// @GET
-	// public Response<Boolean> pushIOS() {
-	//
-	// pushNotificationServices.pushNotificationOnIosDevices("bb", "Hello", "h",
-	// "a");
-	// Response<Boolean> response = new Response<Boolean>();
-	// response.setData(true);
-	// return response;
-	// }
 }

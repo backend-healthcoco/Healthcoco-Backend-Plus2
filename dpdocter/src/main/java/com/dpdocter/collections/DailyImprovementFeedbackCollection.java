@@ -30,7 +30,7 @@ public class DailyImprovementFeedbackCollection extends GenericCollection {
 	private Boolean discarded;
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	public ObjectId getId() {
 		return id;
 	}

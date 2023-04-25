@@ -62,21 +62,23 @@ public class PrescriptionApi {
 		response.setDataList(prescriptions);
 		return response;
 	}
-	
+
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTIONS_FOR_EMR, notes = PathProxy.PrescriptionUrls.GET_PRESCRIPTIONS_FOR_EMR)
 	@Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTIONS_FOR_EMR)
 	public Response<Prescription> getPrescriptionForEMR(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,@QueryParam("from") String from,@QueryParam("to") String to,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @QueryParam("from") String from,
+			@QueryParam("to") String to, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(locationId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 		}
 		List<Prescription> prescriptions = null;
 
-		prescriptions = prescriptionServices.getPrescriptionsForEMR(page, size, doctorId, hospitalId, locationId, patientId, updatedTime, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId),from,to, discarded, false);
+		prescriptions = prescriptionServices.getPrescriptionsForEMR(page, size, doctorId, hospitalId, locationId,
+				patientId, updatedTime, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), from,
+				to, discarded, false);
 
 		Response<Prescription> response = new Response<Prescription>();
 		response.setDataList(prescriptions);
@@ -106,7 +108,7 @@ public class PrescriptionApi {
 		response.setDataList(drugDocuments);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrescriptionUrls.GET_DRUGS_BY_CODE)
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_DRUGS_BY_CODE, notes = PathProxy.PrescriptionUrls.GET_DRUGS_BY_CODE)
@@ -120,5 +122,5 @@ public class PrescriptionApi {
 		response.setData(drugAddEditResponse);
 		return response;
 	}
-	
+
 }

@@ -59,7 +59,6 @@ import com.dpdocter.beans.MultipartUploadFile;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.RecordsFile;
-import com.dpdocter.beans.RecordsUrlData;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
@@ -303,7 +302,6 @@ public class RecordsServiceImpl implements RecordsService {
 			}
 			if (request.getFileDetails() != null) {
 
-				String recordLable = request.getFileDetails().getFileName();
 				request.getFileDetails().setFileName(request.getFileDetails().getFileName() + createdTime.getTime());
 				String path = "records" + File.separator + request.getPatientId();
 
@@ -317,13 +315,6 @@ public class RecordsServiceImpl implements RecordsService {
 				recordsCollection.setRecordsPath(recordPath);
 				if (DPDoctorUtils.anyStringEmpty(request.getRecordsLabel()))
 					recordsCollection.setRecordsLabel(request.getFileDetails().getFileName());
-			}
-
-			if (request.getRecordsUrls() != null && !request.getRecordsUrls().isEmpty()) {
-				for (RecordsUrlData recordsUrlData : request.getRecordsUrls()) {
-					String recordsURL = recordsUrlData.getRecordsUrl().replaceAll(imagePath, "");
-
-				}
 			}
 
 			recordsCollection.setCreatedTime(createdTime);
@@ -502,11 +493,6 @@ public class RecordsServiceImpl implements RecordsService {
 			recordsCollection.setIsPatientDiscarded(oldRecord.getIsPatientDiscarded());
 			recordsCollection = recordsRepository.save(recordsCollection);
 
-			// pushNotificationServices.notifyUser(recordsCollection.getPatientId(),
-			// "Report:"+recordsCollection.getUniqueEmrId()+" is uploaded by
-			// lab", ComponentType.REPORTS.getType(),
-			// recordsCollection.getId());
-
 			BeanUtil.map(recordsCollection, records);
 
 			pushNotificationServices.notifyUser(recordsCollection.getDoctorId().toString(), "Records Added",
@@ -567,8 +553,6 @@ public class RecordsServiceImpl implements RecordsService {
 		List<Records> records = null;
 		List<RecordsLookupResponse> recordsLookupResponses = null;
 		try {
-			boolean isOTPVerified = otpService.checkOTPVerified(request.getDoctorId(), request.getLocationId(),
-					request.getHospitalId(), request.getPatientId());
 			ObjectId tagObjectId = null, patientObjectId = null, doctorObjectId = null, locationObjectId = null,
 					hospitalObjectId = null;
 

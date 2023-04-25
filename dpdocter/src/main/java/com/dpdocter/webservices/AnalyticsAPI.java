@@ -11,7 +11,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -65,8 +64,6 @@ import io.swagger.annotations.ApiOperation;
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.ANALYTICS_BASE_URL, description = "")
 public class AnalyticsAPI {
-
-	private static Logger logger = Logger.getLogger(AnalyticsAPI.class.getName());
 
 	@Autowired
 	private AnalyticsService analyticsService;
@@ -749,10 +746,10 @@ public class AnalyticsAPI {
 		}
 		Response<AnalyticCountResponse> response = new Response<AnalyticCountResponse>();
 		Integer count = patientAnalyticService.getPatientCountAnalytic(0, page, doctorId, locationId, hospitalId,
-				fromDate, toDate, type, searchTerm,  isVisited).size();
+				fromDate, toDate, type, searchTerm, isVisited).size();
 		if (count > 0) {
 			List<AnalyticCountResponse> data = patientAnalyticService.getPatientCountAnalytic(size, page, doctorId,
-					locationId, hospitalId, fromDate, toDate, type, searchTerm,  isVisited);
+					locationId, hospitalId, fromDate, toDate, type, searchTerm, isVisited);
 			response.setDataList(data);
 		}
 		response.setCount(count);
@@ -809,85 +806,75 @@ public class AnalyticsAPI {
 		response.setData(data);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.AnalyticsUrls.GET_ONLINE_CONSULTATION_ANALYTICS)
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_ONLINE_CONSULTATION_ANALYTICS, notes = PathProxy.AnalyticsUrls.GET_ONLINE_CONSULTATION_ANALYTICS)
-	public Response<OnlineConsultationAnalytics> getPatientAppointments(@QueryParam(value = "locationId") String locationId,
-			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "type") String type,
-			@QueryParam(value = "fromDate") String fromDate, @QueryParam(value = "toDate") String toDate) {
+	public Response<OnlineConsultationAnalytics> getPatientAppointments(
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "type") String type, @QueryParam(value = "fromDate") String fromDate,
+			@QueryParam(value = "toDate") String toDate) {
 
-		Response<OnlineConsultationAnalytics> response =new Response<OnlineConsultationAnalytics>();
-		response.setData(appointmentAnalyticsService.getConsultationAnalytics(fromDate, toDate, doctorId, locationId, type));
+		Response<OnlineConsultationAnalytics> response = new Response<OnlineConsultationAnalytics>();
+		response.setData(
+				appointmentAnalyticsService.getConsultationAnalytics(fromDate, toDate, doctorId, locationId, type));
 		return response;
-		
-		
+
 	}
-	
+
 	@Path(value = PathProxy.AnalyticsUrls.GET_PAYMENT_SUMMARY)
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PAYMENT_SUMMARY, notes = PathProxy.AnalyticsUrls.GET_PAYMENT_SUMMARY)
 	public Response<PaymentSummary> getPaymentSummary(@QueryParam(value = "locationId") String locationId,
-			@QueryParam(value = "doctorId") String doctorId,
-			@QueryParam(value = "fromDate") String fromDate, @QueryParam(value = "toDate") String toDate) {
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "fromDate") String fromDate,
+			@QueryParam(value = "toDate") String toDate) {
 
-		Response<PaymentSummary> response =new Response<PaymentSummary>();
+		Response<PaymentSummary> response = new Response<PaymentSummary>();
 
 		response.setData(appointmentAnalyticsService.getPaymentSummary(fromDate, toDate, doctorId));
 
 		return response;
-		
-		
+
 	}
-	
+
 	@Path(value = PathProxy.AnalyticsUrls.FETCH_SETTLEMENT)
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.FETCH_SETTLEMENT, notes = PathProxy.AnalyticsUrls.FETCH_SETTLEMENT)
-	public Response<PaymentSettlements> getSettlements(
-			@QueryParam(value = "day") int  day, 
-			 @QueryParam(value = "month") int month,
-			 @QueryParam(value = "year") int year) {
+	public Response<PaymentSettlements> getSettlements(@QueryParam(value = "day") int day,
+			@QueryParam(value = "month") int month, @QueryParam(value = "year") int year) {
 
-		Response<PaymentSettlements> response =new Response<PaymentSettlements>();
+		Response<PaymentSettlements> response = new Response<PaymentSettlements>();
 		response.setData(appointmentAnalyticsService.fetchSettlement(day, month, year));
 
 		return response;
-		
-		
+
 	}
-	
+
 	@Path(value = PathProxy.AnalyticsUrls.GET_PAYMENT_SETTLEMENT)
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PAYMENT_SETTLEMENT, notes = PathProxy.AnalyticsUrls.GET_PAYMENT_SETTLEMENT)
 	public Response<OnlineConsultationSettlement> getConsultationSettlement(
-			@QueryParam(value = "fromDate") String  fromDate, 
-			 @QueryParam(value = "toDate") String toDate,
-			 @QueryParam(value = "doctorId") String doctorId,
-			@DefaultValue("0") @QueryParam(value = "page") int page,
+			@QueryParam(value = "fromDate") String fromDate, @QueryParam(value = "toDate") String toDate,
+			@QueryParam(value = "doctorId") String doctorId, @DefaultValue("0") @QueryParam(value = "page") int page,
 			@DefaultValue("0") @QueryParam(value = "size") int size) {
 
-		Response<OnlineConsultationSettlement> response =new Response<OnlineConsultationSettlement>();
+		Response<OnlineConsultationSettlement> response = new Response<OnlineConsultationSettlement>();
 		response.setDataList(appointmentAnalyticsService.getSettlements(fromDate, toDate, doctorId, page, size));
 		return response;
-		
-		
+
 	}
-	
-	
+
 	@Path(value = PathProxy.AnalyticsUrls.GET_PATIENT_PAYMENT_SETTLEMENTS)
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PATIENT_PAYMENT_SETTLEMENTS, notes = PathProxy.AnalyticsUrls.GET_PATIENT_PAYMENT_SETTLEMENTS)
-	public Response<PatientPaymentDetails> getPatientSettlement(
-			 @QueryParam(value = "doctorId") String doctorId,
+	public Response<PatientPaymentDetails> getPatientSettlement(@QueryParam(value = "doctorId") String doctorId,
 			@DefaultValue("0") @QueryParam(value = "page") int page,
 			@DefaultValue("0") @QueryParam(value = "size") int size) {
 
-		Response<PatientPaymentDetails> response =new Response<PatientPaymentDetails>();
+		Response<PatientPaymentDetails> response = new Response<PatientPaymentDetails>();
 		response.setDataList(appointmentAnalyticsService.getPatientPaymentDetails(doctorId, page, size));
 		return response;
-		
-		
+
 	}
-	
 
 }

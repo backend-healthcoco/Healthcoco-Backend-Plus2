@@ -426,15 +426,6 @@ public class PaediatricServiceImpl implements PaediatricService {
 			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 				criteria.and("patientId").is(new ObjectId(patientId));
 			}
-			/*
-			 * AggregationOperation aggregationOperation = new
-			 * CustomAggregationOperation(new BasicDBObject("$group", new
-			 * BasicDBObject("_id", new BasicDBObject("duration",
-			 * "$vaccineResponses.duration")) .append("vaccineResponses", new
-			 * BasicDBObject("$push", "$vaccineResponses")).append("dueDate", new
-			 * BasicDBObject("$first", "$diagnosticTest.dueDate"))));
-			 * 
-			 */
 			responses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(
 							Aggregation.lookup("vaccine_brand_cl", "vaccineBrandId", "_id", "vaccineBrand"),
@@ -460,7 +451,6 @@ public class PaediatricServiceImpl implements PaediatricService {
 			int size) {
 		List<MasterVaccineResponse> responses = null;
 		try {
-			// Criteria criteria = new Criteria();
 			Aggregation aggregation = null;
 
 			Criteria criteria = new Criteria();
@@ -520,8 +510,8 @@ public class PaediatricServiceImpl implements PaediatricService {
 									Aggregation.lookup("master_baby_immunization_cl", "vaccineId", "_id", "vaccine"),
 									new CustomAggregationOperation(
 											new Document("$unwind",
-													new BasicDBObject("path",
-															"$vaccine").append("preserveNullAndEmptyArrays", true))),
+													new BasicDBObject("path", "$vaccine")
+															.append("preserveNullAndEmptyArrays", true))),
 									Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC,
 											"id"))/*
 													 * Aggregation.sort(new Sort(Direction.DESC, "createdTime"))
@@ -661,12 +651,12 @@ public class PaediatricServiceImpl implements PaediatricService {
 					new BasicDBObject("_id",
 							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year")
 									.append("patientId", "$patientId"))
-											.append("doctorName", new BasicDBObject("$first", "$doctorName"))
-											.append("locationName", new BasicDBObject("$first", "$locationName"))
-											.append("patientName", new BasicDBObject("$first", "$patientName"))
-											.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
-											.append("clinicNumber", new BasicDBObject("$first", "$clinicNumber"))
-											.append("vaccines", new BasicDBObject("$push", "$vaccines"))));
+							.append("doctorName", new BasicDBObject("$first", "$doctorName"))
+							.append("locationName", new BasicDBObject("$first", "$locationName"))
+							.append("patientName", new BasicDBObject("$first", "$patientName"))
+							.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
+							.append("clinicNumber", new BasicDBObject("$first", "$clinicNumber"))
+							.append("vaccines", new BasicDBObject("$push", "$vaccines"))));
 
 			aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 					Aggregation.unwind("doctor"), Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
@@ -693,8 +683,6 @@ public class PaediatricServiceImpl implements PaediatricService {
 					}
 					vaccineNames = StringUtils.join(vaccineList, ",");
 
-					// dateTime =
-					// formatter.print(vaccineReminderResponse.getVaccines().get(0).getDueDate().getTime());
 					dateTime = formatter.print(new DateTime());
 
 					String message = "Your vaccination for " + vaccineNames + " is due with "
@@ -761,12 +749,12 @@ public class PaediatricServiceImpl implements PaediatricService {
 					new BasicDBObject("_id",
 							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year")
 									.append("patientId", "$patientId"))
-											.append("doctorName", new BasicDBObject("$first", "$doctorName"))
-											.append("locationName", new BasicDBObject("$first", "$locationName"))
-											.append("patientName", new BasicDBObject("$first", "$patientName"))
-											.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
-											.append("clinicNumber", new BasicDBObject("$first", "$clinicNumber"))
-											.append("vaccines", new BasicDBObject("$push", "$vaccines"))));
+							.append("doctorName", new BasicDBObject("$first", "$doctorName"))
+							.append("locationName", new BasicDBObject("$first", "$locationName"))
+							.append("patientName", new BasicDBObject("$first", "$patientName"))
+							.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
+							.append("clinicNumber", new BasicDBObject("$first", "$clinicNumber"))
+							.append("vaccines", new BasicDBObject("$push", "$vaccines"))));
 
 			aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 					Aggregation.unwind("doctor"), Aggregation.lookup("user_cl", "patientId", "_id", "patient"),

@@ -219,7 +219,6 @@ import com.dpdocter.repository.AppointmentRepository;
 import com.dpdocter.repository.BabyNoteRepository;
 import com.dpdocter.repository.CementRepository;
 import com.dpdocter.repository.CityRepository;
-import com.dpdocter.repository.CollectionBoyRepository;
 import com.dpdocter.repository.ComplaintRepository;
 import com.dpdocter.repository.DiagnosisRepository;
 import com.dpdocter.repository.DiagnosticTestRepository;
@@ -291,7 +290,6 @@ import com.dpdocter.response.DoctorAppointmentSMSResponse;
 import com.dpdocter.response.InteraktResponse;
 import com.dpdocter.response.LocationAdminAppointmentLookupResponse;
 import com.dpdocter.services.OTPService;
-import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
 import com.mongodb.BasicDBObject;
@@ -481,9 +479,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	private AdviceRepository adviceRepository;
 
 	@Autowired
-	private PushNotificationServices pushNotificationServices;
-
-	@Autowired
 	private LocaleRepository localeRepository;
 
 	@Autowired
@@ -539,9 +534,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	@Autowired
 	private ServicesRepository servicesRepository;
-
-	@Autowired
-	private CollectionBoyRepository collectionBoyRepository;
 
 	@Value(value = "${mail.appointment.details.subject}")
 	private String appointmentDetailsSub;
@@ -608,16 +600,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
 					TransactionalCollection.class, TransactionalCollection.class).getMappedResults();
 
-//			long count = mongoTemplate.count(new Query(new Criteria("isCached").is(false)), TransactionalCollection.class);
-//			long remainingCount = count;
-//			int page = 0;
-//			int size = 20000;
-//			while(remainingCount>0) {
-//				
-//				transactionalCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("isCached").is(false)), 
-//						Aggregation.skip(page * size), Aggregation.limit(size)).withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), TransactionalCollection.class, TransactionalCollection.class).getMappedResults();
-
-//				transactionalCollections = transnationalRepositiory.findByIsCached(false);
 			if (transactionalCollections != null) {
 				for (TransactionalCollection transactionalCollection : transactionalCollections) {
 					if (transactionalCollection.getResourceId() != null)
@@ -815,9 +797,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 //				remainingCount=remainingCount-transactionalCollections.size();
 //			}
 
-			// Expire invalid otp
 			checkOTP();
-//			addDataFromMongoToElasticSearch();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -989,11 +969,12 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
-							new CustomAggregationOperation(new Document("$redact", new BasicDBObject("$cond",
-									new BasicDBObject("if",
-											new BasicDBObject("$eq",
-													Arrays.asList("$patient.locationId", "$locationId")))
-															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+							new CustomAggregationOperation(new Document("$redact",
+									new BasicDBObject("$cond",
+											new BasicDBObject("if",
+													new BasicDBObject("$eq",
+															Arrays.asList("$patient.locationId", "$locationId")))
+													.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 							new CustomAggregationOperation(new Document("$project",
 									new BasicDBObject("locationId", "$locationId").append("userId", "$userId")
 											.append("locationAdminName", "$locationAdmin.firstName")
@@ -1004,9 +985,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 											.append("drAppointments.id", "$locationAppointments.id")
 											.append("drAppointments.time", "$locationAppointments.time")
 											.append("drAppointments.localPatientName", "$patient.localPatientName")
-											.append("drAppointments.doctorName",
-													new BasicDBObject("$concat",
-															Arrays.asList("$doctor.title", " ", "$doctor.firstName")))
+											.append("drAppointments.doctorName", new BasicDBObject("$concat",
+													Arrays.asList("$doctor.title", " ", "$doctor.firstName")))
 											.append("drAppointments.doctorId", "$locationAppointments.doctorId"))),
 
 							new CustomAggregationOperation(
@@ -1134,7 +1114,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 					}
 				}
 			}
-//			sendAppointmentScheduleToStaff();
 			sendEventReminderToDoctor();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1282,7 +1261,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						new CustomAggregationOperation(new Document("$redact", new BasicDBObject("$cond",
 								new BasicDBObject("if",
 										new BasicDBObject("$eq", Arrays.asList("$patient.locationId", "$locationId")))
-												.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+										.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 
 						new CustomAggregationOperation(new Document("$project",
 								new BasicDBObject("locationId", "$locationId").append("userId", "$userId")
@@ -1374,36 +1353,11 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						String message = "Healthcoco! Your clinic " + response.getLocationName() + " have "
 								+ response.getTotalAppointments() + " appointments scheduled today.\n"
 								+ response.getMessage() + ".\nStay Happy!!";
-
-//							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-//							smsTrackDetail.setDoctorId(response.getUserId());
-//							smsTrackDetail.setType("APPOINTMENT");
-//							SMSDetail smsDetail = new SMSDetail();
-//							smsDetail.setUserId(response.getUserId());
-//							SMS sms = new SMS();
-//							smsDetail.setUserName(response.getLocationAdminName());
-//							sms.setSmsText(message);
-//
-//							SMSAddress smsAddress = new SMSAddress();
-//							smsAddress.setRecipient(response.getLocationAdminMobileNumber());
-//							sms.setSmsAddress(smsAddress);
-//
-//							smsDetail.setSms(sms);
-//							smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-//							List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-//							smsDetails.add(smsDetail);
-//							smsTrackDetail.setSmsDetails(smsDetails);
-//							sMSServices.sendSMS(smsTrackDetail, true);
-//							if (response.getUserDevices() != null && !response.getUserDevices().isEmpty()) {
-//								pushNotificationServices.notifyUser(null, message, ComponentType.CALENDAR_REMINDER.getType(),
-//										null, response.getUserDevices());
-//							}
 					}
 
 				} else {
 				}
 			}
-//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -1639,12 +1593,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							break;
 						}
 						case "hour(s)": {
-							// cal.add(Calendar.YEAR,
-							// Integer.parseInt(prescriptionItem.getDuration().getValue()));
-							// long diff = cal.getTime().getTime() - new
-							// Date().getTime();
-							// noOfDays = (int) TimeUnit.DAYS.convert(diff,
-							// TimeUnit.MILLISECONDS);
 							break;
 						}
 						}
@@ -2730,56 +2678,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public Boolean addDataFromMongoToElasticSearch() {
 		try {
 			System.out.println("addDataFromMongoToElasticSearch");
-//			List<CityCollection> cityCollections = cityRepository.findAll();
-//			if (cityCollections != null && !cityCollections.isEmpty()) {
-//				for (CityCollection cityCollection : cityCollections) {
-//					ESCityDocument esCityDocument = new ESCityDocument();
-//					BeanUtil.map(cityCollection, esCityDocument);
-//
-//					esCityService.addCities(esCityDocument);
-//				}
-//			}
-//			System.out.println("added cities");
-//			
-//			List<AdviceCollection> adviceCollections = adviceRepository.findAll();
-//			if (adviceCollections != null && !adviceCollections.isEmpty()) {
-//				for (AdviceCollection adviceCollection : adviceCollections) {
-//					ESAdvicesDocument esAdvicesDocument = new ESAdvicesDocument();
-//					BeanUtil.map(adviceCollection, esAdvicesDocument);
-//					esPrescriptionService.addAdvices(esAdvicesDocument);
-//				}
-//			}
-//			System.out.println("added advice");
-//
-//			List<CollectionBoyCollection> collectionBoyCollections = collectionBoyRepository.findAll();
-//			if (collectionBoyCollections != null && !collectionBoyCollections.isEmpty()) {
-//				for (CollectionBoyCollection collectionBoyCollection : collectionBoyCollections) {
-//					ESCollectionBoyDocument esCollectionBoyDocument = new ESCollectionBoyDocument();
-//					BeanUtil.map(collectionBoyCollection, esCollectionBoyDocument);
-//					esRegistrationService.addCollectionBoy(esCollectionBoyDocument);
-//				}
-//			}
-//			System.out.println("added collection boy");
-//
-//			List<XRayDetailsCollection> xRayDetailsCollections = xRayDetailsRepository.findAll();
-//			if (xRayDetailsCollections != null && !xRayDetailsCollections.isEmpty()) {
-//				for (XRayDetailsCollection xRayDetailsCollection : xRayDetailsCollections) {
-//					ESXRayDetailsDocument esxRayDetailsDocument = new ESXRayDetailsDocument();
-//					BeanUtil.map(xRayDetailsCollection, esxRayDetailsDocument);
-//					esClinicalNotesService.addXRayDetails(esxRayDetailsDocument);
-//				}
-//			}
-//			System.out.println("added xray details");
-//
-//			List<TreatmentServicesCollection> treatmentServicesCollections = treatmentServicesRepository.findAll();
-//			if (treatmentServicesCollections != null) {
-//				for (TreatmentServicesCollection treatmentServicesCollection : treatmentServicesCollections) {
-//					ESTreatmentServiceDocument esTreatmentServiceDocument = new ESTreatmentServiceDocument();
-//					BeanUtil.map(treatmentServicesCollection, esTreatmentServiceDocument);
-//					esTreatmentService.addEditService(esTreatmentServiceDocument);
-//				}
-//			}
-//			System.out.println("added treatment service");
 
 			List<SystemExamCollection> systemExamCollections = systemExamRepository.findAll();
 			if (systemExamCollections != null) {

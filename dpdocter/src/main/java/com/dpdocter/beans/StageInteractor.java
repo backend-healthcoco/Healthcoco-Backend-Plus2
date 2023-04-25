@@ -3,8 +3,8 @@ package com.dpdocter.beans;
 public class StageInteractor {
 
 	/*
-	 * A) Pediatric B) Geriatric C) Pregnant woman - Pregnancy Catevategory
-	 * (drop down list containing 5 fields; A,B,C,D and X) D) Lactating mothers
+	 * A) Pediatric B) Geriatric C) Pregnant woman - Pregnancy Catevategory (drop
+	 * down list containing 5 fields; A,B,C,D and X) D) Lactating mothers
 	 */
 
 	private Boolean pediatric;

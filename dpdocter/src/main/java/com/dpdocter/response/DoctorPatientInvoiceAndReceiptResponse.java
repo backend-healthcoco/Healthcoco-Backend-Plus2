@@ -6,36 +6,35 @@ import java.util.List;
 import com.dpdocter.beans.DoctorPatientReceipt;
 import com.dpdocter.collections.GenericCollection;
 
-public class DoctorPatientInvoiceAndReceiptResponse extends GenericCollection{
+public class DoctorPatientInvoiceAndReceiptResponse extends GenericCollection {
 
-private String id;
-	
+	private String id;
+
 	private String doctorId;
-	
+
 	private String locationId;
-	
+
 	private String hospitalId;
-	
+
 	private String patientId;
-	
+
 	private String uniqueInvoiceId;
-	
-	private List<InvoiceItemResponse> invoiceItems;   
-	
+
+	private List<InvoiceItemResponse> invoiceItems;
+
 	private Double grandTotal = 0.0;
-	
+
 	private Double usedAdvanceAmount = 0.0;
-	
+
 	private Double refundAmount = 0.0;
-	
+
 	private Double balanceAmount = 0.0;
 
 	private Boolean discarded = false;
-	
-	DoctorPatientReceipt doctorPatientReceipt;
-	
-	private Date invoiceDate;
 
+	DoctorPatientReceipt doctorPatientReceipt;
+
+	private Date invoiceDate;
 
 	public String getId() {
 		return id;

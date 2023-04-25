@@ -5,9 +5,9 @@ import com.dpdocter.enums.BlogSuperCategoryType;
 public class BlogCategoryWithPageSize {
 
 	BlogSuperCategoryType superCategory;
-	
+
 	long page = 0;
-	
+
 	int size = 0;
 
 	public BlogSuperCategoryType getSuperCategory() {

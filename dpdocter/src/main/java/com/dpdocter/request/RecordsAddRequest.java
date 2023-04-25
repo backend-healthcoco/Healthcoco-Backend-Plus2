@@ -18,9 +18,9 @@ public class RecordsAddRequest {
 	private String explanation;
 
 	private FileDetails fileDetails;
-	
+
 	private List<RecordsUrlData> recordsUrls;
-	
+
 	private String locationId;
 
 	private String hospitalId;
@@ -50,7 +50,7 @@ public class RecordsAddRequest {
 	private Date createdTime;
 
 	private Boolean shareWithPatient = false;
-	
+
 	private String appointmentId;
 
 	public Date getCreatedTime() {

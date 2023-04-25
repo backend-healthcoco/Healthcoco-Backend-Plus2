@@ -5,6 +5,7 @@ import java.util.Date;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+
 @Document(indexName = "labournote_in", type = "labournote")
 public class EsLabourNoteDocument {
 	@Field(type = FieldType.Text)
@@ -94,6 +95,5 @@ public class EsLabourNoteDocument {
 	public void setSpeciality(String speciality) {
 		this.speciality = speciality;
 	}
-
 
 }

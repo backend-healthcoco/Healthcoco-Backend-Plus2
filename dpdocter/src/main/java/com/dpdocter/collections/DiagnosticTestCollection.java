@@ -34,17 +34,17 @@ public class DiagnosticTestCollection extends GenericCollection {
 	@Field
 	private String diagnosticTestCode;
 
-    @Field
-    private Double diagnosticTestCost = 0.0;
+	@Field
+	private Double diagnosticTestCost = 0.0;
 
-    @Field
-    private Amount diagnosticTestComission;
+	@Field
+	private Amount diagnosticTestComission;
 
-    @Field
-    private Double diagnosticTestCostForPatient = 0.0;
+	@Field
+	private Double diagnosticTestCostForPatient = 0.0;
 
-    @Field
-    private long rankingCount = 0;
+	@Field
+	private long rankingCount = 0;
 
 	public ObjectId getId() {
 		return id;

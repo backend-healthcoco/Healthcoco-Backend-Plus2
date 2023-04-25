@@ -1,6 +1,5 @@
 package com.dpdocter.request;
 
-
 public class UpdateETARequest {
 
 	private String requestId;

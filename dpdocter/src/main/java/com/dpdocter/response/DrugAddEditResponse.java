@@ -10,69 +10,69 @@ import com.dpdocter.beans.Strength;
 import com.dpdocter.collections.GenericCollection;
 
 public class DrugAddEditResponse extends GenericCollection {
-    private String id;
+	private String id;
 
-    private DrugType drugType;
+	private DrugType drugType;
 
-    private String drugName;
+	private String drugName;
 
-    private String explanation;
+	private String explanation;
 
-    private Strength strength;
+	private Strength strength;
 
-    private List<String> genericCodes;
+	private List<String> genericCodes;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private String locationId;
+	private String locationId;
 
-    private String drugCode;
+	private String drugCode;
 
-    private String companyName;
+	private String companyName;
 
-    private String packSize;
+	private String packSize;
 
-    private String MRP;
+	private String MRP;
 
-    private Duration duration;
+	private Duration duration;
 
-    private String dosage;
+	private String dosage;
 
-    private List<Long> dosageTime;
-    
-    private List<DrugDirection> direction;
+	private List<Long> dosageTime;
 
-    private List<String> categories;
+	private List<DrugDirection> direction;
 
-    List<GenericCode> genericNames;
-    
-    public String getId() {
-	return id;
-    }
+	private List<String> categories;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	List<GenericCode> genericNames;
 
-    public DrugType getDrugType() {
-	return drugType;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setDrugType(DrugType drugType) {
-	this.drugType = drugType;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getDrugName() {
-	return drugName;
-    }
+	public DrugType getDrugType() {
+		return drugType;
+	}
 
-    public void setDrugName(String drugName) {
-	this.drugName = drugName;
-    }
+	public void setDrugType(DrugType drugType) {
+		this.drugType = drugType;
+	}
 
-    public String getExplanation() {
+	public String getDrugName() {
+		return drugName;
+	}
+
+	public void setDrugName(String drugName) {
+		this.drugName = drugName;
+	}
+
+	public String getExplanation() {
 		return explanation;
 	}
 
@@ -81,14 +81,14 @@ public class DrugAddEditResponse extends GenericCollection {
 	}
 
 	public Strength getStrength() {
-	return strength;
-    }
+		return strength;
+	}
 
-    public void setStrength(Strength strength) {
-	this.strength = strength;
-    }
+	public void setStrength(Strength strength) {
+		this.strength = strength;
+	}
 
-    public List<String> getGenericCodes() {
+	public List<String> getGenericCodes() {
 		return genericCodes;
 	}
 
@@ -97,36 +97,36 @@ public class DrugAddEditResponse extends GenericCollection {
 	}
 
 	public String getDoctorId() {
-	return doctorId;
-    }
+		return doctorId;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getDrugCode() {
-	return drugCode;
-    }
+	public String getDrugCode() {
+		return drugCode;
+	}
 
-    public void setDrugCode(String drugCode) {
-	this.drugCode = drugCode;
-    }
+	public void setDrugCode(String drugCode) {
+		this.drugCode = drugCode;
+	}
 
 	public String getCompanyName() {
 		return companyName;

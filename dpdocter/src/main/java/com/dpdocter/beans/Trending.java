@@ -34,7 +34,6 @@ public class Trending extends GenericCollection {
 		this.id = id;
 	}
 
-	
 	public String getOfferId() {
 		return offerId;
 	}

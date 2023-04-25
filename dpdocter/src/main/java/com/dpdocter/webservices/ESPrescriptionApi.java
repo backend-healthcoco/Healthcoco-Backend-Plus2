@@ -48,7 +48,7 @@ public class ESPrescriptionApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm, @QueryParam(value = "category") String category,
-			@DefaultValue("false")  @QueryParam(value = "searchByGenericName") Boolean searchByGenericName) {
+			@DefaultValue("false") @QueryParam(value = "searchByGenericName") Boolean searchByGenericName) {
 
 		if (DPDoctorUtils.anyStringEmpty(range)) {
 			logger.warn("Invalid Input");
@@ -85,9 +85,9 @@ public class ESPrescriptionApi {
 	@Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_DIAGNOSTIC_TEST)
 	@GET
 	@ApiOperation(value = PathProxy.SolrPrescriptionUrls.SEARCH_DIAGNOSTIC_TEST, notes = PathProxy.SolrPrescriptionUrls.SEARCH_DIAGNOSTIC_TEST)
-	public Response<Object> searchDiagnosticTest(@PathParam("range") String range,
-			@QueryParam("page") long page, @QueryParam("size") int size,
-			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+	public Response<Object> searchDiagnosticTest(@PathParam("range") String range, @QueryParam("page") long page,
+			@QueryParam("size") int size, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
@@ -99,7 +99,8 @@ public class ESPrescriptionApi {
 				locationId, hospitalId, updatedTime, discarded, searchTerm);
 		Response<Object> response = new Response<Object>();
 		response.setDataList(diagnosticTests);
-		response.setData(esPrescriptionService.getDiagnosticTestCount(range, page, size, locationId, hospitalId, updatedTime, discarded, searchTerm));
+		response.setData(esPrescriptionService.getDiagnosticTestCount(range, page, size, locationId, hospitalId,
+				updatedTime, discarded, searchTerm));
 		return response;
 	}
 

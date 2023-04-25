@@ -12,35 +12,35 @@ import com.dpdocter.collections.UserDeviceCollection;
 public class AppointmentDoctorReminderResponse {
 
 	private String id;
-	
+
 	private ObjectId doctorId;
-	
+
 	private int total;
 
 	private String patientId;
-	
+
 	private WorkingHours time;
-	
+
 	private UserCollection doctor;
-	
+
 	private String appointmentId;
-	
+
 	private Date fromDate;
-	
-    private ObjectId locationId;
 
-    private ObjectId hospitalId;
+	private ObjectId locationId;
 
-    private List<UserDeviceCollection> userDevices ;
-    
-    private String localPatientName;
-	
+	private ObjectId hospitalId;
+
+	private List<UserDeviceCollection> userDevices;
+
+	private String localPatientName;
+
 	private String doctorName;
 
 	private String subject;
-	
+
 	private List<ObjectId> doctorIds;
-	
+
 	public String getId() {
 		return id;
 	}

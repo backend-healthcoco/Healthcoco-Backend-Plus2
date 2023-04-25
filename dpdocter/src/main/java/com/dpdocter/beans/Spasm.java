@@ -3,8 +3,8 @@ package com.dpdocter.beans;
 public class Spasm {
 
 	private String spasm;
-	
-	private Boolean value=false;
+
+	private Boolean value = false;
 
 	public String getSpasm() {
 		return spasm;
@@ -21,6 +21,5 @@ public class Spasm {
 	public void setValue(Boolean value) {
 		this.value = value;
 	}
-	
-	
+
 }

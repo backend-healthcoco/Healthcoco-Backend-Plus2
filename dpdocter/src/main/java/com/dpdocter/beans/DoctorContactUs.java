@@ -32,7 +32,6 @@ public class DoctorContactUs extends GenericCollection {
 	private Boolean toList;
 	private String deviceType;
 	private String mrCode;
-	
 
 	public String getId() {
 		return id;

@@ -7,7 +7,7 @@ import com.dpdocter.beans.Observation;
 public class TreatmentObservationRequest {
 
 	private PatientTreatmentAddEditRequest Treatments;
-	
+
 	private List<Observation> observations;
 
 	public PatientTreatmentAddEditRequest getTreatments() {
@@ -25,6 +25,5 @@ public class TreatmentObservationRequest {
 	public void setObservations(List<Observation> observations) {
 		this.observations = observations;
 	}
-	
-	
+
 }

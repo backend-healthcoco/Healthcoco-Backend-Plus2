@@ -2,8 +2,6 @@ package com.dpdocter.response.v2;
 
 import java.util.Date;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.beans.v2.PatientCard;
 import com.dpdocter.collections.GenericCollection;
@@ -36,7 +34,7 @@ public class AdmitCardResponse extends GenericCollection {
 	private String timeOfOperation;
 	private String ip;
 	private String address;
-	
+
 	private VitalSigns vitalSigns;
 	private String preOprationalOrders;
 	private String nursingCare;
@@ -250,7 +248,6 @@ public class AdmitCardResponse extends GenericCollection {
 		this.timeOfOperation = timeOfOperation;
 	}
 
-	
 	public VitalSigns getVitalSigns() {
 		return vitalSigns;
 	}
@@ -275,7 +272,6 @@ public class AdmitCardResponse extends GenericCollection {
 		this.nursingCare = nursingCare;
 	}
 
-	
 	public String getIpdNumber() {
 		return ipdNumber;
 	}

@@ -6,7 +6,7 @@ import java.util.Map;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.response.RecipeTemplateItemResponse;
 
-public class RecipeTemplate extends GenericCollection{
+public class RecipeTemplate extends GenericCollection {
 
 	private String id;
 
@@ -21,11 +21,11 @@ public class RecipeTemplate extends GenericCollection{
 	private Boolean discarded = false;
 
 	private List<RecipeTemplateItemResponse> items;
-	
+
 	private List<String> recipeIds;
 
 	private Map<String, String> multilingualName;
-	
+
 	public Map<String, String> getMultilingualName() {
 		return multilingualName;
 	}
@@ -33,7 +33,7 @@ public class RecipeTemplate extends GenericCollection{
 	public void setMultilingualName(Map<String, String> multilingualName) {
 		this.multilingualName = multilingualName;
 	}
-	
+
 	public String getId() {
 		return id;
 	}

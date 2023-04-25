@@ -115,23 +115,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Autowired
 	private DrugRepository drugRepository;
 
-	/*
-	 * LoadingCache<String, List<Code>> Cache =
-	 * CacheBuilder.newBuilder().maximumSize(100) // maximum 100 records can be
-	 * cached .expireAfterAccess(30, TimeUnit.MINUTES) // cache will expire after 30
-	 * minutes of access .build(new CacheLoader<String, List<Code>>() { // build the
-	 * // cacheloader
-	 * 
-	 * @Override public List<Code> load(String id) throws Exception { if
-	 * (getDataFromElasticSearch(id) != null) return getDataFromElasticSearch(id);
-	 * else return new ArrayList<Code>(); }
-	 * 
-	 * public Map<String, List<Code>> loadAll(Iterable<? extends String> keys) {
-	 * return loadDataFromElasticSearch(keys); }
-	 * 
-	 * });
-	 */
-
 	@Override
 	@Transactional
 	public List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId,
@@ -408,20 +391,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			prescriptions = aggregationResults.getMappedResults();
 			if (prescriptions != null && !prescriptions.isEmpty()) {
 				for (Prescription prescription : prescriptions) {
-					/*if (prescription.getItems() != null && !prescription.getItems().isEmpty()) {
-						for (PrescriptionItemDetail itemDetail : prescription.getItems()) {
-							if (itemDetail.getDrug() != null) {
-								itemDetail.getDrug().setDosage(itemDetail.getDosage());
-								itemDetail.getDrug().setDirection(itemDetail.getDirection());
-								itemDetail.getDrug().setDuration(itemDetail.getDuration());
-							}
-
-							itemDetail.setDuration(null);
-							itemDetail.setDosage(null);
-							itemDetail.setDirection(null);
-
-						}
-					}*/
 
 					if (prescription.getTests() != null && !prescription.getTests().isEmpty()) {
 						List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
@@ -805,11 +774,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex1"))),
-						/*Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),*/
-					/*	Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
-						Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),*/
-						/*Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-						Aggregation.unwind("location"),*/
 						/**new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),*/
 						/**new CustomAggregationOperation(new Document("$unwind",
@@ -839,8 +803,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								.append("drugName", new BasicDBObject("$first", "$drugName"))
 								.append("drugType", new BasicDBObject("$first", "$drugType"))
 								.append("isFeedbackAvailable", new BasicDBObject("$first", "$isFeedbackAvailable"))
-							/*	.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))*/
-								/*.append("visitId", new BasicDBObject("$first", "$visitId"))*/
 								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 								.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 								.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
@@ -853,21 +815,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex1"))),
-						/*Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),*/
-						/*Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),*/
-						/*Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),*/
-						/*Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-						Aggregation.unwind("location"),*/
-					/*	*new CustomAggregationOperation(new Document("$unwind",
-								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),*/
 						/**new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 										true))),*/
-						/*new CustomAggregationOperation(
-								new BasicDBObject("$unwind",
-										new BasicDBObject("path",
-												"$visit").append("preserveNullAndEmptyArrays",
-														true))),*/
 						projectList,
 						new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id")
 								.append("name", new BasicDBObject("$first", "$name"))
@@ -875,7 +825,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								.append("locationId", new BasicDBObject("$first", "$locationId"))
 								.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 								.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-								/*.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))*/
 								.append("discarded", new BasicDBObject("$first", "$discarded"))
 								.append("items", new BasicDBObject("$push", "$items"))
 								.append("inHistory", new BasicDBObject("$first", "$inHistory"))
@@ -887,8 +836,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								.append("isFeedbackAvailable", new BasicDBObject("$first", "$isFeedbackAvailable"))
 								.append("drugName", new BasicDBObject("$first", "$drugName"))
 								.append("drugType", new BasicDBObject("$first", "$drugType"))
-								/*.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
-								.append("visitId", new BasicDBObject("$first", "$visitId"))*/
 								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 								.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 								.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
@@ -963,65 +910,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("tests", "$diagnosticTests"), Fields.field("locationName", "$location.locationName")));
 			
 			
-			/*Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					*new CustomAggregationOperation(new Document("$unwind",
-							new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
-									.append("includeArrayIndex", "arrayIndex1"))),
-					Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
-					Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
-					*new CustomAggregationOperation(new Document("$unwind",
-							new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true)
-									.append("includeArrayIndex", "arrayIndex3"))),
-					new CustomAggregationOperation(
-							new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$visit")
-											.append("preserveNullAndEmptyArrays", true).append("includeArrayIndex",
-													"arrayIndex5"))),
-					projectList,
-					*new CustomAggregationOperation(new Document("$group",
-							new BasicDBObject("_id", "$_id").append("name", new BasicDBObject("$first", "$name"))
-									.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
-									.append("locationId", new BasicDBObject("$first", "$locationId"))
-									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("discarded", new BasicDBObject("$first", "$discarded"))
-									.append("items", new BasicDBObject("$push", "$items"))
-									.append("inHistory", new BasicDBObject("$first", "$inHistory"))
-									.append("advice", new BasicDBObject("$first", "$advice"))
-									.append("tests", new BasicDBObject("$first", "$tests"))
-									.append("time", new BasicDBObject("$first", "$time"))
-									.append("fromDate", new BasicDBObject("$first", "$fromDate"))
-									.append("patientId", new BasicDBObject("$first", "$patientId"))
-									.append("isFeedbackAvailable", new BasicDBObject("$first", "$isFeedbackAvailable"))
-									.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
-									.append("visitId", new BasicDBObject("$first", "$visitId"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-									.append("createdBy", new BasicDBObject("$first", "$createdBy")))));
-			AggregationResults<Prescription> aggregationResults = mongoTemplate.aggregate(aggregation,
-					"prescription_cl", Prescription.class);*/
-			
-			
-			
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 									.append("includeArrayIndex", "arrayIndex1"))),
-					/*Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),*/
-					/*Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),*/
-					/*Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),*/
-					/*Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-					Aggregation.unwind("location"),*/
-				/*	*new CustomAggregationOperation(new Document("$unwind",
-							new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),*/
 					/**new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 									true))),*/
-					/*new CustomAggregationOperation(
-							new BasicDBObject("$unwind",
-									new BasicDBObject("path",
-											"$visit").append("preserveNullAndEmptyArrays",
-													true))),*/
 					projectList,
 					new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id")
 							.append("name", new BasicDBObject("$first", "$name"))
@@ -1041,8 +936,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							.append("isFeedbackAvailable", new BasicDBObject("$first", "$isFeedbackAvailable"))
 							.append("drugName", new BasicDBObject("$first", "$drugName"))
 							.append("drugType", new BasicDBObject("$first", "$drugType"))
-							/*.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
-							.append("visitId", new BasicDBObject("$first", "$visitId"))*/
 							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 							.append("createdBy", new BasicDBObject("$first", "$createdBy")))),

@@ -23,92 +23,94 @@ import com.dpdocter.services.VersionControlService;
 import common.util.web.DPDoctorUtils;
 
 @Service
-public class VersionControlServiceImpl implements VersionControlService{
-	
+public class VersionControlServiceImpl implements VersionControlService {
+
 	private static Logger logger = Logger.getLogger(VersionControlServiceImpl.class.getName());
-	
+
 	@Autowired
 	private VersionControlRepository versionControlRepository;
-	
+
 	@Autowired
 	private MongoTemplate mongoTemplate;
-	
+
 	@Override
 	@Transactional
-	public Integer checkVersion(VersionControl versionControl)
-	{
+	public Integer checkVersion(VersionControl versionControl) {
 		Integer versionControlCode = 0; // default value for success - no change
-		VersionControlCollection versionControlCollection = versionControlRepository.findByAppTypeAndDeviceType(versionControl.getAppType().toString() , versionControl.getDeviceType().toString());
-		if(versionControl != null || versionControlCollection != null)
-		{
-			if(versionControlCollection.getMajorVersion() > versionControl.getMajorVersion())
-			{
+		VersionControlCollection versionControlCollection = versionControlRepository.findByAppTypeAndDeviceType(
+				versionControl.getAppType().toString(), versionControl.getDeviceType().toString());
+		if (versionControl != null || versionControlCollection != null) {
+			if (versionControlCollection.getMajorVersion() > versionControl.getMajorVersion()) {
 				versionControlCode = 3; // major version change - forced update
-			}
-			else if(versionControlCollection.getMajorVersion() == versionControl.getMajorVersion() && versionControlCollection.getMinorVersion() > versionControl.getMinorVersion())
-			{
+			} else if (versionControlCollection.getMajorVersion() == versionControl.getMajorVersion()
+					&& versionControlCollection.getMinorVersion() > versionControl.getMinorVersion()) {
 				versionControlCode = 2; // minor version change - forced update
-			}
-			else if(versionControlCollection.getMajorVersion() == versionControl.getMajorVersion() && versionControlCollection.getMinorVersion() ==  versionControl.getMinorVersion() && versionControlCollection.getPatchVersion() > versionControl.getPatchVersion())
-			{
+			} else if (versionControlCollection.getMajorVersion() == versionControl.getMajorVersion()
+					&& versionControlCollection.getMinorVersion() == versionControl.getMinorVersion()
+					&& versionControlCollection.getPatchVersion() > versionControl.getPatchVersion()) {
 				versionControlCode = 1; // minor version change - optional update
 			}
-			
+
 		}
 		return versionControlCode;
 	}
-	
+
 	@Override
 	@Transactional
-	public List<VersionControl> getVersionsList(long page, int size ,String searchTerm)
-	{
+	public List<VersionControl> getVersionsList(long page, int size, String searchTerm) {
 		List<VersionControl> response = null;
 		Criteria criteria = null;
-		try{
-			if(!DPDoctorUtils.anyStringEmpty(searchTerm))criteria = new Criteria().orOperator(new Criteria("deviceType").regex("^"+searchTerm,"i"),(new Criteria("appType").regex("^"+searchTerm,"i")));
+		try {
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = new Criteria().orOperator(new Criteria("deviceType").regex("^" + searchTerm, "i"),
+						(new Criteria("appType").regex("^" + searchTerm, "i")));
 			Aggregation aggregation = null;
-			if(criteria != null)
-			{
-				if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria),Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
-				else aggregation = Aggregation.newAggregation(Aggregation.match(criteria),Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			if (criteria != null) {
+				if (size > 0)
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+							Aggregation.skip((page) * size), Aggregation.limit(size));
+				else
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			} else {
+				if (size > 0)
+					aggregation = Aggregation.newAggregation(
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+							Aggregation.skip((page) * size), Aggregation.limit(size));
+				else
+					aggregation = Aggregation
+							.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			}
-			else
-			{
-				if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
-				else aggregation = Aggregation.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-			}
-			
-			AggregationResults<VersionControl> aggregationResults = mongoTemplate.aggregate(aggregation, VersionControlCollection.class, VersionControl.class);
+
+			AggregationResults<VersionControl> aggregationResults = mongoTemplate.aggregate(aggregation,
+					VersionControlCollection.class, VersionControl.class);
 			response = aggregationResults.getMappedResults();
-		}catch(Exception e){
-			logger.error("Error while getting versions "+ e.getMessage());
+		} catch (Exception e) {
+			logger.error("Error while getting versions " + e.getMessage());
 			e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown,"Error while getting version control List "+ e.getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while getting version control List " + e.getMessage());
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public VersionControl changeVersion(VersionControl versionControl)
-	{
+	public VersionControl changeVersion(VersionControl versionControl) {
 		VersionControl response = null;
-		VersionControlCollection versionControlCollection = versionControlRepository.findByAppTypeAndDeviceType(versionControl.getAppType().toString() , versionControl.getDeviceType().toString());
-		if(versionControl != null )
-		{
-			if(versionControlCollection == null)
-			{
+		VersionControlCollection versionControlCollection = versionControlRepository.findByAppTypeAndDeviceType(
+				versionControl.getAppType().toString(), versionControl.getDeviceType().toString());
+		if (versionControl != null) {
+			if (versionControlCollection == null) {
 				versionControlCollection = new VersionControlCollection();
-			}
-			else
-			{
+			} else {
 				versionControl.setId(versionControlCollection.getId().toString());
 			}
 			BeanUtil.map(versionControl, versionControlCollection);
 			try {
 				versionControlCollection = versionControlRepository.save(versionControlCollection);
-				if(versionControlCollection != null)
-				{
+				if (versionControlCollection != null) {
 					response = new VersionControl();
 					BeanUtil.map(versionControlCollection, response);
 				}
@@ -117,7 +119,7 @@ public class VersionControlServiceImpl implements VersionControlService{
 			}
 		}
 		return response;
-		
+
 	}
 
 }

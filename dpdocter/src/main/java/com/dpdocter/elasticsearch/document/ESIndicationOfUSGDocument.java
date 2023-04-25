@@ -8,7 +8,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 @Document(indexName = "indication_of_usg_in", type = "indication_of_usg")
 public class ESIndicationOfUSGDocument {
-	
+
 	@Field(type = FieldType.Text)
 	private String id;
 
@@ -103,7 +103,5 @@ public class ESIndicationOfUSGDocument {
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
 				+ ", updatedTime=" + updatedTime + ", speciality=" + speciality + "]";
 	}
-	
-	
 
 }

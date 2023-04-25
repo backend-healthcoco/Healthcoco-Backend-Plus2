@@ -5,79 +5,80 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PrescriptionJasperDetails {
 
-    private int no;
+	private int no;
 
-    private String drug;
+	private String drug;
 
-    private String dosage;
+	private String dosage;
 
-    private String duration;
+	private String duration;
 
-    private String direction;
+	private String direction;
 
-    private String instruction;
+	private String instruction;
 
-    private String genericNames;
-    
+	private String genericNames;
+
 	private String drugQuantity;
-    
-    public PrescriptionJasperDetails(int no, String drug, String dosage, String duration, String direction, String instruction, String genericNames) {
-	this.no = no;
-	this.drug = drug;
-	this.dosage = dosage;
-	this.duration = duration;
-	this.direction = direction;
-	this.instruction = instruction;
-	this.genericNames = genericNames;
-    }
 
-    public int getNo() {
-	return no;
-    }
+	public PrescriptionJasperDetails(int no, String drug, String dosage, String duration, String direction,
+			String instruction, String genericNames) {
+		this.no = no;
+		this.drug = drug;
+		this.dosage = dosage;
+		this.duration = duration;
+		this.direction = direction;
+		this.instruction = instruction;
+		this.genericNames = genericNames;
+	}
 
-    public void setNo(int no) {
-	this.no = no;
-    }
+	public int getNo() {
+		return no;
+	}
 
-    public String getDrug() {
-	return drug;
-    }
+	public void setNo(int no) {
+		this.no = no;
+	}
 
-    public void setDrug(String drug) {
-	this.drug = drug;
-    }
+	public String getDrug() {
+		return drug;
+	}
 
-    public String getDosage() {
-	return dosage;
-    }
+	public void setDrug(String drug) {
+		this.drug = drug;
+	}
 
-    public void setDosage(String dosage) {
-	this.dosage = dosage;
-    }
+	public String getDosage() {
+		return dosage;
+	}
 
-    public String getDuration() {
-	return duration;
-    }
+	public void setDosage(String dosage) {
+		this.dosage = dosage;
+	}
 
-    public void setDuration(String duration) {
-	this.duration = duration;
-    }
+	public String getDuration() {
+		return duration;
+	}
 
-    public String getDirection() {
-	return direction;
-    }
+	public void setDuration(String duration) {
+		this.duration = duration;
+	}
 
-    public void setDirection(String direction) {
-	this.direction = direction;
-    }
+	public String getDirection() {
+		return direction;
+	}
 
-    public String getInstruction() {
-	return instruction;
-    }
+	public void setDirection(String direction) {
+		this.direction = direction;
+	}
 
-    public void setInstruction(String instruction) {
-	this.instruction = instruction;
-    }
+	public String getInstruction() {
+		return instruction;
+	}
+
+	public void setInstruction(String instruction) {
+		this.instruction = instruction;
+	}
 
 	public String getGenericNames() {
 		return genericNames;
@@ -102,6 +103,4 @@ public class PrescriptionJasperDetails {
 		this.drugQuantity = drugQuantity;
 	}
 
-
 }
-

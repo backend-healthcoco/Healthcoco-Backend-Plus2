@@ -8,26 +8,27 @@ import org.dozer.loader.api.BeanMappingBuilder;
 import org.dozer.loader.api.TypeMappingOptions;
 
 public class BeanUtil {
-    private static final DozerBeanMapper MAPPER;
+	private static final DozerBeanMapper MAPPER;
 
-    static {
-	MAPPER = new DozerBeanMapper();
-	BeanMappingBuilder builder = new BeanMappingBuilder() {
-	    @Override
-	    protected void configure() {
-		mapping(UUID.class, UUID.class, TypeMappingOptions.oneWay(), TypeMappingOptions.beanFactory(UuidBeanFactory.class.getName()),
-			TypeMappingOptions.relationshipType(RelationshipType.NON_CUMULATIVE));
+	static {
+		MAPPER = new DozerBeanMapper();
+		BeanMappingBuilder builder = new BeanMappingBuilder() {
+			@Override
+			protected void configure() {
+				mapping(UUID.class, UUID.class, TypeMappingOptions.oneWay(),
+						TypeMappingOptions.beanFactory(UuidBeanFactory.class.getName()),
+						TypeMappingOptions.relationshipType(RelationshipType.NON_CUMULATIVE));
 
-	    }
-	};
-	MAPPER.addMapping(builder);
-    }
+			}
+		};
+		MAPPER.addMapping(builder);
+	}
 
-    private BeanUtil() {
-    }
+	private BeanUtil() {
+	}
 
-    public static <T> void map(T source, T destination) {
-	MAPPER.map(source, destination);
-    }
+	public static <T> void map(T source, T destination) {
+		MAPPER.map(source, destination);
+	}
 
 }

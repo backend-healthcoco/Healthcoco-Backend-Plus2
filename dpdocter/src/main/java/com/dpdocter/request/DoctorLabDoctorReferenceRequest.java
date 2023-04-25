@@ -69,6 +69,4 @@ public class DoctorLabDoctorReferenceRequest {
 				+ ", hospitalId=" + hospitalId + "]";
 	}
 
-
-
 }

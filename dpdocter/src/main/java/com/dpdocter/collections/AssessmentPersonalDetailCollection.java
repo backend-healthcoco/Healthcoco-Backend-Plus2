@@ -45,7 +45,7 @@ public class AssessmentPersonalDetailCollection extends GenericCollection {
 	private List<FoodCommunity> communities;
 	@Field
 	private List<NutrientGoal> nutrientGoals;
-	
+
 	public DishType getDietType() {
 		return dietType;
 	}

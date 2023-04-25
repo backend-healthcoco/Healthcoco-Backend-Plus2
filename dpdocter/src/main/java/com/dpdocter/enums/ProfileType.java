@@ -1,7 +1,7 @@
 package com.dpdocter.enums;
 
 public enum ProfileType {
- STUDENT("STUDENT"),TEACHER("TEACHER");
+	STUDENT("STUDENT"), TEACHER("TEACHER");
 
 	private String type;
 
@@ -12,5 +12,5 @@ public enum ProfileType {
 	private ProfileType(String type) {
 		this.type = type;
 	}
-	
+
 }

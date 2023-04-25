@@ -142,7 +142,5 @@ public class DoctorExpenseCollection extends GenericCollection {
 	public void setVendor(VendorExpense vendor) {
 		this.vendor = vendor;
 	}
-	
-	
 
 }

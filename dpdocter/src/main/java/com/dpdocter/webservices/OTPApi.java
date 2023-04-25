@@ -52,19 +52,21 @@ public class OTPApi {
 	}
 
 	@Path(value = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE)
-    @GET
-    @ApiOperation(value = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE, notes = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE)
-    public Response<Boolean> otpGenerator(@PathParam("mobileNumber") String mobileNumber, @DefaultValue("false") @QueryParam(value = "isPatientOTP") Boolean isPatientOTP,@DefaultValue("+91") @QueryParam(value = "countryCode") String countryCode) {
-	if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
-	    logger.warn("Invalid Input. Mobile Number Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Mobile Number Cannot Be Empty");
+	@GET
+	@ApiOperation(value = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE, notes = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE)
+	public Response<Boolean> otpGenerator(@PathParam("mobileNumber") String mobileNumber,
+			@DefaultValue("false") @QueryParam(value = "isPatientOTP") Boolean isPatientOTP,
+			@DefaultValue("+91") @QueryParam(value = "countryCode") String countryCode) {
+		if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
+			logger.warn("Invalid Input. Mobile Number Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Mobile Number Cannot Be Empty");
+		}
+		// mobileNumber=countryCode+mobileNumber;
+		Boolean OTP = otpService.otpGenerator(mobileNumber, isPatientOTP);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(OTP);
+		return response;
 	}
-	//mobileNumber=countryCode+mobileNumber;
-	Boolean OTP = otpService.otpGenerator(mobileNumber, isPatientOTP);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(OTP);
-	return response;
-    }
 
 	@Path(value = PathProxy.OTPUrls.VERIFY_OTP)
 	@GET
@@ -98,19 +100,18 @@ public class OTPApi {
 		response.setData(verifyOTPResponse);
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.OTPUrls.VERIFY_OTP_SIGNUP)
 	@GET
 	@ApiOperation(value = PathProxy.OTPUrls.VERIFY_OTP_SIGNUP, notes = PathProxy.OTPUrls.VERIFY_OTP_SIGNUP)
 	public Response<Boolean> verifySignUpOTP(@PathParam("mobileNumber") String mobileNumber,
-			@PathParam("otpNumber") String otpNumber,@PathParam("countryCode") String countryCode) {
-		if (DPDoctorUtils.anyStringEmpty(otpNumber, mobileNumber,countryCode)) {
+			@PathParam("otpNumber") String otpNumber, @PathParam("countryCode") String countryCode) {
+		if (DPDoctorUtils.anyStringEmpty(otpNumber, mobileNumber, countryCode)) {
 			logger.warn("Invalid Input. mobileNumber,countryCode, OTP Number Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Invalid Input. mobileNumber,countryCode, OTP Number Cannot Be Empty");
 		}
-		Boolean verifyOTPResponse = otpService.verifyOTP(mobileNumber, otpNumber,countryCode);
+		Boolean verifyOTPResponse = otpService.verifyOTP(mobileNumber, otpNumber, countryCode);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(verifyOTPResponse);
 		return response;

@@ -1,15 +1,11 @@
 package com.dpdocter.beans;
 
-import java.util.List;
-
-import com.dpdocter.enums.ConsultationType;
-
 public class DoctorConsultationResponse {
 
 	private String consultationType;
-	
+
 	private Double cost;
-	
+
 	private Double healthcocoCharges;
 
 	public String getConsultationType() {
@@ -35,6 +31,5 @@ public class DoctorConsultationResponse {
 	public void setHealthcocoCharges(Double healthcocoCharges) {
 		this.healthcocoCharges = healthcocoCharges;
 	}
-	
-	
+
 }

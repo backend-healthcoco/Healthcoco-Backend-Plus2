@@ -163,7 +163,6 @@ public class ClinicalNotesJasperDetails {
 	private List<DBObject> eyeInvestigation;
 	private String vaccinationHistory;
 
-	
 	public String getVaccinationHistory() {
 		return vaccinationHistory;
 	}
@@ -908,7 +907,6 @@ public class ClinicalNotesJasperDetails {
 		this.physioExaminationPastHistory = physioExaminationPastHistory;
 	}
 
-
 	public String getNprs() {
 		return nprs;
 	}
@@ -1028,8 +1026,7 @@ public class ClinicalNotesJasperDetails {
 	public void setLeftVisualAcuities(EyeVisualAcuitiesJasperResponse leftVisualAcuities) {
 		this.leftVisualAcuities = leftVisualAcuities;
 	}
-	
-	
+
 	public String getPainType() {
 		return painType;
 	}

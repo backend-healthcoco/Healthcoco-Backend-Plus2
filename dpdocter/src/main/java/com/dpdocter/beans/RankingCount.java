@@ -9,15 +9,15 @@ public class RankingCount {
 	private String id;
 
 	private String resourceId;
-	
+
 	private String resourceName;
-	
+
 	private Resource resourceType;
-	
+
 	private List<RankingCountParametersWithValueInPercentage> parameters;
-	
+
 	private double totalCountInPercentage = 0.0;
-	
+
 	private int rankingCount = 0;
 
 	public String getId() {

@@ -91,7 +91,6 @@ public class SessionQuestion extends GenericCollection {
 		this.question = question;
 	}
 
-	
 	@Override
 	public String toString() {
 		return "SessionQuestion [id=" + id + ", type=" + type + ", sessionId=" + sessionId + ", userId=" + userId

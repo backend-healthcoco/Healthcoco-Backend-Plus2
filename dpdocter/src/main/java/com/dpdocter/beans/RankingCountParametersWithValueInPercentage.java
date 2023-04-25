@@ -5,7 +5,7 @@ import com.dpdocter.enums.RankingCountParatmeter;
 public class RankingCountParametersWithValueInPercentage {
 
 	private RankingCountParatmeter type;
-	
+
 	private double value = 0.0;
 
 	public RankingCountParametersWithValueInPercentage(RankingCountParatmeter type, double value) {

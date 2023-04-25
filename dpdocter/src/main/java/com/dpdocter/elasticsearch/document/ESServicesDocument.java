@@ -11,34 +11,34 @@ import org.springframework.data.elasticsearch.annotations.MultiField;
 
 @Document(indexName = "services_in", type = "services")
 public class ESServicesDocument {
-    @Id
-    private String id;
+	@Id
+	private String id;
 
-    @Field(type = FieldType.Text)
-    private String service;
-    
-    @Field(type = FieldType.Text)
-    private String formattedService;
-    
-    @Field(type = FieldType.Date)//change index
-    private Date updatedTime = new Date();
+	@Field(type = FieldType.Text)
+	private String service;
+
+	@Field(type = FieldType.Text)
+	private String formattedService;
+
+	@Field(type = FieldType.Date) // change index
+	private Date updatedTime = new Date();
 
 	@MultiField(mainField = @Field(type = FieldType.Text))
-    private List<String> specialities;
-    
-	@MultiField(mainField = @Field(type = FieldType.Text))
-    private List<String> formattedSpecialities;
-    
-	@MultiField(mainField = @Field(type = FieldType.Text))
-    private List<String> specialityIds;
-    
-    public String getId() {
-	return id;
-    }
+	private List<String> specialities;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	@MultiField(mainField = @Field(type = FieldType.Text))
+	private List<String> formattedSpecialities;
+
+	@MultiField(mainField = @Field(type = FieldType.Text))
+	private List<String> specialityIds;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public String getService() {
 		return service;

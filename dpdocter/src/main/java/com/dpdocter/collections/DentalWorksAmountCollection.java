@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "dental_works_amount_cl")
-public class DentalWorksAmountCollection extends GenericCollection{
+public class DentalWorksAmountCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
@@ -22,8 +22,6 @@ public class DentalWorksAmountCollection extends GenericCollection{
 	private ObjectId dentalLabHospitalId;
 	@Field
 	private Double remainingAmount = 0.0;
-
-	
 
 	public ObjectId getId() {
 		return id;
@@ -80,6 +78,5 @@ public class DentalWorksAmountCollection extends GenericCollection{
 	public void setRemainingAmount(Double remainingAmount) {
 		this.remainingAmount = remainingAmount;
 	}
-	
-	
+
 }

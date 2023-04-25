@@ -11,7 +11,7 @@ import com.dpdocter.beans.BulkSmsPackage;
 import com.dpdocter.enums.PaymentMode;
 
 @Document(collection = "bulk_sms_credit_cl")
-public class BulkSmsCreditsCollection extends GenericCollection{
+public class BulkSmsCreditsCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
@@ -25,12 +25,11 @@ public class BulkSmsCreditsCollection extends GenericCollection{
 	@Field
 	private ObjectId locationId;
 	@Field
-	private Date dateOfTransaction=new Date();
+	private Date dateOfTransaction = new Date();
 	@Field
 	private BulkSmsPackage smsPackage;
 	@Field
 	private PaymentMode paymentMode;
-
 
 	public ObjectId getId() {
 		return id;
@@ -39,9 +38,6 @@ public class BulkSmsCreditsCollection extends GenericCollection{
 	public void setId(ObjectId id) {
 		this.id = id;
 	}
-
-	
-
 
 	public long getCreditBalance() {
 		return creditBalance;
@@ -83,7 +79,6 @@ public class BulkSmsCreditsCollection extends GenericCollection{
 		this.dateOfTransaction = dateOfTransaction;
 	}
 
-	
 	public BulkSmsPackage getSmsPackage() {
 		return smsPackage;
 	}
@@ -108,8 +103,4 @@ public class BulkSmsCreditsCollection extends GenericCollection{
 		this.creditSpent = creditSpent;
 	}
 
-	
-	
-	
-	
 }

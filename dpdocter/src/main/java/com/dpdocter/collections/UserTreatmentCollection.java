@@ -8,35 +8,35 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "user_treatment_cl")
-public class UserTreatmentCollection extends GenericCollection{
+public class UserTreatmentCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
-	
+
 	@Field
 	private ObjectId doctorId;
-	
+
 	@Field
 	private ObjectId locationId;
 
 	@Field
 	private ObjectId hospitalId;;
-	
+
 	@Field
 	private ObjectId userId;
-	
+
 	@Field
 	private List<String> department;
-	
+
 	@Field
 	private String notes;
-	
+
 	@Field
 	private String treatment;
-	
+
 	@Field
 	private String diagnosis;
-	
+
 	@Field
 	private Boolean discarded = false;
 

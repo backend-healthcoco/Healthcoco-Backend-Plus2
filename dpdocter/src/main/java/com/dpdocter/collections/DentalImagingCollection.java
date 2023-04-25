@@ -68,7 +68,7 @@ public class DentalImagingCollection extends GenericCollection {
 	private Boolean isVisited = false;
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	public ObjectId getPatientId() {
 		return patientId;
 	}

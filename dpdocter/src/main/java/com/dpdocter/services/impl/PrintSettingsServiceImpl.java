@@ -37,7 +37,6 @@ import com.dpdocter.enums.PrintSettingType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.repository.DentalLabPrintSettingRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
@@ -68,9 +67,6 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	private HospitalRepository hospitalRepository;
 
 	@Autowired
-	private DentalLabPrintSettingRepository dentalLabPrintSettingRepository;
-
-	@Autowired
 	private MongoTemplate mongoTemplate;
 
 	@Autowired
@@ -78,13 +74,13 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 	@Value(value = "${image.path}")
 	private String imagePath;
-	
+
 	@Autowired
 	private JasperReportService jasperReportService;
 
 	@Autowired
 	private PatientRepository patientRepository;
-	
+
 	@Autowired
 	private PatientVisitService patientVisitService;
 
@@ -469,7 +465,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 					PrintSettingsCollection.class, PrintSettingsCollection.class);
 			if (aggregationResults.getMappedResults() != null && !aggregationResults.getMappedResults().isEmpty())
 				printSettingsCollection = aggregationResults.getMappedResults().get(0);
- 
+
 			if (printSettingsCollection != null) {
 				if (PrintFilter.PAGESETUP.getFilter().equalsIgnoreCase(printFilter)) {
 					printSettingsCollection.setFooterSetup(null);
@@ -528,7 +524,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	public String createBlankPrint(String patientId, String locationId, String hospitalId, String doctorId) {
 		String response = null;
@@ -539,14 +535,15 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			ObjectId hospitalIdObj = new ObjectId(hospitalId);
 			ObjectId doctorIdObj = new ObjectId(doctorId);
 
-
-			PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(patientIdObj, locationIdObj, hospitalIdObj);
+			PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(patientIdObj,
+					locationIdObj, hospitalIdObj);
 
 			if (patient != null) {
 				UserCollection user = userRepository.findById(patientIdObj).orElse(null);
 
-				JasperReportResponse jasperReportResponse = createJasper(patientIdObj,doctorIdObj,hospitalIdObj,locationIdObj, patient,user,PrintSettingType.EMR.getType());
-			
+				JasperReportResponse jasperReportResponse = createJasper(patientIdObj, doctorIdObj, hospitalIdObj,
+						locationIdObj, patient, user, PrintSettingType.EMR.getType());
+
 //				JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient, user,
 //						historyCollection, showPH, showPLH, showFH, showDA,PrintSettingType.EMR.getType());
 				if (jasperReportResponse != null)
@@ -568,6 +565,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 	/**
 	 * Create Blanl pdf with patient detail & header footer
+	 * 
 	 * @param patientIdObj
 	 * @param doctorIdObj
 	 * @param hospitalIdObj
@@ -580,83 +578,82 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	 * @throws ParseException
 	 */
 	private JasperReportResponse createJasper(ObjectId patientIdObj, ObjectId doctorIdObj, ObjectId hospitalIdObj,
-			ObjectId locationIdObj, PatientCollection patient, UserCollection user, String printSettingType)  throws IOException, ParseException {
+			ObjectId locationIdObj, PatientCollection patient, UserCollection user, String printSettingType)
+			throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		List<PatientTreatmentJasperDetails> patientTreatmentJasperDetails = null;
-		
-			Boolean showTreatmentQuantity = false, showTreatmentDiscount = false;
-			int no = 0;
-			patientTreatmentJasperDetails = new ArrayList<PatientTreatmentJasperDetails>();
-			
-			patientTreatmentJasperDetails.add(null);
 
-			parameters.put("showTreatmentDiscount", showTreatmentDiscount);
-			parameters.put("showTreatmentQuantity", showTreatmentQuantity);
-			parameters.put("services", patientTreatmentJasperDetails);
-			parameters.put("isBlankPdf", true);
-		
-			PrintSettingsCollection printSettings = null;
-			printSettings = printSettingsRepository
-					.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
-							doctorIdObj, locationIdObj,hospitalIdObj, ComponentType.ALL.getType(),
-							printSettingType);
-			if (printSettings == null){
-				List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
-						.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
-								doctorIdObj, locationIdObj,hospitalIdObj,ComponentType.ALL.getType(), PrintSettingType.DEFAULT.getType(),
-								new Sort(Sort.Direction.DESC, "updatedTime"));
-				if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
-					printSettings = printSettingsCollections.get(0);
-			}
-			if (printSettings == null) {
-				printSettings = new PrintSettingsCollection();
-				DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
-				BeanUtil.map(defaultPrintSettings, printSettings);
+		Boolean showTreatmentQuantity = false, showTreatmentDiscount = false;
+		int no = 0;
+		patientTreatmentJasperDetails = new ArrayList<PatientTreatmentJasperDetails>();
 
-			}
+		patientTreatmentJasperDetails.add(null);
 
-			if (printSettings.getContentSetup() != null) {
-				parameters.put("isEnableTreatmentcost", printSettings.getContentSetup().getShowTreatmentcost());
-			} else {
-				parameters.put("isEnableTreatmentcost", true);
-			}
+		parameters.put("showTreatmentDiscount", showTreatmentDiscount);
+		parameters.put("showTreatmentQuantity", showTreatmentQuantity);
+		parameters.put("services", patientTreatmentJasperDetails);
+		parameters.put("isBlankPdf", true);
 
-			patientVisitService.generatePatientDetails(
-					(printSettings != null && printSettings.getHeaderSetup() != null
-							? printSettings.getHeaderSetup().getPatientDetails()
-							: null),patient, null ,	patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-					new Date(),
-					printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
-			patientVisitService.generatePrintSetup(parameters, printSettings, doctorIdObj);
-			String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "BLANKPDF-"
-					+ new Date().getTime();
-			String layout = printSettings != null
-					? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
-					: "PORTRAIT";
-			String pageSize = printSettings != null
-					? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4")
-					: "A4";
-			Integer topMargin = printSettings != null
-					? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20)
-					: 20;
-			Integer bottonMargin = printSettings != null
-					? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20)
-					: 20;
-			Integer leftMargin = printSettings != null
-					? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
-							? printSettings.getPageSetup().getLeftMargin()
-							: 20)
-					: 20;
-			Integer rightMargin = printSettings != null
-					? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
-							? printSettings.getPageSetup().getRightMargin()
-							: 20)
-					: 20;
+		PrintSettingsCollection printSettings = null;
+		printSettings = printSettingsRepository
+				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(doctorIdObj, locationIdObj,
+						hospitalIdObj, ComponentType.ALL.getType(), printSettingType);
+		if (printSettings == null) {
+			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(doctorIdObj,
+							locationIdObj, hospitalIdObj, ComponentType.ALL.getType(),
+							PrintSettingType.DEFAULT.getType(), new Sort(Sort.Direction.DESC, "updatedTime"));
+			if (!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+				printSettings = printSettingsCollections.get(0);
+		}
+		if (printSettings == null) {
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
 
-			response = jasperReportService.createPDF(ComponentType.BLANK, parameters, null, layout, pageSize,
-					topMargin, bottonMargin, leftMargin, rightMargin,12, pdfName.replaceAll("\\s+", ""));
-		
+		}
+
+		if (printSettings.getContentSetup() != null) {
+			parameters.put("isEnableTreatmentcost", printSettings.getContentSetup().getShowTreatmentcost());
+		} else {
+			parameters.put("isEnableTreatmentcost", true);
+		}
+
+		patientVisitService.generatePatientDetails(
+				(printSettings != null && printSettings.getHeaderSetup() != null
+						? printSettings.getHeaderSetup().getPatientDetails()
+						: null),
+				patient, null, patient.getLocalPatientName(), user.getMobileNumber(), parameters, new Date(),
+				printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
+		patientVisitService.generatePrintSetup(parameters, printSettings, doctorIdObj);
+		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "BLANKPDF-" + new Date().getTime();
+		String layout = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+				: "PORTRAIT";
+		String pageSize = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4")
+				: "A4";
+		Integer topMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20)
+				: 20;
+		Integer bottonMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20)
+				: 20;
+		Integer leftMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
+						? printSettings.getPageSetup().getLeftMargin()
+						: 20)
+				: 20;
+		Integer rightMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+						? printSettings.getPageSetup().getRightMargin()
+						: 20)
+				: 20;
+
+		response = jasperReportService.createPDF(ComponentType.BLANK, parameters, null, layout, pageSize, topMargin,
+				bottonMargin, leftMargin, rightMargin, 12, pdfName.replaceAll("\\s+", ""));
+
 		return response;
 	}
 

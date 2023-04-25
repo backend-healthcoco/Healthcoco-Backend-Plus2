@@ -13,141 +13,139 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.enums.QueueStatus;
 
 @Document(collection = "patient_queue_cl")
-@CompoundIndexes({
-    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
-})
+@CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
 public class PatientQueueCollection extends GenericCollection {
 
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Indexed
-    private ObjectId doctorId;
+	@Indexed
+	private ObjectId doctorId;
 
-    @Field
-    private ObjectId locationId;
+	@Field
+	private ObjectId locationId;
 
-    @Field
-    private ObjectId hospitalId;
+	@Field
+	private ObjectId hospitalId;
 
-    @Field
-    private ObjectId patientId;
+	@Field
+	private ObjectId patientId;
 
-    @Indexed
-    private Date date;
+	@Indexed
+	private Date date;
 
-    @Field
-    private Integer startTime;
+	@Field
+	private Integer startTime;
 
-    @Field
-    private Integer sequenceNo;
+	@Field
+	private Integer sequenceNo;
 
-    @Field
-    private String appointmentId;
+	@Field
+	private String appointmentId;
 
-    @Field
-    private Boolean discarded = false;
+	@Field
+	private Boolean discarded = false;
 
-    @Field
-    private QueueStatus status = QueueStatus.SCHEDULED;
-    
-    @Field
-    private long waitedFor = 0;
-    
-    @Field
-    private long engagedFor = 0;
-    
-    @Field
-    private long engagedAt = 0;
-    
-    @Field
-    private long checkedInAt = 0;
-    
-    @Field
-    private long checkedOutAt = 0;
-    
-    @Field
+	@Field
+	private QueueStatus status = QueueStatus.SCHEDULED;
+
+	@Field
+	private long waitedFor = 0;
+
+	@Field
+	private long engagedFor = 0;
+
+	@Field
+	private long engagedAt = 0;
+
+	@Field
+	private long checkedInAt = 0;
+
+	@Field
+	private long checkedOutAt = 0;
+
+	@Field
 	private Boolean isPatientDiscarded = false;
-    
-    public ObjectId getId() {
-	return id;
-    }
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public ObjectId getDoctorId() {
-	return doctorId;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public void setDoctorId(ObjectId doctorId) {
-	this.doctorId = doctorId;
-    }
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
 
-    public ObjectId getLocationId() {
-	return locationId;
-    }
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public void setLocationId(ObjectId locationId) {
-	this.locationId = locationId;
-    }
+	public ObjectId getLocationId() {
+		return locationId;
+	}
 
-    public ObjectId getHospitalId() {
-	return hospitalId;
-    }
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
 
-    public void setHospitalId(ObjectId hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
 
-    public ObjectId getPatientId() {
-	return patientId;
-    }
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public void setPatientId(ObjectId patientId) {
-	this.patientId = patientId;
-    }
+	public ObjectId getPatientId() {
+		return patientId;
+	}
 
-    public Date getDate() {
-	return date;
-    }
+	public void setPatientId(ObjectId patientId) {
+		this.patientId = patientId;
+	}
 
-    public void setDate(Date date) {
-	this.date = date;
-    }
+	public Date getDate() {
+		return date;
+	}
 
-    public Integer getSequenceNo() {
-	return sequenceNo;
-    }
+	public void setDate(Date date) {
+		this.date = date;
+	}
 
-    public void setSequenceNo(Integer sequenceNo) {
-	this.sequenceNo = sequenceNo;
-    }
+	public Integer getSequenceNo() {
+		return sequenceNo;
+	}
 
-    public Integer getStartTime() {
-	return startTime;
-    }
+	public void setSequenceNo(Integer sequenceNo) {
+		this.sequenceNo = sequenceNo;
+	}
 
-    public void setStartTime(Integer startTime) {
-	this.startTime = startTime;
-    }
+	public Integer getStartTime() {
+		return startTime;
+	}
 
-    public String getAppointmentId() {
-	return appointmentId;
-    }
+	public void setStartTime(Integer startTime) {
+		this.startTime = startTime;
+	}
 
-    public void setAppointmentId(String appointmentId) {
-	this.appointmentId = appointmentId;
-    }
+	public String getAppointmentId() {
+		return appointmentId;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
 	public QueueStatus getStatus() {
 		return status;

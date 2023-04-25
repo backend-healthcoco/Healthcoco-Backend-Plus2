@@ -111,7 +111,7 @@ public class ESDrugDocument {
 
 	@Field(type = FieldType.Text)
 	private String drugTypePlacement = DrugTypePlacement.PREFIX.getPlacement();
-	
+
 	@Override
 	public int hashCode() {
 		return this.drugCode.hashCode();
@@ -361,7 +361,7 @@ public class ESDrugDocument {
 	public void setCompanyRankingCount(long companyRankingCount) {
 		this.companyRankingCount = companyRankingCount;
 	}
-	
+
 	public String getStockingUnit() {
 		return stockingUnit;
 	}

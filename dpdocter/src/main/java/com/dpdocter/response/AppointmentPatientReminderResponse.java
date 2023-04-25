@@ -7,29 +7,29 @@ import com.dpdocter.beans.WorkingHours;
 public class AppointmentPatientReminderResponse {
 
 	private String doctorTitle;
-	
+
 	private String doctorName;
-	
+
 	private String patientName;
-	
+
 	private String patientMobileNumber;
-	
+
 	private String locationName;
-	
+
 	private String clinicNumber;
 
-    private String appointmentId;
+	private String appointmentId;
 
-    private WorkingHours time;
+	private WorkingHours time;
 
-    private Date fromDate;
+	private Date fromDate;
 
-    private String googleMapShortUrl;
-    
-    private String doctorId;
-    
-    private String locationId;
-    
+	private String googleMapShortUrl;
+
+	private String doctorId;
+
+	private String locationId;
+
 	public String getDoctorTitle() {
 		return doctorTitle;
 	}
@@ -101,8 +101,6 @@ public class AppointmentPatientReminderResponse {
 	public void setGoogleMapShortUrl(String googleMapShortUrl) {
 		this.googleMapShortUrl = googleMapShortUrl;
 	}
-	
-	
 
 	public String getDoctorId() {
 		return doctorId;

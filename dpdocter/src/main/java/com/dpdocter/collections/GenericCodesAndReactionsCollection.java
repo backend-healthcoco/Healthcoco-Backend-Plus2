@@ -14,16 +14,16 @@ public class GenericCodesAndReactionsCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
-	
+
 	@Field
 	private List<Code> codes;
-	
+
 	@Field
 	private String genericCode;
 
 	@Field
 	private Boolean discarded = false;
-	
+
 	public ObjectId getId() {
 		return id;
 	}

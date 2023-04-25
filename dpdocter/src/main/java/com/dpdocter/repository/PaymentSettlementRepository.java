@@ -5,6 +5,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.dpdocter.collections.PaymentSettlementCollection;
 
-public interface PaymentSettlementRepository extends MongoRepository<PaymentSettlementCollection, ObjectId>{
+public interface PaymentSettlementRepository extends MongoRepository<PaymentSettlementCollection, ObjectId> {
 
 }

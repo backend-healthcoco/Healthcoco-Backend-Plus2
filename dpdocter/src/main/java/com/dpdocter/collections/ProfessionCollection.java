@@ -6,34 +6,34 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "profession_cl")
-public class ProfessionCollection extends GenericCollection{
+public class ProfessionCollection extends GenericCollection {
 
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private String profession;
+	@Field
+	private String profession;
 
-    @Field
-    private String explanation;
+	@Field
+	private String explanation;
 
-    public ObjectId getId() {
-	return id;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public String getProfession() {
-	return profession;
-    }
+	public String getProfession() {
+		return profession;
+	}
 
-    public void setProfession(String profession) {
-	this.profession = profession;
-    }
+	public void setProfession(String profession) {
+		this.profession = profession;
+	}
 
-    public String getExplanation() {
+	public String getExplanation() {
 		return explanation;
 	}
 
@@ -42,7 +42,7 @@ public class ProfessionCollection extends GenericCollection{
 	}
 
 	@Override
-    public String toString() {
-	return "ProfessionCollection [id=" + id + ", profession=" + profession + ", explanation=" + explanation + "]";
-    }
+	public String toString() {
+		return "ProfessionCollection [id=" + id + ", profession=" + profession + ", explanation=" + explanation + "]";
+	}
 }

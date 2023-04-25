@@ -174,7 +174,7 @@ public class UploadDataApi {
 		response.setData(uploadDataService.uploadClinicalNotesData(doctorId, locationId, hospitalId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.UploadDataUrls.INVOICES)
 	@GET
 	@ApiOperation(value = PathProxy.UploadDataUrls.INVOICES, notes = PathProxy.UploadDataUrls.INVOICES)
@@ -189,7 +189,7 @@ public class UploadDataApi {
 		response.setData(uploadDataService.uploadInvoicesData(doctorId, locationId, hospitalId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.UploadDataUrls.PAYMENTS)
 	@GET
 	@ApiOperation(value = PathProxy.UploadDataUrls.PAYMENTS, notes = PathProxy.UploadDataUrls.PAYMENTS)
@@ -204,7 +204,7 @@ public class UploadDataApi {
 		response.setData(uploadDataService.uploadPaymentsData(doctorId, locationId, hospitalId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.UploadDataUrls.UPDATE_TREATMENTS)
 	@GET
 	@ApiOperation(value = PathProxy.UploadDataUrls.UPDATE_TREATMENTS, notes = PathProxy.UploadDataUrls.UPDATE_TREATMENTS)
@@ -219,11 +219,12 @@ public class UploadDataApi {
 		response.setData(uploadDataService.updateTreatmentsData(doctorId, locationId, hospitalId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.UploadDataUrls.UPDATE_BILLING)
 	@GET
 	@ApiOperation(value = PathProxy.UploadDataUrls.UPDATE_BILLING, notes = PathProxy.UploadDataUrls.UPDATE_BILLING)
-	public Response<Boolean> updateBillingData(@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+	public Response<Boolean> updateBillingData(@PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -233,7 +234,7 @@ public class UploadDataApi {
 		response.setData(uploadDataService.updateBillingData(locationId, hospitalId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.UploadDataUrls.UPLOAD_IMAGES)
 	@GET
 	@ApiOperation(value = PathProxy.UploadDataUrls.UPLOAD_IMAGES, notes = PathProxy.UploadDataUrls.UPLOAD_IMAGES)
@@ -248,17 +249,17 @@ public class UploadDataApi {
 		response.setData(uploadDataService.uploadImages(doctorId, locationId, hospitalId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.UploadDataUrls.UPDATE_TREATMENT_SERVICES)
 	@GET
 	@ApiOperation(value = PathProxy.UploadDataUrls.UPDATE_TREATMENT_SERVICES, notes = PathProxy.UploadDataUrls.UPDATE_TREATMENT_SERVICES)
 	public Response<Boolean> updateTreatmentServices() {
-		
+
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(uploadDataService.updateTreatmentServices());
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.UploadDataUrls.UPLOAD_REPORTS)
 	@GET
 	@ApiOperation(value = PathProxy.UploadDataUrls.UPLOAD_REPORTS, notes = PathProxy.UploadDataUrls.UPLOAD_REPORTS)

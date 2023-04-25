@@ -381,8 +381,7 @@ public class ClinicalNotesApi {
 		}
 
 		/*
-		 * try {
-		 * DPDoctorUtils.fileValidator(request.getDiagram().getFileEncoded()); }
+		 * try { DPDoctorUtils.fileValidator(request.getDiagram().getFileEncoded()); }
 		 * catch (IOException e) { // TODO Auto-generated catch block
 		 * e.printStackTrace(); }
 		 */
@@ -553,8 +552,9 @@ public class ClinicalNotesApi {
 	@GET
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.GET_CINICAL_ITEMS, notes = PathProxy.ClinicalNotesUrls.GET_CINICAL_ITEMS)
 	public Response<Object> getClinicalItems(@PathParam("type") String type, @PathParam("range") String range,
-			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
-			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@QueryParam("page") long page, @QueryParam("size") int size,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
@@ -1895,7 +1895,7 @@ public class ClinicalNotesApi {
 		return response;
 
 	}
-	
+
 	@Path(value = PathProxy.ClinicalNotesUrls.EMAIL_CLINICAL_NOTES_WEB)
 	@GET
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.EMAIL_CLINICAL_NOTES_WEB, notes = PathProxy.ClinicalNotesUrls.EMAIL_CLINICAL_NOTES_WEB)
@@ -1921,25 +1921,26 @@ public class ClinicalNotesApi {
 	@POST
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DOWNLOAD_MULTIPLE_CLINICAL_NOTES, notes = PathProxy.ClinicalNotesUrls.DOWNLOAD_MULTIPLE_CLINICAL_NOTES)
 	public Response<String> downloadMultipleClinicalNotes(ListIdrequest request) {
-		
+
 		if (request == null || request.getIds() == null || request.getIds().isEmpty()) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		
+
 		Response<String> response = new Response<String>();
 		response.setData(clinicalNotesService.downloadMultipleClinicalNotes(request.getIds()));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ClinicalNotesUrls.EMAIL_MULTIPLE_CLINICAL_NOTES)
 	@POST
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.EMAIL_MULTIPLE_CLINICAL_NOTES, notes = PathProxy.ClinicalNotesUrls.EMAIL_MULTIPLE_CLINICAL_NOTES)
 	public Response<Boolean> emailMultipleClinicalNotes(ListIdrequest request) {
 
-		if (request == null || request.getIds() == null || request.getIds().isEmpty() || DPDoctorUtils.anyStringEmpty(request.getEmailAddress())) {
+		if (request == null || request.getIds() == null || request.getIds().isEmpty()
+				|| DPDoctorUtils.anyStringEmpty(request.getEmailAddress())) {
 			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput,"Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		clinicalNotesService.emailMultipleClinicalNotes(request.getIds(), request.getEmailAddress());
 

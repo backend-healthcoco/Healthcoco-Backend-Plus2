@@ -17,7 +17,6 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.dpdocter.beans.AddEditSEORequest;
@@ -36,14 +35,11 @@ import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Services;
 import com.dpdocter.beans.Speciality;
-import com.dpdocter.beans.UserSymptom;
-import com.dpdocter.elasticsearch.document.ESServicesDocument;
 import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
 import com.dpdocter.request.DoctorAddEditFacilityRequest;
 import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
@@ -101,9 +97,6 @@ public class DoctorProfileApi {
 
 	@Autowired
 	private DoctorStatsService doctorStatsService;
-	
-	@Autowired
-	private ESMasterService esMasterService;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -211,8 +204,9 @@ public class DoctorProfileApi {
 		response.setData(specialityResponse);
 		return response;
 	}
-	
-	//	public Response<DoctorServicesAddEditRequest> addEditServices(DoctorServicesAddEditRequest request) {
+
+	// public Response<DoctorServicesAddEditRequest>
+	// addEditServices(DoctorServicesAddEditRequest request) {
 //		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 //			logger.warn("Invalid Input");
 //			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -226,7 +220,6 @@ public class DoctorProfileApi {
 //		return response;
 //	}
 
-	
 	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ACHIEVEMENT)
 	@POST
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ACHIEVEMENT, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_ACHIEVEMENT)
@@ -353,7 +346,7 @@ public class DoctorProfileApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 		}
 		DoctorProfile doctorProfile = doctorProfileService.getDoctorProfile(doctorId, locationId, hospitalId, patientId,
-				isMobileApp, isSearched,userState);
+				isMobileApp, isSearched, userState);
 		if (doctorProfile != null) {
 			if (doctorProfile.getImageUrl() != null) {
 				doctorProfile.setImageUrl(getFinalImageURL(doctorProfile.getImageUrl()));
@@ -371,13 +364,14 @@ public class DoctorProfileApi {
 				doctorProfile.setRegistrationImageUrl(getFinalImageURL(doctorProfile.getRegistrationImageUrl()));
 			}
 			if (doctorProfile.getRegistrationThumbnailUrl() != null) {
-				doctorProfile.setRegistrationThumbnailUrl(getFinalImageURL(doctorProfile.getRegistrationThumbnailUrl()));
+				doctorProfile
+						.setRegistrationThumbnailUrl(getFinalImageURL(doctorProfile.getRegistrationThumbnailUrl()));
 			}
-			
+
 			if (doctorProfile.getPhotoIdImageUrl() != null) {
 				doctorProfile.setPhotoIdImageUrl(getFinalImageURL(doctorProfile.getPhotoIdImageUrl()));
 			}
-			
+
 			if (doctorProfile.getClinicProfile() != null & !doctorProfile.getClinicProfile().isEmpty()) {
 				for (DoctorClinicProfile clinicProfile : doctorProfile.getClinicProfile()) {
 					if (clinicProfile.getImages() != null) {
@@ -391,11 +385,12 @@ public class DoctorProfileApi {
 					if (clinicProfile.getLogoUrl() != null) {
 						clinicProfile.setLogoUrl(getFinalImageURL(clinicProfile.getLogoUrl()));
 					}
-					
+
 					if (clinicProfile.getClinicOwnershipImageUrl() != null) {
-						clinicProfile.setClinicOwnershipImageUrl(getFinalImageURL(clinicProfile.getClinicOwnershipImageUrl()));
+						clinicProfile.setClinicOwnershipImageUrl(
+								getFinalImageURL(clinicProfile.getClinicOwnershipImageUrl()));
 					}
-					
+
 					if (clinicProfile.getPackageType() == null) {
 						clinicProfile.setPackageType(PackageType.ADVANCE.getType());
 					}
@@ -549,9 +544,10 @@ public class DoctorProfileApi {
 	@Path(value = PathProxy.DoctorProfileUrls.GET_SERVICES)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_SERVICES, notes = PathProxy.DoctorProfileUrls.GET_SERVICES)
-	public Response<Services> getServices(@QueryParam("page") int page, @QueryParam("size") int size,@QueryParam("searchTerm") String searchTerm,
+	public Response<Services> getServices(@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("searchTerm") String searchTerm,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
-		List<Services> specialities = doctorProfileService.getServices(page, size, updatedTime,searchTerm);
+		List<Services> specialities = doctorProfileService.getServices(page, size, updatedTime, searchTerm);
 		Response<Services> response = new Response<Services>();
 		response.setDataList(specialities);
 		return response;
@@ -844,14 +840,13 @@ public class DoctorProfileApi {
 		response.setData(doctorProfileService.updatePrescriptionSMS(doctorId, isSendSMS));
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.DoctorProfileUrls.UPDATE_SAVE_TO_INVENTORY)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPDATE_SAVE_TO_INVENTORY, notes = PathProxy.DoctorProfileUrls.UPDATE_SAVE_TO_INVENTORY)
-	public Response<Boolean> updateSaveToInventory(@PathParam("doctorId") String doctorId,@PathParam("locationId") String locationId,
-			@QueryParam("saveToInventory") boolean saveToInventory) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId , locationId)) {
+	public Response<Boolean> updateSaveToInventory(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @QueryParam("saveToInventory") boolean saveToInventory) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -860,14 +855,13 @@ public class DoctorProfileApi {
 		response.setData(doctorProfileService.updateSavetoInventory(doctorId, locationId, saveToInventory));
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.DoctorProfileUrls.UPDATE_SHOW_INVENTORY)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPDATE_SHOW_INVENTORY, notes = PathProxy.DoctorProfileUrls.UPDATE_SHOW_INVENTORY)
-	public Response<Boolean> updateShowInventory(@PathParam("doctorId") String doctorId,@PathParam("locationId") String locationId,
-			@QueryParam("showInventory") boolean showInventory) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId , locationId)) {
+	public Response<Boolean> updateShowInventory(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @QueryParam("showInventory") boolean showInventory) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -876,13 +870,13 @@ public class DoctorProfileApi {
 		response.setData(doctorProfileService.updateShowInventory(doctorId, locationId, showInventory));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DoctorProfileUrls.UPDATE_SHOW_INVENTORY_COUNT)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPDATE_SHOW_INVENTORY_COUNT, notes = PathProxy.DoctorProfileUrls.UPDATE_SHOW_INVENTORY_COUNT)
-	public Response<Boolean> updateShowInventoryCount(@PathParam("doctorId") String doctorId,@PathParam("locationId") String locationId,
-			@QueryParam("showInventoryCount") boolean showInventoryCount) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId , locationId)) {
+	public Response<Boolean> updateShowInventoryCount(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @QueryParam("showInventoryCount") boolean showInventoryCount) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -891,7 +885,7 @@ public class DoctorProfileApi {
 		response.setData(doctorProfileService.updateShowInventoryCount(doctorId, locationId, showInventoryCount));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_TIME)
 	@POST
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_TIME, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_TIME)
@@ -906,14 +900,14 @@ public class DoctorProfileApi {
 		}
 		Boolean addEditOnlineWorkingTime = doctorProfileService.addEditOnlineWorkingTime(request);
 		transnationalService.addResource(new ObjectId(request.getDoctorId()), Resource.DOCTOR, false);
-		if (addEditOnlineWorkingTime!=null)
+		if (addEditOnlineWorkingTime != null)
 			transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(addEditOnlineWorkingTime);
 		return response;
-	
+
 	}
-	
+
 	@Path(value = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_TIME)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_TIME, notes = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_TIME)
 	@GET
@@ -923,17 +917,18 @@ public class DoctorProfileApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Is Empty");
 		}
 		Response<DoctorOnlineWorkingTimeRequest> response = new Response<DoctorOnlineWorkingTimeRequest>();
-		
+
 		response.setData(doctorProfileService.getOnlineWorkTiming(doctorId));
-	//	response.setCount(count);
+		// response.setCount(count);
 		return response;
 	}
-		
+
 	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_FEES)
 	@POST
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_FEES, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_FEES)
 
-	public Response<DoctorOnlineConsultationFees> addEditOnlineConsultationFees(@RequestBody DoctorOnlineConsultationFees request) {
+	public Response<DoctorOnlineConsultationFees> addEditOnlineConsultationFees(
+			@RequestBody DoctorOnlineConsultationFees request) {
 		if (request == null) {
 			logger.warn("Doctor Contact Request Is Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact Request Is Empty");
@@ -941,16 +936,17 @@ public class DoctorProfileApi {
 			logger.warn("Doctor Id Is Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Is Empty");
 		}
-		DoctorOnlineConsultationFees addEditVisitingTimeResponse = doctorProfileService.addEditOnlineConsultingFees(request);
+		DoctorOnlineConsultationFees addEditVisitingTimeResponse = doctorProfileService
+				.addEditOnlineConsultingFees(request);
 		transnationalService.addResource(new ObjectId(request.getDoctorId()), Resource.DOCTOR, false);
-		if (addEditVisitingTimeResponse!=null)
+		if (addEditVisitingTimeResponse != null)
 			transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
 		Response<DoctorOnlineConsultationFees> response = new Response<DoctorOnlineConsultationFees>();
 		response.setData(addEditVisitingTimeResponse);
 		return response;
-	
+
 	}
-	
+
 	@Path(value = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_FEES)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_FEES, notes = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_FEES)
 	@GET
@@ -959,15 +955,15 @@ public class DoctorProfileApi {
 			logger.warn("Doctor Id Is Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Is Empty");
 		}
-		//	Integer count = doctorProfileService.countOnlineConsultingfees(discarded, searchTerm);
+		// Integer count = doctorProfileService.countOnlineConsultingfees(discarded,
+		// searchTerm);
 		Response<DoctorOnlineConsultationFees> response = new Response<DoctorOnlineConsultationFees>();
-		
+
 		response.setData(doctorProfileService.getOnlineConsultingfees(doctorId));
-	//	response.setCount(count);
+		// response.setCount(count);
 		return response;
 	}
 
-	
 	@Path(value = PathProxy.DoctorProfileUrls.UPLOAD_REGISTRATION_DETAILS)
 	@POST
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPLOAD_REGISTRATION_DETAILS, notes = PathProxy.DoctorProfileUrls.UPLOAD_REGISTRATION_DETAILS)
@@ -984,7 +980,5 @@ public class DoctorProfileApi {
 		response.setData(addEditCoverPictureResponse);
 		return response;
 	}
-
-	
 
 }

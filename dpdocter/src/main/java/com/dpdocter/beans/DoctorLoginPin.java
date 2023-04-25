@@ -1,17 +1,10 @@
 package com.dpdocter.beans;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Field;
-
 public class DoctorLoginPin {
 
-	@Id
 	private String id;
-	@Field
 	private String doctorId;
-	@Field
 	private Boolean discarded = false;
-	@Field
 	private String pin;
 
 	public String getId() {

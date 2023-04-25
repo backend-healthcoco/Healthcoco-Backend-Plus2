@@ -18,8 +18,6 @@ public class BirthdaySMSDetailsForPatients {
 
 	private String locationName;
 	
-	
-
 	public ObjectId getId() {
 		return id;
 	}

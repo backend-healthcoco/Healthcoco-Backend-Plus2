@@ -46,9 +46,7 @@ import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.repository.EyePrescriptionRepository;
 import com.dpdocter.response.v2.PatientVisitResponse;
-import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RecordsService;
 import com.dpdocter.services.v2.ClinicalNotesService;
@@ -118,13 +116,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Value(value = "${jasper.print.prescription.subreport.a5.fileName}")
 	private String prescriptionSubReportA5FileName;
 
-	@Autowired
-	private EyePrescriptionRepository eyePrescriptionRepository;
-
-	@Autowired
-	private ContactsService contactsService;
-
-	
 
 	@Override
 	@Transactional
@@ -275,21 +266,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					patientCard.setId(patientCard.getUserId());
 					patientCard.setUser(null);
 					
-					//calculate age of patient upto today
-//					if (patientCard.getDob() != null) {
-//						if(patientCard.getDob().getDays() > 0 && patientCard.getDob().getMonths() > 0 && patientCard.getDob().getYears() > 0) {
-//						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
-//						LocalDate today = LocalDate.now();
-//						LocalDate birthday = LocalDate.parse(patientCard.getDob().getDays()+"/"+patientCard.getDob().getMonths()
-//								+"/"+patientCard.getDob().getYears(), formatter);
-//
-//						Period p = Period.between(birthday, today);
-//										
-//						patientCard.getDob().getAge().setDays(p.getDays());
-//						patientCard.getDob().getAge().setMonths(p.getMonths());
-//						patientCard.getDob().getAge().setYears(p.getYears());
-//						}
-//					}
 				}
 				response = new DoctorContactsResponse();
 				response.setPatientCards(patientCards);
@@ -490,10 +466,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		}
 		return response;
 	}
-
-	
-
-	
 
 	@Override
 	@Transactional

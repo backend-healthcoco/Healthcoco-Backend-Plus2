@@ -2,8 +2,6 @@ package com.dpdocter.response;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.ConsultationFee;
@@ -95,9 +93,9 @@ public class UserLocationWithDoctorClinicProfile {
 	private Boolean isVaccinationModuleOn = false;
 
 	private Boolean isPidHasDate = true;
-	
+
 	private Boolean isShowPatientNumber = false;
-	
+
 	private Boolean isShowDoctorInCalender = true;
 
 	public String getDoctorId() {

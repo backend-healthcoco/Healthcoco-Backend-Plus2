@@ -111,7 +111,7 @@ public class DoctorLocation {
 
 	@Field(type = FieldType.Boolean)
 	private Boolean isActivate = false;
-	
+
 	@Field(type = FieldType.Integer)
 	private Integer noOfClinicReview = 0;
 
@@ -122,7 +122,7 @@ public class DoctorLocation {
 	// private String receiptInitial = "RC";
 
 	@Field(type = FieldType.Text)
-    private String googleMapShortUrl;
+	private String googleMapShortUrl;
 
 	public Integer getNoOfClinicReview() {
 		return noOfClinicReview;

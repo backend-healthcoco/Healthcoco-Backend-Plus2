@@ -1,13 +1,7 @@
 package com.dpdocter.response;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.collections.GenericCollection;
 

@@ -9,7 +9,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
@@ -78,11 +77,11 @@ public class SignUpApi {
 
 	/**
 	 * This API signup patient into DB. It contains a flag
-	 * isNewPatientNeedToBeCreated which indicates that a new patient signup
-	 * need to be done or not. When new patient is created then unlock only that
-	 * new patient only.Rest of the patients will be locked. When patient signup
-	 * is done (for already registered from doc.) with 80% match then unlock all
-	 * the patients with that mobile number.
+	 * isNewPatientNeedToBeCreated which indicates that a new patient signup need to
+	 * be done or not. When new patient is created then unlock only that new patient
+	 * only.Rest of the patients will be locked. When patient signup is done (for
+	 * already registered from doc.) with 80% match then unlock all the patients
+	 * with that mobile number.
 	 * 
 	 * @param PatientSignupRequestMobile
 	 * @return User List
@@ -137,11 +136,11 @@ public class SignUpApi {
 	}
 
 	/**
-	 * This API will take name and mobile num and flag (to verify or unlock) as
-	 * i/p and return true or false based on 80 % match of name.POST API.In case
-	 * of unlock it will unlock the user.In case of verify only return true or
-	 * false ,no unlock in this case.Also while unlock check 80% match for only
-	 * lock patients.
+	 * This API will take name and mobile num and flag (to verify or unlock) as i/p
+	 * and return true or false based on 80 % match of name.POST API.In case of
+	 * unlock it will unlock the user.In case of verify only return true or false
+	 * ,no unlock in this case.Also while unlock check 80% match for only lock
+	 * patients.
 	 */
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path(value = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT)
@@ -394,8 +393,7 @@ public class SignUpApi {
 		response.setData(doctorSignUp);
 		return response;
 	}
-	
-	
+
 //	@Produces(MediaType.APPLICATION_JSON)
 //	@Path(value = PathProxy.SignUpUrls.DOCTOR_REGISTER)
 //	@GET
@@ -414,7 +412,7 @@ public class SignUpApi {
 //		    
 //			return response;
 //		}
-	
+
 //	@Produces(MediaType.APPLICATION_JSON)
 //	@Path(value = PathProxy.SignUpUrls.VERIFY_EMAIL_ADDRESS)
 //	@GET
@@ -429,5 +427,5 @@ public class SignUpApi {
 //		return response;
 //	}
 //
-	
+
 }

@@ -5,9 +5,9 @@ import com.dpdocter.enums.EyeType;
 public class VisionPR {
 
 	private String entityPr;
-	
+
 	private String leftEye;
-	
+
 	private String rightEye;
 
 	public String getEntityPr() {
@@ -34,6 +34,4 @@ public class VisionPR {
 		this.rightEye = rightEye;
 	}
 
-	
-	
 }

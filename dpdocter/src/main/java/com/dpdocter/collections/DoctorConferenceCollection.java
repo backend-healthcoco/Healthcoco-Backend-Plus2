@@ -39,7 +39,6 @@ public class DoctorConferenceCollection extends GenericCollection {
 	private String status = "NONE";
 	@Field
 	private String smsHeader;
-	
 
 	public String getSmsHeader() {
 		return smsHeader;

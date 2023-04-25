@@ -6,16 +6,14 @@ import com.dpdocter.beans.DoctorPatientReceipt;
 public class DoctorPatientReceiptAddEditResponse {
 
 	private DoctorPatientReceipt doctorPatientReceipt;
-	
-	private DoctorPatientInvoice invoice;
-	
-	private Double totalRemainingAdvanceAmount = 0.0;
-	
-	private Double totalDueAmount = 0.0;
-	
-	private String paymentInfo;
 
-	
+	private DoctorPatientInvoice invoice;
+
+	private Double totalRemainingAdvanceAmount = 0.0;
+
+	private Double totalDueAmount = 0.0;
+
+	private String paymentInfo;
 
 	public String getPaymentInfo() {
 		return paymentInfo;

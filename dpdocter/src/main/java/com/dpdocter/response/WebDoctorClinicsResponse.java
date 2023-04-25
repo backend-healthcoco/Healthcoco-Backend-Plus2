@@ -7,21 +7,21 @@ import com.dpdocter.beans.DoctorExperience;
 public class WebDoctorClinicsResponse {
 
 	private String doctorId;
-	
+
 	private String firstName;
-	
+
 	private List<String> specialities;
 
 	private List<String> parentSpecialities;
-	
+
 	private List<WebClinicResponse> clinics;
-	
+
 	private String doctorSlugURL;
 
 	private DoctorExperience experience;
 
 	private String thumbnailUrl;
-	
+
 	public String getDoctorId() {
 		return doctorId;
 	}

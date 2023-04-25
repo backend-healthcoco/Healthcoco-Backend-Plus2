@@ -12,40 +12,40 @@ import com.dpdocter.enums.WayOfOrder;
 
 @Document(collection = "order_drug_cl")
 public class OrderDrugCollection extends GenericCollection {
-	
+
 	@Id
 	private ObjectId id;
-	
+
 	@Field
 	private ObjectId localeId;
-	
+
 	@Field
 	private ObjectId userId;
-	
+
 	@Field
 	private String uniqueRequestId;
-	
+
 	@Field
 	private String uniqueResponseId;
-	
+
 	@Field
 	private ReplyType replyType = ReplyType.REQUESTED;
 
 	@Field
 	private WayOfOrder wayOfOrder;
-	
+
 	@Field
 	private UserAddress pickUpAddress;
-		
+
 	@Field
 	private Long pickUpDate;
-	
+
 	@Field
 	private LocaleWorkingHours pickUpTime;
-	
+
 	@Field
 	private Boolean isCancelled = false;
-	
+
 	public ObjectId getId() {
 		return id;
 	}

@@ -59,7 +59,7 @@ public class DentalWorksInvoiceCollection extends GenericCollection {
 
 	@Field
 	private List<InvoiceTax> invoiceTaxes;
-	
+
 	@Field
 	private Double grandTotal = 0.0;
 
@@ -92,7 +92,7 @@ public class DentalWorksInvoiceCollection extends GenericCollection {
 
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	public ObjectId getId() {
 		return id;
 	}

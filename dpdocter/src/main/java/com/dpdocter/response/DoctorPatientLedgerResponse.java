@@ -7,12 +7,10 @@ import com.dpdocter.beans.DoctorPatientLedger;
 public class DoctorPatientLedgerResponse {
 
 	private List<DoctorPatientLedger> doctorPatientLedgers;
-	
-	private Double totalDebitAmount=0.0;
-	
-	private Double totalCreditAmount=0.0;
-	
-	//private Double totalDueAmount;
+
+	private Double totalDebitAmount = 0.0;
+
+	private Double totalCreditAmount = 0.0;
 
 	public List<DoctorPatientLedger> getDoctorPatientLedgers() {
 		return doctorPatientLedgers;
@@ -21,8 +19,6 @@ public class DoctorPatientLedgerResponse {
 	public void setDoctorPatientLedgers(List<DoctorPatientLedger> doctorPatientLedgers) {
 		this.doctorPatientLedgers = doctorPatientLedgers;
 	}
-	
-	
 
 	public Double getTotalDebitAmount() {
 		return totalDebitAmount;
@@ -53,5 +49,4 @@ public class DoctorPatientLedgerResponse {
 //		this.totalDueAmount = totalDueAmount;
 //	}
 
-	
 }

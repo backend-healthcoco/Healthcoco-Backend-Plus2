@@ -1,7 +1,6 @@
 package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -14,9 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 import com.dpdocter.beans.ConsultationProblemDetails;
 import com.dpdocter.exceptions.BusinessException;
@@ -34,38 +30,37 @@ import io.swagger.annotations.ApiOperation;
 @Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.CONSULTATION_PROBLEM_DETAILS_BASE_URL, description = "Endpoint for consultationProblemDetails")
 public class ConsultationProblemDetailsApi {
-	
+
 	private static Logger logger = LogManager.getLogger(ConsultationProblemDetailsApi.class.getName());
-	
+
 	@Autowired
 	private ConsultationProblemDetailsService consultationProblemDetailsService;
 
 	@POST
 	@Path(value = PathProxy.ConsultationproblemDetailsUrls.ADD_EDIT_CONSULTATION_PROBLEM_DETAILS)
 	@ApiOperation(value = PathProxy.ConsultationproblemDetailsUrls.ADD_EDIT_CONSULTATION_PROBLEM_DETAILS, notes = PathProxy.ConsultationproblemDetailsUrls.ADD_EDIT_CONSULTATION_PROBLEM_DETAILS)
-	public Response<ConsultationProblemDetails> addEditConsultationProblemDetails(@RequestBody ConsultationProblemDetailsRequest request)
-	{
-		
-	if (request == null) {
-		logger.warn("Invalid Input");
-		throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	} 
-	Response<ConsultationProblemDetails> response = new Response<ConsultationProblemDetails>();
-	response.setData(consultationProblemDetailsService.addEditProblemDetails(request));
-	return response;
+	public Response<ConsultationProblemDetails> addEditConsultationProblemDetails(
+			@RequestBody ConsultationProblemDetailsRequest request) {
+
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<ConsultationProblemDetails> response = new Response<ConsultationProblemDetails>();
+		response.setData(consultationProblemDetailsService.addEditProblemDetails(request));
+		return response;
 	}
-	
+
 	@Path(value = PathProxy.ConsultationproblemDetailsUrls.GET_CONSULTATION_PROBLEM_DETAILS)
 	@GET
 	@ApiOperation(value = PathProxy.ConsultationproblemDetailsUrls.GET_CONSULTATION_PROBLEM_DETAILS, notes = PathProxy.ConsultationproblemDetailsUrls.GET_CONSULTATION_PROBLEM_DETAILS)
-	public Response<ConsultationProblemDetails> getConsultationDetails( @QueryParam(value ="problemDetailsId") String problemDetailsId) {
-		//Integer count = consultationProblemDetailsService.countConsultationProblemDetails(discarded, searchTerm);
+	public Response<ConsultationProblemDetails> getConsultationDetails(
+			@QueryParam(value = "problemDetailsId") String problemDetailsId) {
 		Response<ConsultationProblemDetails> response = new Response<ConsultationProblemDetails>();
-		
-			response.setData(consultationProblemDetailsService.getProblemDetails(problemDetailsId));
-		
+
+		response.setData(consultationProblemDetailsService.getProblemDetails(problemDetailsId));
+
 		return response;
 	}
-	
 
 }

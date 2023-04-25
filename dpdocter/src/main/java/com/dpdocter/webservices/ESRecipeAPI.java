@@ -10,7 +10,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,8 +31,6 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.SOLR_RECIPE_BASE_URL, description = "Endpoint for solr recipe")
 public class ESRecipeAPI {
 
-	private static Logger logger = Logger.getLogger(ESRecipeAPI.class.getName());
-
 	@Autowired
 	private ESRecipeService esRecipeService;
 
@@ -44,7 +41,8 @@ public class ESRecipeAPI {
 			@DefaultValue("false") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm, @QueryParam(value = "verified") Boolean verified) {
 
-		List<ESRecipeResponse> recipeDocuments = esRecipeService.searchRecipe(page, size, discarded, searchTerm, verified);
+		List<ESRecipeResponse> recipeDocuments = esRecipeService.searchRecipe(page, size, discarded, searchTerm,
+				verified);
 		Response<ESRecipeResponse> response = new Response<ESRecipeResponse>();
 		response.setDataList(recipeDocuments);
 		return response;

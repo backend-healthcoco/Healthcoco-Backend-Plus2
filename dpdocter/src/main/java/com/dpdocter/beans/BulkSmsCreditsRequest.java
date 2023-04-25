@@ -2,30 +2,22 @@ package com.dpdocter.beans;
 
 import java.util.Date;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.PaymentMode;
 
 public class BulkSmsCreditsRequest extends GenericCollection {
 
-	//private String id;
+	private Long creditBalance = 0L;
 
-	private Long creditBalance=0L;
-		
 	private String doctorId;
-	
-	private String locationId;
-	
-	//private BulkSmsCredit bulkSmsCredit;
-	
-	private Date dateOfTransaction=new Date();
-	
-	private BulkSmsPackage smsPackage;
-	
-	private PaymentMode paymentMode;
 
-	
+	private String locationId;
+
+	private Date dateOfTransaction = new Date();
+
+	private BulkSmsPackage smsPackage;
+
+	private PaymentMode paymentMode;
 
 	public long getCreditBalance() {
 		return creditBalance;
@@ -55,13 +47,9 @@ public class BulkSmsCreditsRequest extends GenericCollection {
 		return dateOfTransaction;
 	}
 
-	
-
 	public void setDateOfTransaction(Date dateOfTransaction) {
 		this.dateOfTransaction = dateOfTransaction;
 	}
-
-	
 
 	public PaymentMode getPaymentMode() {
 		return paymentMode;
@@ -71,7 +59,6 @@ public class BulkSmsCreditsRequest extends GenericCollection {
 		this.paymentMode = paymentMode;
 	}
 
-	
 	public BulkSmsPackage getSmsPackage() {
 		return smsPackage;
 	}
@@ -79,6 +66,5 @@ public class BulkSmsCreditsRequest extends GenericCollection {
 	public void setSmsPackage(BulkSmsPackage smsPackage) {
 		this.smsPackage = smsPackage;
 	}
-	
 
 }

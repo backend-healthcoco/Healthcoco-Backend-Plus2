@@ -25,8 +25,8 @@ public class ClinicDoctorResponse {
 
 	private String colorCode;
 
-	private Boolean isDefault=false;
-	
+	private Boolean isDefault = false;
+
 	private Boolean isShowDoctorInCalender = false;
 
 	private Boolean isShowPatientNumber = false;

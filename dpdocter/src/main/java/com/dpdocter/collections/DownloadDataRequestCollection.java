@@ -11,35 +11,35 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.enums.ComponentType;
 
 @Document(collection = "download_data_request_cl")
-public class DownloadDataRequestCollection extends GenericCollection{
-    
+public class DownloadDataRequestCollection extends GenericCollection {
+
 	@Id
 	private ObjectId id;
-	
+
 	@Field
-    private ObjectId doctorId;
-    
-    @Field
-    private ObjectId locationId;
-    
-    @Field
-    private ObjectId hospitalId;
-    
-    @Field
-    private String emailAddress;
+	private ObjectId doctorId;
 
-    @Field
-    private List<ComponentType> dataType;
+	@Field
+	private ObjectId locationId;
 
-    @Field
-    private String specialComments;
+	@Field
+	private ObjectId hospitalId;
 
-    @Field 
-    private Boolean isMailSend = false;
-    
-    @Field
-    private Date mailSendTime;
-    
+	@Field
+	private String emailAddress;
+
+	@Field
+	private List<ComponentType> dataType;
+
+	@Field
+	private String specialComments;
+
+	@Field
+	private Boolean isMailSend = false;
+
+	@Field
+	private Date mailSendTime;
+
 	public ObjectId getId() {
 		return id;
 	}

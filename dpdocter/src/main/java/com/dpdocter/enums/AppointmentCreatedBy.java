@@ -2,15 +2,15 @@ package com.dpdocter.enums;
 
 public enum AppointmentCreatedBy {
 
-    DOCTOR("DOCTOR"), PATIENT("PATIENT");
+	DOCTOR("DOCTOR"), PATIENT("PATIENT");
 
-    private String type;
+	private String type;
 
-    private AppointmentCreatedBy(String type) {
-	this.type = type;
-    }
+	private AppointmentCreatedBy(String type) {
+		this.type = type;
+	}
 
-    public String getType() {
-	return type;
-    }
+	public String getType() {
+		return type;
+	}
 }

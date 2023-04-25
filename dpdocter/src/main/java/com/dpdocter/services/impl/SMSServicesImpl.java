@@ -2,14 +2,12 @@ package com.dpdocter.services.impl;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -18,13 +16,7 @@ import java.nio.charset.CharsetEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -50,8 +42,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriUtils;
 
-import com.dpdocter.beans.Message;
-import com.dpdocter.beans.MessageXmlbean;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDeliveryReports;
@@ -60,10 +50,7 @@ import com.dpdocter.beans.SMSFormat;
 import com.dpdocter.beans.SMSReport;
 import com.dpdocter.beans.SMSTrack;
 import com.dpdocter.beans.UserMobileNumbers;
-import com.dpdocter.beans.XMLMobile;
-import com.dpdocter.beans.XmlMessage;
 import com.dpdocter.collections.DoctorCollection;
-import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.MessageCollection;
 import com.dpdocter.collections.SMSDeliveryReportsCollection;
 import com.dpdocter.collections.SMSFormatCollection;
@@ -75,7 +62,6 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorRepository;
-import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.MessageRepository;
 import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.SMSTrackRepository;
@@ -155,9 +141,6 @@ public class SMSServicesImpl implements SMSServices {
 	private SubscriptionDetailRepository subscriptionDetailRepository;
 
 	@Autowired
-	private LocationRepository locationRepository;
-
-	@Autowired
 	private SmsDeliveryReportsRepository smsDeliveryReportsRepository;
 
 	@Value(value = "${SERVICE_ID}")
@@ -174,97 +157,6 @@ public class SMSServicesImpl implements SMSServices {
 
 	@Value(value = "${SMILEBIRD_SENDER_ID}")
 	private String SMILEBIRD_SENDER_ID;
-
-//	@Override
-//	@Transactional
-//	public Boolean sendSMS(SMSTrackDetail smsTrackDetail, Boolean save) {
-//		Boolean response = false;
-//		String responseId = null;
-//		LocationCollection locationCollection = null;
-//		try {
-//			if(smsTrackDetail.getLocationId() != null)
-//			{
-//				locationCollection = locationRepository.findById(smsTrackDetail.getLocationId()).orElse(null);
-//			}
-//			
-//			Message message = new Message();
-//			List<SMS> smsList = new ArrayList<SMS>();
-//			message.setAuthKey(AUTH_KEY);
-//			message.setCountryCode(COUNTRY_CODE);
-//			message.setRoute(ROUTE);
-//		//	if(locationCollection != null && !DPDoctorUtils.anyStringEmpty(locationCollection.getSmsCode()))
-//		//	{
-//		//		message.setSenderId(locationCollection.getSmsCode());
-//		//	}
-//		//	else
-//		//	{
-//				message.setSenderId(SENDER_ID);
-//	//		}
-//			message.setUnicode(UNICODE);
-//			Boolean isSMSInAccount = true;
-//			UserMobileNumbers userNumber = null;
-////			SubscriptionDetailCollection subscriptionDetailCollection = null;
-//
-////			if (!isEnvProduction) {
-////				FileInputStream fileIn = new FileInputStream(MOBILE_NUMBERS_RESOURCE);
-////				ObjectInputStream in = new ObjectInputStream(fileIn);
-////				userNumber = (UserMobileNumbers) in.readObject();
-////				in.close();
-////				fileIn.close();
-////			}
-////			if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId())) {
-////				
-////				List<SubscriptionDetailCollection> subscriptionDetailCollections = subscriptionDetailRepository
-////						.findSuscriptionDetailBylocationId(smsTrackDetail.getLocationId());
-////				if(subscriptionDetailCollections !=null)subscriptionDetailCollection = subscriptionDetailCollections.get(0);
-////			}
-//
-//			for (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) {
-//				/*if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId()))
-//					isSMSInAccount = this.checkNoOFsms(smsDetails.getSms().getSmsText(), subscriptionDetailCollection);*/
-//				if (isSMSInAccount) {
-//				//	if (!isEnvProduction) {
-//						if (userNumber != null && smsDetails.getSms() != null
-//								&& smsDetails.getSms().getSmsAddress() != null) {
-//							String recipient = smsDetails.getSms().getSmsAddress().getRecipient();
-//						//	if (userNumber.mobileNumber.contains(recipient)) {
-//								smsDetails.getSms().getSmsAddress().setRecipient(COUNTRY_CODE + recipient);
-//								SMS sms = new SMS();
-//								BeanUtil.map(smsDetails.getSms(), sms);
-//								if (sms.getSmsText() != null)
-//									sms.setSmsText(UriUtils.encode(sms.getSmsText(), "UTF-8"));
-//								smsList.add(sms);
-//								message.setSms(smsList);
-//								String xmlSMSData = createXMLData(message);
-//								responseId = hitSMSUrl(SMS_POST_URL, xmlSMSData);
-//								smsTrackDetail.setResponseId(responseId);
-//						//	}
-//						}
-////					} else {
-////						SMS sms = new SMS();
-////						BeanUtil.map(smsDetails.getSms(), sms);
-////						if (sms.getSmsText() != null)
-////							sms.setSmsText(UriUtils.encode(sms.getSmsText(), "UTF-8"));
-////						smsList.add(sms);
-////						message.setSms(smsList);
-////						String xmlSMSData = createXMLData(message);
-////						responseId = hitSMSUrl(SMS_POST_URL, xmlSMSData);
-////						smsTrackDetail.setResponseId(responseId);
-////					}
-//				}
-//
-//				if (save)
-//					smsTrackRepository.save(smsTrackDetail);
-//				if (!DPDoctorUtils.anyStringEmpty(responseId))
-//					response = true;
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			logger.error("Error : " + e.getMessage());
-//			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
-//		}
-//		return response;
-//	}
 
 	@Async
 	@Override
@@ -304,64 +196,6 @@ public class SMSServicesImpl implements SMSServices {
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 		}
 		return response;
-	}
-
-	private static String hitSMSUrl(final String SMS_URL, String xmlSMSData) {
-		StringBuffer response = null;
-		try {
-			logger.info("Sending SMS...!");
-			URL url = new URL(SMS_URL);
-			HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
-			httpConnection.setDoOutput(true);
-			httpConnection.setDoInput(true);
-			httpConnection.setRequestMethod("POST");
-
-			DataOutputStream wr = new DataOutputStream(httpConnection.getOutputStream());
-			wr.writeBytes(xmlSMSData);
-			wr.flush();
-			wr.close();
-			httpConnection.disconnect();
-
-			BufferedReader in = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
-			String inputLine;
-			response = new StringBuffer();
-
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-			logger.info("SMS Sent...!");
-			logger.info("Response : " + response.toString());
-
-			in.close();
-
-		} catch (Exception e) {
-			logger.error("Error : " + e.getMessage());
-			response = new StringBuffer();
-			response.append("-2");
-		}
-
-		return response.toString();
-	}
-
-	private String createXMLData(Message message) {
-		String xmlData = null;
-		try {
-			JAXBContext jaxbContext = JAXBContext.newInstance(Message.class);
-			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-
-			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			jaxbMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-
-			StringWriter xmlStringWriter = new StringWriter();
-
-			jaxbMarshaller.marshal(message, xmlStringWriter);
-
-			xmlData = "data=" + xmlStringWriter.toString();
-		} catch (JAXBException e) {
-			logger.error("Error : " + e.getMessage());
-			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
-		}
-		return xmlData;
 	}
 
 	@Override
@@ -673,33 +507,6 @@ public class SMSServicesImpl implements SMSServices {
 		return response;
 	}
 
-	/*
-	 * @Override public Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, Boolean
-	 * save) { Boolean response = false; try { // if (!isEnvProduction) { response =
-	 * sendSMS(smsTrackDetail, save); // } else { // if (sendSmsFromTwilio) { // for
-	 * (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) { // if
-	 * (smsDetails.getSms() != null && smsDetails.getSms().getSmsAddress() != null)
-	 * { // String recipient = TWILIO_COUNTRY_CODE +
-	 * smsDetails.getSms().getSmsAddress().getRecipient(); //
-	 * smsDetails.getSms().getSmsAddress().setRecipient(recipient); // SMS sms = new
-	 * SMS(); // BeanUtil.map(smsDetails.getSms(), sms); // TwilioRestClient client
-	 * = new TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN); // // List<NameValuePair>
-	 * params = new ArrayList<NameValuePair>(); // params.add(new
-	 * BasicNameValuePair("To", recipient)); // params.add(new
-	 * BasicNameValuePair("From", TWILIO_FROM_NUMBER));// 15005550006 //
-	 * params.add(new BasicNameValuePair("Body", sms.getSmsText())); // //
-	 * MessageFactory messageFactory = client.getAccount().getMessageFactory(); //
-	 * com.twilio.sdk.resource.instance.Message message =
-	 * messageFactory.create(params); // responseId = message.getSid(); //
-	 * smsTrackDetail.setResponseId(responseId); // } // } // if
-	 * (!DPDoctorUtils.anyStringEmpty(responseId)) // response = true; // } else {
-	 * // response = sendSMS(smsTrackDetail, save); // } // }
-	 * 
-	 * } catch (BusinessException e) { logger.error(e); throw new
-	 * BusinessException(ServiceError.Unknown, "Error while sendind Sms"); } return
-	 * response; }
-	 */
-
 	public Boolean checkNoOFsms(String massage, SubscriptionDetailCollection subscriptionDetailCollection) {
 		Boolean response = false;
 		CharsetEncoder asciiEncoder = Charset.forName("US-ASCII").newEncoder();
@@ -732,52 +539,6 @@ public class SMSServicesImpl implements SMSServices {
 		}
 		return response;
 	}
-
-//	@Override
-//	public String getBulkSMSResponse(List<String> mobileNumbers, String message) {
-//
-//		StringBuffer response = new StringBuffer();
-//		try {
-//			Set<String> numbers= new HashSet<>(mobileNumbers);
-//			List<String> numberlist = new ArrayList<String> (numbers);
-//			String numberString = StringUtils.join(numberlist, ',');
-//			// String password = new String(loginRequest.getPassword());
-//			
-//			message = StringEscapeUtils.unescapeJava(message);
-//			String url =  "http://dndsms.resellergrow.com/api/sendhttp.php?authkey=" + AUTH_KEY + "&mobiles="
-//					+ numberString + "&message=" + UriUtils.encode(message, "UTF-8") + "&sender="
-//					+ SENDER_ID + "&route=" + PROMOTIONAL_ROUTE + "&country=" + COUNTRY_CODE+ "&unicode="+UNICODE;
-//			URL obj = new URL(url);
-//			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-//
-//			System.out.println("url:"+url);
-//			// optional default is POST
-//			con.setRequestMethod("GET");
-//            System.out.println(con.getResponseCode());
-//			// add request header
-//			// con.setRequestProperty("User-Agent", USER_AGENT);
-//			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
-//			con.setRequestProperty("Accept-Charset", "UTF-8");
-//
-//			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-//			String inputLine;
-//			/* response = new StringBuffer(); */
-//
-//			while ((inputLine = in.readLine()) != null) {
-//
-//				response.append(inputLine);
-//
-//			}
-//			in.close();
-//		} catch (Exception e) {
-//
-//			e.printStackTrace();
-//			return "Failed";
-//		}
-//
-//		return response.toString();
-//
-//	}
 
 	@Override
 	public Boolean getOTPSMSResponse(String mobileNumber, String message, String otp) {
@@ -824,25 +585,6 @@ public class SMSServicesImpl implements SMSServices {
 
 	}
 
-//	@Override
-//	public Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, Boolean save) {
-//	//public Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, String otp, Boolean save) {
-//	
-//	Boolean response = false;
-//		try {
-//			if(smsTrackDetail.getSmsDetails().size() > 0)
-//			{
-//				response = sendAndSaveOTPSMS(smsTrackDetail.getSmsDetails().get(0).getSms().getSmsText(), smsTrackDetail.getSmsDetails().get(0).getSms().getSmsAddress().getRecipient(),smsTrackDetail.getSmsDetails().get(0).getSms().getOtp());
-//			}
-//			response = true;
-//		} catch (BusinessException e) {
-//			e.printStackTrace();
-//			logger.error(e);
-//			throw new BusinessException(ServiceError.Unknown, "Error while sendind Sms");
-//		}
-//		return response;
-//	}
-
 	@Override
 	public Boolean sendPatientOTP(String mobileNumber, String otp) {
 		Boolean boolResponse = false;
@@ -871,7 +613,6 @@ public class SMSServicesImpl implements SMSServices {
 			if (responseCode == 200)
 				boolResponse = true;
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return boolResponse;
@@ -901,141 +642,8 @@ public class SMSServicesImpl implements SMSServices {
 		con.setRequestProperty("User-Agent",
 				"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
 		con.setRequestProperty("Accept-Charset", "UTF-8");
-//		int responseCode = con.getResponseCode();
-//
-//		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-//		String inputLine;
-		/* response = new StringBuffer(); */
 
 	}
-
-	// old dndsms service
-//	@Override
-//	public String getBulkSMSResponse(List<String> mobileNumbers, String message,String doctorId,String locationId,long subCredits) {
-//		StringBuffer response = new StringBuffer();
-//		try {
-//			Set<String> numbers = new HashSet<>(mobileNumbers);
-//			List<String> numberlist = new ArrayList<String>(numbers);
-//			String numberString = StringUtils.join(numberlist, ',');
-//			// String password = new String(loginRequest.getPassword());
-//			
-//			 SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-//				
-//				smsTrackDetail.setType("BULK_SMS");
-//				smsTrackDetail.setDoctorId(new ObjectId(doctorId));
-//				smsTrackDetail.setLocationId(new ObjectId(locationId));
-//				smsTrackDetail.setTotalCreditsSpent(subCredits);
-//				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-//
-//			
-//			JAXBContext contextObj = JAXBContext.newInstance(MessageXmlbean.class);  
-//			Marshaller marshallerObj = contextObj.createMarshaller();  
-//		    marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);  
-//		    
-//		    message = StringEscapeUtils.unescapeJava(message);
-//			//String	messages=UriUtils.encode(message, "UTF-8");
-//		    List<XMLMobile> numberlists=new ArrayList<XMLMobile>();
-//		   
-////		    XMLMobile mobile2=new XMLMobile();
-////		    
-////		    
-////		    mobile1.setMobileNumber("9604248471");
-////		    mobile2.setMobileNumber("7219653706");
-////		    numberlists.add(mobile1);
-////		    numberlists.add(mobile2);
-//		    
-//		   
-//		    
-//		    for(String mobiles:mobileNumbers) {
-//		    	
-//		    	// sms.setSmsText(message);
-//					
-//					//smsAddress.setRecipient(mobiles);
-//					
-//				    
-//				//	sms.setSmsAddress(new SMSAddress(mobiles));
-//					
-//					smsDetails.add(new SMSDetail(new SMS(message, new SMSAddress(mobiles)), SMSStatus.IN_PROGRESS));
-//		     //mobile1.setMobileNumber(mobiles);
-//		     numberlists.add(new XMLMobile(mobiles));
-//		     
-//		    }
-//		   
-//		   // smsDetail.setSms(sms);
-//			//smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-//		
-//		smsTrackDetail.setSmsDetails(smsDetails);
-//		    MessageXmlbean xmlBean=new MessageXmlbean(AUTH_KEY,new XmlMessage(message,(numberlists)),SENDER_ID,PROMOTIONAL_ROUTE,COUNTRY_CODE,UNICODE);
-//		   // marshallerObj.marshal(xmlBean, os);
-//
-//			
-//			
-//			String strUrl = "http://dndsms.resellergrow.com/api/postsms.php";
-//			
-//			
-////				url = "http://dndsms.resellergrow.com/api/sendhttp.php?authkey=" + AUTH_KEY + "&mobiles=" + numberString
-////						+ "&message=" + UriUtils.encode(message, "UTF-8") + "&sender=" + SENDER_ID + "&route="
-////						+ PROMOTIONAL_ROUTE + "&country=" + COUNTRY_CODE + "&unicode=" + UNICODE;
-//
-//			
-//			URL obj = new URL(strUrl);
-//			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-//
-//			
-//			con.setDoOutput(true);
-//			
-//			con.setDoInput(true);
-//			// optional default is POST
-//			con.setRequestMethod("POST");
-//			
-//			
-//
-//			// add request header
-//			// con.setRequestProperty("User-Agent", USER_AGENT);
-//			con.setRequestProperty("User-Agent",
-//					"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
-//			con.setRequestProperty("Accept-Charset", "UTF-8");
-//			
-//			 DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-//			 StringWriter sw = new StringWriter();
-//			 
-//			 marshallerObj.marshal(xmlBean,sw);
-//			 
-//			String sq= sw.toString();
-//		
-//			System.out.println("Object:"+sq);
-//          //   wr.writeBytes(sq);
-//               wr.write(sq.getBytes("UTF-8")); //for unicode message's instead of wr.writeBytes(param);
-//
-//             wr.flush();
-//             wr.close();
-//             con.disconnect();
-//
-//
-//
-//			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-//			String inputLine;
-//			/* response = new StringBuffer(); */
-//
-//			while ((inputLine = in.readLine()) != null) {
-//
-//				response.append(inputLine);
-//				System.out.println("response:"+response.toString());
-//			}
-//			smsTrackDetail.setResponseId(response.toString());
-//			smsTrackDetail.setCreatedTime(new Date());
-//			smsTrackDetail.setUpdatedTime(new Date());
-//			smsTrackRepository.save(smsTrackDetail);
-//			in.close();
-//		} catch (Exception e) {
-//
-//			e.printStackTrace();
-//			return "Failed";
-//		}
-//
-//		return response.toString();
-//
-//	}
 
 //commenting new service 	
 	// new sms service
@@ -1099,12 +707,7 @@ public class SMSServicesImpl implements SMSServices {
 		Boolean response = false;
 		String responseId = null;
 
-		LocationCollection locationCollection = null;
 		try {
-			if (smsTrackDetail.getLocationId() != null) {
-				locationCollection = locationRepository.findById(smsTrackDetail.getLocationId()).orElse(null);
-			}
-
 			String type = "TXN";
 			if (smsTrackDetail.getType() != null)
 				if (smsTrackDetail.getType().equals("BIRTHDAY WISH TO PATIENT")
@@ -1120,9 +723,7 @@ public class SMSServicesImpl implements SMSServices {
 			senderId = SENDER_ID;
 
 			ObjectMapper mapper = new ObjectMapper();
-			Boolean isSMSInAccount = true;
 			UserMobileNumbers userNumber = null;
-//				SubscriptionDetailCollection subscriptionDetailCollection = null;
 
 			if (!isEnvProduction) {
 				FileInputStream fileIn = new FileInputStream(MOBILE_NUMBERS_RESOURCE);
@@ -1132,21 +733,9 @@ public class SMSServicesImpl implements SMSServices {
 				fileIn.close();
 				System.out.println(userNumber);
 			}
-//				if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId())) {
-//					
-//					List<SubscriptionDetailCollection> subscriptionDetailCollections = subscriptionDetailRepository
-//							.findSuscriptionDetailBylocationId(smsTrackDetail.getLocationId());
-//					if(subscriptionDetailCollections !=null)subscriptionDetailCollection = subscriptionDetailCollections.get(0);
-//				}
 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			MessageResponse list = null;
-			// for (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) {
-			/*
-			 * if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId()))
-			 * isSMSInAccount = this.checkNoOFsms(smsDetails.getSms().getSmsText(),
-			 * subscriptionDetailCollection);
-			 */
 
 			if (smsTrackDetail.getType().equals("BIRTHDAY WISH TO DOCTOR")) {
 				DoctorCollection doctorClinicProfileCollection = doctorRepository
@@ -1217,10 +806,6 @@ public class SMSServicesImpl implements SMSServices {
 		Boolean response = false;
 		try {
 
-//				response = sendSMS(smsTrackDetail, save);
-
-			String responseId = null;
-
 			String type = "OTP";
 			String message = smsTrackDetail.getSmsDetails().get(0).getSms().getSmsText();
 			String mobileNumber = smsTrackDetail.getSmsDetails().get(0).getSms().getSmsAddress().getRecipient();
@@ -1233,7 +818,6 @@ public class SMSServicesImpl implements SMSServices {
 			ObjectMapper mapper = new ObjectMapper();
 			Boolean isSMSInAccount = true;
 			UserMobileNumbers userNumber = null;
-//					SubscriptionDetailCollection subscriptionDetailCollection = null;
 
 			if (!isEnvProduction) {
 				FileInputStream fileIn = new FileInputStream(MOBILE_NUMBERS_RESOURCE);
@@ -1242,47 +826,23 @@ public class SMSServicesImpl implements SMSServices {
 				in.close();
 				fileIn.close();
 			}
-//					if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId())) {
-//						
-//						List<SubscriptionDetailCollection> subscriptionDetailCollections = subscriptionDetailRepository
-//								.findSuscriptionDetailBylocationId(smsTrackDetail.getLocationId());
-//						if(subscriptionDetailCollections !=null)subscriptionDetailCollection = subscriptionDetailCollections.get(0);
-//					}
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			MessageResponse list = null;
-			// for (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) {
-			/*
-			 * if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId()))
-			 * isSMSInAccount = this.checkNoOFsms(smsDetails.getSms().getSmsText(),
-			 * subscriptionDetailCollection);
-			 */
 			if (isSMSInAccount) {
-				// if (!isEnvProduction) {
-				// String recipient = smsDetails.getSms().getSmsAddress().getRecipient();
-//								if (userNumber != null && smsDetails.getSms() != null
-//										&& smsDetails.getSms().getSmsAddress() != null) {
-				// if (userNumber.mobileNumber.contains(mobileNumber)) {
-				// smsDetails.getSms().getSmsAddress().setRecipient(COUNTRY_CODE +
-				// mobileNumber);
 
 				HttpClient client = HttpClients.custom().build();
 				HttpUriRequest httprequest = RequestBuilder.post().addParameter("to", COUNTRY_CODE + mobileNumber)
 						.addParameter("type", type).addParameter("body", message).addParameter("sender", SENDER_ID)
-						// .addParameter("unicode", "1")
 						.addParameter("template_id", smsTrackDetail.getTemplateId()).setUri(strUrl)
 						.setHeader("api-key", KEY).build();
-				// System.out.println("response"+client.execute(httprequest));
 				System.out.println("senderId" + senderId);
 				org.apache.http.HttpResponse responses = client.execute(httprequest);
 				responses.getEntity().writeTo(out);
 				list = mapper.readValue(out.toString(), MessageResponse.class);
 				response = true;
 			}
-			// }
-			// }
 
 			if (save) {
-
 				String responseString = out.toString();
 				System.out.println("responseString" + responseString);
 
@@ -1299,7 +859,6 @@ public class SMSServicesImpl implements SMSServices {
 				messageRepository.save(collection);
 				response = true;
 			}
-			// response=list.getMessageId();
 
 		} catch (Exception e) {
 			logger.error(e);
@@ -1310,7 +869,6 @@ public class SMSServicesImpl implements SMSServices {
 
 	@Override
 	public Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, String otp, Boolean save) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -1369,7 +927,6 @@ public class SMSServicesImpl implements SMSServices {
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 		}
 		return response;
-
 	}
 
 }

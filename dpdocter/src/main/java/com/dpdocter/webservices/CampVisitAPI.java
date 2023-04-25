@@ -13,8 +13,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,7 +30,6 @@ import com.dpdocter.beans.UserTreatment;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.AcadamicClassResponse;
-import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.NutritionSchoolAssociationResponse;
 import com.dpdocter.response.UserAssessment;
 import com.dpdocter.services.CampVisitService;
@@ -48,8 +45,6 @@ import io.swagger.annotations.ApiOperation;
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.CAMP_VISIT_BASE_URL, description = "Endpoint for camp visit")
 public class CampVisitAPI {
-
-	private static Logger logger = LogManager.getLogger(CampVisitAPI.class.getName());
 
 	@Autowired
 	private CampVisitService campVisitService;
@@ -226,8 +221,7 @@ public class CampVisitAPI {
 			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "page") int page,
 			@QueryParam(value = "size") int size,
 			@QueryParam(value = "updatedTime") @DefaultValue("0") String updatedTime,
-			@QueryParam(value = "discarded") Boolean discarded,
-			@QueryParam(value = "recipe") String recipe) {
+			@QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "recipe") String recipe) {
 		Response<NutritionAssessment> response = new Response<NutritionAssessment>();
 		response.setDataList(campVisitService.getNutritionAssessmentList(academicProfileId, schoolId, branchId,
 				doctorId, updatedTime, page, size, discarded, recipe));
@@ -244,8 +238,8 @@ public class CampVisitAPI {
 			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("classId") String classId,
 			@QueryParam("sectionId") String sectionId, @QueryParam("searchTerm") String searchTerm,
 			@QueryParam("discarded") Boolean discarded, @QueryParam("userId") String userId,
-			@QueryParam("updatedTime") String updatedTime, @QueryParam("assesmentType") String assesmentType, @QueryParam("department") String department,
-			@QueryParam("departmentValue") String departmentValue) {
+			@QueryParam("updatedTime") String updatedTime, @QueryParam("assesmentType") String assesmentType,
+			@QueryParam("department") String department, @QueryParam("departmentValue") String departmentValue) {
 
 		if (DPDoctorUtils.anyStringEmpty(branchId, schoolId, profileType)) {
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -253,8 +247,9 @@ public class CampVisitAPI {
 		}
 		Response<AcademicProfile> response = new Response<AcademicProfile>();
 		if (profileType.equalsIgnoreCase("STUDENT")) {
-			response.setDataList(campVisitService.getStudentProfile(page, size, branchId, schoolId, classId, sectionId,
-					searchTerm, discarded, profileType, userId, updatedTime, assesmentType, department, departmentValue));
+			response.setDataList(
+					campVisitService.getStudentProfile(page, size, branchId, schoolId, classId, sectionId, searchTerm,
+							discarded, profileType, userId, updatedTime, assesmentType, department, departmentValue));
 			response.setCount(campVisitService.countStudentProfile(branchId, schoolId, classId, sectionId, searchTerm,
 					discarded, profileType, userId, updatedTime));
 		} else if (profileType.equalsIgnoreCase("TEACHER")) {
@@ -307,14 +302,14 @@ public class CampVisitAPI {
 		response.setCount(campVisitService.countAcadamicClass(branchId, schoolId, searchTerm, discarded));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.CampVisitUrls.GET_DOCTOR_ACADAMIC_PROFILE)
 	@ApiOperation(value = PathProxy.CampVisitUrls.GET_DOCTOR_ACADAMIC_PROFILE, notes = PathProxy.CampVisitUrls.GET_DOCTOR_ACADAMIC_PROFILE)
 	@GET
-	
-	public Response<AcademicProfile> getAcadamicProfile(
-			@PathParam("userId") String userId, @QueryParam("page") int page, @QueryParam("size") int size,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("discarded") Boolean discarded) {
+
+	public Response<AcademicProfile> getAcadamicProfile(@PathParam("userId") String userId,
+			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("discarded") Boolean discarded) {
 		Response<AcademicProfile> response = new Response<AcademicProfile>();
 		response.setDataList(campVisitService.getProfile(page, size, userId, discarded, searchTerm));
 		response.setCount(campVisitService.countProfile(userId, discarded, searchTerm));
@@ -324,7 +319,7 @@ public class CampVisitAPI {
 	@Path(value = PathProxy.CampVisitUrls.GET_RDA_FOR_USER)
 	@GET
 	@ApiOperation(value = PathProxy.CampVisitUrls.GET_RDA_FOR_USER, notes = PathProxy.CampVisitUrls.GET_RDA_FOR_USER)
-	public Response<NutritionRDA> getRDAForUser(@PathParam("academicProfileId") String academicProfileId, 
+	public Response<NutritionRDA> getRDAForUser(@PathParam("academicProfileId") String academicProfileId,
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId) {
 		if (academicProfileId == null) {
@@ -335,7 +330,7 @@ public class CampVisitAPI {
 		response.setData(campVisitService.getRDAForUser(academicProfileId, doctorId, locationId, hospitalId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.CampVisitUrls.GET_USER_ASSESSMENT)
 	@GET
 	@ApiOperation(value = PathProxy.CampVisitUrls.GET_USER_ASSESSMENT, notes = PathProxy.CampVisitUrls.GET_USER_ASSESSMENT)
@@ -348,7 +343,7 @@ public class CampVisitAPI {
 		response.setData(campVisitService.getUserAssessment(academicProfileId, doctorId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.CampVisitUrls.GET_ASSOCIATIONS_FOR_DOCTOR)
 	@ApiOperation(value = PathProxy.CampVisitUrls.GET_ASSOCIATIONS_FOR_DOCTOR, notes = PathProxy.CampVisitUrls.GET_ASSOCIATIONS_FOR_DOCTOR)
 	@GET
@@ -361,15 +356,16 @@ public class CampVisitAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "id should not null or Empty");
 		}
 		Response<DoctorSchoolAssociation> response = new Response<DoctorSchoolAssociation>();
-		response.setDataList(campVisitService.getDoctorAssociations(page, size, doctorId, searchTerm, updatedTime, branchId, department));
+		response.setDataList(campVisitService.getDoctorAssociations(page, size, doctorId, searchTerm, updatedTime,
+				branchId, department));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.CampVisitUrls.ADD_USER_TREATMENT)
 	@ApiOperation(value = PathProxy.CampVisitUrls.ADD_USER_TREATMENT, notes = PathProxy.CampVisitUrls.ADD_USER_TREATMENT)
 	@POST
 	public Response<UserTreatment> addUserTreatment(UserTreatment request) {
-		if(request == null) {
+		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Request should not null or Empty");
 		}
 		Response<UserTreatment> response = new Response<UserTreatment>();
@@ -389,23 +385,26 @@ public class CampVisitAPI {
 		response.setData(campVisitService.getUserTreatmentById(id));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.CampVisitUrls.GET_USER_TREATMENTS)
 	@GET
 	@ApiOperation(value = PathProxy.CampVisitUrls.GET_USER_TREATMENTS, notes = PathProxy.CampVisitUrls.GET_USER_TREATMENTS)
-	public Response<UserTreatment> getUserTreatments(@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("userId") String userId, 
-			@QueryParam(value = "doctorId") String doctorId, @QueryParam("locationId") String locationId, 
-			@QueryParam("hospitalId") String hospitalId, @QueryParam("discarded") Boolean discarded,
-			@QueryParam("updatedTime") String updatedTime, @QueryParam("department") String department) {
+	public Response<UserTreatment> getUserTreatments(@QueryParam("size") int size, @QueryParam("page") int page,
+			@QueryParam("userId") String userId, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("discarded") Boolean discarded, @QueryParam("updatedTime") String updatedTime,
+			@QueryParam("department") String department) {
 		Response<UserTreatment> response = new Response<UserTreatment>();
-		response.setDataList(campVisitService.getUserTreatments(size, page, userId, doctorId, locationId, hospitalId, discarded, updatedTime, department));
+		response.setDataList(campVisitService.getUserTreatments(size, page, userId, doctorId, locationId, hospitalId,
+				discarded, updatedTime, department));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.CampVisitUrls.DELETE_TREATMENT)
 	@ApiOperation(value = PathProxy.CampVisitUrls.DELETE_TREATMENT, notes = PathProxy.CampVisitUrls.DELETE_TREATMENT)
 	@DELETE
-	public Response<UserTreatment> deleteUserTreatment(@PathParam("id") String id, @QueryParam("discarded") Boolean discarded) {
+	public Response<UserTreatment> deleteUserTreatment(@PathParam("id") String id,
+			@QueryParam("discarded") Boolean discarded) {
 		if (id == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
 		}
@@ -413,7 +412,7 @@ public class CampVisitAPI {
 		response.setData(campVisitService.deleteUserTreatment(id, discarded));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.CampVisitUrls.GET_USER_TREATMENT_ANALYTICS_DATA)
 	@GET
 	@ApiOperation(value = PathProxy.CampVisitUrls.GET_USER_TREATMENT_ANALYTICS_DATA, notes = PathProxy.CampVisitUrls.GET_USER_TREATMENT_ANALYTICS_DATA)
@@ -424,8 +423,8 @@ public class CampVisitAPI {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, " locationId, hospitalId should not be empty");
 		}
-		List<Object> analyticResponse = campVisitService.getUserTreatmentAnalyticsData(
-				doctorId, locationId, hospitalId, fromDate, toDate, department, discarded);
+		List<Object> analyticResponse = campVisitService.getUserTreatmentAnalyticsData(doctorId, locationId, hospitalId,
+				fromDate, toDate, department, discarded);
 
 		Response<Object> response = new Response<Object>();
 		response.setDataList(analyticResponse);

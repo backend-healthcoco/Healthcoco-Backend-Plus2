@@ -16,13 +16,13 @@ public class RecipeTemplateItem extends GenericCollection {
 	private MealQuantity quantity;
 
 	private MealTimeEnum mealTime;
-	
+
 	private List<EquivalentQuantities> equivalentMeasurements;
 
 	private String name;
 
 	private String recipeDescription;
-	
+
 	private String videoUrl;
 
 	private List<String> recipeImages;
@@ -102,7 +102,7 @@ public class RecipeTemplateItem extends GenericCollection {
 	private Map<String, String> otherNutrients;
 
 	private boolean nutrientValueAtRecipeLevel = false;
-	
+
 	private String dietoryEvaluation;
 	private String phLevel;
 	private String giLevel;
@@ -120,7 +120,7 @@ public class RecipeTemplateItem extends GenericCollection {
 	private List<Disease> diseases;
 	private String principle;
 	private Map<String, String> multilingualName;
-	
+
 	public Map<String, String> getMultilingualName() {
 		return multilingualName;
 	}
@@ -128,13 +128,15 @@ public class RecipeTemplateItem extends GenericCollection {
 	public void setMultilingualName(Map<String, String> multilingualName) {
 		this.multilingualName = multilingualName;
 	}
+
 	public String getPrinciple() {
 		return principle;
 	}
+
 	public void setPrinciple(String principle) {
 		this.principle = principle;
 	}
-	
+
 	public boolean getNutrientValueAtRecipeLevel() {
 		return nutrientValueAtRecipeLevel;
 	}

@@ -14,25 +14,25 @@ public class ESPresentComplaintDocument {
 	private String id;
 
 	@Field(type = FieldType.Text)
-    private String presentComplaint;
+	private String presentComplaint;
 
 	@Field(type = FieldType.Text)
-    private String doctorId;
+	private String doctorId;
 
 	@Field(type = FieldType.Text)
-    private String locationId;
+	private String locationId;
 
 	@Field(type = FieldType.Text)
-    private String hospitalId;
+	private String hospitalId;
 
 	@Field(type = FieldType.Boolean)
-    private Boolean discarded = false;
-    
+	private Boolean discarded = false;
+
 	@Field(type = FieldType.Date)
-    private Date updatedTime = new Date();
-    
+	private Date updatedTime = new Date();
+
 	@Field(type = FieldType.Text)
-    private String speciality;
+	private String speciality;
 
 	public String getId() {
 		return id;
@@ -104,7 +104,5 @@ public class ESPresentComplaintDocument {
 				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
 				+ ", updatedTime=" + updatedTime + ", speciality=" + speciality + "]";
 	}
-	
-	
-	
+
 }

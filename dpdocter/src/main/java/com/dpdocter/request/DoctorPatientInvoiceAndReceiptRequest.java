@@ -9,39 +9,39 @@ import com.dpdocter.enums.ModeOfPayment;
 import com.dpdocter.response.InvoiceItemResponse;
 
 public class DoctorPatientInvoiceAndReceiptRequest {
-	
+
 	private String doctorId;
-	
+
 	private String locationId;
-	
+
 	private String hospitalId;
-	
+
 	private String patientId;
-	
+
 	private String uniqueInvoiceId;
-	
-	private List<InvoiceItemResponse> invoiceItems;   
-	
+
+	private List<InvoiceItemResponse> invoiceItems;
+
 	private Discount totalDiscount;
 
 	private double totalCost = 0.0;
 
 	private Tax totalTax;
-	
-	private Double grandTotal= 0.0;
-	
-	private Double usedAdvanceAmount= 0.0;
-	
-	private Double refundAmount= 0.0;
-	
-	private Double balanceAmount= 0.0;
+
+	private Double grandTotal = 0.0;
+
+	private Double usedAdvanceAmount = 0.0;
+
+	private Double refundAmount = 0.0;
+
+	private Double balanceAmount = 0.0;
 
 	private Boolean discarded = false;
 
 	private ModeOfPayment modeOfPayment;
 
-	private Double amountPaid= 0.0;
-	
+	private Double amountPaid = 0.0;
+
 	private Date invoiceDate;
 
 	public String getDoctorId() {

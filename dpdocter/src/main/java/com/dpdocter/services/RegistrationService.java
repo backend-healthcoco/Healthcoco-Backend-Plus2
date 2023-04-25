@@ -2,9 +2,6 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.dpdocter.beans.BloodGroup;
 import com.dpdocter.beans.ClinicAddress;
 import com.dpdocter.beans.ClinicImage;
@@ -200,11 +197,8 @@ public interface RegistrationService {
 
 	DoctorCalendarView getDoctorCalendarView(String doctorId, String locationId);
 
-<<<<<<< HEAD
-=======
 	Boolean updateShowPatient(String doctorId, Boolean isShowPatientNumber, String locationId);
 	
 	Boolean updateIsShowDoctorInCalender(String doctorId, Boolean isShowDoctorInCalender, String locationId);
 
->>>>>>> release-4.6
 }

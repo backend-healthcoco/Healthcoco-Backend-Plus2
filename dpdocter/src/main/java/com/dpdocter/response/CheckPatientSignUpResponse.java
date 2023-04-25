@@ -6,9 +6,9 @@ public class CheckPatientSignUpResponse {
 
 	private char[] password;
 
-    private char[] salt;
+	private char[] salt;
 
-    private boolean signedUp = false;
+	private boolean signedUp = false;
 
 	public CheckPatientSignUpResponse() {
 	}

@@ -11,6 +11,6 @@ import com.dpdocter.collections.PCUserCollection;
  */
 @Repository
 public interface PCUserRepository extends MongoRepository<PCUserCollection, ObjectId> {
-	
+
 	public PCUserCollection findByMrCode(String mrCode);
 }

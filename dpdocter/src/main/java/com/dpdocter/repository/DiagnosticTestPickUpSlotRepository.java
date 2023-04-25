@@ -6,6 +6,8 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.dpdocter.collections.DiagnosticTestPickUpSlotCollection;
 
-public interface DiagnosticTestPickUpSlotRepository extends MongoRepository<DiagnosticTestPickUpSlotCollection, ObjectId>, PagingAndSortingRepository<DiagnosticTestPickUpSlotCollection, ObjectId> {
+public interface DiagnosticTestPickUpSlotRepository
+		extends MongoRepository<DiagnosticTestPickUpSlotCollection, ObjectId>,
+		PagingAndSortingRepository<DiagnosticTestPickUpSlotCollection, ObjectId> {
 
 }

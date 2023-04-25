@@ -12,6 +12,7 @@ import com.dpdocter.beans.DentalImagingInvoiceItem;
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.InvoiceTax;
 import com.dpdocter.beans.Tax;
+
 @Document(collection = "dental_imaging_invoice_cl")
 public class DentalImagingInvoiceCollection extends GenericCollection {
 
@@ -38,9 +39,9 @@ public class DentalImagingInvoiceCollection extends GenericCollection {
 
 	@Field
 	private String mobileNumber;
-	
+
 	@Field
-	private ObjectId dentalImagingDoctorId;	
+	private ObjectId dentalImagingDoctorId;
 
 	@Field
 	private ObjectId dentalImagingLocationId;
@@ -92,13 +93,13 @@ public class DentalImagingInvoiceCollection extends GenericCollection {
 
 	@Field
 	private Boolean isPaid = false;
-	
+
 	@Field
 	private String referringDoctor;
 
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	public ObjectId getId() {
 		return id;
 	}

@@ -14,71 +14,71 @@ import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Duration;
 import com.dpdocter.beans.GenericCode;
 
-@Document(indexName = "doctor_drugs_in", type ="doctor_drugs")
+@Document(indexName = "doctor_drugs_in", type = "doctor_drugs")
 public class ESDoctorDrugDocument {
-    @Id
-    private String id;
+	@Id
+	private String id;
 
-    @Field(type = FieldType.Keyword)
-    private String drugName;
+	@Field(type = FieldType.Keyword)
+	private String drugName;
 
-    @Field(type = FieldType.Text)
-    private String explanation;
+	@Field(type = FieldType.Text)
+	private String explanation;
 
-    @Field(type = FieldType.Text)
-    private String drugCode;
+	@Field(type = FieldType.Text)
+	private String drugCode;
 
-    @Field(type = FieldType.Nested)
-    private DrugType drugType;
+	@Field(type = FieldType.Nested)
+	private DrugType drugType;
 
-    @Field(type = FieldType.Text)
-    private String doctorId;
+	@Field(type = FieldType.Text)
+	private String doctorId;
 
-    @Field(type = FieldType.Text)
-    private String locationId;
+	@Field(type = FieldType.Text)
+	private String locationId;
 
-    @Field(type = FieldType.Text)
-    private String hospitalId;
+	@Field(type = FieldType.Text)
+	private String hospitalId;
 
-    @Field(type = FieldType.Boolean)
-    private Boolean discarded = false;
+	@Field(type = FieldType.Boolean)
+	private Boolean discarded = false;
 
-    @Field(type = FieldType.Date)
-    private Date updatedTime = new Date();
+	@Field(type = FieldType.Date)
+	private Date updatedTime = new Date();
 
-    @Field(type = FieldType.Text)
-    private String companyName;
+	@Field(type = FieldType.Text)
+	private String companyName;
 
-    @Field(type = FieldType.Text)
-    private String packSize;
+	@Field(type = FieldType.Text)
+	private String packSize;
 
-    @Field(type = FieldType.Text)
-    private String MRP;
+	@Field(type = FieldType.Text)
+	private String MRP;
 
-    @MultiField(mainField = @Field(type = FieldType.Text))
-    private List<String> genericCodes;
+	@MultiField(mainField = @Field(type = FieldType.Text))
+	private List<String> genericCodes;
 
-    @Field(type = FieldType.Nested)
-    private Duration duration;
+	@Field(type = FieldType.Nested)
+	private Duration duration;
 
-    @Field(type = FieldType.Text)
-    private String dosage;
+	@Field(type = FieldType.Text)
+	private String dosage;
 
-    @MultiField(mainField = @Field(type = FieldType.Long))
-    private List<Long> dosageTime;
-    
-    @Field(type = FieldType.Nested)
-    private List<DrugDirection> direction;
+	@MultiField(mainField = @Field(type = FieldType.Long))
+	private List<Long> dosageTime;
 
-    @MultiField(mainField = @Field(type = FieldType.Text))
-    private List<String> categories;
-    
-    @Field(type = FieldType.Long)
-    private long rankingCount = 0;
+	@Field(type = FieldType.Nested)
+	private List<DrugDirection> direction;
 
-    @Field(type = FieldType.Nested)
-    private List<GenericCode> genericNames;
-    
+	@MultiField(mainField = @Field(type = FieldType.Text))
+	private List<String> categories;
+
+	@Field(type = FieldType.Long)
+	private long rankingCount = 0;
+
+	@Field(type = FieldType.Nested)
+	private List<GenericCode> genericNames;
+
 	public String getId() {
 		return id;
 	}

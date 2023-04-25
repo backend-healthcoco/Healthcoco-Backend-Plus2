@@ -19,79 +19,104 @@ public class ExerciseMovement extends GenericCollection {
 	private Boolean isPartInStructuredCardiorespiratoryProgram;
 	private StructuredCardiorespiratoryProgram structuredCardiorespiratoryProgram;
 	private ResistanceTrainingProgramType resistancetrainingProgramType;
+
 	public String getId() {
 		return id;
 	}
+
 	public String getDoctorId() {
 		return doctorId;
 	}
+
 	public String getLocationId() {
 		return locationId;
 	}
+
 	public String getHospitalId() {
 		return hospitalId;
 	}
+
 	public String getPatientId() {
 		return patientId;
 	}
+
 	public Boolean getDiscarded() {
 		return discarded;
 	}
+
 	public Map<String, Boolean> getExerciseAndMovementBoolen() {
 		return exerciseAndMovementBoolen;
 	}
+
 	public Map<String, String> getExerciseAndMovementString() {
 		return exerciseAndMovementString;
 	}
+
 	public Map<String, List<String>> getExerciseAndMovementList() {
 		return exerciseAndMovementList;
 	}
+
 	public Boolean getIsPartInStructuredCardiorespiratoryProgram() {
 		return isPartInStructuredCardiorespiratoryProgram;
 	}
+
 	public StructuredCardiorespiratoryProgram getStructuredCardiorespiratoryProgram() {
 		return structuredCardiorespiratoryProgram;
 	}
+
 	public ResistanceTrainingProgramType getResistancetrainingProgramType() {
 		return resistancetrainingProgramType;
 	}
+
 	public void setId(String id) {
 		this.id = id;
 	}
+
 	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
 	}
+
 	public void setLocationId(String locationId) {
 		this.locationId = locationId;
 	}
+
 	public void setHospitalId(String hospitalId) {
 		this.hospitalId = hospitalId;
 	}
+
 	public void setPatientId(String patientId) {
 		this.patientId = patientId;
 	}
+
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
+
 	public void setExerciseAndMovementBoolen(Map<String, Boolean> exerciseAndMovementBoolen) {
 		this.exerciseAndMovementBoolen = exerciseAndMovementBoolen;
 	}
+
 	public void setExerciseAndMovementString(Map<String, String> exerciseAndMovementString) {
 		this.exerciseAndMovementString = exerciseAndMovementString;
 	}
+
 	public void setExerciseAndMovementList(Map<String, List<String>> exerciseAndMovementList) {
 		this.exerciseAndMovementList = exerciseAndMovementList;
 	}
+
 	public void setIsPartInStructuredCardiorespiratoryProgram(Boolean isPartInStructuredCardiorespiratoryProgram) {
 		this.isPartInStructuredCardiorespiratoryProgram = isPartInStructuredCardiorespiratoryProgram;
 	}
+
 	public void setStructuredCardiorespiratoryProgram(
 			StructuredCardiorespiratoryProgram structuredCardiorespiratoryProgram) {
 		this.structuredCardiorespiratoryProgram = structuredCardiorespiratoryProgram;
 	}
+
 	public void setResistancetrainingProgramType(ResistanceTrainingProgramType resistancetrainingProgramType) {
 		this.resistancetrainingProgramType = resistancetrainingProgramType;
 	}
+
 	@Override
 	public String toString() {
 		return "ExerciseMovement [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="

@@ -4,6 +4,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.enums.EyeSightednessUnit;
 import com.dpdocter.enums.EyeType;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class VisualAcuity {
 
@@ -44,8 +45,6 @@ public class VisualAcuity {
 	public void setPresentLensUnit(EyeSightednessUnit presentLensUnit) {
 		this.presentLensUnit = presentLensUnit;
 	}
-	
-	
 
 	public String getPinHole() {
 		return pinHole;

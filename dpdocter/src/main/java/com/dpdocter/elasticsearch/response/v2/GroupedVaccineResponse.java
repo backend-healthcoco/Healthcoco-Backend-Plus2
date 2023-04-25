@@ -25,7 +25,5 @@ public class GroupedVaccineResponse {
 	public void setVaccineResponses(List<VaccineResponse> vaccineResponses) {
 		this.vaccineResponses = vaccineResponses;
 	}
-	
 
-	
 }

@@ -1,7 +1,8 @@
 package com.dpdocter.enums;
 
 public enum ThyroidType {
-	HYPERGLYCEMIA("HYPERGLYCEMIA"),HYPOGLYCEMIA("HYPOGLYCEMIA");
+	HYPERGLYCEMIA("HYPERGLYCEMIA"), HYPOGLYCEMIA("HYPOGLYCEMIA");
+
 	private String type;
 
 	public String getType() {

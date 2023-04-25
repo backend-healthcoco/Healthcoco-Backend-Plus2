@@ -9,33 +9,33 @@ import com.dpdocter.enums.ReceiptType;
 public class DoctorPatientReceiptRequest {
 
 	private String id;
-	
+
 	private String uniqueReceiptId;
-	
-	private ReceiptType receiptType; 
-	
+
+	private ReceiptType receiptType;
+
 	private String doctorId;
-	
+
 	private String locationId;
-	
+
 	private String hospitalId;
-	
+
 	private String patientId;
-	
+
 	private ModeOfPayment modeOfPayment;
-	
+
 	private String paymentInfo;
 
 	private PaymentDetails paymentDetails;
-	
+
 	private String transactionId;
-	
-	private List<String> invoiceIds;   
-	
-	private Double amountPaid= 0.0;
-	
+
+	private List<String> invoiceIds;
+
+	private Double amountPaid = 0.0;
+
 	private Double usedAdvanceAmount = 0.0;
-	
+
 	private Date receivedDate;
 
 	public String getId() {
@@ -133,8 +133,6 @@ public class DoctorPatientReceiptRequest {
 	public void setReceivedDate(Date receivedDate) {
 		this.receivedDate = receivedDate;
 	}
-	
-	
 
 	public PaymentDetails getPaymentDetails() {
 		return paymentDetails;
@@ -151,8 +149,6 @@ public class DoctorPatientReceiptRequest {
 	public void setTransactionId(String transactionId) {
 		this.transactionId = transactionId;
 	}
-	
-	
 
 	public String getPaymentInfo() {
 		return paymentInfo;

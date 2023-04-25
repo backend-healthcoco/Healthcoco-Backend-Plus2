@@ -9,7 +9,6 @@ import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
-import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.PatientTreatmentAddEditRequest;
 import com.dpdocter.response.PatientTreatmentResponse;
 

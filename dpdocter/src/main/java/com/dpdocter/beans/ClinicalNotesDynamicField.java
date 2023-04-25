@@ -65,8 +65,6 @@ public class ClinicalNotesDynamicField {
 	private String neckExam = Range.BOTH.getRange();
 
 	private String earsExam = Range.BOTH.getRange();
-	
-	
 
 	public ClinicalNotesDynamicField() {
 		this.note = Range.BOTH.getRange();
@@ -355,7 +353,7 @@ public class ClinicalNotesDynamicField {
 				+ oralCavityThroatExam + ", indirectLarygoscopyExam=" + indirectLarygoscopyExam + ", neckExam="
 				+ neckExam + ", earsExam=" + earsExam + "]";
 	}
-	
+
 	public static void main(String[] args) {
 		System.out.println(JacksonUtil.obj2Json(new ClinicalNotesDynamicField()));
 	}

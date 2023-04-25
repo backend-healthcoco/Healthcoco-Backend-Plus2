@@ -5,43 +5,47 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.AccessPermissionType;
 
 @Document(collection = "acos_cl")
 public class AcosCollection {
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    private String module;
+	@Field
+	private String module;
 
-    private String url;
+	@Field
+	private String url;
 
-    private List<AccessPermissionType> accessPermissionTypes;
+	@Field
+	private List<AccessPermissionType> accessPermissionTypes;
 
-    public ObjectId getId() {
-	return id;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public String getModule() {
-	return module;
-    }
+	public String getModule() {
+		return module;
+	}
 
-    public void setModule(String module) {
-	this.module = module;
-    }
+	public void setModule(String module) {
+		this.module = module;
+	}
 
-    public String getUrl() {
-	return url;
-    }
+	public String getUrl() {
+		return url;
+	}
 
-    public void setUrl(String url) {
-	this.url = url;
-    }
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
 	public List<AccessPermissionType> getAccessPermissionTypes() {
 		return accessPermissionTypes;

@@ -10,9 +10,11 @@ import com.dpdocter.collections.SMSFormatCollection;
 
 @Repository
 public interface SMSFormatRepository extends MongoRepository<SMSFormatCollection, ObjectId> {
-	
-	    SMSFormatCollection findByDoctorIdAndLocationIdAndHospitalIdAndType(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, String type);
 
-	    List<SMSFormatCollection> findByDoctorIdAndLocationIdAndHospitalId(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId);
+	SMSFormatCollection findByDoctorIdAndLocationIdAndHospitalIdAndType(ObjectId doctorId, ObjectId locationId,
+			ObjectId hospitalId, String type);
+
+	List<SMSFormatCollection> findByDoctorIdAndLocationIdAndHospitalId(ObjectId doctorId, ObjectId locationId,
+			ObjectId hospitalId);
 
 }

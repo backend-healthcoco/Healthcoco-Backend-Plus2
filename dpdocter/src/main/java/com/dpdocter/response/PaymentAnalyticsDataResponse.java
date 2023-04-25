@@ -7,23 +7,23 @@ import com.dpdocter.enums.ModeOfPayment;
 public class PaymentAnalyticsDataResponse {
 
 	private String title;
-	
+
 	private String doctorName;
-	
+
 	private Double cash;
-	
-	private Double  online;
-	
+
+	private Double online;
+
 	private Double card;
-	
+
 	private Double wallet;
-	
+
 	private Date date;
 
 	private Double total;
-	
+
 	private ModeOfPayment modeOfPayment;
-	
+
 	public String getTitle() {
 		return title;
 	}
@@ -100,6 +100,6 @@ public class PaymentAnalyticsDataResponse {
 	public String toString() {
 		return "PaymentAnalyticsDataResponse [title=" + title + ", doctorName=" + doctorName + ", cash=" + cash
 				+ ", online=" + online + ", card=" + card + ", wallet=" + wallet + ", date=" + date + ", total=" + total
-				+ ", modeOfPayment=" + modeOfPayment +"]";
+				+ ", modeOfPayment=" + modeOfPayment + "]";
 	}
 }

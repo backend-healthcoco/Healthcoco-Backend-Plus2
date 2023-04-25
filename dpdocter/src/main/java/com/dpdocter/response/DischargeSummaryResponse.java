@@ -83,7 +83,7 @@ public class DischargeSummaryResponse extends GenericCollection {
 	private String treatmentAdviceForBaby;
 	private String pediatricianName;
 	private List<FlowSheet> flowSheets;
-	private List<MonitoringChart>monitoringChart;
+	private List<MonitoringChart> monitoringChart;
 	private List<String> diagrams;
 	private String timeOfEntryInOt;
 	private String timeOfExitFromOt;
@@ -100,7 +100,7 @@ public class DischargeSummaryResponse extends GenericCollection {
 	private String dischargeOutcome;
 	private String bedLog;
 	private String hospitalCourse;
-	
+
 	// OT fields
 	private AnaesthesiaTypeEnum anaesthesiaType;
 	private String provisionalDiagnosis;
@@ -118,7 +118,7 @@ public class DischargeSummaryResponse extends GenericCollection {
 	private List<DoctorAndCost> assitingDoctorsAndCost;
 	private List<DoctorAndCost> assitingNursesAndCost;
 	private List<PrescriptionItemDetail> postOperativeOrder;
-	
+
 	public String getOperationName() {
 		return operationName;
 	}
@@ -742,8 +742,6 @@ public class DischargeSummaryResponse extends GenericCollection {
 	public void setHospitalCourse(String hospitalCourse) {
 		this.hospitalCourse = hospitalCourse;
 	}
-	
-	
 
 	public AnaesthesiaTypeEnum getAnaesthesiaType() {
 		return anaesthesiaType;
@@ -880,8 +878,6 @@ public class DischargeSummaryResponse extends GenericCollection {
 	public void setMonitoringChart(List<MonitoringChart> monitoringChart) {
 		this.monitoringChart = monitoringChart;
 	}
-
-	
 
 	@Override
 	public String toString() {

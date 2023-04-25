@@ -6,17 +6,17 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "nutrient_goal_cl")
-public class NutrientGoalCollection extends GenericCollection{
+public class NutrientGoalCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
-	
+
 	@Field
 	private String value;
 
 	@Field
 	private Boolean discarded = false;
-	
+
 	public ObjectId getId() {
 		return id;
 	}

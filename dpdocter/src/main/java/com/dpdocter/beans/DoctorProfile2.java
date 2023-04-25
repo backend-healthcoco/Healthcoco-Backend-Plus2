@@ -16,7 +16,6 @@ public class DoctorProfile2 {
     private String firstName;
 
     private String emailAddress;
-    
 
     private String mobileNumber;
 

@@ -1,25 +1,23 @@
 package com.dpdocter.beans;
 
-import java.util.List;
-
 public class MonitoringChart {
-	   
+
 	private WorkingHours time;
-	
+
 	private String intake;
-	
+
 	private String outputDrain;
-	
-    private String bP;
-    
-    private String hR;
-    
-    private String sPO2;
-    
-    private String  anySpecialEventsAndStatDrugs;
-    
-	private String diagnosis;	
-	private String referanceDone;	
+
+	private String bP;
+
+	private String hR;
+
+	private String sPO2;
+
+	private String anySpecialEventsAndStatDrugs;
+
+	private String diagnosis;
+	private String referanceDone;
 	private String nurseName;
 
 	public WorkingHours getTime() {
@@ -78,7 +76,6 @@ public class MonitoringChart {
 		this.anySpecialEventsAndStatDrugs = anySpecialEventsAndStatDrugs;
 	}
 
-	
 	public String getDiagnosis() {
 		return diagnosis;
 	}
@@ -109,6 +106,5 @@ public class MonitoringChart {
 				+ ", hR=" + hR + ", sPO2=" + sPO2 + ", anySpecialEventsAndStatDrugs=" + anySpecialEventsAndStatDrugs
 				+ "]";
 	}
-    
-    
+
 }

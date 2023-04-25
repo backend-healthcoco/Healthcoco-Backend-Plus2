@@ -45,27 +45,27 @@ public class AdmitCardCollection extends GenericCollection {
 	@Field
 	private String treatmentsPlan;
 	@Field
-	private String diagnosis;	
+	private String diagnosis;
 	@Field
-	private Boolean discarded=false;
+	private Boolean discarded = false;
 	@Field
 	private String examination;
-	
+
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	@Field
 	private String timeOfAdmission;
-	
+
 	@Field
 	private String timeOfDischarge;
-	
+
 	@Field
 	private String timeOfOperation;
-	
+
 	@Field
 	private String ip;
-	
+
 	@Field
 	private String address;
 	@Field
@@ -77,7 +77,6 @@ public class AdmitCardCollection extends GenericCollection {
 	@Field
 	private String ipdNumber;
 
-	
 	public String getIp() {
 		return ip;
 	}
@@ -94,7 +93,6 @@ public class AdmitCardCollection extends GenericCollection {
 		this.address = address;
 	}
 
-	
 	public String getExamination() {
 		return examination;
 	}
@@ -178,8 +176,6 @@ public class AdmitCardCollection extends GenericCollection {
 	public String getDiagnosis() {
 		return diagnosis;
 	}
-
-	
 
 	public void setId(ObjectId id) {
 		this.id = id;
@@ -289,7 +285,6 @@ public class AdmitCardCollection extends GenericCollection {
 		this.timeOfOperation = timeOfOperation;
 	}
 
-	
 	public VitalSigns getVitalSigns() {
 		return vitalSigns;
 	}
@@ -314,7 +309,6 @@ public class AdmitCardCollection extends GenericCollection {
 		this.nursingCare = nursingCare;
 	}
 
-	
 	public String getIpdNumber() {
 		return ipdNumber;
 	}

@@ -8,20 +8,11 @@ public interface OphthalmologyService {
 
 	public EyeObservation addEditEyeObservation(EyeObservation eyeObservation);
 	
-	//public EyeObservation deleteEyeObservation(String id);
-	
 	public EyeObservation getEyeObservation(long page, int size, String doctorId, String locationId,
 			String hospitalId, String patientId, String updatedTime, Boolean isOTPVerified, Boolean discarded,
 			Boolean inHistory);
 	
-	/*public List<EyeObservation> getEyeObservations(long page, int size, String doctorId, String locationId,
-			String hospitalId, String patientId, String updatedTime, Boolean isOTPVerified, Boolean discarded,
-			Boolean inHistory);
-*/
 	EyeObservation deleteEyeObservation(String id, Boolean discarded);
-
-	//List<EyeObservation> getEyeObservations(long page, int size, String doctorId, String locationId, String hospitalId,
-	//		String patientId, String updatedTime, Boolean discarded);
 
 	List<EyeObservation> getEyeObservations(long page, int size, String doctorId, String locationId, String hospitalId,
 			String patientId, String updatedTime, Boolean discarded, Boolean isOTPVerified);

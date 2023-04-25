@@ -38,7 +38,7 @@ public class PatientVisitResponse extends GenericCollection {
 	private List<ClinicalNotes> clinicalNotes;
 
 	private List<Diagram> clinicalNotesDiagrams;
-	
+
 	private List<PatientTreatment> patientTreatment;
 
 	private List<Records> records;
@@ -56,7 +56,7 @@ public class PatientVisitResponse extends GenericCollection {
 	private Boolean discarded = false;
 
 	private PatientCollection patient;
-	
+
 	public String getId() {
 		return id;
 	}

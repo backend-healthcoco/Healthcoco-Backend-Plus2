@@ -3,12 +3,8 @@ package com.dpdocter.beans;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.response.InvoiceItemResponse;
-
-
 
 public class DoctorPatientInvoice extends GenericCollection {
 
@@ -35,7 +31,7 @@ public class DoctorPatientInvoice extends GenericCollection {
 	private Double grandTotal = 0.0;
 
 	private Double oldGrantTotal = this.grandTotal;
-	
+
 	private Double usedAdvanceAmount = 0.0;
 
 	private Double refundAmount = 0.0;
@@ -47,13 +43,13 @@ public class DoctorPatientInvoice extends GenericCollection {
 	private List<String> receiptIds;
 
 	private Date invoiceDate;
-	
+
 	private String timeOfAdmission;
-	
+
 	private String timeOfDischarge;
-		
+
 	private Date admissionDate;
-	
+
 	private Date dischargeDate;
 
 	public String getId() {
@@ -200,7 +196,7 @@ public class DoctorPatientInvoice extends GenericCollection {
 	public void setOldGrantTotal(Double oldGrantTotal) {
 		this.oldGrantTotal = oldGrantTotal;
 	}
-	
+
 	public String getTimeOfAdmission() {
 		return timeOfAdmission;
 	}

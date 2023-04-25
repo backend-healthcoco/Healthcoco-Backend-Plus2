@@ -48,8 +48,8 @@ public class ESDiagnosticTestDocument {
 	@Field(type = FieldType.Double)
 	private Double diagnosticTestCostForPatient = 0.0;
 
-    @Field(type = FieldType.Long)
-    private long rankingCount = 0;
+	@Field(type = FieldType.Long)
+	private long rankingCount = 0;
 
 	@Field(type = FieldType.Text)
 	private String code;

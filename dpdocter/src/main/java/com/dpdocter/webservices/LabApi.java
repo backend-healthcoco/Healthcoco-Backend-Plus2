@@ -136,8 +136,9 @@ public class LabApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<Object> response = new Response<Object>();
-		response.setDataList(locationServices.getCollectionBoyList(size, page, locationId, searchTerm ,LabType.DIAGNOSTIC.getType()));
-		response.setData(locationServices.getCBCount(locationId, searchTerm , LabType.DIAGNOSTIC.getType()));
+		response.setDataList(locationServices.getCollectionBoyList(size, page, locationId, searchTerm,
+				LabType.DIAGNOSTIC.getType()));
+		response.setData(locationServices.getCBCount(locationId, searchTerm, LabType.DIAGNOSTIC.getType()));
 		return response;
 	}
 
@@ -356,11 +357,13 @@ public class LabApi {
 	@ApiOperation(value = PathProxy.LabUrls.GET_CLINICS_AND_LABS, notes = PathProxy.LabUrls.GET_CLINICS_AND_LABS)
 	public Response<Location> getClinics(@QueryParam(value = "page") long page, @QueryParam(value = "size") int size,
 			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "isClinic") Boolean isClinic,
-			@QueryParam(value = "isLab") Boolean isLab, @QueryParam(value = "isDentalWorksLab") Boolean isDentalWorksLab ,  @QueryParam(value = "isDentalImagingLab") Boolean isDentalImagingLab ,  @QueryParam(value = "isParent") Boolean isParent,
-			@QueryParam(value = "searchTerm") String searchTerm) {
+			@QueryParam(value = "isLab") Boolean isLab,
+			@QueryParam(value = "isDentalWorksLab") Boolean isDentalWorksLab,
+			@QueryParam(value = "isDentalImagingLab") Boolean isDentalImagingLab,
+			@QueryParam(value = "isParent") Boolean isParent, @QueryParam(value = "searchTerm") String searchTerm) {
 
-		List<Location> locations = locationServices.getClinics(page, size, hospitalId, isClinic, isLab, isParent, isDentalWorksLab , isDentalImagingLab,
-				searchTerm);
+		List<Location> locations = locationServices.getClinics(page, size, hospitalId, isClinic, isLab, isParent,
+				isDentalWorksLab, isDentalImagingLab, searchTerm);
 
 		Response<Location> response = new Response<Location>();
 		response.setDataList(locations);

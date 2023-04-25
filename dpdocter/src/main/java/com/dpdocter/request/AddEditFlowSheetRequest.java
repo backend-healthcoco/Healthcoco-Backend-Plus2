@@ -18,9 +18,6 @@ public class AddEditFlowSheetRequest {
 	private List<MonitoringChart> monitoringChart;
 
 	private String uniqueId;
-	
-
-	
 
 	public String getUniqueId() {
 		return uniqueId;
@@ -94,7 +91,6 @@ public class AddEditFlowSheetRequest {
 		this.discarded = discarded;
 	}
 
-	
 	public List<MonitoringChart> getMonitoringChart() {
 		return monitoringChart;
 	}

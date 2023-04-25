@@ -6,249 +6,249 @@ import com.dpdocter.beans.DOB;
 
 public class ESPatientResponse {
 
-    private String id;
+	private String id;
 
-    private String userId;
+	private String userId;
 
-    private String PID;
+	private String PID;
 
-    private String userName;
+	private String userName;
 
-    private String firstName;
+	private String firstName;
 
-    private String middleName;
+	private String middleName;
 
-    private String lastName;
+	private String lastName;
 
-    private String localPatientName;
-    
-    private String gender;
+	private String localPatientName;
 
-    private String bloodGroup;
+	private String gender;
 
-    private String emailAddress;
+	private String bloodGroup;
 
-    private DOB dob;
+	private String emailAddress;
 
-    private String city;
+	private DOB dob;
 
-    private String locality;
+	private String city;
 
-    private String postalCode;
+	private String locality;
 
-    private String mobileNumber;
+	private String postalCode;
 
-    private String profession;
+	private String mobileNumber;
 
-    private String doctorId;
+	private String profession;
 
-    private String locationId;
+	private String doctorId;
 
-    private String hospitalId;
+	private String locationId;
 
-    private String referredBy;
+	private String hospitalId;
 
-    private Date createdTime;
+	private String referredBy;
 
-    private String imageUrl;
+	private Date createdTime;
 
-    private String thumbnailUrl;
+	private String imageUrl;
 
-    private String colorCode;
+	private String thumbnailUrl;
 
-    private String PNUM;
-    
-    public String getId() {
-	return id;
-    }
+	private String colorCode;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	private String PNUM;
 
-    public String getUserId() {
-	return userId;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setUserId(String userId) {
-	this.userId = userId;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getPID() {
-	return PID;
-    }
+	public String getUserId() {
+		return userId;
+	}
 
-    public void setPID(String pID) {
-	PID = pID;
-    }
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
-    public String getUserName() {
-	return userName;
-    }
+	public String getPID() {
+		return PID;
+	}
 
-    public void setUserName(String userName) {
-	this.userName = userName;
-    }
+	public void setPID(String pID) {
+		PID = pID;
+	}
 
-    public String getFirstName() {
-	return firstName;
-    }
+	public String getUserName() {
+		return userName;
+	}
 
-    public void setFirstName(String firstName) {
-	this.firstName = firstName;
-    }
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
 
-    public String getMiddleName() {
-	return middleName;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public void setMiddleName(String middleName) {
-	this.middleName = middleName;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-    public String getLastName() {
-	return lastName;
-    }
-
-    public void setLastName(String lastName) {
-	this.lastName = lastName;
-    }
-
-    public String getGender() {
-	return gender;
-    }
-
-    public void setGender(String gender) {
-	this.gender = gender;
-    }
-
-    public String getBloodGroup() {
-	return bloodGroup;
-    }
-
-    public void setBloodGroup(String bloodGroup) {
-	this.bloodGroup = bloodGroup;
-    }
-
-    public String getEmailAddress() {
-	return emailAddress;
-    }
-
-    public void setEmailAddress(String emailAddress) {
-	this.emailAddress = emailAddress;
-    }
-
-    public DOB getDob() {
-	return dob;
-    }
-
-    public void setDob(DOB dob) {
-	this.dob = dob;
-    }
-
-    public String getCity() {
-	return city;
-    }
-
-    public void setCity(String city) {
-	this.city = city;
-    }
-
-    public String getLocality() {
-	return locality;
-    }
-
-    public void setLocality(String locality) {
-	this.locality = locality;
-    }
-
-    public String getPostalCode() {
-	return postalCode;
-    }
-
-    public void setPostalCode(String postalCode) {
-	this.postalCode = postalCode;
-    }
-
-    public String getMobileNumber() {
-	return mobileNumber;
-    }
-
-    public void setMobileNumber(String mobileNumber) {
-	this.mobileNumber = mobileNumber;
-    }
-
-    public String getProfession() {
-	return profession;
-    }
-
-    public void setProfession(String profession) {
-	this.profession = profession;
-    }
-
-    public String getDoctorId() {
-	return doctorId;
-    }
-
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
-
-    public String getLocationId() {
-	return locationId;
-    }
-
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
-
-    public String getHospitalId() {
-	return hospitalId;
-    }
-
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
-
-    public String getReferredBy() {
-	return referredBy;
-    }
-
-    public void setReferredBy(String referredBy) {
-	this.referredBy = referredBy;
-    }
-
-    public Date getCreatedTime() {
-	return createdTime;
-    }
-
-    public void setCreatedTime(Date createdTime) {
-	this.createdTime = createdTime;
-    }
-
-    public String getImageUrl() {
-	return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-	this.imageUrl = imageUrl;
-    }
-
-    public String getThumbnailUrl() {
-	return thumbnailUrl;
-    }
-
-    public void setThumbnailUrl(String thumbnailUrl) {
-	this.thumbnailUrl = thumbnailUrl;
-    }
-
-    public String getColorCode() {
-	return colorCode;
-    }
-
-    public void setColorCode(String colorCode) {
-	this.colorCode = colorCode;
-    }
+	public String getMiddleName() {
+		return middleName;
+	}
+
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public String getBloodGroup() {
+		return bloodGroup;
+	}
+
+	public void setBloodGroup(String bloodGroup) {
+		this.bloodGroup = bloodGroup;
+	}
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
+	public DOB getDob() {
+		return dob;
+	}
+
+	public void setDob(DOB dob) {
+		this.dob = dob;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getLocality() {
+		return locality;
+	}
+
+	public void setLocality(String locality) {
+		this.locality = locality;
+	}
+
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
+	public String getProfession() {
+		return profession;
+	}
+
+	public void setProfession(String profession) {
+		this.profession = profession;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public String getReferredBy() {
+		return referredBy;
+	}
+
+	public void setReferredBy(String referredBy) {
+		this.referredBy = referredBy;
+	}
+
+	public Date getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(Date createdTime) {
+		this.createdTime = createdTime;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public String getThumbnailUrl() {
+		return thumbnailUrl;
+	}
+
+	public void setThumbnailUrl(String thumbnailUrl) {
+		this.thumbnailUrl = thumbnailUrl;
+	}
+
+	public String getColorCode() {
+		return colorCode;
+	}
+
+	public void setColorCode(String colorCode) {
+		this.colorCode = colorCode;
+	}
 
 	public String getLocalPatientName() {
 		return localPatientName;

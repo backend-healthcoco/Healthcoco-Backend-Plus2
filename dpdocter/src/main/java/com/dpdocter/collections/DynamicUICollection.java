@@ -31,7 +31,7 @@ public class DynamicUICollection extends GenericCollection {
 
 	public void setUiPermissions(UIPermissions uiPermissions) {
 		this.uiPermissions = uiPermissions;
-		if(uiPermissions != null){
+		if (uiPermissions != null) {
 			this.uiPermissions.setClinicalNotesPermissions(uiPermissions.getClinicalNotesPermissions());
 			this.uiPermissions.setPatientVisitPermissions(uiPermissions.getPatientVisitPermissions());
 			this.uiPermissions.setPrescriptionPermissions(uiPermissions.getPrescriptionPermissions());

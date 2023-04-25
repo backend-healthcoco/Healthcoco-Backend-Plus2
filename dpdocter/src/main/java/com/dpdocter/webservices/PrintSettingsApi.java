@@ -8,7 +8,6 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -109,8 +108,7 @@ public class PrintSettingsApi {
 	@ApiOperation(value = "GET_PRINT_SETTING_BY_TYPE", notes = "GET_PRINT_SETTING_BY_TYPE")
 	public Response<PrintSettings> getSettingByType(@PathParam(value = "printFilter") String printFilter,
 			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@PathParam("printSettingType") String printSettingType,
+			@PathParam(value = "hospitalId") String hospitalId, @PathParam("printSettingType") String printSettingType,
 			@DefaultValue("false") @QueryParam(value = "discarded") Boolean discarded) {
 
 		if (DPDoctorUtils.anyStringEmpty(printFilter, locationId, hospitalId)) {
@@ -119,7 +117,8 @@ public class PrintSettingsApi {
 					"PrintFilter, DoctorId or locationId or hospitalId cannot be null");
 		}
 
-		PrintSettings printSetting = printSettingsService.getSettingByType(printFilter, doctorId, locationId, hospitalId, discarded, printSettingType);
+		PrintSettings printSetting = printSettingsService.getSettingByType(printFilter, doctorId, locationId,
+				hospitalId, discarded, printSettingType);
 		if (printSetting != null) {
 			printSetting.setClinicLogoUrl(getFinalImageURL(printSetting.getClinicLogoUrl()));
 		}
@@ -137,7 +136,7 @@ public class PrintSettingsApi {
 		response.setData(printSettingsService.putSettingByType());
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrintSettingsUrls.GET_LAB_PRINT_SETTING)
 	@GET
 	@ApiOperation(value = "GET_LAB_PRINT_SETTING", notes = "GET_LAB_PRINT_SETTING")
@@ -245,7 +244,7 @@ public class PrintSettingsApi {
 		response.setData(file);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrintSettingsUrls.BLANK_PRINT)
 	@GET
 	@ApiOperation(value = PathProxy.PrintSettingsUrls.BLANK_PRINT, notes = PathProxy.PrintSettingsUrls.BLANK_PRINT)

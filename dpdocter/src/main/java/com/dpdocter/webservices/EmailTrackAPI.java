@@ -26,22 +26,21 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.EMAIL_TRACK_BASE_URL, description = "Endpoint for email track")
 public class EmailTrackAPI {
 
-//    private static Logger logger = Logger.getLogger(EmailTrackAPI.class.getName());
+	@Autowired
+	private EmailTackService emailTackService;
 
-    @Autowired
-    private EmailTackService emailTackService;
+	@GET
+	@ApiOperation(value = "GET_EMAIL_DETAILS", notes = "GET_EMAIL_DETAILS")
+	public Response<EmailTrack> getEmailDetails(@QueryParam(value = "patientId") String patientId,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam("page") long page,
+			@QueryParam("size") int size) {
 
-    @GET
-    @ApiOperation(value = "GET_EMAIL_DETAILS", notes = "GET_EMAIL_DETAILS")
-    public Response<EmailTrack> getEmailDetails(@QueryParam(value = "patientId") String patientId, @QueryParam(value = "doctorId") String doctorId,
-	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId, @QueryParam("page") long page,
-	    @QueryParam("size") int size) {
-
-	List<EmailTrack> emailTrackList = emailTackService.getEmailDetails(patientId, doctorId, locationId, hospitalId, page, size);
-	Response<EmailTrack> response = new Response<EmailTrack>();
-	response.setDataList(emailTrackList);
-	return response;
-    }
-    
+		List<EmailTrack> emailTrackList = emailTackService.getEmailDetails(patientId, doctorId, locationId, hospitalId,
+				page, size);
+		Response<EmailTrack> response = new Response<EmailTrack>();
+		response.setDataList(emailTrackList);
+		return response;
+	}
 
 }

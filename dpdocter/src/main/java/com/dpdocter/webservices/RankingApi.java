@@ -27,26 +27,26 @@ import io.swagger.annotations.ApiOperation;
 public class RankingApi {
 
 //private static Logger logger = Logger.getLogger(RankingApi.class.getName());
-	
+
 	@Autowired
 	RankingAlgorithmsServices rankingAlgorithmsServices;
-	
+
 	@Path(value = PathProxy.RankingUrls.GET_DOCTORS_RANKING)
 	@GET
 	@ApiOperation(value = PathProxy.RankingUrls.GET_DOCTORS_RANKING, notes = PathProxy.RankingUrls.GET_DOCTORS_RANKING)
-	public Response<RankingCount> getDoctorsRankingCount(@QueryParam("page") long page, @QueryParam("size") int size){
-		
+	public Response<RankingCount> getDoctorsRankingCount(@QueryParam("page") long page, @QueryParam("size") int size) {
+
 		List<RankingCount> rankingCounts = rankingAlgorithmsServices.getDoctorsRankingCount(page, size);
 		Response<RankingCount> response = new Response<RankingCount>();
 		response.setDataList(rankingCounts);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.RankingUrls.CALCULATE_RANKING)
 	@GET
 	@ApiOperation(value = PathProxy.RankingUrls.CALCULATE_RANKING, notes = PathProxy.RankingUrls.CALCULATE_RANKING)
-	public Response<Boolean> calculateRankingOfResources(){
-		
+	public Response<Boolean> calculateRankingOfResources() {
+
 		rankingAlgorithmsServices.calculateRankingOfResources();
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);

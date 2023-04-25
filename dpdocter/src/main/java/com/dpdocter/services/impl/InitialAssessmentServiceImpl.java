@@ -117,7 +117,7 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 				}
 				request.setUpdatedTime(new Date());
 				request.setCreatedBy(initialAssessmentCollection.getCreatedBy());
-				BeanUtil.map(request, initialAssessmentCollection);				
+				BeanUtil.map(request, initialAssessmentCollection);
 
 			} else {
 				initialAssessmentCollection = new InitialAssessmentCollection();
@@ -204,7 +204,7 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 				nursesAdmissionCollection.setOldMedication(null);
 				nursesAdmissionCollection.setRiskFactor(null);
 				BeanUtil.map(request, nursesAdmissionCollection);
-				
+
 			} else {
 				nursesAdmissionCollection = new NursesAdmissionCollection();
 				BeanUtil.map(request, nursesAdmissionCollection);
@@ -287,7 +287,6 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 				request.setUpdatedTime(new Date());
 				request.setCreatedBy(preOperationFormCollection.getCreatedBy());
 				BeanUtil.map(request, preOperationFormCollection);
-				
 
 			} else {
 				preOperationFormCollection = new PreOperationFormCollection();
@@ -710,7 +709,7 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 			parameters.put("investigation", initialAssessmentCollection.getInvestigation());
 		}
 		parameters.put("showInvestigation", show);
-		
+
 		if (!DPDoctorUtils.allStringsEmpty(initialAssessmentCollection.getObservation())) {
 			show = true;
 			parameters.put("observation", initialAssessmentCollection.getObservation());
@@ -757,7 +756,7 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 			parameters.put("earsExam", initialAssessmentCollection.getEarsExam());
 		}
 		parameters.put("showEarsEx", show);
-		
+
 		show = false;
 		if (!DPDoctorUtils.allStringsEmpty(initialAssessmentCollection.getIpdNumber())) {
 			show = true;
@@ -955,7 +954,7 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 			parameters.put("ipdNumber", preOperationFormCollection.getIpdNumber());
 		}
 		parameters.put("showIpdNumber", show);
-		
+
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
 						? printSettings.getContentLineSpace()
@@ -1105,20 +1104,13 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 			parameters.put("advice", nursesAdmissionCollection.getAdvice());
 		}
 		parameters.put("showAdvice", show);
-		
+
 		show = false;
 		if (!DPDoctorUtils.allStringsEmpty(nursesAdmissionCollection.getIpdNumber())) {
 			show = true;
 			parameters.put("ipdNumber", nursesAdmissionCollection.getIpdNumber());
 		}
 		parameters.put("showIpdNumber", show);
-
-//		if (!DPDoctorUtils.allStringsEmpty(nursesAdmissionCollection.getTreatmentsPlan())) {
-//			show = true;
-//			parameters.put("treatmentPlan", nursesAdmissionCollection.getTreatmentsPlan());
-//		}
-//		parameters.put("showTP", show);
-//		show = false;
 
 		if (nursesAdmissionCollection.getVitalSigns() != null) {
 			String vitalSigns = null;

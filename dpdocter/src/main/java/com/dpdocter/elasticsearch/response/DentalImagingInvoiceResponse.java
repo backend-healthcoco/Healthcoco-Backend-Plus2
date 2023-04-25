@@ -1,4 +1,4 @@
-package com.dpdocter.collections;
+package com.dpdocter.elasticsearch.response;
 
 import java.util.Date;
 import java.util.List;
@@ -10,6 +10,7 @@ import com.dpdocter.beans.InvoiceTax;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Tax;
 import com.dpdocter.beans.User;
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.response.DentalImagingInvoiceItemResponse;
 
 public class DentalImagingInvoiceResponse extends GenericCollection {

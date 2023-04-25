@@ -200,7 +200,6 @@ public class Subscription extends GenericCollection {
 		this.accountNo = accountNo;
 	}
 
-	
 	public String getTransactionStatus() {
 		return transactionStatus;
 	}

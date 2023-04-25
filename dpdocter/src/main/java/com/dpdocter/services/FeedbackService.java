@@ -31,9 +31,6 @@ public interface FeedbackService {
 
 	List<PharmacyFeedback> getPharmacyFeedbackList(FeedbackGetRequest request);
 
-	// DailyImprovementFeedback
-	// addEditDailyImprovementFeedback(DailyImprovementFeedback feedback);
-
 	PatientFeedback addEditPatientFeedback(PatientFeedbackRequest feedback);
 
 	List<PatientFeedbackResponse> getPatientFeedbackList(FeedbackGetRequest request, String type);

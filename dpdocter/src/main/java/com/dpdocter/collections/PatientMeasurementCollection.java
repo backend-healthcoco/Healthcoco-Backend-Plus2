@@ -49,7 +49,7 @@ public class PatientMeasurementCollection extends GenericCollection {
 
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	public ObjectId getId() {
 		return id;
 	}

@@ -83,9 +83,6 @@ public class ContactsServiceImpl implements ContactsService {
 	private MongoTemplate mongoTemplate;
 
 	@Autowired
-	private LocationRepository locationRepository;
-
-	@Autowired
 	private GroupRepository groupRepository;
 
 	@Autowired
@@ -102,21 +99,6 @@ public class ContactsServiceImpl implements ContactsService {
 
 	@Autowired
 	private FileManager fileManager;
-
-	@Autowired
-	private ReferenceRepository referenceRepository;
-
-	@Autowired
-	private PrescriptionRepository prescriptionRepository;
-
-	@Autowired
-	private ClinicalNotesRepository clinicalNotesRepository;
-
-	@Autowired
-	private RecordsRepository recordsRepository;
-
-	@Autowired
-	private OTPService otpService;
 
 	@Autowired
 	private SMSServices smsServices;
@@ -323,11 +305,6 @@ public class ContactsServiceImpl implements ContactsService {
 		patientCards = aggregationResults.getMappedResults();
 		if (patientCards != null) {
 			for (PatientCard patientCard : patientCards) {
-//				LocationCollection locationCollection = locationRepository.findById(new ObjectId(patientCard.getLocationId())).orElse(null);
-//				String mobileNumber = patientCard.getUser().getMobileNumber();
-//				if (locationCollection.getIsDentalChain()) {
-//					patientCard.setMobileNumber(mobileNumber.replaceAll("\\w(?=\\w{4})", "*"));
-//				} else
 				patientCard.setMobileNumber(patientCard.getUser().getMobileNumber());
 				patientCard.setColorCode(patientCard.getUser().getColorCode());
 				patientCard.setDoctorSepecificPatientId(patientCard.getUserId().toString());
@@ -688,7 +665,6 @@ public class ContactsServiceImpl implements ContactsService {
 				hospitalObjectId = new ObjectId(request.getHospitalId());
 			PatientCollection patientCollection = patientRepository
 					.findByUserIdAndLocationIdAndHospitalId(patientObjecId, locationObjectId, hospitalObjectId);
-			;
 			List<String> groupIds = new ArrayList<String>();
 			List<PatientGroupCollection> patientGroupCollections = patientGroupRepository
 					.findByPatientIdAndDiscardedIsFalse(patientObjecId);
@@ -881,8 +857,6 @@ public class ContactsServiceImpl implements ContactsService {
 					registeredPatientDetail.setPID(patientCard.getPID());
 					registeredPatientDetail.setMobileNumber(patientCard.getUser().getMobileNumber());
 					registeredPatientDetail.setBackendPatientId(patientCard.getId());
-					// registeredPatientDetail.setImageUrl(patientCard.getImageUrl());
-					// registeredPatientDetail.setThumbnailUrl(patientCard.getThumbnailUrl());
 					registeredPatientDetail.setColorCode(patientCard.getUser().getColorCode());
 					if (groupIds != null) {
 						groupIdList = new ArrayList<>();

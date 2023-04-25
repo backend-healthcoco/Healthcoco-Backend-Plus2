@@ -50,6 +50,4 @@ public class PharmacyResponse {
 				+ localeId + ", userId=" + userId + "]";
 	}
 
-	
-	
 }

@@ -22,7 +22,6 @@ import com.dpdocter.beans.AppointmentGeneralFeedback;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DailyImprovementFeedback;
 import com.dpdocter.beans.DailyPatientFeedback;
-import com.dpdocter.beans.Duration;
 import com.dpdocter.beans.PatientFeedback;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.PharmacyFeedback;
@@ -38,12 +37,10 @@ import com.dpdocter.collections.PharmacyFeedbackCollection;
 import com.dpdocter.collections.PrescriptionFeedbackCollection;
 import com.dpdocter.collections.ServicesCollection;
 import com.dpdocter.collections.UserCollection;
-import com.dpdocter.enums.DurationUnitEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AppointmentGeneralFeedbackRepository;
-import com.dpdocter.repository.AppointmentRepository;
 import com.dpdocter.repository.DailyImprovementFeedbackRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocaleRepository;
@@ -51,7 +48,6 @@ import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientFeedbackRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PharmacyFeedbackRepository;
-import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrescritptionFeedbackRepository;
 import com.dpdocter.repository.ServicesRepository;
 import com.dpdocter.repository.UserRepository;
@@ -104,12 +100,6 @@ public class FeedbackServiceImpl implements FeedbackService {
 
 	@Autowired
 	private PatientRepository patientRepository;
-
-	@Autowired
-	private AppointmentRepository appointmentRepository;
-
-	@Autowired
-	private PrescriptionRepository prescriptionRepository;
 
 	@Autowired
 	private ServicesRepository servicesRepository;
@@ -211,49 +201,6 @@ public class FeedbackServiceImpl implements FeedbackService {
 								AppointmentGeneralFeedbackCollection.class, AppointmentGeneralFeedback.class)
 						.getMappedResults();
 
-			/*
-			 * if (otReportsLookupResponses != null) { response = new
-			 * ArrayList<OTReports>(); for (OTReportsLookupResponse collection :
-			 * otReportsLookupResponses) { OTReports otReports = new OTReports();
-			 * BeanUtil.map(collection, otReports); if (collection.getDoctorId() != null) {
-			 * UserCollection doctor = collection.getDoctor(); if (doctor != null)
-			 * otReports.setDoctorName(doctor.getFirstName()); } LocationCollection
-			 * locationCollection = collection.getLocation(); if (locationCollection !=
-			 * null) { otReports.setLocationName(locationCollection.getLocationName());
-			 * 
-			 * } HospitalCollection hospitalCollection = collection.getHospital(); if
-			 * (hospitalCollection != null) {
-			 * otReports.setHospitalName(hospitalCollection.getHospitalName()); } if
-			 * (collection.getPatientId() != null) { PatientCollection patientCollection =
-			 * patientRepository.findByUserIdLocationIdAndHospitalId( new
-			 * ObjectId(collection.getPatientId()), new
-			 * ObjectId(collection.getLocationId()), new
-			 * ObjectId(collection.getHospitalId())); if (patientCollection != null) {
-			 * Patient patient = new Patient(); BeanUtil.map(patientCollection, patient);
-			 * otReports.setPatient(patient); } } if (collection.getSurgery().getEndTime()
-			 * != null && collection.getSurgery().getStartTime() != null) { Long diff =
-			 * collection.getSurgery().getStartTime() -
-			 * collection.getSurgery().getEndTime(); TimeDuration timeDuration = new
-			 * TimeDuration();
-			 * 
-			 * Long diffSeconds = diff / 1000 % 60; Long diffMinutes = diff / (60 * 1000) %
-			 * 60; Long diffHours = diff / (60 * 60 * 1000); Integer diffInDays = (int)
-			 * ((collection.getSurgery().getEndTime() -
-			 * collection.getSurgery().getStartTime()) / (1000 * 60 * 60 * 24));
-			 * 
-			 * timeDuration.setSeconds(diffSeconds.intValue());
-			 * timeDuration.setMinutes(diffMinutes.intValue());
-			 * timeDuration.setHours(diffHours.intValue());
-			 * timeDuration.setDays(diffInDays);
-			 * 
-			 * otReports.setTimeDuration(timeDuration); }
-			 * 
-			 * response.add(otReports); } } int count =
-			 * otReportsRepository.getReportsCount(new ObjectId(locationId), new
-			 * ObjectId(doctorId), new ObjectId(patientId)); otReportsResponse = new
-			 * OTReportsResponse(); otReportsResponse.setOtReports(response);
-			 * otReportsResponse.setCount(count);
-			 */
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -330,26 +277,6 @@ public class FeedbackServiceImpl implements FeedbackService {
 		return pharmacyFeedbacks;
 	}
 
-	private Integer getDurationDays(List<Duration> durations) {
-		Integer maxDays = 0;
-
-		for (Duration duration : durations) {
-			Integer days = 0;
-			if (duration.getDurationUnit().getUnit().equals(DurationUnitEnum.DAY.getDurationUnit())) {
-				days = Integer.parseInt(duration.getValue());
-			} else if (duration.getDurationUnit().getUnit().equals(DurationUnitEnum.WEEK.getDurationUnit())) {
-				days = Integer.parseInt(duration.getValue()) * 7;
-			} else if (duration.getDurationUnit().getUnit().equals(DurationUnitEnum.MONTH.getDurationUnit())) {
-				days = Integer.parseInt(duration.getValue()) * 30;
-			}
-
-			if (days > maxDays) {
-				maxDays = days;
-			}
-		}
-		return maxDays;
-	}
-
 	@Override
 	@Transactional
 	public DailyImprovementFeedback addEditDailyImprovementFeedback(DailyImprovementFeedbackRequest feedback) {
@@ -383,8 +310,8 @@ public class FeedbackServiceImpl implements FeedbackService {
 
 	@Override
 	@Transactional
-	public List<DailyImprovementFeedbackResponse> getDailyImprovementFeedbackList(String prescriptionId , String doctorId,
-		     String locationId, String hospitalId, long page , int size) {
+	public List<DailyImprovementFeedbackResponse> getDailyImprovementFeedbackList(String prescriptionId,
+			String doctorId, String locationId, String hospitalId, long page, int size) {
 		List<DailyImprovementFeedbackResponse> dailyImprovementFeedbacks = null;
 		LocationCollection locationCollection = null;
 		HospitalCollection hospitalCollection = null;
@@ -533,9 +460,6 @@ public class FeedbackServiceImpl implements FeedbackService {
 						new ObjectId(request.getHospitalId()));
 			}
 
-			// criteria.and("discarded").is(false);
-			// criteria.and("isApproved").is(true);
-
 			if (request.getSize() > 0) {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("prescription_cl", "prescriptionId", "_id", "prescription"),
@@ -544,26 +468,27 @@ public class FeedbackServiceImpl implements FeedbackService {
 						Aggregation.lookup("appointment_cl", "appointmentId", "_id", "appointment"),
 
 						new CustomAggregationOperation(new Document("$unwind",
-								new BasicDBObject("path", "$appointment").append("preserveNullAndEmptyArrays", true))),Aggregation.match(criteria),
-						Aggregation.skip(request.getPage() * request.getSize()), Aggregation.limit(request.getSize()),
+								new BasicDBObject("path", "$appointment").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.match(criteria), Aggregation.skip(request.getPage() * request.getSize()),
+						Aggregation.limit(request.getSize()),
 						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}
 
 			else {
 				aggregation = Aggregation.newAggregation(
-				Aggregation.lookup("prescription_cl", "prescriptionId", "_id", "prescription"),
-				new CustomAggregationOperation(new Document("$unwind",
-						new BasicDBObject("path", "$prescription").append("preserveNullAndEmptyArrays", true))),
-				Aggregation.lookup("appointment_cl", "appointmentId", "_id", "appointment"),
-				new CustomAggregationOperation(new Document("$unwind",
-						new BasicDBObject("path", "$appointment").append("preserveNullAndEmptyArrays", true))),Aggregation.match(criteria),
-				Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+						Aggregation.lookup("prescription_cl", "prescriptionId", "_id", "prescription"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$prescription").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.lookup("appointment_cl", "appointmentId", "_id", "appointment"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$appointment").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}
-			
-			feedbackResponses = mongoTemplate.aggregate(aggregation, PatientFeedbackCollection.class, PatientFeedbackResponse.class).getMappedResults();
-				
-		
-			
+
+			feedbackResponses = mongoTemplate
+					.aggregate(aggregation, PatientFeedbackCollection.class, PatientFeedbackResponse.class)
+					.getMappedResults();
+
 			for (PatientFeedbackResponse patientFeedbackResponse : feedbackResponses) {
 				if (localeCollection != null) {
 					patientFeedbackResponse.setLocaleName(localeCollection.getLocaleName());
@@ -670,7 +595,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 								new CustomAggregationOperation(new Document("$unwind",
 										new BasicDBObject("path", "$services").append("preserveNullAndEmptyArrays",
 												true))),
-								Aggregation.match(criteria), aggregationOperation, Aggregation.skip((long)page * size),
+								Aggregation.match(criteria), aggregationOperation, Aggregation.skip((long) page * size),
 								Aggregation.limit(size), Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}
 
@@ -783,13 +708,15 @@ public class FeedbackServiceImpl implements FeedbackService {
 				localeCollection = localeRepository.findById(patientFeedbackCollection.getDoctorId()).orElse(null);
 
 			if (patientFeedbackCollection.getHospitalId() != null)
-				hospitalCollection = hospitalRepository.findById(patientFeedbackCollection.getHospitalId()).orElse(null);
+				hospitalCollection = hospitalRepository.findById(patientFeedbackCollection.getHospitalId())
+						.orElse(null);
 
 			if (patientFeedbackCollection.getDoctorId() != null)
 				userCollection = userRepository.findById(patientFeedbackCollection.getDoctorId()).orElse(null);
 
 			if (patientFeedbackCollection.getLocationId() != null)
-				locationCollection = locationRepository.findById(patientFeedbackCollection.getLocationId()).orElse(null);
+				locationCollection = locationRepository.findById(patientFeedbackCollection.getLocationId())
+						.orElse(null);
 
 			if (patientFeedbackCollection.getPatientId() != null)
 				patientCollection = patientRepository.findByUserId(patientFeedbackCollection.getPatientId());
@@ -821,60 +748,6 @@ public class FeedbackServiceImpl implements FeedbackService {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return patientFeedbackResponse;
-	}
-
-	private List<Integer> getDaysForNotification(Integer maxDays) {
-		List<Integer> notificationDays = null;
-
-		if (maxDays <= 1) {
-			return notificationDays;
-		} else if (isBetween(maxDays, 2, 5)) {
-			Double pivot = maxDays.doubleValue() / 2;
-			Double maxN = Math.ceil(pivot);
-			notificationDays = calcNotificationDays(maxDays, maxN);
-		}
-
-		else if (isBetween(maxDays, 6, 10)) {
-			Double pivot = maxDays.doubleValue() / 3;
-			Double maxN = Math.ceil(pivot);
-			notificationDays = calcNotificationDays(maxDays, maxN);
-		}
-
-		else if (isBetween(maxDays, 11, 30)) {
-			Double pivot = maxDays.doubleValue() / 4;
-			Double maxN = Math.ceil(pivot);
-			notificationDays = calcNotificationDays(maxDays, maxN);
-		}
-
-		else if (isBetween(maxDays, 31, 100)) {
-			Double pivot = maxDays.doubleValue() / 4;
-			Double maxN = Math.ceil(pivot);
-			notificationDays = calcNotificationDays(maxDays, maxN);
-		}
-
-		else {
-			Double pivot = maxDays.doubleValue() / 7;
-			Double maxN = Math.ceil(pivot);
-			notificationDays = calcNotificationDays(maxDays, maxN);
-		}
-
-		return notificationDays;
-	}
-
-	private boolean isBetween(Integer value, Integer lower, Integer upper) {
-		return lower <= value && value <= upper;
-	}
-
-	private List<Integer> calcNotificationDays(Integer maxDays, Double maxN) {
-		List<Integer> notificationDays = new ArrayList<>();
-		Double dayDiff = Math.ceil((maxDays - 2) / maxN);
-		Integer day = 2;
-		notificationDays.add(day);
-		while (day <= maxDays) {
-			day = day + dayDiff.intValue();
-			notificationDays.add(day);
-		}
-		return notificationDays;
 	}
 
 }

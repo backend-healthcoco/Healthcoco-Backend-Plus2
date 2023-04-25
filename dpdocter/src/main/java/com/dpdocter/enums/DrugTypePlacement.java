@@ -2,10 +2,10 @@ package com.dpdocter.enums;
 
 public enum DrugTypePlacement {
 
-	PREFIX("PREFIX"),SUFFIX("SUFFIX");
-	
+	PREFIX("PREFIX"), SUFFIX("SUFFIX");
+
 	private String placement;
-	
+
 	public String getPlacement() {
 		return placement;
 	}

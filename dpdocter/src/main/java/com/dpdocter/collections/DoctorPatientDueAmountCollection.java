@@ -11,29 +11,29 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "doctor_patient_due_amount_cl")
 @CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
 
-public class DoctorPatientDueAmountCollection extends GenericCollection{
+public class DoctorPatientDueAmountCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
-	
+
 	@Indexed
 	private ObjectId doctorId;
-	
+
 	@Field
 	private ObjectId locationId;
-	
+
 	@Field
 	private ObjectId hospitalId;
-	
+
 	@Field
 	private ObjectId patientId;
-	
+
 	@Field
 	private Double dueAmount = 0.0;
 
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	public ObjectId getId() {
 		return id;
 	}

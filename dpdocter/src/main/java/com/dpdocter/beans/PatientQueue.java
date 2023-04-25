@@ -5,94 +5,95 @@ import java.util.Date;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.enums.QueueStatus;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PatientQueue {
 
 	private String id;
-    
-	private Integer count; 
-    
-    private QueueStatus status = QueueStatus.SCHEDULED;
-    
-    private String doctorId;
 
-    private String locationId;
+	private Integer count;
 
-    private String hospitalId;
+	private QueueStatus status = QueueStatus.SCHEDULED;
 
-    private PatientCard patient;
+	private String doctorId;
 
-    private Date date;
+	private String locationId;
 
-    private String sequenceNo;
+	private String hospitalId;
 
-    private String appointmentId;
+	private PatientCard patient;
 
-    private long waitedFor = 0;
-    
-    private long engagedAt = 0;
-    
-    private long checkedInAt = 0;
-    
-    private long checkedOutAt = 0;
-    
-    private long engagedFor = 0;
-    
-    public String getDoctorId() {
-	return doctorId;
-    }
+	private Date date;
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	private String sequenceNo;
 
-    public String getLocationId() {
-	return locationId;
-    }
+	private String appointmentId;
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	private long waitedFor = 0;
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	private long engagedAt = 0;
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	private long checkedInAt = 0;
 
-    public PatientCard getPatient() {
-	return patient;
-    }
+	private long checkedOutAt = 0;
 
-    public void setPatient(PatientCard patient) {
-	this.patient = patient;
-    }
+	private long engagedFor = 0;
 
-    public Date getDate() {
-	return date;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public void setDate(Date date) {
-	this.date = date;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public String getSequenceNo() {
-	return sequenceNo;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setSequenceNo(String sequenceNo) {
-	this.sequenceNo = sequenceNo;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getAppointmentId() {
-	return appointmentId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setAppointmentId(String appointmentId) {
-	this.appointmentId = appointmentId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public PatientCard getPatient() {
+		return patient;
+	}
+
+	public void setPatient(PatientCard patient) {
+		this.patient = patient;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
+	public String getSequenceNo() {
+		return sequenceNo;
+	}
+
+	public void setSequenceNo(String sequenceNo) {
+		this.sequenceNo = sequenceNo;
+	}
+
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
 
 	public String getId() {
 		return id;

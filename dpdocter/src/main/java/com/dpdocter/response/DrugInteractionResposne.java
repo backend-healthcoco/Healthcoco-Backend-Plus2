@@ -3,7 +3,7 @@ package com.dpdocter.response;
 public class DrugInteractionResposne {
 
 	private String text;
-	
+
 	private String reaction;
 
 	private String explanation;
@@ -19,11 +19,9 @@ public class DrugInteractionResposne {
 		return explanation;
 	}
 
-
 	public void setExplanation(String explanation) {
 		this.explanation = explanation;
 	}
-
 
 	public String getText() {
 		return text;

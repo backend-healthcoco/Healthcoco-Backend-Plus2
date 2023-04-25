@@ -5,8 +5,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.dpdocter.collections.SpecimenCollection;
 
-public interface SpecimenRepository extends MongoRepository<SpecimenCollection, ObjectId>{
+public interface SpecimenRepository extends MongoRepository<SpecimenCollection, ObjectId> {
 
- 
-	
 }

@@ -5,13 +5,13 @@ import java.util.List;
 public class WebAppointmentSlotDataResponse {
 
 	private String doctorSlugURL;
-	
+
 	private String doctorId;
-	
+
 	private String locationId;
-	
+
 	private String hospitalId;
-	
+
 	List<SlotDataResponse> slots;
 
 	public String getDoctorSlugURL() {

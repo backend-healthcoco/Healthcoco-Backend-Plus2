@@ -3,6 +3,7 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -10,41 +11,55 @@ import com.dpdocter.beans.DrugsAndAllergies;
 import com.dpdocter.beans.PersonalHistory;
 
 @Document(collection = "nutrition_referral_cl")
-public class NutritionReferralCollection extends GenericCollection{
-
+public class NutritionReferralCollection extends GenericCollection {
+	@Id
 	private ObjectId id;
 
+	@Field
 	private ObjectId patientId;
 
+	@Field
 	private ObjectId doctorId;
 
+	@Field
 	private ObjectId locationId;
 
+	@Field
 	private ObjectId hospitalId;
 
+	@Field
 	private ObjectId referralDoctorId;
 
+	@Field
 	private ObjectId referralLocationId;
 
+	@Field
 	private ObjectId referralHospitalId;
 
+	@Field
 	private String note;
 
+	@Field
 	private List<String> familyhistory;
 
+	@Field
 	private List<String> medicalhistory;
 
+	@Field
 	private DrugsAndAllergies drugsAndAllergies;
 
+	@Field
 	private PersonalHistory personalHistory;
 
+	@Field
 	private Boolean everHospitalized = false;
 
+	@Field
 	private List<String> tests;
 
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -182,5 +197,5 @@ public class NutritionReferralCollection extends GenericCollection{
 				+ ", drugsAndAllergies=" + drugsAndAllergies + ", personalHistory=" + personalHistory
 				+ ", everHospitalized=" + everHospitalized + ", tests=" + tests + ", isPatientDiscarded="
 				+ isPatientDiscarded + "]";
-	}	
+	}
 }

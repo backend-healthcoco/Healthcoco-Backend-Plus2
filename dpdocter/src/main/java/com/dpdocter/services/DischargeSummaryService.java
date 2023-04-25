@@ -21,8 +21,6 @@ public interface DischargeSummaryService {
 
 	DischargeSummaryResponse addEditDischargeSummary(DischargeSummaryRequest dischargeSummary);
 
-	// List<DischargeSummary> getAllDischargeSummary();
-
 	List<DischargeSummaryResponse> getDischargeSummary(String doctorId, String locationId, String hospitalId,
 			String patientId, long page, int size, String updatedTime);
 

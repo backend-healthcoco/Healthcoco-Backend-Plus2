@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,22 +19,17 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.ExerciseAndMovement;
 import com.dpdocter.beans.FitnessAssessment;
 import com.dpdocter.beans.PhysicalActivityAndMedicalHistory;
 import com.dpdocter.beans.StructuredCardiorespiratoryProgram;
 import com.dpdocter.beans.TreatmentAndDiagnosis;
 import com.dpdocter.collections.FitnessAssessmentCollection;
-import com.dpdocter.enums.StressAreaOfLife;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.FitnessAssessmentRepository;
-import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.services.FitnessAssessmentService;
-import com.dpdocter.services.JasperReportService;
-import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -47,15 +41,6 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
-
-	@Autowired
-	private PrintSettingsRepository printSettingsRepository;
-
-	@Autowired
-	private JasperReportService jasperReportService;
-
-//	@Value(value = "${jasper.print.fitnessAssessment.a4.fileName}")
-//	private String fitnessAssessmentA4FileName;
 
 	@Autowired
 	@Value(value = "${image.path}")
@@ -227,12 +212,13 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 								.isNullOrEmptyList(physicalActivityAndMedicalHistory.getPhysicalMedicalHistoryList()))
 							physicalActivityAndMedicalHistory.getPhysicalMedicalHistoryList().forEach(
 									(key, value) -> physicalMedicalHistoryList.put(key, new ArrayList<String>()));
-						if (physicalActivityAndMedicalHistory.getStressAreaOfLifeList()!=null) 
+						if (physicalActivityAndMedicalHistory.getStressAreaOfLifeList() != null)
 //							List<StressAreaOfLife> stressAreaOfLifeList = new ArrayList<StressAreaOfLife>();
 //							stressAreaOfLifeList.addAll(physicalActivityAndMedicalHistory.getStressAreaOfLifeList());
 							physicalActivityAndMedicalHistory.getStressAreaOfLifeList().clear();
-							physicalActivityAndMedicalHistory.setStressAreaOfLifeList(request.getPhysicalActivityAndMedicalHistory().getStressAreaOfLifeList());
-						
+						physicalActivityAndMedicalHistory.setStressAreaOfLifeList(
+								request.getPhysicalActivityAndMedicalHistory().getStressAreaOfLifeList());
+
 						fitnessAssessmentCollection
 								.setPhysicalActivityAndMedicalHistory(physicalActivityAndMedicalHistory);
 					}
@@ -258,7 +244,7 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 
 							if (!DPDoctorUtils.isNullOrEmptyList(treatmentAndDiagnosis.getTreatmentAndDiagnosisList()))
 								treatmentAndDiagnosis.getTreatmentAndDiagnosisList()
-										.forEach((key, value) -> treatmentAndDiagnosisList.put(key, new ArrayList()));
+										.forEach((key, value) -> treatmentAndDiagnosisList.put(key, new ArrayList<String>()));
 
 							fitnessAssessmentCollection.setTreatmentAndDiagnosis(treatmentAndDiagnosis);
 						}
@@ -281,7 +267,7 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 								.forEach((key, value) -> exerciseMovementBoolean.put(key, value));
 
 						exerciseMovement.getExerciseAndMovementList()
-								.forEach((key, value) -> exerciseMovementList.put(key, new ArrayList()));
+								.forEach((key, value) -> exerciseMovementList.put(key, new ArrayList<String>()));
 
 						if (exerciseMovement.getIsPartInStructuredCardiorespiratoryProgram()) {
 							StructuredCardiorespiratoryProgram cardiorespiratoryProgram = new StructuredCardiorespiratoryProgram();
@@ -316,91 +302,7 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 	@Override
 	public String getFitnessAssessmentFile(String fitnessId) {
 		String response = null;
-//
-//		try {
-//			FitnessAssessmentCollection fitnessAssessmentCollection = fitnessAssessmentRepository
-//					.findById(new ObjectId(fitnessId)).orElse(null);
-//			if (fitnessAssessmentCollection != null) {
-//				PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
-//						fitnessAssessmentCollection.getPatientId(), fitnessAssessmentCollection.getLocationId(),
-//						fitnessAssessmentCollection.getHospitalId());
-//
-//				UserCollection user = userRepository.findById(fitnessAssessmentCollection.getPatientId()).orElse(null);
-//				JasperReportResponse jasperReportResponse = createJasper(fitnessAssessmentCollection, patient, user);
-//				if (jasperReportResponse != null)
-//					response = getFinalImageURL(jasperReportResponse.getPath());
-//				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
-//					if (jasperReportResponse.getFileSystemResource().getFile().exists())
-//						jasperReportResponse.getFileSystemResource().getFile().delete();
-//			} else {
-//				logger.warn("Invoice Id does not exist");
-//				throw new BusinessException(ServiceError.NotFound, "Id does not exist");
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			logger.error(e);
-//			throw new BusinessException(ServiceError.Unknown, "Exception in download Discharge Summary ");
-//		}
 		return response;
-	}
-
-//	private JasperReportResponse createJasper(FitnessAssessmentCollection fitnessAssessmentCollection,
-//			PatientCollection patient, UserCollection user) throws NumberFormatException, IOException, ParseException {
-//		JasperReportResponse response = null;
-//		Map<String, Object> parameters = new HashMap<String, Object>();
-//		String pattern = "dd/MM/yyyy";
-//		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-//		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
-//		Boolean show = false;
-//
-//		PrintSettingsCollection printSettings = printSettingsRepository
-//				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(fitnessAssessmentCollection.getDoctorId(),
-//						fitnessAssessmentCollection.getLocationId(), fitnessAssessmentCollection.getHospitalId(),
-//						ComponentType.ALL.getType());
-//
-//		if (printSettings == null) {
-//			printSettings = new PrintSettingsCollection();
-//			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
-//			BeanUtil.map(defaultPrintSettings, printSettings);
-//		}
-//		String pdfName = (user != null ? user.getFirstName() : "") + "FITNESS-ASSESSMENT-"
-//				+ fitnessAssessmentCollection.getId() + new Date().getTime();
-//
-//		String layout = printSettings != null
-//				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
-//				: "PORTRAIT";
-//		String pageSize = printSettings != null
-//				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4")
-//				: "A4";
-//		Integer topMargin = printSettings != null
-//				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20)
-//				: 20;
-//		Integer bottonMargin = printSettings != null
-//				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20)
-//				: 20;
-//		Integer leftMargin = printSettings != null
-//				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != 20
-//						? printSettings.getPageSetup().getLeftMargin()
-//						: 20)
-//				: 20;
-//		Integer rightMargin = printSettings != null
-//				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
-//						? printSettings.getPageSetup().getRightMargin()
-//						: 20)
-//				: 20;
-//		response = jasperReportService.createPDF(ComponentType.FITNESS_ASSESSMENT, parameters,
-//				fitnessAssessmentA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
-//				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
-//
-//		return response;
-//
-//	}
-//
-	private String getFinalImageURL(String imageURL) {
-		if (imageURL != null) {
-			return imagePath + imageURL;
-		} else
-			return null;
 	}
 
 	@Override

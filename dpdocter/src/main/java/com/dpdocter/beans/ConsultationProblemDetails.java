@@ -5,26 +5,24 @@ import java.util.List;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.GenderType;
 
-public class ConsultationProblemDetails extends GenericCollection{
+public class ConsultationProblemDetails extends GenericCollection {
 
 	private String id;
-	
+
 	private String doctorId;
-	
+
 	private String userId;
-	
-	private List<String>recordId;
-	
-	
-	
+
+	private List<String> recordId;
+
 	private String problemDetail;
-	
-	private Boolean discarded=false;
-	
+
+	private Boolean discarded = false;
+
 	private String transactionId;
-	
+
 	private GenderType gender;
-	
+
 	private Integer age;
 
 	public String getId() {
@@ -59,8 +57,6 @@ public class ConsultationProblemDetails extends GenericCollection{
 		this.recordId = recordId;
 	}
 
-	
-
 	public String getProblemDetail() {
 		return problemDetail;
 	}
@@ -68,8 +64,6 @@ public class ConsultationProblemDetails extends GenericCollection{
 	public void setProblemDetail(String problemDetail) {
 		this.problemDetail = problemDetail;
 	}
-	
-	
 
 	public Boolean getDiscarded() {
 		return discarded;
@@ -78,8 +72,6 @@ public class ConsultationProblemDetails extends GenericCollection{
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
-	
-	
 
 	public String getTransactionId() {
 		return transactionId;
@@ -110,7 +102,5 @@ public class ConsultationProblemDetails extends GenericCollection{
 		return "ConsultationProblemDetails [id=" + id + ", doctorId=" + doctorId + ", userId=" + userId + ", recordId="
 				+ recordId + ", problemDetail=" + problemDetail + "]";
 	}
-	
-	
-	
+
 }

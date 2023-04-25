@@ -12,49 +12,43 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class SMSAddress {
 
-    private String recipient;
-    
-    private List<String> recipients;
+	private String recipient;
 
-    
-    public SMSAddress() {
+	private List<String> recipients;
+
+	public SMSAddress() {
 		// TODO Auto-generated constructor stub
 	}
-    
-   
 
 	public SMSAddress(String recipient) {
 		super();
 		this.recipient = recipient;
 	}
 
-
-
 	@JsonProperty("recipient")
-    public String getRecipient() {
-	return recipient;
-    }
+	public String getRecipient() {
+		return recipient;
+	}
 
-    @XmlAttribute(name = "TO")
-    @JsonProperty("recipient")
-    public void setRecipient(String recipient) {
-	this.recipient = recipient;
-    }
-    
-    
-    @JsonProperty("recipients")
-    public List<String> getRecipients() {
+	@XmlAttribute(name = "TO")
+	@JsonProperty("recipient")
+	public void setRecipient(String recipient) {
+		this.recipient = recipient;
+	}
+
+	@JsonProperty("recipients")
+	public List<String> getRecipients() {
 		return recipients;
 	}
 
-    @JsonProperty("recipients")
+	@JsonProperty("recipients")
 	public void setRecipients(List<String> recipients) {
 		this.recipients = recipients;
 	}
 
 	@Override
-    public String toString() {
-	return "SMSAddress [recipient=" + recipient + "]";
-    }
+	public String toString() {
+		return "SMSAddress [recipient=" + recipient + "]";
+	}
 
 }

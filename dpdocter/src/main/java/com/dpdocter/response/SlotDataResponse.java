@@ -8,15 +8,15 @@ import com.dpdocter.beans.Slot;
 public class SlotDataResponse {
 
 	long date;
-	
+
 	List<Slot> slots;
-	
+
 	AppointmentSlot appointmentSlot;
-	
+
 	private AppointmentSlot onlineConsultationSlot;
 
 	String nextAvailableSlotDate;
-	
+
 	public long getDate() {
 		return date;
 	}
@@ -48,8 +48,6 @@ public class SlotDataResponse {
 	public void setNextAvailableSlotDate(String nextAvailableSlotDate) {
 		this.nextAvailableSlotDate = nextAvailableSlotDate;
 	}
-	
-	
 
 	public AppointmentSlot getOnlineConsultationSlot() {
 		return onlineConsultationSlot;

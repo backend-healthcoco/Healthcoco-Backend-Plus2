@@ -2,7 +2,7 @@ package com.dpdocter.response;
 
 public class BookedAndCancelAppointmentCount {
 	private long bookedCount;
-	
+
 	private long cancelledCount;
 
 	public long getBookedCount() {
@@ -20,7 +20,5 @@ public class BookedAndCancelAppointmentCount {
 	public void setCancelledCount(long cancelledCount) {
 		this.cancelledCount = cancelledCount;
 	}
-	
-	
 
 }

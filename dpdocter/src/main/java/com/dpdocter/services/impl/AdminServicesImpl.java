@@ -387,54 +387,8 @@ public class AdminServicesImpl implements AdminServices {
 	@Override
 	@Transactional
 	public void importDrug() {
-//		String csvFile = "/home/ubuntu/Drugs.csv";
 		BufferedReader br = null;
-//		String line = "";
-//		String cvsSplitBy = ",";
-
 		try {
-			// br = new BufferedReader(new FileReader(csvFile));
-			// while ((line = br.readLine()) != null) {
-			// String[] obj = line.split(cvsSplitBy);
-			// String drugType = obj[2];
-			// DrugTypeCollection drugTypeCollection =
-			// drugTypeRepository.findByType(drugType);
-			//
-			// DrugType type = null;
-			// if (drugTypeCollection != null) {
-			// type = new DrugType();
-			// drugTypeCollection.setType(drugType);
-			// BeanUtil.map(drugTypeCollection, type);
-			//
-			// }
-			//
-			// DrugCollection drugCollection = new DrugCollection();
-			// drugCollection.setCreatedBy("ADMIN");
-			// drugCollection.setCreatedTime(new Date());
-			// drugCollection.setUpdatedTime(new Date());
-			// drugCollection.setDiscarded(false);
-			// drugCollection.setDrugName(obj[1]);
-			// drugCollection.setDrugType(type);
-			// drugCollection.setDoctorId(null);
-			// drugCollection.setHospitalId(null);
-			// drugCollection.setLocationId(null);
-			// drugCollection.setDrugCode(obj[0]);
-			// drugCollection.setPackSize(obj[3]);
-			// drugCollection.setCompanyName(obj[4]);
-			//
-			// if (obj.length > 5) {
-			// String[] genericCodesArray = obj[5].split("\\+");
-			//
-			// if (genericCodesArray.length > 0) {
-			// List<String> genericCodes = new ArrayList<String>();
-			// for (String code : genericCodesArray)
-			// genericCodes.add(code);
-			// drugCollection.setGenericCodes(genericCodes);
-			// }
-			// }
-			//
-			// drugCollection = drugRepository.save(drugCollection);
-
 			List<DrugCollection> drugCollections = drugRepository.findAll();
 			for (DrugCollection drugCollection : drugCollections) {
 				ESDrugDocument esDrugDocument = new ESDrugDocument();

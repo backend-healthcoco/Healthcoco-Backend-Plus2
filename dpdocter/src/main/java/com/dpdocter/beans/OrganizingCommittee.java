@@ -6,7 +6,6 @@ public class OrganizingCommittee {
 	private ObjectId speakerId;
 	private String role;
 
-
 	public ObjectId getSpeakerId() {
 		return speakerId;
 	}

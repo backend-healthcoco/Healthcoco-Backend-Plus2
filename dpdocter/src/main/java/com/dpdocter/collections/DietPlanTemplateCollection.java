@@ -16,6 +16,7 @@ import com.dpdocter.beans.FoodCommunity;
 import com.dpdocter.beans.MealQuantity;
 import com.dpdocter.beans.NutritionDisease;
 import com.dpdocter.enums.LifeStyleType;
+
 @Document(collection = "diet_plan_template_cl")
 @CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
 public class DietPlanTemplateCollection extends GenericCollection {
@@ -73,16 +74,19 @@ public class DietPlanTemplateCollection extends GenericCollection {
 	private double bmiTo;
 	@Field
 	private Map<ObjectId, String> multilingualTemplateName;
-	
+
 	public Map<ObjectId, String> getMultilingualTemplateName() {
 		return multilingualTemplateName;
 	}
+
 	public void setMultilingualTemplateName(Map<ObjectId, String> multilingualTemplateName) {
 		this.multilingualTemplateName = multilingualTemplateName;
 	}
+
 	public String getPrinciple() {
 		return principle;
 	}
+
 	public void setPrinciple(String principle) {
 		this.principle = principle;
 	}
@@ -254,30 +258,39 @@ public class DietPlanTemplateCollection extends GenericCollection {
 	public void setTemplateName(String templateName) {
 		this.templateName = templateName;
 	}
+
 	public String getFoodPreference() {
 		return foodPreference;
 	}
+
 	public void setFoodPreference(String foodPreference) {
 		this.foodPreference = foodPreference;
 	}
+
 	public List<NutritionDisease> getDiseases() {
 		return diseases;
 	}
+
 	public void setDiseases(List<NutritionDisease> diseases) {
 		this.diseases = diseases;
 	}
+
 	public double getBmiFrom() {
 		return bmiFrom;
 	}
+
 	public void setBmiFrom(double bmiFrom) {
 		this.bmiFrom = bmiFrom;
 	}
+
 	public double getBmiTo() {
 		return bmiTo;
 	}
+
 	public void setBmiTo(double bmiTo) {
 		this.bmiTo = bmiTo;
 	}
+
 	@Override
 	public String toString() {
 		return "DietPlanTemplateCollection [id=" + id + ", uniquePlanId=" + uniquePlanId + ", doctorId=" + doctorId

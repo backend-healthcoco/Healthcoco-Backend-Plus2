@@ -19,19 +19,11 @@ public interface BulkSmsServices {
 		
 		Integer CountBulkSmsPackage(String searchTerm,Boolean discarded);
 		
-
-		//BulkSmsCredits getCreditsByDoctorId(String doctorId);
-		
 		List<BulkSmsCredits> getBulkSmsHistory(int page,int size,String searchTerm,String doctorId,String locationId);
-		
-		
-//		public BulkSmsPaymentResponse createOrder(OrderRequest request);
 		
 		public Boolean verifySignature(PaymentSignatureRequest request);
 
 		BulkSmsPaymentResponse addCredits(OrderRequest request);
-
-		//BulkSmsCredits getCreditsByDoctorIdAndLocationId(String doctorId, String locationId);
 
 		Boolean bulkSmsCreditCheck();
 
@@ -40,11 +32,6 @@ public interface BulkSmsServices {
 		List<BulkSmsCredits> getCreditsByDoctorIdAndLocationId(int size, int page, String searchTerm, String doctorId,
 				String locationId);
 
-	
-
-		//String getSmsStatus(List<String> messageId);
-
 		MessageStatus getSmsStatus(String messageId);
-
 
 }

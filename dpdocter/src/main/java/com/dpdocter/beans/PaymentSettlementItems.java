@@ -2,60 +2,57 @@ package com.dpdocter.beans;
 
 public class PaymentSettlementItems {
 
-	
 	private String entity_id;
-	
-	private String type;
-	
-	private Integer debit;
-	
-	private Integer credit;
-	
-	private Integer amount;
-	
-	private String currency;
-	
-	private Integer fee;
-	
-	private Integer tax;
-	
-	private Boolean on_hold;
-	
-	private Boolean settled;
-	
-	private Long created_at;
-	
-	private Long settled_at;
-	
-	private String settlement_id;
-	
-	private String posted_at;
-	
-	private String description;
-	
-	private String notes;
-	
-	private String payment_id;
-	
-	private String settlement_utr;
-	
-	private String order_id;
-	
-	private String order_receipt;
-	
-	private String method;
-	
-	private String card_network;
-	
-	private String card_issuer;
-	
-	private String card_type;
-	
-	private String dispute_id;
-	
-	private String credit_type;
 
-	
+	private String type;
+
+	private Integer debit;
+
+	private Integer credit;
+
+	private Integer amount;
+
+	private String currency;
+
+	private Integer fee;
+
+	private Integer tax;
+
+	private Boolean on_hold;
+
+	private Boolean settled;
+
+	private Long created_at;
+
+	private Long settled_at;
+
+	private String settlement_id;
+
+	private String posted_at;
+
+	private String description;
+
+	private String notes;
+
+	private String payment_id;
+
+	private String settlement_utr;
+
+	private String order_id;
+
+	private String order_receipt;
+
+	private String method;
+
+	private String card_network;
+
+	private String card_issuer;
+
+	private String card_type;
+
+	private String dispute_id;
+
+	private String credit_type;
 
 	public String getEntity_id() {
 		return entity_id;
@@ -264,6 +261,5 @@ public class PaymentSettlementItems {
 	public void setCredit_type(String credit_type) {
 		this.credit_type = credit_type;
 	}
-	
-	
+
 }

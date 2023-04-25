@@ -89,10 +89,11 @@ public class ESIngredientDocument {
 
 	@Field(type = FieldType.Text)
 	private String principle;
-	
+
 	public String getPrinciple() {
 		return principle;
 	}
+
 	public void setPrinciple(String principle) {
 		this.principle = principle;
 	}
@@ -272,6 +273,5 @@ public class ESIngredientDocument {
 	public void setVitaminNutrients(Map<String, String> vitaminNutrients) {
 		this.vitaminNutrients = vitaminNutrients;
 	}
-	
 
 }

@@ -50,16 +50,16 @@ public class PatientLifeStyleCollection extends GenericCollection {
 	private Integer laptopInBedRoomForMinute = 0;
 	@Field
 	private LifeStyleType type;
-	
+
 	@Field
 	private List<String> pregnancyCategory;
-	
+
 	@Field
 	private SleepPattern mobileUsage;
 
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	public ObjectId getId() {
 		return id;
 	}

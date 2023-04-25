@@ -4,31 +4,23 @@ import java.util.List;
 
 public class PaymentSummary {
 
-
 	private List<DoctorConsultation> consultationType;
 
-	 
-	 private String doctorId;
-	 
-	 private Double totalAmountReceivedByChat=0.0;
+	private String doctorId;
 
-	 private Double totalAmountReceivedByVideo=0.0;
-	 
-	 private Double totalAmountReceivedByOnlineConsultation=0.0;
-	
-	 
+	private Double totalAmountReceivedByChat = 0.0;
+
+	private Double totalAmountReceivedByVideo = 0.0;
+
+	private Double totalAmountReceivedByOnlineConsultation = 0.0;
+
 	public List<DoctorConsultation> getConsultationType() {
-
 		return consultationType;
 	}
-
-	
 
 	public void setConsultationType(List<DoctorConsultation> consultationType) {
 		this.consultationType = consultationType;
 	}
-
-
 
 	public String getDoctorId() {
 		return doctorId;
@@ -62,9 +54,4 @@ public class PaymentSummary {
 		this.totalAmountReceivedByOnlineConsultation = totalAmountReceivedByOnlineConsultation;
 	}
 
-	
-	
-	
-	
-	
 }

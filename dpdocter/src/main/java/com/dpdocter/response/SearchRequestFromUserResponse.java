@@ -27,33 +27,33 @@ public class SearchRequestFromUserResponse extends GenericCollection {
 	private Double longitude;
 
 	private Integer countForNo;
-	
+
 	private Integer countForYes;
 
 	private Boolean isCancelled = false;
 
 	private String localeName;
-	
+
 	private Address localeAddress;
-	
+
 	private String localeFormattedAddress;
-	
+
 	private Boolean isTwentyFourSevenOpen = false;
-	
+
 	private List<String> pharmacyType;
-	
+
 	private Long noOfLocaleRecommendation;
-	
+
 	private Boolean isHomeDeliveryAvailable = false;
-	
+
 	private Double homeDeliveryRadius;
-	
+
 	private String paymentInfo;
-	
+
 	private List<String> paymentInfos;
-	
+
 	private Boolean isOrdered = false;
-	
+
 	public String getId() {
 		return id;
 	}

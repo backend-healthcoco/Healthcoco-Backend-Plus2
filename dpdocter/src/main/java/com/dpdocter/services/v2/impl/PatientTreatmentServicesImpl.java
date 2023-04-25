@@ -46,7 +46,6 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 	@Autowired
 	PushNotificationServices pushNotificationServices;
-	
 
 	@Override
 	@Transactional
@@ -314,10 +313,6 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 										.append("preserveNullAndEmptyArrays", true))),
 						// Treatment
 
-//						Aggregation.lookup("patient_treatment_cl", "_id", "_id", "patientTreatment"),
-//						new CustomAggregationOperation(new Document("$unwind",
-//								new BasicDBObject("path", "$patientTreatment").append("preserveNullAndEmptyArrays",
-//										true))),
 						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$treatments").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex7"))),
@@ -330,8 +325,6 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 						patientTreatmentFirstProjectAggregationOperation(),
 						patientTreatmentFirstGroupAggregationOperation(),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size)
-//						patientTreatmentSecondProjectAggregationOperation(),
-//						patientTreatmentSecondGroupAggregationOperation(),
 				);
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -341,10 +334,6 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 										.append("preserveNullAndEmptyArrays", true))),
 						// Treatment
 
-//						Aggregation.lookup("patient_treatment_cl", "_id", "_id", "patientTreatment"),
-//						new CustomAggregationOperation(new Document("$unwind",
-//								new BasicDBObject("path", "$patientTreatment").append("preserveNullAndEmptyArrays",
-//										true))),
 						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$treatments").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex7"))),
@@ -356,9 +345,6 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 										.append("includeArrayIndex", "arrayIndex8"))),
 						patientTreatmentFirstProjectAggregationOperation(),
 						patientTreatmentFirstGroupAggregationOperation(),
-						// patientTreatmentSecondProjectAggregationOperation(),
-						// patientTreatmentSecondGroupAggregationOperation(),
-
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			
@@ -379,25 +365,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				new BasicDBObject("_id", "$_id").append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId")
 						.append("doctorId", "$doctorId").append("locationId", "$locationId")
 						.append("hospitalId", "$hospitalId").append("visitedTime", "$visitedTime")
-					//	.append("visitedFor", "$visitedFor").append("prescriptions", "$prescriptions")
-					//	.append("clinicalNotes", "$clinicalNotes")
-					//	.append("clinicalNotesDiagrams", "$clinicalNotesDiagrams").append("recordId", "$recordId")
-					//	.append("eyePrescriptionId", "$eyePrescriptionId").append("appointmentId", "$appointmentId")
-//						.append("time", "$time")
-//						.append("fromDate", "$fromDate")
 						.append("discarded", "$discarded")
 						.append("adminCreatedTime", "$adminCreatedTime")
 						.append("appointmentRequest", "$appointmentRequest")
-//						.append("createdTime", "$createdTime")
 						.append("adminCreatedTime", "$adminCreatedTime")
-//						.append("updatedTime", "$updatedTime")
-//						.append("createdBy", "$createdBy")
-						//.append("patientTreatmentid", "$patientTreatment._id")
-					//	.append("uniqueEmrId", "$patientTreatment.uniqueEmrId")
-					//	.append("patientTreatmentlocationId", "$patientTreatment.locationId")
-					//	.append("patientTreatmenthospitalId", "$patientTreatment.hospitalId")
-					//	.append("patientTreatmentdoctorId", "$patientTreatment.doctorId")
-					//	.append("patientTreatmentdiscarded", "$patientTreatment.discarded")
 						.append("inHistory", "$inHistory")
 						.append("totalCost", "$totalCost")
 						.append("time", "$time")
@@ -430,17 +401,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 				.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 				.append("discarded", new BasicDBObject("$first", "$discarded"))
-			//	.append("visitedTime", new BasicDBObject("$first", "$visitedTime"))
-			//	.append("visitedFor", new BasicDBObject("$first", "$visitedFor"))
-			//	.append("prescriptions", new BasicDBObject("$first", "$prescriptions"))
-			//	.append("clinicalNotes", new BasicDBObject("$first", "$clinicalNotes"))
-			//	.append("clinicalNotesDiagrams", new BasicDBObject("$first", "$clinicalNotesDiagrams"))
-			//	.append("patientTreatmentid", new BasicDBObject("$first", "$patientTreatmentid"))
 				.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
-			//	.append("patientTreatmentlocationId", new BasicDBObject("$first", "$patientTreatmentlocationId"))
-			//	.append("patientTreatmenthospitalId", new BasicDBObject("$first", "$patientTreatmenthospitalId"))
-			//	.append("patientTreatmentdoctorId", new BasicDBObject("$first", "$patientTreatmentdoctorId"))
-			//	.append("patientTreatmentdiscarded", new BasicDBObject("$first", "$patientTreatmentdiscarded"))
 				.append("inHistory", new BasicDBObject("$first", "$inHistory"))
 				.append("totalCost", new BasicDBObject("$first", "$totalCost"))
 				.append("time", new BasicDBObject("$first", "$time"))
@@ -456,13 +417,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 				.append("treatments", new BasicDBObject("$addToSet", "$treatments"))
 				.append("recordId", new BasicDBObject("$first", "$recordId"))
-			//	.append("eyePrescriptionId", new BasicDBObject("$first", "$eyePrescriptionId"))
-			//	.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 				.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
-			//	.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-			//	.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 				.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
-				//.append("createdBy", new BasicDBObject("$first", "$createdBy"))
 				));
 	}
 
@@ -492,7 +448,6 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 						.append("patientTreatment.totalCost", "$patientTreatmenttotalCost")
 						.append("patientTreatment.totalDiscount", "$patientTreatmenttotalDiscount")
 						.append("patientTreatment.totalgrandTotal", "$patientTreatmenttotalgrandTotal")
-
 						.append("patientTreatment.appointmentId", "$patientTreatmentappointmentId")
 						.append("patientTreatment.visitId", "$patientTreatmentvisitId")
 						.append("adminCreatedTime", "$adminCreatedTime")
@@ -500,30 +455,6 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 						.append("patientTreatment.createdBy", "$patientTreatmentcreatedBy")
 						.append("patientTreatment.updatedTime", "$patientTreatmentupdatedTime")
 						.append("patientTreatment.treatments", "$treatments")));
-	}
-
-	private AggregationOperation patientTreatmentSecondGroupAggregationOperation() {
-		return new CustomAggregationOperation(new Document("$group",
-				new BasicDBObject("_id", "$_id").append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
-						.append("patientId", new BasicDBObject("$first", "$patientId"))
-						.append("locationId", new BasicDBObject("$first", "$locationId"))
-						.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-						.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-						.append("discarded", new BasicDBObject("$first", "$discarded"))
-						.append("visitedTime", new BasicDBObject("$first", "$visitedTime"))
-						.append("visitedFor", new BasicDBObject("$first", "$visitedFor"))
-						.append("prescriptions", new BasicDBObject("$first", "$prescriptions"))
-						.append("clinicalNotes", new BasicDBObject("$first", "$clinicalNotes"))
-						.append("clinicalNotesDiagrams", new BasicDBObject("$first", "$clinicalNotesDiagrams"))
-						.append("patientTreatment", new BasicDBObject("$push", "$patientTreatment"))
-						.append("recordId", new BasicDBObject("$first", "$recordId"))
-						.append("eyePrescriptionId", new BasicDBObject("$first", "$eyePrescriptionId"))
-						.append("fromDate", new BasicDBObject("$first", "$fromDate"))
-						.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
-						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-						.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
-						.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 	}
 
 	@Override

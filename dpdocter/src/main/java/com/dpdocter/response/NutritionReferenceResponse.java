@@ -117,7 +117,6 @@ public class NutritionReferenceResponse extends GenericCollection {
 		this.locationName = locationName;
 	}
 
-	
 	public RegularityStatus getRegularityStatus() {
 		return regularityStatus;
 	}

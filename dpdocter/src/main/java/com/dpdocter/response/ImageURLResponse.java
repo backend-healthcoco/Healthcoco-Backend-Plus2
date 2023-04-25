@@ -2,11 +2,11 @@ package com.dpdocter.response;
 
 public class ImageURLResponse {
 
-    private String imageUrl;
+	private String imageUrl;
 
-    private String thumbnailUrl;
-    
-    private String name;
+	private String thumbnailUrl;
+
+	private String name;
 
 	public String getImageUrl() {
 		return imageUrl;
@@ -23,8 +23,6 @@ public class ImageURLResponse {
 	public void setThumbnailUrl(String thumbnailUrl) {
 		this.thumbnailUrl = thumbnailUrl;
 	}
-	
-	
 
 	public String getName() {
 		return name;

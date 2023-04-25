@@ -117,8 +117,8 @@ public class AdmitCardAPI {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Discharge Summery  Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		Boolean admitCardResponse = admitCardService.deleteAdmitCard(admitCardId, doctorId, hospitalId,
-				locationId, discarded);
+		Boolean admitCardResponse = admitCardService.deleteAdmitCard(admitCardId, doctorId, hospitalId, locationId,
+				discarded);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(admitCardResponse);
 		return response;
@@ -145,7 +145,7 @@ public class AdmitCardAPI {
 		response.setData(true);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.AdmitCardUrls.EMAIL_ADMIT_CARD_WEB)
 	@GET
 	@ApiOperation(value = PathProxy.AdmitCardUrls.EMAIL_ADMIT_CARD_WEB, notes = PathProxy.AdmitCardUrls.EMAIL_ADMIT_CARD_WEB)

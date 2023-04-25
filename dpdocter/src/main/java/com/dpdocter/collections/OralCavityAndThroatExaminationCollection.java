@@ -21,6 +21,7 @@ public class OralCavityAndThroatExaminationCollection extends GenericCollection 
 	private Boolean discarded = false;
 	@Field
 	private String speciality;
+
 	@Field
 	public ObjectId getId() {
 		return id;

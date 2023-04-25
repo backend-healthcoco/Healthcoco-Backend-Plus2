@@ -10,7 +10,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -31,8 +30,6 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.CLINICAL_NOTES_BASE_URL, description = "Endpoint for clinical notes")
 public class ClinicalNotesApi {
 
-	private static Logger logger = Logger.getLogger(ClinicalNotesApi.class.getName());
-
 	@Autowired
 	private ClinicalNotesService clinicalNotesService;
 
@@ -42,18 +39,17 @@ public class ClinicalNotesApi {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
-	
 	@GET
 	@ApiOperation(value = "GET_CLINICAL_NOTES", notes = "GET_CLINICAL_NOTES")
 	public Response<ClinicalNotes> getNotes(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "patientId") String patientId,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,@QueryParam("from") String from,@QueryParam("to") String to,
-			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @QueryParam("from") String from,
+			@QueryParam("to") String to, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
 		List<ClinicalNotes> clinicalNotes = clinicalNotesService.getClinicalNotes(page, size, doctorId, locationId,
 				hospitalId, patientId, updatedTime,
-				otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), from,to,discarded, false);
+				otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), from, to, discarded, false);
 
 		if (clinicalNotes != null && !clinicalNotes.isEmpty()) {
 			for (ClinicalNotes clinicalNote : clinicalNotes) {
@@ -66,7 +62,6 @@ public class ClinicalNotesApi {
 		response.setDataList(clinicalNotes);
 		return response;
 	}
-	
 
 	private List<Diagram> getFinalDiagrams(List<Diagram> diagrams) {
 		for (Diagram diagram : diagrams) {

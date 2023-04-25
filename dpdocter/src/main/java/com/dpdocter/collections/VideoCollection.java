@@ -12,7 +12,7 @@ public class VideoCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
-	
+
 	@Field
 	private ObjectId doctorId;
 
@@ -36,13 +36,12 @@ public class VideoCollection extends GenericCollection {
 
 	@Field
 	private String description;
-	
+
 	@Field
 	private String type;
-	
+
 	@Field
 	private List<String> tags;
-	
 
 	public ObjectId getId() {
 		return id;

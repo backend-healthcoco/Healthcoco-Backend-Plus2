@@ -33,22 +33,21 @@ import com.dpdocter.services.TransactionalManagementService;
 import common.util.web.DPDoctorUtils;
 
 @Service
-public class ESDentalLabServiceImpl implements ESDentalLabService{
+public class ESDentalLabServiceImpl implements ESDentalLabService {
 
 	private static Logger logger = Logger.getLogger(ESDentalLabServiceImpl.class.getName());
-	
+
 	@Autowired
 	private ESDentalWorksRepository esDentalWorksRepository;
 
 	@Autowired
 	private TransactionalManagementService transnationalService;
-	
+
 	@Autowired
 	private ESDoctorRepository esDoctorRepository;
-	
+
 	@Autowired
 	private ElasticsearchTemplate elasticsearchTemplate;
-	
 
 	@Override
 	public boolean addDentalWorks(ESDentalWorksDocument request) {
@@ -63,7 +62,7 @@ public class ESDentalLabServiceImpl implements ESDentalLabService{
 		}
 		return response;
 	}
-	
+
 	@Override
 	public List<ESDentalWorksDocument> searchDentalworks(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
@@ -87,7 +86,7 @@ public class ESDentalLabServiceImpl implements ESDentalLabService{
 
 		return response;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private List<ESDentalWorksDocument> getCustomGlobalDentalWorks(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
@@ -123,8 +122,7 @@ public class ESDentalLabServiceImpl implements ESDentalLabService{
 			}
 
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DENTAL_WORKS, page, size, doctorId,
-					locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, null, null,
-					"workName");
+					locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, null, null, "workName");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESDentalWorksDocument.class);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -198,6 +196,5 @@ public class ESDentalLabServiceImpl implements ESDentalLabService{
 		}
 		return response;
 	}
-
 
 }

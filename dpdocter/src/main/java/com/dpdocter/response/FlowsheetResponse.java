@@ -20,7 +20,6 @@ public class FlowsheetResponse extends GenericCollection {
 	private List<FlowSheet> flowSheets;
 	private List<MonitoringChart> monitoringChart;
 
-
 	public String getUniqueId() {
 		return uniqueId;
 	}
@@ -100,8 +99,6 @@ public class FlowsheetResponse extends GenericCollection {
 	public void setDischargeSummaryUniqueEMRId(String dischargeSummaryUniqueEMRId) {
 		this.dischargeSummaryUniqueEMRId = dischargeSummaryUniqueEMRId;
 	}
-	
-	
 
 	public List<MonitoringChart> getMonitoringChart() {
 		return monitoringChart;

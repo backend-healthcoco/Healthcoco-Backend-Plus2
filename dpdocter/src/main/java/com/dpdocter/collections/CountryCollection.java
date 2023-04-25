@@ -11,7 +11,7 @@ import com.dpdocter.beans.Tax;
 import com.dpdocter.enums.PeriodEnums;
 
 @Document(collection = "country_cl")
-public class CountryCollection extends GenericCollection{
+public class CountryCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
@@ -78,6 +78,5 @@ public class CountryCollection extends GenericCollection{
 	public void setIsDiscarded(Boolean isDiscarded) {
 		this.isDiscarded = isDiscarded;
 	}
-	
-	
+
 }

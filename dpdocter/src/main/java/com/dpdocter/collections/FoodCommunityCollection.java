@@ -6,14 +6,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "food_community_cl")
-public class FoodCommunityCollection extends GenericCollection{
+public class FoodCommunityCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
-	
+
 	@Field
 	private String value;
-	
+
 	@Field
 	private Boolean discarded = false;
 

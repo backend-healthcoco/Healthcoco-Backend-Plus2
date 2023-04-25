@@ -9,30 +9,30 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 @Document(indexName = "ecg_details_in", type = "ecg_details")
 public class ESECGDetailsDocument {
-	
+
 	@Id
-    private String id;
+	private String id;
 
-    @Field(type = FieldType.Text)
-    private String ecgDetails;
+	@Field(type = FieldType.Text)
+	private String ecgDetails;
 
-    @Field(type = FieldType.Text)
-    private String doctorId;
+	@Field(type = FieldType.Text)
+	private String doctorId;
 
-    @Field(type = FieldType.Text)
-    private String locationId;
+	@Field(type = FieldType.Text)
+	private String locationId;
 
-    @Field(type = FieldType.Text)
-    private String hospitalId;
+	@Field(type = FieldType.Text)
+	private String hospitalId;
 
-    @Field(type = FieldType.Boolean)
-    private Boolean discarded = false;
+	@Field(type = FieldType.Boolean)
+	private Boolean discarded = false;
 
-    @Field(type = FieldType.Date)
-    private Date updatedTime = new Date();
+	@Field(type = FieldType.Date)
+	private Date updatedTime = new Date();
 
-    @Field(type = FieldType.Text)
-    private String speciality;
+	@Field(type = FieldType.Text)
+	private String speciality;
 
 	public String getId() {
 		return id;
@@ -104,7 +104,5 @@ public class ESECGDetailsDocument {
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
 				+ ", updatedTime=" + updatedTime + ", speciality=" + speciality + "]";
 	}
-    
-    
 
 }

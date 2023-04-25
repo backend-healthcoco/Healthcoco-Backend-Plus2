@@ -10,13 +10,13 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.DoctorConsultation;
 
 @Document(collection = "patient_payment_details_cl")
-public class PatientPaymentDetailsCollection extends GenericCollection{
+public class PatientPaymentDetailsCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
 	private ObjectId userId;
 	@Field
-	private Boolean isSettled=false;
+	private Boolean isSettled = false;
 	@Field
 	private Date settlementDate;
 	@Field
@@ -25,10 +25,9 @@ public class PatientPaymentDetailsCollection extends GenericCollection{
 	private String paymentId;
 	@Field
 	private ObjectId doctorId;
-	
+
 	@Field
 	private DoctorConsultation consultationType;
-
 
 	public ObjectId getId() {
 		return id;
@@ -93,7 +92,5 @@ public class PatientPaymentDetailsCollection extends GenericCollection{
 	public void setConsultationType(DoctorConsultation consultationType) {
 		this.consultationType = consultationType;
 	}
-	
-	
-	
+
 }

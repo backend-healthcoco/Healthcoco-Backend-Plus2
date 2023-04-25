@@ -8,63 +8,63 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "hospital_cl")
 public class HospitalCollection extends GenericCollection {
 
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private String hospitalName;
+	@Field
+	private String hospitalName;
 
-    @Field
-    private String hospitalPhoneNumber;
+	@Field
+	private String hospitalPhoneNumber;
 
-    @Field
-    private String hospitalImageUrl;
+	@Field
+	private String hospitalImageUrl;
 
-    @Field
-    private String hospitalDescription;
+	@Field
+	private String hospitalDescription;
 
-    @Field
-    private String hospitalUId;
-    
-    public ObjectId getId() {
-	return id;
-    }
+	@Field
+	private String hospitalUId;
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public String getHospitalName() {
-	return hospitalName;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public void setHospitalName(String hospitalName) {
-	this.hospitalName = hospitalName;
-    }
+	public String getHospitalName() {
+		return hospitalName;
+	}
 
-    public String getHospitalPhoneNumber() {
-	return hospitalPhoneNumber;
-    }
+	public void setHospitalName(String hospitalName) {
+		this.hospitalName = hospitalName;
+	}
 
-    public void setHospitalPhoneNumber(String hospitalPhoneNumber) {
-	this.hospitalPhoneNumber = hospitalPhoneNumber;
-    }
+	public String getHospitalPhoneNumber() {
+		return hospitalPhoneNumber;
+	}
 
-    public String getHospitalImageUrl() {
-	return hospitalImageUrl;
-    }
+	public void setHospitalPhoneNumber(String hospitalPhoneNumber) {
+		this.hospitalPhoneNumber = hospitalPhoneNumber;
+	}
 
-    public void setHospitalImageUrl(String hospitalImageUrl) {
-	this.hospitalImageUrl = hospitalImageUrl;
-    }
+	public String getHospitalImageUrl() {
+		return hospitalImageUrl;
+	}
 
-    public String getHospitalDescription() {
-	return hospitalDescription;
-    }
+	public void setHospitalImageUrl(String hospitalImageUrl) {
+		this.hospitalImageUrl = hospitalImageUrl;
+	}
 
-    public void setHospitalDescription(String hospitalDescription) {
-	this.hospitalDescription = hospitalDescription;
-    }
+	public String getHospitalDescription() {
+		return hospitalDescription;
+	}
+
+	public void setHospitalDescription(String hospitalDescription) {
+		this.hospitalDescription = hospitalDescription;
+	}
 
 	public String getHospitalUId() {
 		return hospitalUId;

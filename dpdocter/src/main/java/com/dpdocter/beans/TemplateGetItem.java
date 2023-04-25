@@ -5,37 +5,38 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.enums.DirectionEnum;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class TemplateGetItem {
-    private Drug drug;
+	private Drug drug;
 
-    private Duration duration;
+	private Duration duration;
 
-    private String dosage;
+	private String dosage;
 
-    private List<Long> dosageTime;
-    
-    private List<DirectionEnum> direction;
+	private List<Long> dosageTime;
 
-    private String instructions;
+	private List<DirectionEnum> direction;
 
-    public Drug getDrug() {
-	return drug;
-    }
+	private String instructions;
 
-    public void setDrug(Drug drug) {
-	this.drug = drug;
-    }
+	public Drug getDrug() {
+		return drug;
+	}
 
-    public Duration getDuration() {
-	return duration;
-    }
+	public void setDrug(Drug drug) {
+		this.drug = drug;
+	}
 
-    public void setDuration(Duration duration) {
-	this.duration = duration;
-    }
+	public Duration getDuration() {
+		return duration;
+	}
 
-    public String getDosage() {
+	public void setDuration(Duration duration) {
+		this.duration = duration;
+	}
+
+	public String getDosage() {
 		return dosage;
 	}
 
@@ -52,20 +53,20 @@ public class TemplateGetItem {
 	}
 
 	public List<DirectionEnum> getDirection() {
-	return direction;
-    }
+		return direction;
+	}
 
-    public void setDirection(List<DirectionEnum> direction) {
-	this.direction = direction;
-    }
+	public void setDirection(List<DirectionEnum> direction) {
+		this.direction = direction;
+	}
 
-    public String getInstructions() {
-	return instructions;
-    }
+	public String getInstructions() {
+		return instructions;
+	}
 
-    public void setInstructions(String instructions) {
-	this.instructions = instructions;
-    }
+	public void setInstructions(String instructions) {
+		this.instructions = instructions;
+	}
 
 	@Override
 	public String toString() {

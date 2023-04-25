@@ -19,15 +19,14 @@ public class UIPermissions {
 	private String landingPagePermissions = "CONTACTS";
 	private List<String> patientCertificatePermissions = new ArrayList<String>();
 	private Boolean showSidePanels = true;
-	private Boolean isIPDIvoice=false;
-	private Boolean isIPDSection= true;
-	
+	private Boolean isIPDIvoice = false;
+	private Boolean isIPDSection = true;
+
 	// IPD Module
 	private List<String> nursingAdmissionFormPermissions = new ArrayList<String>();
 	private List<String> preOperationAssessmentFormPerimissions = new ArrayList<String>();
 	private List<String> initialAssessmentFormPermissions = new ArrayList<String>();
 
-	
 	public List<String> getTabPermissions() {
 		return tabPermissions;
 	}
@@ -115,8 +114,6 @@ public class UIPermissions {
 	public void setShowSidePanels(Boolean showSidePanels) {
 		this.showSidePanels = showSidePanels;
 	}
-	
-	
 
 	public Boolean getIsIPDIvoice() {
 		return isIPDIvoice;
@@ -126,7 +123,6 @@ public class UIPermissions {
 		this.isIPDIvoice = isIPDIvoice;
 	}
 
-	
 	public Boolean getIsIPDSection() {
 		return isIPDSection;
 	}
@@ -135,7 +131,6 @@ public class UIPermissions {
 		this.isIPDSection = isIPDSection;
 	}
 
-	
 	public List<String> getNursingAdmissionFormPermissions() {
 		return nursingAdmissionFormPermissions;
 	}

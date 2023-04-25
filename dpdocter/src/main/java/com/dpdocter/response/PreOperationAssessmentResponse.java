@@ -2,18 +2,18 @@ package com.dpdocter.response;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class PreOperationAssessmentResponse extends GenericCollection{
+public class PreOperationAssessmentResponse extends GenericCollection {
 
-private String id;
-	
+	private String id;
+
 	private String doctorId;
 
 	private String locationId;
 
 	private String hospitalId;
-	
+
 	private String patientId;
-	
+
 	private String complaint;
 
 	private String pastHistory;
@@ -23,11 +23,11 @@ private String id;
 	private String investigation;
 
 	private String diagnosis;
-	
+
 	private String treatmentsPlan;
 
 	private boolean discarded = false;
-	
+
 	private String localExam;
 
 	private String ipdNumber;
@@ -128,8 +128,6 @@ private String id;
 		this.discarded = discarded;
 	}
 
-	
-
 	public String getLocalExam() {
 		return localExam;
 	}
@@ -146,6 +144,4 @@ private String id;
 		this.ipdNumber = ipdNumber;
 	}
 
-	
-	
 }

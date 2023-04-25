@@ -48,7 +48,6 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AssessmentPersonalDetailRepository;
 import com.dpdocter.repository.DrugRepository;
-import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.NutritionDiseaseRepository;
 import com.dpdocter.repository.PatientAssessmentHistoryRepository;
 import com.dpdocter.repository.PatientFoodAndExerciseRepository;
@@ -88,9 +87,6 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 	private PatientMeasurementRepository patientMeasurementRepository;
 
 	@Autowired
-	private HistoryRepository historyRepository;
-
-	@Autowired
 	private ESRegistrationService esRegistrationService;
 
 	@Autowired
@@ -116,7 +112,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 
 	@Autowired
 	private PatientAssessmentHistoryRepository patientAssessmentHistoryRepository;
-	
+
 	@Transactional
 	@Override
 	public AssessmentPersonalDetail addEditAssessmentPersonalDetail(AssessmentPersonalDetail request) {
@@ -153,7 +149,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 			} else {
 				assessmentPersonalDetailCollection = assessmentPersonalDetailRepository
 						.findById(new ObjectId(request.getId())).orElse(null);
-				
+
 				assessmentPersonalDetailCollection.setCommunities(null);
 				assessmentPersonalDetailCollection.setNutrientGoals(null);
 				BeanUtil.map(request, assessmentPersonalDetailCollection);
@@ -206,7 +202,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				patientFoodAndExcerciseCollection.setExercise(null);
 				patientFoodAndExcerciseCollection.setFoodPrefer(null);
 				patientFoodAndExcerciseCollection.setDrugs(null);
-				
+
 				BeanUtil.map(request, patientFoodAndExcerciseCollection);
 				patientFoodAndExcerciseCollection.setUpdatedTime(new Date());
 			}
@@ -226,7 +222,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 	@Override
 	public AssessmentFormHistoryResponse addEditAssessmentHistory(PatientAssesentmentHistoryRequest request) {
 		AssessmentFormHistoryResponse response = null;
-		
+
 		try {
 			PatientAssessmentHistoryCollection historyCollection = null;
 
@@ -243,13 +239,6 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				historyCollection = new PatientAssessmentHistoryCollection();
 
 				BeanUtil.map(request, historyCollection);
-//				if (request.getDiesease() != null) {
-//					diseaseObjectIds = new ArrayList<>();
-//					for (String diseaseId : request.getDiesease()) {
-//						diseaseObjectIds.add(new ObjectId(diseaseId));
-//					}
-//				}
-//				historyCollection.setDiesease(diseaseObjectIds);
 				historyCollection.setCreatedTime(new Date());
 				historyCollection.setUpdatedTime(new Date());
 				historyCollection
@@ -257,11 +246,12 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 								+ " " + doctor.getFirstName());
 
 			} else {
-				historyCollection = patientAssessmentHistoryRepository.findById(new ObjectId(request.getId())).orElse(null);
+				historyCollection = patientAssessmentHistoryRepository.findById(new ObjectId(request.getId()))
+						.orElse(null);
 				request.setUpdatedTime(new Date());
 				request.setCreatedBy(historyCollection.getCreatedBy());
 				request.setCreatedTime(historyCollection.getCreatedTime());
-				
+
 				historyCollection.setAddiction(null);
 				historyCollection.setDiesease(null);
 				historyCollection.setExistingMedication(null);
@@ -274,13 +264,6 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				historyCollection.setPersonalHistory(null);
 
 				BeanUtil.map(request, historyCollection);
-//				if (request.getDiesease() != null) {
-//					diseaseObjectIds = new ArrayList<>();
-//					for (String diseaseId : request.getDiesease()) {
-//						diseaseObjectIds.add(new ObjectId(diseaseId));
-//					}
-//				}
-//				historyCollection.setDiesease(diseaseObjectIds);
 				historyCollection.setUpdatedTime(new Date());
 			}
 			if (historyCollection.getExistingMedication() != null) {
@@ -353,7 +336,8 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 
 			if (historyCollection.getFamilyhistory() != null && !historyCollection.getFamilyhistory().isEmpty()) {
 				diseaseListResponses = new ArrayList<NutritionDisease>();
-				diseasesCollections = (List<NutritionDiseaseCollection>)nutritionDiseaseRepository.findAllById(historyCollection.getFamilyhistory());
+				diseasesCollections = (List<NutritionDiseaseCollection>) nutritionDiseaseRepository
+						.findAllById(historyCollection.getFamilyhistory());
 				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
 					for (NutritionDiseaseCollection diseasesCollection : diseasesCollections) {
 						diseaseListResponse = new NutritionDisease();
@@ -362,11 +346,13 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 					}
 				}
 				response.setFamilyhistory(diseaseListResponses);
-			}else response.setFamilyhistory(null);
-			
+			} else
+				response.setFamilyhistory(null);
+
 			if (historyCollection.getMedicalhistory() != null && !historyCollection.getMedicalhistory().isEmpty()) {
 				diseaseListResponses = new ArrayList<NutritionDisease>();
-				diseasesCollections = (List<NutritionDiseaseCollection>)nutritionDiseaseRepository.findAllById(historyCollection.getMedicalhistory());
+				diseasesCollections = (List<NutritionDiseaseCollection>) nutritionDiseaseRepository
+						.findAllById(historyCollection.getMedicalhistory());
 				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
 					for (NutritionDiseaseCollection diseasesCollection : diseasesCollections) {
 						diseaseListResponse = new NutritionDisease();
@@ -375,12 +361,13 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 					}
 				}
 				response.setMedicalhistory(diseaseListResponses);
-			}else response.setMedicalhistory(null);
-			
+			} else
+				response.setMedicalhistory(null);
 
 			if (historyCollection.getDiesease() != null && !historyCollection.getDiesease().isEmpty()) {
 				diseaseListResponses = new ArrayList<NutritionDisease>();
-				diseasesCollections = (List<NutritionDiseaseCollection>)nutritionDiseaseRepository.findAllById(historyCollection.getDiesease());
+				diseasesCollections = (List<NutritionDiseaseCollection>) nutritionDiseaseRepository
+						.findAllById(historyCollection.getDiesease());
 				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
 					for (NutritionDiseaseCollection diseasesCollection : diseasesCollections) {
 						diseaseListResponse = new NutritionDisease();
@@ -389,8 +376,8 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 					}
 				}
 				response.setDiesease(diseaseListResponses);
-			}else response.setDiesease(null);
-			
+			} else
+				response.setDiesease(null);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -419,7 +406,8 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				patientLifeStyleCollection.setCreatedBy(doctor.getFirstName());
 
 			} else {
-				patientLifeStyleCollection = patientLifeStyleRepository.findById(new ObjectId(request.getId())).orElse(null);
+				patientLifeStyleCollection = patientLifeStyleRepository.findById(new ObjectId(request.getId()))
+						.orElse(null);
 				patientLifeStyleCollection.setOffDays(null);
 				patientLifeStyleCollection.setPregnancyCategory(null);
 				patientLifeStyleCollection.setSleepPatterns(null);
@@ -459,7 +447,8 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				patientMeasurementCollection.setCreatedBy(doctor.getFirstName());
 
 			} else {
-				patientMeasurementCollection = patientMeasurementRepository.findById(new ObjectId(request.getId())).orElse(null);
+				patientMeasurementCollection = patientMeasurementRepository.findById(new ObjectId(request.getId()))
+						.orElse(null);
 				BeanUtil.map(request, patientMeasurementCollection);
 				patientMeasurementCollection.setUpdatedTime(new Date());
 			}
@@ -512,10 +501,11 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 					Fields.field("locationId", "$locationId"), Fields.field("hospitalId", "$hospitalId"),
 					Fields.field("bloodGroup", "$patient.bloodGroup"), Fields.field("gender", "$patient.gender"),
 					Fields.field("assessmentUniqueId", "$assessmentUniqueId"),
-					Fields.field("physicalStatusType", "$physicalStatusType"), Fields.field("nutrientGoals", "$nutrientGoals"),
-					Fields.field("discarded", "$discarded"), Fields.field("dob", "$patient.dob"),
-					Fields.field("address", "$patient.address"), Fields.field("profession", "$patient.profession"),
-					Fields.field("communities", "$communities"), Fields.field("noOfAdultMember", "$noOfAdultMember"),
+					Fields.field("physicalStatusType", "$physicalStatusType"),
+					Fields.field("nutrientGoals", "$nutrientGoals"), Fields.field("discarded", "$discarded"),
+					Fields.field("dob", "$patient.dob"), Fields.field("address", "$patient.address"),
+					Fields.field("profession", "$patient.profession"), Fields.field("communities", "$communities"),
+					Fields.field("noOfAdultMember", "$noOfAdultMember"),
 					Fields.field("noOfChildMember", "$noOfChildMember"), Fields.field("createdTime", "$createdTime"),
 					Fields.field("createdBy", "$createdBy"), Fields.field("dietType", "$dietType")));
 
@@ -539,9 +529,9 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 			if (updateTime > 0) {
 				criteria.and("createdTime").lte(new Date(updateTime));
 			}
-            if(!discarded) {
-            	criteria.and("discarded").is(discarded);
-            }
+			if (!discarded) {
+				criteria.and("discarded").is(discarded);
+			}
 			Aggregation aggregation = null;
 			if (size > 0)
 
@@ -550,7 +540,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 						Aggregation.unwind("patient"), Aggregation.match(secondCriteria), projectList,
 						Aggregation.sort(Sort.Direction.DESC, "createdTime"),
 
-						Aggregation.skip((long)(page) * size), Aggregation.limit(size));
+						Aggregation.skip((long) (page) * size), Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("patient_cl", "userId", "patientId", "patient"),
@@ -575,7 +565,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 		try {
 			Criteria criteria = new Criteria();
 			Criteria secondCriteria = new Criteria();
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 				criteria.and("patientId").is(new ObjectId(patientId));
 				secondCriteria.and("patient.userId").is(new ObjectId(patientId));
@@ -596,24 +586,23 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 			if (updateTime > 0) {
 				criteria.and("createdTime").lte(new Date(updateTime));
 			}
-            if(!discarded) {
-            	criteria.and("discarded").is(discarded);
-            }
+			if (!discarded) {
+				criteria.and("discarded").is(discarded);
+			}
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-						Aggregation.unwind("patient"), Aggregation.match(secondCriteria), 
-						Aggregation.group("id").count().as("value"));
+					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"), Aggregation.unwind("patient"),
+					Aggregation.match(secondCriteria), Aggregation.group("id").count().as("value"));
 
-			List<Count> results = mongoTemplate.aggregate(aggregation,
-					AssessmentPersonalDetailCollection.class, Count.class).getMappedResults();
-			count = (results!=null) ? results.size() : 0;
+			List<Count> results = mongoTemplate
+					.aggregate(aggregation, AssessmentPersonalDetailCollection.class, Count.class).getMappedResults();
+			count = (results != null) ? results.size() : 0;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return count;
 	}
-	
+
 	@Override
 	public PatientLifeStyle getAssessmentLifeStyle(String assessmentId) {
 		PatientLifeStyle response = null;
@@ -640,14 +629,16 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 
 			List<NutritionDiseaseCollection> diseasesCollections = null;
 			NutritionDisease diseaseListResponse = null;
-			PatientAssessmentHistoryCollection historyCollection = patientAssessmentHistoryRepository.findByAssessmentId(new ObjectId(assessmentId));
+			PatientAssessmentHistoryCollection historyCollection = patientAssessmentHistoryRepository
+					.findByAssessmentId(new ObjectId(assessmentId));
 			if (historyCollection != null) {
 				response = new AssessmentFormHistoryResponse();
 				BeanUtil.map(historyCollection, response);
 
 				if (historyCollection.getFamilyhistory() != null && !historyCollection.getFamilyhistory().isEmpty()) {
 					diseaseListResponses = new ArrayList<NutritionDisease>();
-					diseasesCollections = (List<NutritionDiseaseCollection>)nutritionDiseaseRepository.findAllById(historyCollection.getFamilyhistory());
+					diseasesCollections = (List<NutritionDiseaseCollection>) nutritionDiseaseRepository
+							.findAllById(historyCollection.getFamilyhistory());
 					if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
 						for (NutritionDiseaseCollection diseasesCollection : diseasesCollections) {
 							diseaseListResponse = new NutritionDisease();
@@ -655,12 +646,14 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 							diseaseListResponses.add(diseaseListResponse);
 						}
 					}
-					response.setFamilyhistory(diseaseListResponses);	
-				}else response.setFamilyhistory(null);
-				
+					response.setFamilyhistory(diseaseListResponses);
+				} else
+					response.setFamilyhistory(null);
+
 				if (historyCollection.getMedicalhistory() != null && !historyCollection.getMedicalhistory().isEmpty()) {
 					diseaseListResponses = new ArrayList<NutritionDisease>();
-					diseasesCollections = (List<NutritionDiseaseCollection>)nutritionDiseaseRepository.findAllById(historyCollection.getMedicalhistory());
+					diseasesCollections = (List<NutritionDiseaseCollection>) nutritionDiseaseRepository
+							.findAllById(historyCollection.getMedicalhistory());
 					if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
 						for (NutritionDiseaseCollection diseasesCollection : diseasesCollections) {
 							diseaseListResponse = new NutritionDisease();
@@ -669,12 +662,13 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 						}
 					}
 					response.setMedicalhistory(diseaseListResponses);
-				}else response.setMedicalhistory(null);
-				
+				} else
+					response.setMedicalhistory(null);
 
 				if (historyCollection.getDiesease() != null && !historyCollection.getDiesease().isEmpty()) {
 					diseaseListResponses = new ArrayList<NutritionDisease>();
-					diseasesCollections = (List<NutritionDiseaseCollection>)nutritionDiseaseRepository.findAllById(historyCollection.getDiesease());
+					diseasesCollections = (List<NutritionDiseaseCollection>) nutritionDiseaseRepository
+							.findAllById(historyCollection.getDiesease());
 					if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
 						for (NutritionDiseaseCollection diseasesCollection : diseasesCollections) {
 							diseaseListResponse = new NutritionDisease();

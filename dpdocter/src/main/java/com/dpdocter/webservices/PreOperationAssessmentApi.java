@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.PreOperationAssessmentRequest;
-import com.dpdocter.response.InitialAdmissionResponse;
 import com.dpdocter.response.PreOperationAssessmentResponse;
 import com.dpdocter.services.InitialAssessmentService;
 
@@ -32,6 +31,7 @@ import io.swagger.annotations.ApiOperation;
 
 /**
  * This api used for get patient health details before operation
+ * 
  * @author dell
  *
  */
@@ -43,48 +43,55 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.PREOPERATION_ASSESSMENT_BASE_URL, description = "Endpoint for form")
 public class PreOperationAssessmentApi {
 
-private static Logger logger = Logger.getLogger(PreOperationAssessmentApi.class.getName());
-	
+	private static Logger logger = Logger.getLogger(PreOperationAssessmentApi.class.getName());
+
 	@Autowired
 	private InitialAssessmentService initialAssessmentService;
 
 	@Path(value = PathProxy.PreOprationAssessmentsUrls.ADD_EDIT_PREOPERATION_FORM)
 	@POST
 	@ApiOperation(value = PathProxy.PreOprationAssessmentsUrls.ADD_EDIT_PREOPERATION_FORM, notes = PathProxy.PreOprationAssessmentsUrls.ADD_EDIT_PREOPERATION_FORM)
-	public Response<PreOperationAssessmentResponse> addEditPreOperationAssessmentForm(PreOperationAssessmentRequest request) {
+	public Response<PreOperationAssessmentResponse> addEditPreOperationAssessmentForm(
+			PreOperationAssessmentRequest request) {
 		if (request == null || DPDoctorUtils.allStringsEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getPatientId())) {
 			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		PreOperationAssessmentResponse preOperationAssessmentResponse = initialAssessmentService.addEditPreOperationAssessmentForm(request);
+		PreOperationAssessmentResponse preOperationAssessmentResponse = initialAssessmentService
+				.addEditPreOperationAssessmentForm(request);
 		Response<PreOperationAssessmentResponse> response = new Response<PreOperationAssessmentResponse>();
 		response.setData(preOperationAssessmentResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PreOprationAssessmentsUrls.GET_PREOPERATION_FORM)
 	@GET
-	@ApiOperation(value = PathProxy.PreOprationAssessmentsUrls.GET_PREOPERATION_FORM,notes = PathProxy.PreOprationAssessmentsUrls.GET_PREOPERATION_FORM)
-	public Response<PreOperationAssessmentResponse> getAdmissionAssessmentForms(@PathParam(value = "patientId") String patientId,
-			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-			@QueryParam(value = "doctorId") String doctorId,@DefaultValue("0") @QueryParam(value = "page") int page,
+	@ApiOperation(value = PathProxy.PreOprationAssessmentsUrls.GET_PREOPERATION_FORM, notes = PathProxy.PreOprationAssessmentsUrls.GET_PREOPERATION_FORM)
+	public Response<PreOperationAssessmentResponse> getAdmissionAssessmentForms(
+			@PathParam(value = "patientId") String patientId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "doctorId") String doctorId,
+			@DefaultValue("0") @QueryParam(value = "page") int page,
 			@DefaultValue("0") @QueryParam(value = "size") int size,
-			@DefaultValue("false") @QueryParam("discarded") Boolean discarded){
-		if (DPDoctorUtils.anyStringEmpty(patientId, hospitalId, locationId,doctorId)) {
+			@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(patientId, hospitalId, locationId, doctorId)) {
 			logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		List<PreOperationAssessmentResponse> preOperationAssessmentResponse = initialAssessmentService.getPreOperationAssessmentForms(doctorId,locationId,hospitalId,patientId,page,size,discarded);
+		List<PreOperationAssessmentResponse> preOperationAssessmentResponse = initialAssessmentService
+				.getPreOperationAssessmentForms(doctorId, locationId, hospitalId, patientId, page, size, discarded);
 		Response<PreOperationAssessmentResponse> response = new Response<PreOperationAssessmentResponse>();
 		response.setDataList(preOperationAssessmentResponse);
 		return response;
 	}
+
 	@Path(value = PathProxy.PreOprationAssessmentsUrls.GET_PREOPERATION_FORM_BY_ID)
 	@GET
 	@ApiOperation(value = PathProxy.PreOprationAssessmentsUrls.GET_PREOPERATION_FORM_BY_ID, notes = PathProxy.PreOprationAssessmentsUrls.GET_PREOPERATION_FORM_BY_ID)
-	public Response<PreOperationAssessmentResponse> getById(@PathParam("preOperationFormId") String preOperationFormId) {
+	public Response<PreOperationAssessmentResponse> getById(
+			@PathParam("preOperationFormId") String preOperationFormId) {
 		if (preOperationFormId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -95,6 +102,7 @@ private static Logger logger = Logger.getLogger(PreOperationAssessmentApi.class.
 		return response;
 
 	}
+
 	@Path(value = PathProxy.PreOprationAssessmentsUrls.DELETE_PREOPERATION_FORM)
 	@DELETE
 	@ApiOperation(value = PathProxy.PreOprationAssessmentsUrls.DELETE_PREOPERATION_FORM, notes = PathProxy.PreOprationAssessmentsUrls.DELETE_PREOPERATION_FORM)
@@ -114,7 +122,7 @@ private static Logger logger = Logger.getLogger(PreOperationAssessmentApi.class.
 		response.setData(formResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PreOprationAssessmentsUrls.DOWNLOAD_PREOPERATION_FORM_BY_ID)
 	@GET
 	@ApiOperation(value = PathProxy.PreOprationAssessmentsUrls.DOWNLOAD_PREOPERATION_FORM_BY_ID, notes = PathProxy.PreOprationAssessmentsUrls.DOWNLOAD_PREOPERATION_FORM_BY_ID)

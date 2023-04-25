@@ -3,28 +3,29 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class DoctorDrug {
 
 	private String id;
 
 	private String drugId;
-	
+
 	private String doctorId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private String locationId;
+	private String locationId;
 
-    private long rankingCount = 0;
+	private long rankingCount = 0;
 
-    private Boolean discarded = false;
+	private Boolean discarded = false;
 
-    private List<String> genericCodes;
+	private List<String> genericCodes;
 
-    private List<Drug> drugs;
-    
-    Drug drug;
+	private List<Drug> drugs;
+
+	Drug drug;
 
 	public String getId() {
 		return id;
@@ -91,7 +92,9 @@ public class DoctorDrug {
 	}
 
 	public List<Drug> getDrugs() {
-		if(drugs != null && !drugs.isEmpty()){drug = drugs.get(0);}
+		if (drugs != null && !drugs.isEmpty()) {
+			drug = drugs.get(0);
+		}
 		return drugs;
 	}
 

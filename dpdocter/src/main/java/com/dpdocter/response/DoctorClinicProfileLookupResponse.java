@@ -1,4 +1,3 @@
-
 package com.dpdocter.response;
 
 import java.util.List;
@@ -85,27 +84,27 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	private Boolean isVaccinationModuleOn = false;
 
 	private String feedbackURL;
-	
+
 	private Boolean isAdminNutritionist = false;
 
 	private List<String> departments;
-	
+
 	private List<WorkingSchedule> onlineWorkingSchedules;
-	
-	private List<DoctorConsultation>  consultationType;
-	
+
+	private List<DoctorConsultation> consultationType;
+
 	private String clinicOwnershipImageUrl;
-	
-	//private List<ConsultationType> onlineConsultationType;
+
+	// private List<ConsultationType> onlineConsultationType;
 
 	private Boolean isOnlineConsultationAvailable = false;
-	
+
 	private AppointmentSlot onlineConsultationSlot;
-	
+
 	private Boolean isShowPatientNumber = false;
 
 	private Boolean isShowDoctorInCalender;
-	
+
 	public Boolean getIsShowPatientNumber() {
 		return isShowPatientNumber;
 	}
@@ -177,7 +176,6 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	public void setPatientCounter(int patientCounter) {
 		this.patientCounter = patientCounter;
 	}
-
 
 	public List<String> getAppointmentBookingNumber() {
 		return appointmentBookingNumber;
@@ -338,7 +336,7 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	public void setDoctorSlugURL(String doctorSlugURL) {
 		this.doctorSlugURL = doctorSlugURL;
 	}
-	
+
 	public Boolean getIsVaccinationModuleOn() {
 		return isVaccinationModuleOn;
 	}
@@ -346,7 +344,7 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	public void setIsVaccinationModuleOn(Boolean isVaccinationModuleOn) {
 		this.isVaccinationModuleOn = isVaccinationModuleOn;
 	}
-	
+
 	public Boolean getIskiosk() {
 		return iskiosk;
 	}
@@ -370,7 +368,7 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	public void setIsSuperAdmin(Boolean isSuperAdmin) {
 		this.isSuperAdmin = isSuperAdmin;
 	}
-	
+
 	public String getFeedbackURL() {
 		return feedbackURL;
 	}
@@ -418,10 +416,6 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	public void setIsOnlineConsultationAvailable(Boolean isOnlineConsultationAvailable) {
 		this.isOnlineConsultationAvailable = isOnlineConsultationAvailable;
 	}
-	
-	
-
-	
 
 	public AppointmentSlot getOnlineConsultationSlot() {
 		return onlineConsultationSlot;
@@ -467,5 +461,4 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 				+ isOnlineConsultationAvailable + "]";
 	}
 
-	
 }

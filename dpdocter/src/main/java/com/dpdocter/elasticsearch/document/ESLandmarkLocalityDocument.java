@@ -10,65 +10,65 @@ import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 @Document(indexName = "landmarkslocalities_in", type = "landmarkslocalities")
 public class ESLandmarkLocalityDocument {
 
-    @Id
-    private String id;
+	@Id
+	private String id;
 
-    @Field(type = FieldType.Text)
-    private String cityId;
+	@Field(type = FieldType.Text)
+	private String cityId;
 
-    @Field(type = FieldType.Text)
-    private String locality;
+	@Field(type = FieldType.Text)
+	private String locality;
 
-    @Field(type = FieldType.Text)
-    private String landmark;
+	@Field(type = FieldType.Text)
+	private String landmark;
 
-    @Field(type = FieldType.Text)
-    private String explanation;
+	@Field(type = FieldType.Text)
+	private String explanation;
 
-    @GeoPointField
-    private GeoPoint geoPoint;
+	@GeoPointField
+	private GeoPoint geoPoint;
 
-    @Field(type = FieldType.Double)
-    private Double latitude;
+	@Field(type = FieldType.Double)
+	private Double latitude;
 
-    @Field(type = FieldType.Double)
-    private Double longitude;
+	@Field(type = FieldType.Double)
+	private Double longitude;
 
-    @Field(type = FieldType.Text)
-    private String postalCode;
+	@Field(type = FieldType.Text)
+	private String postalCode;
 
-    public String getId() {
-	return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getCityId() {
-	return cityId;
-    }
+	public String getCityId() {
+		return cityId;
+	}
 
-    public void setCityId(String cityId) {
-	this.cityId = cityId;
-    }
+	public void setCityId(String cityId) {
+		this.cityId = cityId;
+	}
 
-    public String getLocality() {
-	return locality;
-    }
+	public String getLocality() {
+		return locality;
+	}
 
-    public void setLocality(String locality) {
-	this.locality = locality;
-    }
+	public void setLocality(String locality) {
+		this.locality = locality;
+	}
 
-    public String getLandmark() {
-	return landmark;
-    }
+	public String getLandmark() {
+		return landmark;
+	}
 
-    public void setLandmark(String landmark) {
-	this.landmark = landmark;
-    }
-    
+	public void setLandmark(String landmark) {
+		this.landmark = landmark;
+	}
+
 	public GeoPoint getGeoPoint() {
 		return geoPoint;
 	}
@@ -78,19 +78,19 @@ public class ESLandmarkLocalityDocument {
 	}
 
 	public Double getLatitude() {
-	return latitude;
-    }
-
-    public void setLatitude(Double latitude) {
-	this.latitude = latitude;
+		return latitude;
 	}
 
-    public Double getLongitude() {
-	return longitude;
-    }
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
 
-    public void setLongitude(Double longitude) {
-	this.longitude = longitude;
+	public Double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
 	}
 
 	public String getExplanation() {

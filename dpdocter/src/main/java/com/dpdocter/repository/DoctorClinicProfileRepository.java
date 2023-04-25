@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 
 public interface DoctorClinicProfileRepository extends MongoRepository<DoctorClinicProfileCollection, ObjectId> {
-	
+
 	DoctorClinicProfileCollection findByUserLocationId(ObjectId userLocationId);
 
 	List<DoctorClinicProfileCollection> findByDoctorId(ObjectId doctorId);
@@ -21,5 +21,4 @@ public interface DoctorClinicProfileRepository extends MongoRepository<DoctorCli
 
 	DoctorClinicProfileCollection findByDoctorIdAndConsultationType(ObjectId doctorObjectId, String consultationType);
 
-	//DoctorClinicProfileCollection findByDoctorId(ObjectId doctorId);
-	}
+}

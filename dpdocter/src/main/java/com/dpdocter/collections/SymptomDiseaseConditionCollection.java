@@ -9,23 +9,23 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "symptom_disease_condition_cl")
 public class SymptomDiseaseConditionCollection extends GenericCollection {
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private String name;
+	@Field
+	private String name;
 
-    @Field
-    private String type;
-    
-    @Field
-    private Boolean toShow = true;
+	@Field
+	private String type;
 
-    @Field
-    private List<String> specialities;
-        
-    @Field
-    private List<ObjectId> specialityIds;
+	@Field
+	private Boolean toShow = true;
+
+	@Field
+	private List<String> specialities;
+
+	@Field
+	private List<ObjectId> specialityIds;
 
 	public ObjectId getId() {
 		return id;

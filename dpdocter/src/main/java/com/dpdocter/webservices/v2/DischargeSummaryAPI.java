@@ -10,7 +10,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -32,11 +31,8 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.DISCHARGE_SUMMARY_BASE_URL)
 public class DischargeSummaryAPI {
 
-	private Logger logger = Logger.getLogger(DischargeSummaryAPI.class);
-
 	@Autowired
 	DischargeSummaryService dischargeSummaryService;
-
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -48,7 +44,8 @@ public class DischargeSummaryAPI {
 			@QueryParam(value = "size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@QueryParam(value = "patientId") String patientId,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		Response<DischargeSummaryResponse> response = null;
 		List<DischargeSummaryResponse> dischargeSummaries = null;
 
@@ -65,10 +62,4 @@ public class DischargeSummaryAPI {
 
 	}
 
-	private String getFinalImageURL(String imageURL) {
-		if (imageURL != null) {
-			return imagePath + imageURL;
-		} else
-			return null;
-	}
 }

@@ -1,16 +1,16 @@
 package com.dpdocter.enums;
 
 public enum Period {
-    AM("AM"), PM("PM");
+	AM("AM"), PM("PM");
 
-    private String period;
+	private String period;
 
-    private Period(String period) {
-	this.period = period;
-    }
+	private Period(String period) {
+		this.period = period;
+	}
 
-    public String getPeriod() {
-	return period;
-    }
+	public String getPeriod() {
+		return period;
+	}
 
 }

@@ -273,7 +273,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (DPDoctorUtils.anyStringEmpty(dentalWorkCollection.getId())) {
 				dentalWorkCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(dentalWorkCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(dentalWorkCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(dentalWorkCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						dentalWorkCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -419,10 +420,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 				}
 				dentalLabDoctorAssociationCollection = dentalLabDoctorAssociationRepository
 						.save(dentalLabDoctorAssociationCollection);
-				/*
-				 * response = new DentalLabDoctorAssociation();
-				 * BeanUtil.map(dentalLabDoctorAssociationCollection, response);
-				 */
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -561,7 +558,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 				}
 			}
 			if (request.getId() != null) {
-				dentalLabPickupCollection = dentalLabTestPickupRepository.findById(new ObjectId(request.getId())).orElse(null);
+				dentalLabPickupCollection = dentalLabTestPickupRepository.findById(new ObjectId(request.getId()))
+						.orElse(null);
 				if (dentalLabPickupCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "Record not found");
 				}
@@ -724,7 +722,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 		try {
 			for (RateCardDentalWorkAssociation rateCardDentalWorkAssociation : request) {
 				rateCardDentalWorkAssociationCollection = rateCardDentalWorkAssociationRepository
-						.findByLocationIdAndDentalWorkIdAndRateCardId(new ObjectId(rateCardDentalWorkAssociation.getLocationId()),
+						.findByLocationIdAndDentalWorkIdAndRateCardId(
+								new ObjectId(rateCardDentalWorkAssociation.getLocationId()),
 								new ObjectId(rateCardDentalWorkAssociation.getDentalWorkId()),
 								new ObjectId(rateCardDentalWorkAssociation.getRateCardId()));
 				if (rateCardDentalWorkAssociationCollection == null) {
@@ -773,13 +772,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("dental_work_cl", "dentalWorkId", "_id", "dentalWork"),
-						Aggregation.unwind("dentalWork"),
-						/*
-						 * Aggregation.lookup("specimen_cl", "diagnosticTest.specimenId", "_id",
-						 * "specimen"), Aggregation.unwind("specimen"),
-						 */
-						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-						Aggregation.skip((page) * size), Aggregation.limit(size));
+						Aggregation.unwind("dentalWork"), Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("dental_work_cl", "dentalWorkId", "_id", "dentalWork"),
@@ -852,13 +847,12 @@ public class DentalLabServiceImpl implements DentalLabService {
 		RateCardDoctorAssociationCollection rateCardDoctorAssociationCollection = null;
 		try {
 
-			rateCardDoctorAssociationCollection = rateCardDoctorAssociationRepository
-					.getByDentalLabIdAndDoctorId(new ObjectId(request.getDentalLabId()), new ObjectId(request.getDoctorId()));
+			rateCardDoctorAssociationCollection = rateCardDoctorAssociationRepository.getByDentalLabIdAndDoctorId(
+					new ObjectId(request.getDentalLabId()), new ObjectId(request.getDoctorId()));
 			if (rateCardDoctorAssociationCollection == null) {
 				rateCardDoctorAssociationCollection = new RateCardDoctorAssociationCollection();
 			} else {
 				oldId = rateCardDoctorAssociationCollection.getId();
-				// rateCardLabAssociationCollection.setId(rateCardLabAssociationCollection.getId());
 			}
 
 			BeanUtil.map(request, rateCardDoctorAssociationCollection);
@@ -900,13 +894,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("rate_card_cl", "rateCardId", "_id", "rateCard"),
-						Aggregation.unwind("rateCard"),
-						/*
-						 * Aggregation.lookup("specimen_cl", "diagnosticTest.specimenId", "_id",
-						 * "specimen"), Aggregation.unwind("specimen"),
-						 */
-						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-						Aggregation.skip((page) * size), Aggregation.limit(size));
+						Aggregation.unwind("rateCard"), Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("rate_card_cl", "rateCardId", "_id", "rateCard"),
@@ -938,9 +928,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 					throw new BusinessException(ServiceError.InvalidInput,
 							"Invalid Input - Doctor & Dental Lab ID cannot be null");
 				}
-				collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository.findByDentalLabIdAndDoctorId(
-						new ObjectId(collectionBoyDoctorAssociation.getDentalLabId()),
-						new ObjectId(collectionBoyDoctorAssociation.getDoctorId()));
+				collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
+						.findByDentalLabIdAndDoctorId(new ObjectId(collectionBoyDoctorAssociation.getDentalLabId()),
+								new ObjectId(collectionBoyDoctorAssociation.getDoctorId()));
 				if (collectionBoyDoctorAssociationCollection == null) {
 					collectionBoyDoctorAssociationCollection = new CollectionBoyDoctorAssociationCollection();
 					BeanUtil.map(collectionBoyDoctorAssociation, collectionBoyDoctorAssociationCollection);
@@ -1007,12 +997,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 					aggregation, CollectionBoyDoctorAssociationCollection.class,
 					CBDoctorAssociationLookupResponse.class);
 			lookupResponses = aggregationResults.getMappedResults();
-			/*
-			 * if (lookupResponses != null) { users = new ArrayList<User>(); for
-			 * (CBDoctorAssociationLookupResponse lookupResponse : lookupResponses) {
-			 * users.add(lookupResponse.getDoctor()); } }
-			 */
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.warn(e);
@@ -1067,14 +1051,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 				criteria.and("dentalWorksSamples.etaInDate").gte(fromETA).lte(toETA);
 			}
 
-			/*
-			 * if (from != 0 && {
-			 * 
-			 * } else if (from != 0) { criteria.and("updatedTime").gte(new Date(from)); }
-			 * else if (to != null) {
-			 * criteria.and("updatedTime").lt(DPDoctorUtils.getEndTime(new Date(to))); }
-			 */
-
 			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$_id").append("patientId", new BasicDBObject("$first", "$patientId"))
 							.append("patientName", new BasicDBObject("$first", "$patientName"))
@@ -1113,43 +1089,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 							.append("doctor", new BasicDBObject("$first", "$doctor"))
 							.append("feedBackRating", new BasicDBObject("$first", "$feedBackRating"))
 							.append("feedBackComment", new BasicDBObject("$first", "$feedBackComment"))));
-
-			/*
-			 * private String doctorId; private String locationId; private String
-			 * hospitalId; private String dentalLabLocationId; private String
-			 * dentalLabHospitalId; private DentalWork dentalWork; private
-			 * List<DentalToothNumber> dentalToothNumbers; private List<DentalStage>
-			 * dentalStagesForLab; private Long etaInDate; private Integer etaInHour;
-			 * private Boolean isCompleted = false; private Boolean isUrgent = false;
-			 * private String instructions; private String occlusalStaining; private String
-			 * ponticDesign; private String collarAndMetalDesign; private String
-			 * uniqueWorkId; private List<ImageURLResponse> dentalImages; private
-			 * List<DentalWorkCardValue> dentalWorkCardValues; private String shade; private
-			 * List<String> material; private List<DentalStage> dentalStagesForDoctor;
-			 * private RateCardDentalWorkAssociation rateCardDentalWorkAssociation; private
-			 * String processStatus;
-			 */
-
-//			CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(new Document(
-//					"$group",
-//					new BasicDBObject("uniqueWorkId", "$uniqueWorkId")
-//							.append("dentalWork", new BasicDBObject("$first", "$dentalWork"))
-//							.append("dentalToothNumbers", new BasicDBObject("$first", "$dentalToothNumbers"))
-//							.append("dentalStagesForLab", new BasicDBObject("$first", "$dentalStagesForLab"))
-//							.append("dentalStagesForDoctor", new BasicDBObject("$push", "$dentalStagesForDoctor"))
-//							.append("etaInDate", new BasicDBObject("$first", "$etaInDate"))
-//							.append("etaInHour", new BasicDBObject("$first", "$etaInHour"))
-//							.append("instructions", new BasicDBObject("$first", "$instructions"))
-//							.append("occlusalStaining", new BasicDBObject("$first", "$occlusalStaining"))
-//							.append("ponticDesign", new BasicDBObject("$first", "$ponticDesign"))
-//							.append("collarAndMetalDesign", new BasicDBObject("$first", "$collarAndMetalDesign"))
-//							.append("dentalImages", new BasicDBObject("$first", "$dentalImages"))
-//							.append("dentalWorkCardValues", new BasicDBObject("$first", "$dentalWorkCardValues"))
-//							.append("shade", new BasicDBObject("$first", "$shade"))
-//							.append("material", new BasicDBObject("$first", "$material"))
-//							.append("rateCardDentalWorkAssociation",
-//									new BasicDBObject("$first", "$rateCardDentalWorkAssociation"))
-//							.append("processStatus", new BasicDBObject("$first", "$processStatus"))));
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("dentalLab.locationName").regex("^" + searchTerm, "i"),
@@ -1302,13 +1241,15 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
 							CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
-									.findByDentalLabIdAndDoctorIdAndCollectionBoyId(dentalLabPickupCollection.getDentalLabId(),
+									.findByDentalLabIdAndDoctorIdAndCollectionBoyId(
+											dentalLabPickupCollection.getDentalLabId(),
 											dentalLabPickupCollection.getDoctorId(),
 											dentalLabPickupCollection.getCollectionBoyId());
 							if (collectionBoyDoctorAssociationCollection != null
 									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
 								CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-										.findById(collectionBoyDoctorAssociationCollection.getCollectionBoyId()).orElse(null);
+										.findById(collectionBoyDoctorAssociationCollection.getCollectionBoyId())
+										.orElse(null);
 								if (collectionBoyCollection != null
 										&& collectionBoyCollection.getDiscarded() == false) {
 									pushNotificationServices.notifyPharmacy(
@@ -1336,13 +1277,15 @@ public class DentalLabServiceImpl implements DentalLabService {
 						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
 
 							CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
-									.findByDentalLabIdAndDoctorIdAndCollectionBoyId(dentalLabPickupCollection.getDentalLabId(),
+									.findByDentalLabIdAndDoctorIdAndCollectionBoyId(
+											dentalLabPickupCollection.getDentalLabId(),
 											dentalLabPickupCollection.getDoctorId(),
 											dentalLabPickupCollection.getCollectionBoyId());
 							if (collectionBoyDoctorAssociationCollection != null
 									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
 								CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-										.findById(collectionBoyDoctorAssociationCollection.getCollectionBoyId()).orElse(null);
+										.findById(collectionBoyDoctorAssociationCollection.getCollectionBoyId())
+										.orElse(null);
 								if (collectionBoyCollection != null
 										&& collectionBoyCollection.getDiscarded() == false) {
 									pushNotificationServices.notifyPharmacy(
@@ -1361,13 +1304,15 @@ public class DentalLabServiceImpl implements DentalLabService {
 						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
 
 							CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
-									.findByDentalLabIdAndDoctorIdAndCollectionBoyId(dentalLabPickupCollection.getDentalLabId(),
+									.findByDentalLabIdAndDoctorIdAndCollectionBoyId(
+											dentalLabPickupCollection.getDentalLabId(),
 											dentalLabPickupCollection.getDoctorId(),
 											dentalLabPickupCollection.getCollectionBoyId());
 							if (collectionBoyDoctorAssociationCollection != null
 									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
 								CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-										.findById(collectionBoyDoctorAssociationCollection.getCollectionBoyId()).orElse(null);
+										.findById(collectionBoyDoctorAssociationCollection.getCollectionBoyId())
+										.orElse(null);
 								if (collectionBoyCollection != null
 										&& collectionBoyCollection.getDiscarded() == false) {
 									pushNotificationServices.notifyPharmacy(
@@ -1386,13 +1331,15 @@ public class DentalLabServiceImpl implements DentalLabService {
 						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
 
 							CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
-									.findByDentalLabIdAndDoctorIdAndCollectionBoyId(dentalLabPickupCollection.getDentalLabId(),
+									.findByDentalLabIdAndDoctorIdAndCollectionBoyId(
+											dentalLabPickupCollection.getDentalLabId(),
 											dentalLabPickupCollection.getDoctorId(),
 											dentalLabPickupCollection.getCollectionBoyId());
 							if (collectionBoyDoctorAssociationCollection != null
 									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
 								CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-										.findById(collectionBoyDoctorAssociationCollection.getCollectionBoyId()).orElse(null);
+										.findById(collectionBoyDoctorAssociationCollection.getCollectionBoyId())
+										.orElse(null);
 								if (collectionBoyCollection != null
 										&& collectionBoyCollection.getDiscarded() == false) {
 									pushNotificationServices.notifyPharmacy(
@@ -1534,7 +1481,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
 								.findById(dentalLabPickupCollection.getCollectionBoyId()).orElse(null);
 						CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
-								.findByDentalLabIdAndDoctorIdAndCollectionBoyId(dentalLabPickupCollection.getDentalLabId(),
+								.findByDentalLabIdAndDoctorIdAndCollectionBoyId(
+										dentalLabPickupCollection.getDentalLabId(),
 										dentalLabPickupCollection.getDoctorId(),
 										dentalLabPickupCollection.getCollectionBoyId());
 						if (collectionBoyDoctorAssociationCollection != null
@@ -1556,7 +1504,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
 								.findById(dentalLabPickupCollection.getCollectionBoyId()).orElse(null);
 						CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
-								.findByDentalLabIdAndDoctorIdAndCollectionBoyId(dentalLabPickupCollection.getDentalLabId(),
+								.findByDentalLabIdAndDoctorIdAndCollectionBoyId(
+										dentalLabPickupCollection.getDentalLabId(),
 										dentalLabPickupCollection.getDoctorId(),
 										dentalLabPickupCollection.getCollectionBoyId());
 						if (collectionBoyDoctorAssociationCollection != null
@@ -1577,7 +1526,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 							CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
 									.findById(dentalLabPickupCollection.getCollectionBoyId()).orElse(null);
 							CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
-									.findByDentalLabIdAndDoctorIdAndCollectionBoyId(dentalLabPickupCollection.getDentalLabId(),
+									.findByDentalLabIdAndDoctorIdAndCollectionBoyId(
+											dentalLabPickupCollection.getDentalLabId(),
 											dentalLabPickupCollection.getDoctorId(),
 											dentalLabPickupCollection.getCollectionBoyId());
 							if (collectionBoyDoctorAssociationCollection != null
@@ -1651,7 +1601,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
 								.findById(dentalLabPickupCollection.getCollectionBoyId()).orElse(null);
 						CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
-								.findByDentalLabIdAndDoctorIdAndCollectionBoyId(dentalLabPickupCollection.getDentalLabId(),
+								.findByDentalLabIdAndDoctorIdAndCollectionBoyId(
+										dentalLabPickupCollection.getDentalLabId(),
 										dentalLabPickupCollection.getDoctorId(),
 										dentalLabPickupCollection.getCollectionBoyId());
 						if (collectionBoyDoctorAssociationCollection != null
@@ -1679,7 +1630,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
 								.findById(dentalLabPickupCollection.getCollectionBoyId()).orElse(null);
 						CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
-								.findByDentalLabIdAndDoctorIdAndCollectionBoyId(dentalLabPickupCollection.getDentalLabId(),
+								.findByDentalLabIdAndDoctorIdAndCollectionBoyId(
+										dentalLabPickupCollection.getDentalLabId(),
 										dentalLabPickupCollection.getDoctorId(),
 										dentalLabPickupCollection.getCollectionBoyId());
 						if (collectionBoyDoctorAssociationCollection != null
@@ -1700,7 +1652,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 							CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
 									.findById(dentalLabPickupCollection.getCollectionBoyId()).orElse(null);
 							CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
-									.findByDentalLabIdAndDoctorIdAndCollectionBoyId(dentalLabPickupCollection.getDentalLabId(),
+									.findByDentalLabIdAndDoctorIdAndCollectionBoyId(
+											dentalLabPickupCollection.getDentalLabId(),
 											dentalLabPickupCollection.getDoctorId(),
 											dentalLabPickupCollection.getCollectionBoyId());
 							if (collectionBoyDoctorAssociationCollection != null
@@ -2018,20 +1971,13 @@ public class DentalLabServiceImpl implements DentalLabService {
 		String pattern = "dd/MM/yyyy";
 		String labName = "";
 		String locationId = null;// hospitalId = null;
-//		int sNo = 0;
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 		UserCollection userCollection = null;
 		List<DentalStagejasperBean> dentalStage = null;
 
-//		DBObject labReportItems = null;
-//		List<DBObject> labreports = new ArrayList<DBObject>();
-
-//		labReportItems = new BasicDBObject();
-
 		if (dentalLabPickupResponse.getDentalLab() != null) {
 			locationId = dentalLabPickupResponse.getDentalLab().getId();
-//			hospitalId = dentalLabPickupResponse.getDentalLab().getHospitalId();
 			labName = dentalLabPickupResponse.getDentalLab().getLocationName();
 			parameters.put("dentalLab", "<b>Dental Lab :- </b> " + labName);
 		} else {
@@ -2423,7 +2369,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			if (dentalLabPickupResponse.getDentalLab() != null) {
 				locationId = dentalLabPickupResponse.getDentalLab().getId();
-//				hospitalId = dentalLabPickupResponse.getDentalLab().getHospitalId();
 				labName = dentalLabPickupResponse.getDentalLab().getLocationName();
 				jasperBean.setDentalLab("<b>Dental Lab :- </b> " + labName);
 			} else {
@@ -2433,7 +2378,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (dentalLabPickupResponse.getDoctor() != null) {
 				jasperBean.setDoctor("<b>Doctor :- </b>Dr. " + dentalLabPickupResponse.getDoctor().getFirstName());
 			} else if (!DPDoctorUtils.anyStringEmpty(dentalLabPickupResponse.getDoctorId())) {
-				userCollection = userRepository.findById(new ObjectId(dentalLabPickupResponse.getDoctorId())).orElse(null);
+				userCollection = userRepository.findById(new ObjectId(dentalLabPickupResponse.getDoctorId()))
+						.orElse(null);
 				if (userCollection != null)
 					jasperBean.setDoctor("<b>Doctor :- </b>Dr. " + userCollection.getFirstName());
 				else
@@ -2634,8 +2580,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 				String message = dentalLabSMSToDoctor;
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 				smsTrackDetail.setDoctorId(doctorId);
-				// smsTrackDetail.setLocationId(locationId);
-				// smsTrackDetail.setHospitalId(hospitalId);
 				smsTrackDetail.setType("APP_LINK_THROUGH_DENTAL_LAB");
 				SMSDetail smsDetail = new SMSDetail();
 				smsDetail.setUserId(userCollection.getId());
@@ -2788,7 +2732,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 					: "--");
 			dentalWorkInvoiceJasperResponse.setPatientName(dentalWorksInvoiceCollection.getPatientName());
 			dentalWorkInvoiceJasperResponse.setMaterial(dentalWorksInvoiceItem.getWorkName());
-			// dentalWorkInvoiceJasperResponse.setUnits(dentalWorksInvoiceItem.getQuantity());
 			dentalWorkInvoiceJasperResponse.setRate(dentalWorksInvoiceItem.getFinalCost());
 			if (dentalWorksInvoiceItem.getDentalToothNumbers() != null
 					&& !dentalWorksInvoiceItem.getDentalToothNumbers().isEmpty()) {
@@ -2819,8 +2762,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 		parameters.put("invoiceId", "<b>InvoiceId : </b>" + dentalWorksInvoiceCollection.getUniqueInvoiceId());
 		parameters.put("date", "<b>Date : </b>" + simpleDateFormat.format(new Date()));
 
-		printSettings = printSettingsRepository.findByLocationIdAndHospitalId(dentalWorksInvoiceCollection.getLocationId(),
-				dentalWorksInvoiceCollection.getHospitalId());
+		printSettings = printSettingsRepository.findByLocationIdAndHospitalId(
+				dentalWorksInvoiceCollection.getLocationId(), dentalWorksInvoiceCollection.getHospitalId());
 
 		if (printSettings == null) {
 
@@ -2905,7 +2848,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 				dentalWorksAmountRepository.save(dentalWorksAmountCollection);
 
 			} else {
-				dentalWorksInvoiceCollection = dentalWorksInvoiceRepository.findById(new ObjectId(request.getId())).orElse(null);
+				dentalWorksInvoiceCollection = dentalWorksInvoiceRepository.findById(new ObjectId(request.getId()))
+						.orElse(null);
 				Double OldCost = dentalWorksInvoiceCollection.getTotalCost();
 				BeanUtil.map(request, dentalWorksInvoiceCollection);
 				if (request.getCreatedTime() != null) {
@@ -3001,7 +2945,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 				dentalWorksReceiptCollection.setUpdatedTime(new Date());
 
 			} else {
-				dentalWorksReceiptCollection = dentalWorksReceiptRepository.findById(new ObjectId(request.getId())).orElse(null);
+				dentalWorksReceiptCollection = dentalWorksReceiptRepository.findById(new ObjectId(request.getId()))
+						.orElse(null);
 				oldCost = dentalWorksReceiptCollection.getAmountPaid();
 				BeanUtil.map(request, dentalWorksReceiptCollection);
 				dentalWorksReceiptCollection.setUpdatedTime(new Date());

@@ -2,7 +2,7 @@ package com.dpdocter.response;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class PharmaLicenseResponse extends GenericCollection{
+public class PharmaLicenseResponse extends GenericCollection {
 
 	private String id;
 	private Long date;

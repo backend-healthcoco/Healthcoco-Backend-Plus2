@@ -136,8 +136,8 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		List<?> response = null;
 		List<ESDrugDocument> esDrugDocuments = null;
 		List<DrugDocument> drugDocuments = null;
-		//Please remove this in next release. Its an hack for IOS 
-			searchByGenericName = false;
+		// Please remove this in next release. Its an hack for IOS
+		searchByGenericName = false;
 		//
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 			searchTerm = searchTerm.toUpperCase();
@@ -529,7 +529,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(PageRequest.of((int)page, size))
+						.withPageable(PageRequest.of((int) page, size))
 						.withSort(SortBuilders.fieldSort("testName").order(SortOrder.ASC)).build();
 
 			else
@@ -632,7 +632,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		if (!DPDoctorUtils.anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(PageRequest.of((int)page, size, Direction.ASC, sortBy)).build();
+						.withPageable(PageRequest.of((int) page, size, Direction.ASC, sortBy)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
@@ -640,7 +640,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC))
-						.withPageable(PageRequest.of((int)page, size)).build();
+						.withPageable(PageRequest.of((int) page, size)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
@@ -672,14 +672,14 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		if (!DPDoctorUtils.anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(PageRequest.of((int)page, size, Direction.ASC, sortBy)).build();
+						.withPageable(PageRequest.of((int) page, size, Direction.ASC, sortBy)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
 		} else {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(PageRequest.of((int)page, size))
+						.withPageable(PageRequest.of((int) page, size))
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
@@ -693,17 +693,15 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			String updatedTime, Boolean discarded, String searchTermFieldName, String searchTerm,
 			Collection<String> testIds, Boolean calculateCount, Class<?> classForCount, String sortBy) {
 
-		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)).to(new Date().getTime()));
+		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(
+				QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)).to(new Date().getTime()));
 
 		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			boolQueryBuilder
-			.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")))
-					 .should(QueryBuilders.termQuery("locationId", locationId))
-					 .minimumShouldMatch(1))
-			.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")))
-					 .should(QueryBuilders.termQuery("hospitalId", hospitalId))
-					 .minimumShouldMatch(1));
+					.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")))
+							.should(QueryBuilders.termQuery("locationId", locationId)).minimumShouldMatch(1))
+					.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")))
+							.should(QueryBuilders.termQuery("hospitalId", hospitalId)).minimumShouldMatch(1));
 		}
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName, searchTerm));
@@ -720,14 +718,14 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		if (!DPDoctorUtils.anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(PageRequest.of((int)page, size, Direction.ASC, sortBy)).build();
+						.withPageable(PageRequest.of((int) page, size, Direction.ASC, sortBy)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
 		} else {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(PageRequest.of((int)page, size))
+						.withPageable(PageRequest.of((int) page, size))
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
@@ -834,8 +832,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return response;
 	}
 
-	private List<ESDrugDocument> addStockToDrug(List<ESDrugDocument> drugs)
-	{
+	private List<ESDrugDocument> addStockToDrug(List<ESDrugDocument> drugs) {
 
 		for (ESDrugDocument drug : drugs) {
 
@@ -855,7 +852,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	}
 
 	private List<DrugDocument> addStockToDrugWeb(List<DrugDocument> drugs) {
-		List<DrugDocument> response= new ArrayList<>();
+		List<DrugDocument> response = new ArrayList<>();
 
 		for (DrugDocument drug : drugs) {
 

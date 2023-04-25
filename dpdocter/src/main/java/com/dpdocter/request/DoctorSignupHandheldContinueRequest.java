@@ -4,127 +4,126 @@ import java.util.List;
 
 public class DoctorSignupHandheldContinueRequest {
 
-    private String userId;
+	private String userId;
 
-    private List<String> specialization;
+	private List<String> specialization;
 
-    // hospital details
-    private String hospitalName;
+	private String hospitalName;
 
-    private String hospitalPhoneNumber;
+	private String hospitalPhoneNumber;
 
-    private String hospitalImageUrl;
+	private String hospitalImageUrl;
 
-    private String hospitalDescription;
+	private String hospitalDescription;
 
-    // location details
-    private String locationName;
+	private String locationName;
 
-    private String country;
+	private String country;
 
-    private String state;
+	private String state;
 
-    private String city;
+	private String city;
 
-    private String clinicNumber;
+	private String clinicNumber;
 
-    private String postalCode;
+	private String postalCode;
 
-    private String websiteUrl;
+	private String websiteUrl;
 
-    private String locationImageUrl;
+	private String locationImageUrl;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private Double latitude;
+	private Double latitude;
 
-    private Double longitude;
+	private Double longitude;
 
-    private String streetAddress;
+	private String streetAddress;
 
-    private String registerNumber;
-    private String googleMapShortUrl;
-    public String getUserId() {
-	return userId;
-    }
+	private String registerNumber;
+	private String googleMapShortUrl;
 
-    public void setUserId(String userId) {
-	this.userId = userId;
-    }
+	public String getUserId() {
+		return userId;
+	}
 
-    public List<String> getSpecialization() {
-	return specialization;
-    }
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
-    public void setSpecialization(List<String> specialization) {
-	this.specialization = specialization;
-    }
+	public List<String> getSpecialization() {
+		return specialization;
+	}
 
-    public String getHospitalName() {
-	return hospitalName;
-    }
+	public void setSpecialization(List<String> specialization) {
+		this.specialization = specialization;
+	}
 
-    public void setHospitalName(String hospitalName) {
-	this.hospitalName = hospitalName;
-    }
+	public String getHospitalName() {
+		return hospitalName;
+	}
 
-    public String getHospitalPhoneNumber() {
-	return hospitalPhoneNumber;
-    }
+	public void setHospitalName(String hospitalName) {
+		this.hospitalName = hospitalName;
+	}
 
-    public void setHospitalPhoneNumber(String hospitalPhoneNumber) {
-	this.hospitalPhoneNumber = hospitalPhoneNumber;
-    }
+	public String getHospitalPhoneNumber() {
+		return hospitalPhoneNumber;
+	}
 
-    public String getHospitalImageUrl() {
-	return hospitalImageUrl;
-    }
+	public void setHospitalPhoneNumber(String hospitalPhoneNumber) {
+		this.hospitalPhoneNumber = hospitalPhoneNumber;
+	}
 
-    public void setHospitalImageUrl(String hospitalImageUrl) {
-	this.hospitalImageUrl = hospitalImageUrl;
-    }
+	public String getHospitalImageUrl() {
+		return hospitalImageUrl;
+	}
 
-    public String getHospitalDescription() {
-	return hospitalDescription;
-    }
+	public void setHospitalImageUrl(String hospitalImageUrl) {
+		this.hospitalImageUrl = hospitalImageUrl;
+	}
 
-    public void setHospitalDescription(String hospitalDescription) {
-	this.hospitalDescription = hospitalDescription;
-    }
+	public String getHospitalDescription() {
+		return hospitalDescription;
+	}
 
-    public String getLocationName() {
-	return locationName;
-    }
+	public void setHospitalDescription(String hospitalDescription) {
+		this.hospitalDescription = hospitalDescription;
+	}
 
-    public void setLocationName(String locationName) {
-	this.locationName = locationName;
-    }
+	public String getLocationName() {
+		return locationName;
+	}
 
-    public String getCountry() {
-	return country;
-    }
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
 
-    public void setCountry(String country) {
-	this.country = country;
-    }
+	public String getCountry() {
+		return country;
+	}
 
-    public String getState() {
-	return state;
-    }
+	public void setCountry(String country) {
+		this.country = country;
+	}
 
-    public void setState(String state) {
-	this.state = state;
-    }
+	public String getState() {
+		return state;
+	}
 
-    public String getCity() {
-	return city;
-    }
+	public void setState(String state) {
+		this.state = state;
+	}
 
-    public void setCity(String city) {
-	this.city = city;
-    }
+	public String getCity() {
+		return city;
+	}
 
-    public String getClinicNumber() {
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getClinicNumber() {
 		return clinicNumber;
 	}
 
@@ -133,70 +132,70 @@ public class DoctorSignupHandheldContinueRequest {
 	}
 
 	public String getPostalCode() {
-	return postalCode;
-    }
+		return postalCode;
+	}
 
-    public void setPostalCode(String postalCode) {
-	this.postalCode = postalCode;
-    }
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
 
-    public String getWebsiteUrl() {
-	return websiteUrl;
-    }
+	public String getWebsiteUrl() {
+		return websiteUrl;
+	}
 
-    public void setWebsiteUrl(String websiteUrl) {
-	this.websiteUrl = websiteUrl;
-    }
+	public void setWebsiteUrl(String websiteUrl) {
+		this.websiteUrl = websiteUrl;
+	}
 
-    public String getLocationImageUrl() {
-	return locationImageUrl;
-    }
+	public String getLocationImageUrl() {
+		return locationImageUrl;
+	}
 
-    public void setLocationImageUrl(String locationImageUrl) {
-	this.locationImageUrl = locationImageUrl;
-    }
+	public void setLocationImageUrl(String locationImageUrl) {
+		this.locationImageUrl = locationImageUrl;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public Double getLatitude() {
-	return latitude;
-    }
+	public Double getLatitude() {
+		return latitude;
+	}
 
-    public void setLatitude(Double latitude) {
-	this.latitude = latitude;
-    }
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
 
-    public Double getLongitude() {
-	return longitude;
-    }
+	public Double getLongitude() {
+		return longitude;
+	}
 
-    public void setLongitude(Double longitude) {
-	this.longitude = longitude;
-    }
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
+	}
 
-    public String getStreetAddress() {
-	return streetAddress;
-    }
+	public String getStreetAddress() {
+		return streetAddress;
+	}
 
-    public void setStreetAddress(String streetAddress) {
-	this.streetAddress = streetAddress;
-    }
+	public void setStreetAddress(String streetAddress) {
+		this.streetAddress = streetAddress;
+	}
 
-    public String getRegisterNumber() {
-	return registerNumber;
-    }
+	public String getRegisterNumber() {
+		return registerNumber;
+	}
 
-    public void setRegisterNumber(String registerNumber) {
-	this.registerNumber = registerNumber;
-    }
+	public void setRegisterNumber(String registerNumber) {
+		this.registerNumber = registerNumber;
+	}
 
-    public String getGoogleMapShortUrl() {
+	public String getGoogleMapShortUrl() {
 		return googleMapShortUrl;
 	}
 
@@ -215,6 +214,5 @@ public class DoctorSignupHandheldContinueRequest {
 				+ ", longitude=" + longitude + ", streetAddress=" + streetAddress + ", registerNumber=" + registerNumber
 				+ ", googleMapShortUrl=" + googleMapShortUrl + "]";
 	}
-
 
 }

@@ -2,21 +2,21 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class PresentComplaint  extends GenericCollection{
+public class PresentComplaint extends GenericCollection {
 
-    private String id;
+	private String id;
 
-    private String presentComplaint;
+	private String presentComplaint;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private Boolean discarded = false;
-    
-    private String speciality;
+	private Boolean discarded = false;
+
+	private String speciality;
 
 	public PresentComplaint() {
 		super();
@@ -32,8 +32,6 @@ public class PresentComplaint  extends GenericCollection{
 		this.discarded = discarded;
 		this.speciality = speciality;
 	}
-
-
 
 	public String getId() {
 		return id;
@@ -97,7 +95,5 @@ public class PresentComplaint  extends GenericCollection{
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
 				+ ", speciality=" + speciality + "]";
 	}
-    
-    
-	
+
 }

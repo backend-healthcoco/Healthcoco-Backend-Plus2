@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.dpdocter.beans.DeliveryReports;
 
-public class DeliveryReportsResponse  {
+public class DeliveryReportsResponse {
 
 	List<DeliveryReports> deliveryReports;
 	Integer count;

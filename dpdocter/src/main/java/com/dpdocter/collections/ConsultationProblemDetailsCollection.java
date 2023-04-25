@@ -10,34 +10,32 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.enums.GenderType;
 
 @Document(collection = "consultation_problem_detail_cl")
-public class ConsultationProblemDetailsCollection extends GenericCollection{
+public class ConsultationProblemDetailsCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
-	
+
 	@Field
 	private ObjectId doctorId;
-	
+
 	@Field
 	private ObjectId userId;
-	
-	
-	
+
 	@Field
-	private List<ObjectId>recordId;
-	
+	private List<ObjectId> recordId;
+
 	@Field
 	private String problemDetail;
-	
+
 	@Field
 	private String transactionId;
 	@Field
 	private GenderType gender;
 	@Field
 	private Integer age;
-	
+
 	@Field
-	private Boolean discarded=false;
+	private Boolean discarded = false;
 
 	public ObjectId getId() {
 		return id;
@@ -62,8 +60,6 @@ public class ConsultationProblemDetailsCollection extends GenericCollection{
 	public void setUserId(ObjectId userId) {
 		this.userId = userId;
 	}
-
-	
 
 	public List<ObjectId> getRecordId() {
 		return recordId;
@@ -112,6 +108,5 @@ public class ConsultationProblemDetailsCollection extends GenericCollection{
 	public void setAge(Integer age) {
 		this.age = age;
 	}
-	
-	
+
 }

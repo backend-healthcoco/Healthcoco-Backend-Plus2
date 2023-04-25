@@ -4,28 +4,28 @@ import java.util.List;
 
 public class ESPatientResponseDetails {
 
-    private List<ESPatientResponse> patients;
+	private List<ESPatientResponse> patients;
 
-    private long totalSize;
+	private long totalSize;
 
-    public List<ESPatientResponse> getPatients() {
-	return patients;
-    }
+	public List<ESPatientResponse> getPatients() {
+		return patients;
+	}
 
-    public void setPatients(List<ESPatientResponse> patients) {
-	this.patients = patients;
-    }
+	public void setPatients(List<ESPatientResponse> patients) {
+		this.patients = patients;
+	}
 
-    public long getTotalSize() {
-	return totalSize;
-    }
+	public long getTotalSize() {
+		return totalSize;
+	}
 
-    public void setTotalSize(long totalSize) {
-	this.totalSize = totalSize;
-    }
+	public void setTotalSize(long totalSize) {
+		this.totalSize = totalSize;
+	}
 
-    @Override
-    public String toString() {
-	return "ESPatientResponseDetails [patients=" + patients + ", totalSize=" + totalSize + "]";
-    }
+	@Override
+	public String toString() {
+		return "ESPatientResponseDetails [patients=" + patients + ", totalSize=" + totalSize + "]";
+	}
 }

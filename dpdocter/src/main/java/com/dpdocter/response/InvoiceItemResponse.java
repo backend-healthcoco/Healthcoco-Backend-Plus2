@@ -20,7 +20,7 @@ public class InvoiceItemResponse {
 	private String doctorName;
 
 	private Date itemDate;
-	
+
 	private String name;
 
 	private InvoiceItemType type;
@@ -164,7 +164,7 @@ public class InvoiceItemResponse {
 	public void setInventoryBatch(InventoryBatch inventoryBatch) {
 		this.inventoryBatch = inventoryBatch;
 	}
-	
+
 	public Date getItemDate() {
 		return itemDate;
 	}

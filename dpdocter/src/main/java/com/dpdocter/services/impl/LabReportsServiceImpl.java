@@ -91,9 +91,6 @@ public class LabReportsServiceImpl implements LabReportsService {
 	@Autowired
 	LocationRepository locationRepository;
 
-//	@Autowired
-//	private PatientVisitService patientVisitService;
-
 	@Autowired
 	private JasperReportService jasperReportService;
 
@@ -169,8 +166,6 @@ public class LabReportsServiceImpl implements LabReportsService {
 			Date createdTime = new Date();
 
 			if (fileDetails != null) {
-				// String path = "lab-reports";
-				// String recordLabel = fileDetails.getFileName();
 				fileDetails.setFileName(fileDetails.getFileName() + createdTime.getTime());
 
 				String path = "lab-reports" + File.separator + request.getPatientName();
@@ -333,7 +328,8 @@ public class LabReportsServiceImpl implements LabReportsService {
 							.findById(labReportsCollection.getUploadedByLocationId()).orElse(null);
 					String message = labReportUploadMessage;
 
-					UserCollection userCollection = userRepository.findById(new ObjectId(request.getPatientId())).orElse(null);
+					UserCollection userCollection = userRepository.findById(new ObjectId(request.getPatientId()))
+							.orElse(null);
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
 					smsTrackDetail.setType("LAB REPORT UPLOAD");
@@ -593,7 +589,8 @@ public class LabReportsServiceImpl implements LabReportsService {
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(labTestPickupLookupResponse.getDoctorId())) {
-				userCollection = userRepository.findById(new ObjectId(labTestPickupLookupResponse.getDoctorId())).orElse(null);
+				userCollection = userRepository.findById(new ObjectId(labTestPickupLookupResponse.getDoctorId()))
+						.orElse(null);
 				if (userCollection != null)
 					labReportItems.put("doctor", "<b>Doctor :- </b>Dr. " + userCollection.getFirstName());
 				else
@@ -624,9 +621,9 @@ public class LabReportsServiceImpl implements LabReportsService {
 						labSubReportJasperDetail.setGender("--");
 					}
 					if (patientLabTestSample.getAge() != null) {
-						labSubReportJasperDetail.setGender(
-								labSubReportJasperDetail.getGender() + "/" + (patientLabTestSample.getAge() > 0
-										? patientLabTestSample.getAge().toString() : "--"));
+						labSubReportJasperDetail.setGender(labSubReportJasperDetail.getGender() + "/"
+								+ (patientLabTestSample.getAge() > 0 ? patientLabTestSample.getAge().toString()
+										: "--"));
 					} else {
 						labSubReportJasperDetail.setGender(labSubReportJasperDetail.getGender() + "/" + "--");
 					}

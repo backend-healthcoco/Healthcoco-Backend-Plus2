@@ -83,7 +83,6 @@ public class ConfexUserCollection extends GenericCollection {
 		this.firstName = firstName;
 	}
 
-
 	public String getUserName() {
 		return userName;
 	}

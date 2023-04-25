@@ -23,15 +23,15 @@ public class UserSearchRequest {
 	private String uniqueRequestId;
 
 	private List<String> pharmacyType;
-	
+
 	private WayOfOrder wayOfOrder;
-	
+
 	private LocaleWorkingHours pickUpTime;
-	
+
 	private Long pickUpDate;
-	
+
 	private UserAddress pickUpAddress;
-	
+
 	public String getUserId() {
 		return userId;
 	}
@@ -136,5 +136,5 @@ public class UserSearchRequest {
 				+ wayOfOrder + ", pickUpTime=" + pickUpTime + ", pickUpDate=" + pickUpDate + ", pickUpAddress="
 				+ pickUpAddress + "]";
 	}
-	
+
 }

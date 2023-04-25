@@ -3,10 +3,10 @@ package com.dpdocter.response;
 public class AdvanceReceiptIdWithAmountResponse {
 
 	private String receiptId;
-	
-    private	Double usedAdvanceAmount = 0.0;
 
-    private String uniqueReceiptId;
+	private Double usedAdvanceAmount = 0.0;
+
+	private String uniqueReceiptId;
 
 	public String getReceiptId() {
 		return receiptId;

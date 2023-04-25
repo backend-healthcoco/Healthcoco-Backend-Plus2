@@ -10,8 +10,6 @@ public class OrganizingCommitteeResponse {
 
 	private String role;
 
-	
-
 	public String getSpeakerId() {
 		return speakerId;
 	}
@@ -44,5 +42,4 @@ public class OrganizingCommitteeResponse {
 		this.role = role;
 	}
 
-	
 }

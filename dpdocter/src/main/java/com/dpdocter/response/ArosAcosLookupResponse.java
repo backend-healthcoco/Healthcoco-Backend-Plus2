@@ -7,21 +7,21 @@ import com.dpdocter.collections.ArosAcosCollection;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.Type;
 
-public class ArosAcosLookupResponse extends GenericCollection{
+public class ArosAcosLookupResponse extends GenericCollection {
 
 	private String id;
-	
+
 	private ObjectId roleOrUserId;
 
-    private ObjectId hospitalId;
+	private ObjectId hospitalId;
 
-    private ObjectId locationId;
+	private ObjectId locationId;
 
-    private Type type;
-    
-    ArosAcosCollection arosAcos;
-    
-    AcosCollection acos;
+	private Type type;
+
+	ArosAcosCollection arosAcos;
+
+	AcosCollection acos;
 
 	public String getId() {
 		return id;

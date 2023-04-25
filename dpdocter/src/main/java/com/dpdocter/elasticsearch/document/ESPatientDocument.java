@@ -24,7 +24,7 @@ public class ESPatientDocument {
 
 	@Field(type = FieldType.Text, fielddata = true)
 	private String pnum;
-	
+
 	@Field(type = FieldType.Text)
 	private String userName;
 
@@ -36,7 +36,7 @@ public class ESPatientDocument {
 
 	@Field(type = FieldType.Text)
 	private String localPatientNameFormatted;
-	
+
 	@Field(type = FieldType.Text)
 	private String gender;
 
@@ -61,7 +61,7 @@ public class ESPatientDocument {
 	@Field(type = FieldType.Text, fielddata = true)
 	private String mobileNumber;
 
-    @Field(type = FieldType.Keyword)
+	@Field(type = FieldType.Keyword)
 	private String profession;
 
 	@Field(type = FieldType.Text)
@@ -73,7 +73,7 @@ public class ESPatientDocument {
 	@Field(type = FieldType.Text)
 	private String hospitalId;
 
-    @Field(type = FieldType.Keyword)
+	@Field(type = FieldType.Keyword)
 	private String referredBy;
 
 	@Field(type = FieldType.Date)
@@ -111,7 +111,7 @@ public class ESPatientDocument {
 
 	@Field(type = FieldType.Text)
 	private String motherName;
-	
+
 	@Field(type = FieldType.Text)
 	private String userLanguage;
 

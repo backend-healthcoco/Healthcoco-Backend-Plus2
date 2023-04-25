@@ -31,8 +31,6 @@ public class Immunisation extends GenericCollection {
 		this.patientId = patientId;
 	}
 
-	
-
 	public List<Vaccine> getVaccines() {
 		return vaccines;
 	}

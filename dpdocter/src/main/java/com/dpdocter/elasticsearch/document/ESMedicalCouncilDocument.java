@@ -10,41 +10,42 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Document(indexName = "medicalcouncils_in", type = "medicalcouncils")
 public class ESMedicalCouncilDocument {
 
-    @Id
-    private String id;
+	@Id
+	private String id;
 
-    @Field(type = FieldType.Text,fielddata = true)
-    private String medicalCouncil;
+	@Field(type = FieldType.Text, fielddata = true)
+	private String medicalCouncil;
 
-    @Field(type = FieldType.Date)
-    private Date updatedTime = new Date();
+	@Field(type = FieldType.Date)
+	private Date updatedTime = new Date();
 
-    public String getId() {
-	return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getMedicalCouncil() {
-	return medicalCouncil;
-    }
+	public String getMedicalCouncil() {
+		return medicalCouncil;
+	}
 
-    public void setMedicalCouncil(String medicalCouncil) {
-	this.medicalCouncil = medicalCouncil;
-    }
+	public void setMedicalCouncil(String medicalCouncil) {
+		this.medicalCouncil = medicalCouncil;
+	}
 
-    public Date getUpdatedTime() {
-	return updatedTime;
-    }
+	public Date getUpdatedTime() {
+		return updatedTime;
+	}
 
-    public void setUpdatedTime(Date updatedTime) {
-	this.updatedTime = updatedTime;
-    }
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
 
-    @Override
-    public String toString() {
-	return "ESMedicalCouncilDocument [id=" + id + ", medicalCouncil=" + medicalCouncil + ", updatedTime=" + updatedTime + "]";
-    }
+	@Override
+	public String toString() {
+		return "ESMedicalCouncilDocument [id=" + id + ", medicalCouncil=" + medicalCouncil + ", updatedTime="
+				+ updatedTime + "]";
+	}
 }

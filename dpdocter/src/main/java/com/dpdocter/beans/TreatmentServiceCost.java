@@ -5,28 +5,29 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class TreatmentServiceCost extends GenericCollection{
+public class TreatmentServiceCost extends GenericCollection {
 
 	private String id;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private String doctorId;
+	private String doctorId;
 
-    private TreatmentService treatmentService;
+	private TreatmentService treatmentService;
 
-    private List<TreatmentService> treatmentServicesList;
-    
-    private double cost = 0.0;
+	private List<TreatmentService> treatmentServicesList;
 
-    private Boolean discarded = false;
+	private double cost = 0.0;
 
-    private int ranking = 0;
+	private Boolean discarded = false;
 
-    private Boolean isFav = false;
+	private int ranking = 0;
+
+	private Boolean isFav = false;
 
 	public String getId() {
 		return id;
@@ -85,7 +86,7 @@ public class TreatmentServiceCost extends GenericCollection{
 	}
 
 	public List<TreatmentService> getTreatmentServicesList() {
-		if(treatmentServicesList != null && !treatmentServicesList.isEmpty()){
+		if (treatmentServicesList != null && !treatmentServicesList.isEmpty()) {
 			this.treatmentService = treatmentServicesList.get(0);
 			this.treatmentServicesList = null;
 		}
@@ -94,7 +95,7 @@ public class TreatmentServiceCost extends GenericCollection{
 
 	public void setTreatmentServicesList(List<TreatmentService> treatmentServicesList) {
 		this.treatmentServicesList = treatmentServicesList;
-		if(treatmentServicesList != null && !treatmentServicesList.isEmpty()){
+		if (treatmentServicesList != null && !treatmentServicesList.isEmpty()) {
 			this.treatmentService = treatmentServicesList.get(0);
 			this.treatmentServicesList = null;
 		}

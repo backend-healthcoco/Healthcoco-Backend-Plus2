@@ -3,19 +3,19 @@ package com.dpdocter.response;
 public class EyeTestJasperResponse {
 
 	private String distanceSPH = "--";
-	
+
 	private String nearSPH = "--";
-	
+
 	private String distanceCylinder = "--";
-	
+
 	private String nearCylinder = "--";
-	
+
 	private String distanceAxis = "--";
-	
+
 	private String nearAxis = "--";
-	
+
 	private String nearVA = "--";
-	
+
 	private String distanceVA = "--";
 
 	private String nearBaseCurve = "--";
@@ -31,10 +31,13 @@ public class EyeTestJasperResponse {
 	}
 
 	public void setDistanceSPH(String distanceSPH) {
-		if(distanceSPH == null)this.distanceSPH = "--";
-		else{
-			if(!distanceSPH.startsWith("-"))this.distanceSPH = "+"+distanceSPH;
-			else this.distanceSPH = distanceSPH;
+		if (distanceSPH == null)
+			this.distanceSPH = "--";
+		else {
+			if (!distanceSPH.startsWith("-"))
+				this.distanceSPH = "+" + distanceSPH;
+			else
+				this.distanceSPH = distanceSPH;
 		}
 	}
 
@@ -43,10 +46,13 @@ public class EyeTestJasperResponse {
 	}
 
 	public void setNearSPH(String nearSPH) {
-		if(nearSPH == null)this.nearSPH = "--";
-		else{
-			if(!nearSPH.startsWith("-"))this.nearSPH = "+"+nearSPH;
-			else this.nearSPH = nearSPH;	
+		if (nearSPH == null)
+			this.nearSPH = "--";
+		else {
+			if (!nearSPH.startsWith("-"))
+				this.nearSPH = "+" + nearSPH;
+			else
+				this.nearSPH = nearSPH;
 		}
 	}
 
@@ -55,10 +61,13 @@ public class EyeTestJasperResponse {
 	}
 
 	public void setDistanceCylinder(String distanceCylinder) {
-		if(distanceCylinder == null)this.distanceCylinder = "--";
-		else{
-			if(!distanceCylinder.startsWith("-"))this.distanceCylinder = "+"+distanceCylinder;
-			else this.distanceCylinder = distanceCylinder;	
+		if (distanceCylinder == null)
+			this.distanceCylinder = "--";
+		else {
+			if (!distanceCylinder.startsWith("-"))
+				this.distanceCylinder = "+" + distanceCylinder;
+			else
+				this.distanceCylinder = distanceCylinder;
 		}
 	}
 
@@ -67,10 +76,13 @@ public class EyeTestJasperResponse {
 	}
 
 	public void setNearCylinder(String nearCylinder) {
-		if(nearCylinder == null)this.nearCylinder = "--";
-		else{
-			if(!nearCylinder.startsWith("-"))this.nearCylinder = "+"+nearCylinder;
-			else this.nearCylinder = nearCylinder;
+		if (nearCylinder == null)
+			this.nearCylinder = "--";
+		else {
+			if (!nearCylinder.startsWith("-"))
+				this.nearCylinder = "+" + nearCylinder;
+			else
+				this.nearCylinder = nearCylinder;
 		}
 	}
 
@@ -79,8 +91,10 @@ public class EyeTestJasperResponse {
 	}
 
 	public void setDistanceAxis(String distanceAxis) {
-		if(distanceAxis == null || distanceAxis.equalsIgnoreCase("0"))this.distanceAxis = "--";
-		else this.distanceAxis = distanceAxis;
+		if (distanceAxis == null || distanceAxis.equalsIgnoreCase("0"))
+			this.distanceAxis = "--";
+		else
+			this.distanceAxis = distanceAxis;
 	}
 
 	public String getNearAxis() {
@@ -88,8 +102,10 @@ public class EyeTestJasperResponse {
 	}
 
 	public void setNearAxis(String nearAxis) {
-		if(nearAxis == null || nearAxis.equalsIgnoreCase("0"))this.nearAxis = "--";
-		else this.nearAxis = nearAxis;
+		if (nearAxis == null || nearAxis.equalsIgnoreCase("0"))
+			this.nearAxis = "--";
+		else
+			this.nearAxis = nearAxis;
 	}
 
 	public String getNearVA() {
@@ -97,8 +113,10 @@ public class EyeTestJasperResponse {
 	}
 
 	public void setNearVA(String nearVA) {
-		if(nearVA == null)this.nearVA = "--";
-		else this.nearVA = nearVA;
+		if (nearVA == null)
+			this.nearVA = "--";
+		else
+			this.nearVA = nearVA;
 	}
 
 	public String getDistanceVA() {
@@ -106,8 +124,10 @@ public class EyeTestJasperResponse {
 	}
 
 	public void setDistanceVA(String distanceVA) {
-		if(distanceVA == null)this.distanceVA = "--";
-		else this.distanceVA = distanceVA;
+		if (distanceVA == null)
+			this.distanceVA = "--";
+		else
+			this.distanceVA = distanceVA;
 	}
 
 	public String getNearBaseCurve() {
@@ -115,10 +135,13 @@ public class EyeTestJasperResponse {
 	}
 
 	public void setNearBaseCurve(String nearBaseCurve) {
-		if(nearBaseCurve == null)this.nearBaseCurve = "--";
-		else{
-			if(!nearBaseCurve.startsWith("-"))this.nearBaseCurve = "+"+nearBaseCurve;
-			else this.nearBaseCurve = nearBaseCurve;
+		if (nearBaseCurve == null)
+			this.nearBaseCurve = "--";
+		else {
+			if (!nearBaseCurve.startsWith("-"))
+				this.nearBaseCurve = "+" + nearBaseCurve;
+			else
+				this.nearBaseCurve = nearBaseCurve;
 		}
 	}
 
@@ -127,10 +150,13 @@ public class EyeTestJasperResponse {
 	}
 
 	public void setDistanceBaseCurve(String distanceBaseCurve) {
-		if(distanceBaseCurve == null)this.distanceBaseCurve = "--";
-		else{
-			if(!distanceBaseCurve.startsWith("-"))this.distanceBaseCurve = "+"+distanceBaseCurve;
-			else this.distanceBaseCurve = distanceBaseCurve;
+		if (distanceBaseCurve == null)
+			this.distanceBaseCurve = "--";
+		else {
+			if (!distanceBaseCurve.startsWith("-"))
+				this.distanceBaseCurve = "+" + distanceBaseCurve;
+			else
+				this.distanceBaseCurve = distanceBaseCurve;
 		}
 	}
 
@@ -139,10 +165,13 @@ public class EyeTestJasperResponse {
 	}
 
 	public void setNearDiameter(String nearDiameter) {
-		if(nearDiameter == null)this.nearDiameter = "--";
-		else{
-			if(!nearDiameter.startsWith("-"))this.nearDiameter = "+"+nearDiameter;
-			else this.nearDiameter = nearDiameter;
+		if (nearDiameter == null)
+			this.nearDiameter = "--";
+		else {
+			if (!nearDiameter.startsWith("-"))
+				this.nearDiameter = "+" + nearDiameter;
+			else
+				this.nearDiameter = nearDiameter;
 		}
 	}
 
@@ -151,10 +180,13 @@ public class EyeTestJasperResponse {
 	}
 
 	public void setDistanceDiameter(String distanceDiameter) {
-		if(distanceDiameter == null)this.distanceDiameter = "--";
-		else{
-			if(!distanceDiameter.startsWith("-"))this.distanceDiameter = "+"+distanceDiameter;
-			else this.distanceDiameter = distanceDiameter;
+		if (distanceDiameter == null)
+			this.distanceDiameter = "--";
+		else {
+			if (!distanceDiameter.startsWith("-"))
+				this.distanceDiameter = "+" + distanceDiameter;
+			else
+				this.distanceDiameter = distanceDiameter;
 		}
 	}
 

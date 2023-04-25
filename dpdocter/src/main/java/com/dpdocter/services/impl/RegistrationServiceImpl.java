@@ -21,7 +21,6 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -43,7 +42,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,10 +61,8 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DoctorCalendarView;
-import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FileDetails;
-import com.dpdocter.beans.FoodCommunity;
 import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Group;
@@ -125,7 +121,6 @@ import com.dpdocter.collections.EyePrescriptionCollection;
 import com.dpdocter.collections.FeedbackCollection;
 import com.dpdocter.collections.FeedbackRecommendationCollection;
 import com.dpdocter.collections.FlowsheetCollection;
-import com.dpdocter.collections.FoodCommunityCollection;
 import com.dpdocter.collections.FormContentCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.GrowthChartCollection;
@@ -208,8 +203,6 @@ import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorLabReportRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DynamicUIRepository;
-import com.dpdocter.repository.EyeAssessmentRepository;
-
 import com.dpdocter.repository.FeedbackRepository;
 import com.dpdocter.repository.FormContentRepository;
 import com.dpdocter.repository.GroupRepository;
@@ -257,7 +250,6 @@ import com.dpdocter.services.FileManager;
 import com.dpdocter.services.GenerateUniqueUserNameService;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.LocationServices;
-import com.dpdocter.services.LoginService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.OTPService;
@@ -272,11 +264,6 @@ import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
-
-import java.text.DateFormat;
-import java.time.Period;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
@@ -479,14 +466,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private GroupRepository groupRepository;
 
 	@Autowired
-	private LoginService loginService;
-
-	@Autowired
 	private AcadamicProfileRespository acadamicProfileRespository;
-	
+
 	@Autowired
 	private DoctorCalendarViewRepository doctorCalendarViewRepository;
-
 
 	@Value(value = "${healthcoco.support.number}")
 	private String healthcocoSupportNumber;
@@ -749,17 +732,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 					}
 				}
 
-				/*
-				 * if (referencesCollection != null) { if
-				 * (referencesCollection.getMobileNumber() != null) {
-				 * sendReferenceMessage(patientCollection, locationCollection.getLocationName(),
-				 * referencesCollection.getMobileNumber()); } }
-				 * 
-				 * if (referencesCollection != null) { if
-				 * (referencesCollection.getMobileNumber() != null) {
-				 * sendReferenceMessage(patientCollection, locationCollection.getLocationName(),
-				 * referencesCollection.getMobileNumber()); } }
-				 */
 				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
 						.findByDoctorIdAndLocationId(new ObjectId(request.getDoctorId()),
 								new ObjectId(request.getLocationId()));
@@ -768,11 +740,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 						sendWelcomeMessageToPatient(patientCollection, locationCollection, request.getMobileNumber());
 					}
 				}
-//				if (locationCollection.getIsPatientWelcomeMessageOn() != null) {
-//					if (locationCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE)) {
-//						sendWelcomeMessageToPatient(patientCollection, locationCollection, request.getMobileNumber());
-//					}
-//				}
 
 				pushNotificationServices.notifyUser(request.getDoctorId(), "New patient created.",
 						ComponentType.PATIENT_REFRESH.getType(), null, null);
@@ -1231,7 +1198,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return registeredPatientDetails;
 	}
 
-
 	// @Scheduled(cron = "0 30 12 * * ?", zone = "IST")
 	@Override
 	public Boolean updatePatientAge() {
@@ -1273,7 +1239,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return response;
 
 	}
-
 
 //	@Scheduled(cron = "0 30 12 * * ?", zone = "IST")
 	@Override
@@ -1515,10 +1480,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return users;
 	}
 
-	private char[] generateRandomAlphanumericString(int count) {
-		return RandomStringUtils.randomAlphabetic(count).toCharArray();
-	}
-
 	@Override
 	@Transactional
 	public RegisteredPatientDetails getPatientProfileByUserId(String userId, String doctorId, String locationId,
@@ -1619,24 +1580,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 				registeredPatientDetails.setAddress(patientCard.getAddress());
 				registeredPatientDetails.setBackendPatientId(patientCard.getId());
 				// calculate age of patient upto today
-
-//				if (registeredPatientDetails.getDob() != null) {
-//					if (registeredPatientDetails.getDob().getDays() > 0
-//							&& registeredPatientDetails.getDob().getMonths() > 0
-//							&& registeredPatientDetails.getDob().getYears() > 0) {
-//						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
-//						LocalDate today = LocalDate.now();
-//						LocalDate birthday = LocalDate.parse(registeredPatientDetails.getDob().getDays() + "/"
-//								+ registeredPatientDetails.getDob().getMonths() + "/"
-//								+ registeredPatientDetails.getDob().getYears(), formatter);
-//
-//						Period p = Period.between(birthday, today);
-//
-//						registeredPatientDetails.getDob().getAge().setDays(p.getDays());
-//						registeredPatientDetails.getDob().getAge().setMonths(p.getMonths());
-//						registeredPatientDetails.getDob().getAge().setYears(p.getYears());
-//					}
-//				}
 
 				@SuppressWarnings("unchecked")
 				Collection<ObjectId> groupIds = CollectionUtils.collect(patientCard.getPatientGroupCollections(),
@@ -2084,31 +2027,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 				BeanUtil.map(request, locationCollection);
 			}
 
-//			List<GeocodedLocation> geocodedLocations = locationServices
-//					.geocodeLocation((!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-//							? locationCollection.getStreetAddress() + ", "
-//							: "")
-//							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-//									? locationCollection.getLandmarkDetails() + ", "
-//									: "")
-//							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-//									? locationCollection.getLocality() + ", "
-//									: "")
-//							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-//									? locationCollection.getCity() + ", "
-//									: "")
-//							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-//									? locationCollection.getState() + ", "
-//									: "")
-//							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-//									? locationCollection.getCountry() + ", "
-//									: "")
-//							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-//									? locationCollection.getPostalCode()
-//									: ""));
-//
-//			if (geocodedLocations != null && !geocodedLocations.isEmpty())
-//				BeanUtil.map(geocodedLocations.get(0), locationCollection);
 			if (DPDoctorUtils.anyStringEmpty(request.getLocationName()))
 				locationCollection.setLocationName(locationName);
 			locationCollection.setAlternateClinicNumbers(request.getAlternateClinicNumbers());
@@ -3056,35 +2974,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 				}
 			}
 
-			CustomAggregationOperation projectionOperation = new CustomAggregationOperation(new Document("$group",
-					new BasicDBObject("_id", "$_id").append("doctorId", new BasicDBObject("$first", "$doctorId"))
-							.append("locationId", new BasicDBObject("$first", "$locationId"))
-							.append("isActivate", new BasicDBObject("$first", "$isActivate"))
-							.append("hasLoginAccess", new BasicDBObject("$first", "$hasLoginAccess"))
-							.append("isVerified", new BasicDBObject("$first", "$isVerified"))
-							.append("discarded", new BasicDBObject("$first", "$discarded"))
-							.append("patientInitial", new BasicDBObject("$first", "$patientInitial"))
-							.append("patientCounter", new BasicDBObject("$first", "$patientCounter"))
-							.append("appointmentBookingNumber",
-									new BasicDBObject("$first", "$appointmentBookingNumber"))
-							.append("consultationFee", new BasicDBObject("$first", "$consultationFee"))
-							.append("revisitConsultationFee", new BasicDBObject("$first", "$revisitConsultationFee"))
-							.append("appointmentSlot", new BasicDBObject("$first", "$appointmentSlot"))
-							.append("workingSchedules", new BasicDBObject("$first", "$workingSchedules"))
-							.append("facility", new BasicDBObject("$first", "$facility"))
-							.append("noOfReviews", new BasicDBObject("$first", "$noOfReviews"))
-							.append("noOfRecommenations", new BasicDBObject("$first", "$noOfRecommenations"))
-							.append("timeZone", new BasicDBObject("$first", "$timeZone"))
-							.append("rankingCount", new BasicDBObject("$first", "$rankingCount"))
-							.append("location", new BasicDBObject("$first", "$location"))
-							.append("hospital", new BasicDBObject("$first", "$hospital"))
-							.append("doctor", new BasicDBObject("$first", "$doctor"))
-							.append("user", new BasicDBObject("$first", "$user"))
-							.append("packageType", new BasicDBObject("$first", "$packageType"))
-							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
-
 			if (size > 0) {
 				doctorClinicProfileLookupResponses = mongoTemplate
 						.aggregate(
@@ -3998,7 +3887,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 					.orElse(null);
 			if (locationCollection != null && locationCollection.getIsDentalChain()) {
 				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
-						.findByDoctorIdAndLocationId(consentFormCollection.getDoctorId(), consentFormCollection.getLocationId());
+						.findByDoctorIdAndLocationId(consentFormCollection.getDoctorId(),
+								consentFormCollection.getLocationId());
 				if (doctorClinicProfileCollection != null && !doctorClinicProfileCollection.getIsShowPatientNumber()) {
 					mobileNumber = mobileNumber.replaceAll("\\w(?=\\w{4})", "*");
 				}
@@ -4263,18 +4153,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 									new CustomAggregationOperation(new Document(
 											"$group",
 											new BasicDBObject("_id",
-													new BasicDBObject("locationId", "$locationId")
-															.append("PID", "$PID")).append("count",
-																	new BasicDBObject("$sum", 1)))),
-									new CustomAggregationOperation(
-											new Document("$project",
-													new BasicDBObject("locationId", "$locationId").append("PID", "$PID")
-															.append("keep", new BasicDBObject("$cond",
-																	new BasicDBObject("if",
-																			new BasicDBObject("$gt",
-																					Arrays.asList("$count", 1)))
-																							.append("then", "$count")
-																							.append("else", 0))))),
+													new BasicDBObject("locationId", "$locationId").append(
+															"PID", "$PID"))
+													.append("count", new BasicDBObject("$sum", 1)))),
+									new CustomAggregationOperation(new Document("$project", new BasicDBObject(
+											"locationId", "$locationId")
+											.append("PID", "$PID")
+											.append("keep", new BasicDBObject("$cond",
+													new BasicDBObject("if",
+															new BasicDBObject("$gt", Arrays.asList("$count", 1)))
+															.append("then", "$count").append("else", 0))))),
 									Aggregation.match(new Criteria("keep").gt(1))),
 							PatientCollection.class, PatientCollection.class)
 					.getMappedResults();
@@ -4597,8 +4485,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 													new BasicDBObject("if",
 															new BasicDBObject("$ne",
 																	Arrays.asList("$emailAddress", "$userName")))
-																			.append("then", "$$KEEP")
-																			.append("else", "$$PRUNE")))),
+															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 									Aggregation.project("id")), UserCollection.class, UserCollection.class)
 							.getMappedResults();
 				} else {
@@ -4614,8 +4501,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 													new BasicDBObject("if",
 															new BasicDBObject("$ne",
 																	Arrays.asList("$user.emailAddress",
-																			"$user.userName"))).append("then", "$$KEEP")
-																					.append("else", "$$PRUNE")))),
+																			"$user.userName")))
+															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 											new CustomAggregationOperation(
 													new Document("$project", new BasicDBObject("id", "user.id")))),
 									UserCollection.class, UserCollection.class)
@@ -5077,66 +4964,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 			throw new BusinessException(ServiceError.Unknown, "Error while updating patient number");
 		}
 		return response;
-	}
-
-	@SuppressWarnings("unchecked")
-	private void setPatientDetailsResponse(UserCollection userCollection, PatientCollection patientCollection,
-			RegisteredPatientDetails registeredPatientDetails) {
-		if (registeredPatientDetails == null)
-			registeredPatientDetails = new RegisteredPatientDetails();
-		BeanUtil.map(userCollection, registeredPatientDetails);
-		registeredPatientDetails.setImageUrl(getFinalImageURL(patientCollection.getImageUrl()));
-		registeredPatientDetails.setThumbnailUrl(getFinalImageURL(patientCollection.getThumbnailUrl()));
-		registeredPatientDetails.setUserId(userCollection.getId().toString());
-
-		Patient patient = new Patient();
-		BeanUtil.map(patientCollection, patient);
-		registeredPatientDetails.setBackendPatientId(patientCollection.getId().toString());
-		patient.setPatientId(userCollection.getId().toString());
-
-		registeredPatientDetails.setPatient(patient);
-		registeredPatientDetails.setLocalPatientName(patient.getLocalPatientName());
-		registeredPatientDetails.setDob(patientCollection.getDob());
-		registeredPatientDetails.setGender(patientCollection.getGender());
-		registeredPatientDetails.setPID(patientCollection.getPID());
-		registeredPatientDetails.setPNUM(patientCollection.getPNUM());
-		registeredPatientDetails.setConsultantDoctorIds(patient.getConsultantDoctorIds());
-		registeredPatientDetails.setIsChild(patientCollection.getIsChild());
-		if (!DPDoctorUtils.anyStringEmpty(patientCollection.getDoctorId()))
-			registeredPatientDetails.setDoctorId(patientCollection.getDoctorId().toString());
-		if (!DPDoctorUtils.anyStringEmpty(patientCollection.getLocationId()))
-			registeredPatientDetails.setLocationId(patientCollection.getLocationId().toString());
-		if (!DPDoctorUtils.anyStringEmpty(patientCollection.getHospitalId()))
-			registeredPatientDetails.setHospitalId(patientCollection.getHospitalId().toString());
-		registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
-
-		if (patientCollection.getReferredBy() != null) {
-			ReferencesCollection referencesCollection = referrenceRepository.findById(patientCollection.getReferredBy())
-					.orElse(null);
-
-			if (referencesCollection != null) {
-				Reference reference = new Reference();
-				BeanUtil.map(referencesCollection, reference);
-				registeredPatientDetails.setReferredBy(reference);
-			}
-		}
-
-		registeredPatientDetails.setAddress(patientCollection.getAddress());
-
-		List<PatientGroupCollection> groupCollections = patientGroupRepository
-				.findByPatientIdAndDiscardedIsFalse(patientCollection.getUserId());
-		if (groupCollections != null && !groupCollections.isEmpty()) {
-
-			List<ObjectId> groupObjectIds = (List<ObjectId>) CollectionUtils.collect(groupCollections,
-					new BeanToPropertyValueTransformer("groupId"));
-			List<Group> groups = mongoTemplate
-					.aggregate(
-							Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(groupObjectIds)
-									.and("locationId").is(patientCollection.getLocationId()))),
-							GroupCollection.class, Group.class)
-					.getMappedResults();
-			registeredPatientDetails.setGroups(groups);
-		}
 	}
 
 	private void updatePatientData(ObjectId locationObjectId, ObjectId hospitalObjectId, ObjectId patientObjectId,
@@ -5604,7 +5431,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 							new BasicDBObject("$cond",
 									new BasicDBObject("if",
 											new BasicDBObject("$ne", Arrays.asList("$emailAddress", "$userName")))
-													.append("then", "$$KEEP").append("else", "$$PRUNE")))))
+											.append("then", "$$KEEP").append("else", "$$PRUNE")))))
 					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 			List<UserCollection> users = mongoTemplate

@@ -38,7 +38,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	@Autowired
 	private PrescriptionServices prescriptionServices;
 
-	
 	@Value(value = "${jasper.print.dischargeSummary.a4.fileName}")
 	private String dischargeSummaryReportA4FileName;
 
@@ -47,8 +46,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 	@Autowired
 	PushNotificationServices pushNotificationServices;
-	
-	
 
 	@Override
 	@Transactional
@@ -129,6 +126,5 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		} else
 			return null;
 	}
-	
 
 }

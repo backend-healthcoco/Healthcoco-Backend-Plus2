@@ -1,6 +1,5 @@
 package com.dpdocter.beans.v2;
 
-import java.util.Arrays;
 import java.util.List;
 
 import com.dpdocter.beans.DOB;
@@ -44,13 +43,13 @@ public class DoctorSignupRequest {
 	private String cityId;
 
 	private String deviceType;
-	
+
 	private String promoCode;
-	
-	private Boolean isMedicalStudent=false;
-	
-	private String timeZone ;
-	
+
+	private Boolean isMedicalStudent = false;
+
+	private String timeZone;
+
 	private String countryCode;
 
 	public DOB getDob() {
@@ -76,13 +75,10 @@ public class DoctorSignupRequest {
 	public void setPassword(char[] password) {
 		this.password = password;
 	}
-	
 
 	public String getEmailAddress() {
 		return emailAddress != null ? emailAddress.toLowerCase() : emailAddress;
 	}
-
-	
 
 	public String getMobileNumber() {
 		return mobileNumber;
@@ -191,8 +187,6 @@ public class DoctorSignupRequest {
 	public void setDeviceType(String deviceType) {
 		this.deviceType = deviceType;
 	}
-	
-	
 
 	public String getPromoCode() {
 		return promoCode;
@@ -209,8 +203,6 @@ public class DoctorSignupRequest {
 	public void setIsMedicalStudent(Boolean isMedicalStudent) {
 		this.isMedicalStudent = isMedicalStudent;
 	}
-	
-	
 
 	public String getTimeZone() {
 		return timeZone;
@@ -219,8 +211,6 @@ public class DoctorSignupRequest {
 	public void setTimeZone(String timeZone) {
 		this.timeZone = timeZone;
 	}
-	
-	
 
 	public String getCountryCode() {
 		return countryCode;
@@ -228,15 +218,6 @@ public class DoctorSignupRequest {
 
 	public void setCountryCode(String countryCode) {
 		this.countryCode = countryCode;
-	}
-
-	@Override
-	public String toString() {
-		return "DoctorSignupRequest [title=" + title + ", firstName=" + firstName + ", password="
-				+ password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
-				+ ", gender=" + gender + ", dob=" + dob + ", specialities=" + specialities + ", locationName="
-				+ locationName + ", country=" + country + ", state=" + state + ", city=" + city + ", streetAddress="
-				+ streetAddress + ", registerNumber=" + registerNumber + "]";
 	}
 
 }

@@ -6,9 +6,7 @@ import java.util.Map;
 
 import org.bson.types.ObjectId;
 
-import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.ClinicalNotesJasperDetails;
-import com.dpdocter.beans.ClinicalNotesResponseFieldWise;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.beans.PatientVisit;
@@ -22,8 +20,6 @@ import com.dpdocter.request.AddMultipleDataRequest;
 import com.dpdocter.response.PatientVisitResponse;
 
 public interface PatientVisitService {
-	// boolean addRecord(PatientVisit request);
-
 	String addRecord(Object details, VisitedFor visitedFor, String visitId);
 
 	boolean addRecord(String patientId, String doctorId, String locationId, String hospitalId, VisitedFor visitedFor);
@@ -73,13 +69,9 @@ public interface PatientVisitService {
 
 	PatientVisitResponse getPatientLastVisit(String doctorId, String locationId, String hospitalId, String patientId);
 
-
-
 	ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId, String contentLineStyle,
 			Map<String, Object> parameters, Boolean showUSG, Boolean isCustomPDF, Boolean showLMP, Boolean showEDD,
 			Boolean showNoOfChildren, ClinicalNotesCollection clinicalNotesCollection, Boolean showVitalSign);
-
-//	ClinicalNotesResponseFieldWise getPatientFirstVisit(String doctorId, String locationId, String hospitalId, String patientId, String type);
 
 	Integer getPatientFirstVisitCount(String doctorId, String locationId, String hospitalId, String patientId);
 

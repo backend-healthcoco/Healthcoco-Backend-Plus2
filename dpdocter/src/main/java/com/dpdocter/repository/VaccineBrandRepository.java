@@ -5,6 +5,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.dpdocter.collections.VaccineBrandCollection;
 
-public interface VaccineBrandRepository extends MongoRepository<VaccineBrandCollection, ObjectId>{
+public interface VaccineBrandRepository extends MongoRepository<VaccineBrandCollection, ObjectId> {
 
 }

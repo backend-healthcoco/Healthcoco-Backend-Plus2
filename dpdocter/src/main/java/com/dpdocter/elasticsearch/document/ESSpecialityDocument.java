@@ -9,53 +9,53 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 @Document(indexName = "specialities_in", type = "specialities")
 public class ESSpecialityDocument {
-    @Id
-    private String id;
+	@Id
+	private String id;
 
-    @Field(type = FieldType.Text)
-    private String speciality;
+	@Field(type = FieldType.Text)
+	private String speciality;
 
-    @Field(type = FieldType.Text)
-    private String superSpeciality;
+	@Field(type = FieldType.Text)
+	private String superSpeciality;
 
-    @Field(type = FieldType.Text)
-    private String metaTitle;
-    
-    @Field(type = FieldType.Text)
-    private String formattedSpeciality;
+	@Field(type = FieldType.Text)
+	private String metaTitle;
 
-    @Field(type = FieldType.Text)
-    private String formattedSuperSpeciality;
-    
-    @Field(type = FieldType.Text)
-    private String code;
-    
-    @Field(type = FieldType.Date)
-    private Date updatedTime = new Date();
+	@Field(type = FieldType.Text)
+	private String formattedSpeciality;
 
-    public String getId() {
-	return id;
-    }
+	@Field(type = FieldType.Text)
+	private String formattedSuperSpeciality;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	@Field(type = FieldType.Text)
+	private String code;
 
-    public String getSpeciality() {
-	return speciality;
-    }
+	@Field(type = FieldType.Date)
+	private Date updatedTime = new Date();
 
-    public void setSpeciality(String speciality) {
-	this.speciality = speciality;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getCode() {
-	return code;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setCode(String code) {
-	this.code = code;
-    }
+	public String getSpeciality() {
+		return speciality;
+	}
+
+	public void setSpeciality(String speciality) {
+		this.speciality = speciality;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
 
 	public String getSuperSpeciality() {
 		return superSpeciality;

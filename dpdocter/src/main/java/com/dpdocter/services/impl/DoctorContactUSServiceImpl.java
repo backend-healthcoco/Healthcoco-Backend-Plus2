@@ -24,7 +24,6 @@ import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.DoctorContactUsCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TokenCollection;
-import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.DoctorContactStateType;
 import com.dpdocter.enums.SMSStatus;
@@ -33,7 +32,6 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorContactUsRepository;
 import com.dpdocter.repository.TokenRepository;
-import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.services.DoctorContactUsService;
 import com.dpdocter.services.ForgotPasswordService;
@@ -71,37 +69,33 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 
 	@Value(value = "${mail.signup.request.subject}")
 	private String signupRequestSubject;
-	
+
 	@Autowired
 	private TokenRepository tokenRepository;
-	
+
 	@Autowired
 	private SMSServices smsServices;
-	
+
 	@Value(value = "${welcome.link}")
 	private String welcomeLink;
-	
+
 	@Autowired
 	private ForgotPasswordService forgotPasswordService;
 
-	@Autowired
-	private UserRepository userRepository;
-	
 	@Override
 	@Transactional
 	public String submitDoctorContactUSInfo(DoctorContactUs doctorContactUs) {
 		String response = null;
 		DoctorContactUsCollection doctorContactUsCollection = new DoctorContactUsCollection();
-		DoctorContactUsCollection doctorContactUsCollections = doctorContactUsRepository.findByEmailAddressIgnoreCase(doctorContactUs.getEmailAddress());
-	
-	if(doctorContactUsCollections!=null)
-		if(doctorContactUsCollections.getEmailAddress() !=null) {
-			throw new BusinessException(ServiceError.Unknown,
-					"This emailId "+ doctorContactUs.getEmailAddress()+" already exists,Please Contact our Support number 8459802223.");
-		}
-		
-		
-		
+		DoctorContactUsCollection doctorContactUsCollections = doctorContactUsRepository
+				.findByEmailAddressIgnoreCase(doctorContactUs.getEmailAddress());
+
+		if (doctorContactUsCollections != null)
+			if (doctorContactUsCollections.getEmailAddress() != null) {
+				throw new BusinessException(ServiceError.Unknown, "This emailId " + doctorContactUs.getEmailAddress()
+						+ " already exists,Please Contact our Support number 8459802223.");
+			}
+
 		if (doctorContactUs != null) {
 			BeanUtil.map(doctorContactUs, doctorContactUsCollection);
 			try {
@@ -109,50 +103,46 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 				doctorContactUsCollection.setUserName(doctorContactUs.getEmailAddress());
 				doctorContactUsCollection = doctorContactUsRepository.save(doctorContactUsCollection);
 
-				
 				TokenCollection tokenCollection = new TokenCollection();
 				tokenCollection.setResourceId(doctorContactUsCollection.getId());
 				tokenCollection.setCreatedTime(new Date());
 				tokenCollection = tokenRepository.save(tokenCollection);
-				
-				String body=null;
-				
-				
-				 body = mailBodyGenerator.generateActivationEmailBody(
+
+				String body = null;
+
+				body = mailBodyGenerator.generateActivationEmailBody(
 						doctorContactUs.getTitle() + " " + doctorContactUs.getFirstName(), tokenCollection.getId(),
 						"doctorWelcomeTemplate.vm", null, null, null);
 				mailService.sendEmail(doctorContactUs.getEmailAddress(), doctorWelcomeSubject, body, null);
 
-				
 				body = mailBodyGenerator.generateContactEmailBody(doctorContactUs, "Doctor");
 				mailService.sendEmail(mailTo, signupRequestSubject, body, null);
-				
-				
-			//	Thank you for signing up, we are excited to get you started with Healthcoco+. Our representative will reach out to you within 1 working day.
+
+				// Thank you for signing up, we are excited to get you started with Healthcoco+.
+				// Our representative will reach out to you within 1 working day.
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-					
-						smsTrackDetail.setType(ComponentType.SIGNED_UP.getType());
-						SMSDetail smsDetail = new SMSDetail();
-						
-						smsDetail.setUserName(doctorContactUs.getFirstName());
-						SMS sms = new SMS();
-						String link = welcomeLink + "/" + tokenCollection.getId()+"/";
-						String shortUrl = DPDoctorUtils.urlShortner(link);
-						sms.setSmsText("Please set your Healthcoco+ password, link is valid for 60 min only. Password set link  " 
+
+				smsTrackDetail.setType(ComponentType.SIGNED_UP.getType());
+				SMSDetail smsDetail = new SMSDetail();
+
+				smsDetail.setUserName(doctorContactUs.getFirstName());
+				SMS sms = new SMS();
+				String link = welcomeLink + "/" + tokenCollection.getId() + "/";
+				String shortUrl = DPDoctorUtils.urlShortner(link);
+				sms.setSmsText(
+						"Please set your Healthcoco+ password, link is valid for 60 min only. Password set link  "
 								+ shortUrl);
-		
-							SMSAddress smsAddress = new SMSAddress();
-						smsAddress.setRecipient(doctorContactUs.getMobileNumber());
-						sms.setSmsAddress(smsAddress);
-						smsDetail.setSms(sms);
-						smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-						List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-						smsDetails.add(smsDetail);
-						smsTrackDetail.setSmsDetails(smsDetails);
-						smsServices.sendSMS(smsTrackDetail, true);
-				
-				
-				
+
+				SMSAddress smsAddress = new SMSAddress();
+				smsAddress.setRecipient(doctorContactUs.getMobileNumber());
+				sms.setSmsAddress(smsAddress);
+				smsDetail.setSms(sms);
+				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+				smsDetails.add(smsDetail);
+				smsTrackDetail.setSmsDetails(smsDetails);
+				smsServices.sendSMS(smsTrackDetail, true);
+
 				if (doctorContactUsCollection != null) {
 					response = doctorWelcomeMessage;
 				}
@@ -163,8 +153,8 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 				request.setMobileNumber(doctorContactUs.getMobileNumber());
 				request.setUsername(doctorContactUs.getUserName());
 				forgotPasswordService.forgotPasswordForDoctor(request);
-				throw new BusinessException(ServiceError.Unknown,
-						"An account already exists with " + doctorContactUs.getEmailAddress()+" .Please use another email address to register.");
+				throw new BusinessException(ServiceError.Unknown, "An account already exists with "
+						+ doctorContactUs.getEmailAddress() + " .Please use another email address to register.");
 			} catch (BusinessException be) {
 				logger.error(be);
 				throw be;
@@ -243,32 +233,5 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 		}
 		return response;
 	}
-	
-	private void sendWelcomeMessage(String mobileNumber , String tokenId) {
-		try {
-				String link = welcomeLink + "/" + tokenId;
-				String shortUrl = DPDoctorUtils.urlShortner(link);
-				String message = "Thank you for joining the Healthcoco community. Kindly set the new password by clicking on the link below, and login to enjoy our services. "+shortUrl;
-				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-				smsTrackDetail.setType("WELCOME_SMS");
-				SMSDetail smsDetail = new SMSDetail();
-				SMS sms = new SMS();
-				sms.setSmsText(message);
 
-				SMSAddress smsAddress = new SMSAddress();
-				smsAddress.setRecipient(mobileNumber);
-				sms.setSmsAddress(smsAddress);
-
-				smsDetail.setSms(sms);
-				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-				smsDetails.add(smsDetail);
-				smsTrackDetail.setSmsDetails(smsDetails);
-				smsServices.sendSMS(smsTrackDetail, true);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
 }

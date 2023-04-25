@@ -84,8 +84,9 @@ public class ContactsApi {
 	@GET
 	@ApiOperation(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC, notes = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC)
 	public Response<DoctorContactsResponse> getDoctorContacts(@PathParam("type") String type,
-			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
-			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("page") long page, @QueryParam("size") int size,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded, @QueryParam("role") String role) {
 
@@ -139,10 +140,11 @@ public class ContactsApi {
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam("role") String role,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm,@QueryParam("userId") String userId) {
+			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("userId") String userId) {
 
 		List<RegisteredPatientDetails> registeredPatientDetails = contactsService.getDoctorContactsHandheld(doctorId,
-				locationId, hospitalId, updatedTime, discarded, role, page, size, searchTerm,userId);
+				locationId, hospitalId, updatedTime, discarded, role, page, size, searchTerm, userId);
 		if (registeredPatientDetails != null && !registeredPatientDetails.isEmpty()) {
 			for (RegisteredPatientDetails registeredPatientDetail : registeredPatientDetails) {
 				registeredPatientDetail.setImageUrl(getFinalImageURL(registeredPatientDetail.getImageUrl()));
@@ -262,15 +264,15 @@ public class ContactsApi {
 			@QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-		if (DPDoctorUtils.anyStringEmpty(locationId)&&DPDoctorUtils.anyStringEmpty(doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(locationId) && DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Response<Object> response = contactsService.getAllGroups(page, size, doctorId, locationId, hospitalId, updatedTime,
-				discarded);
+		Response<Object> response = contactsService.getAllGroups(page, size, doctorId, locationId, hospitalId,
+				updatedTime, discarded);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ContactsUrls.ADD_GROUP_TO_PATIENT)
 	@POST
 	@ApiOperation(value = PathProxy.ContactsUrls.ADD_GROUP_TO_PATIENT, notes = PathProxy.ContactsUrls.ADD_GROUP_TO_PATIENT)
@@ -358,16 +360,17 @@ public class ContactsApi {
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded, @QueryParam("searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(locationId)&&DPDoctorUtils.anyStringEmpty(doctorId)) {
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded,
+			@QueryParam("searchTerm") String searchTerm) {
+		if (DPDoctorUtils.anyStringEmpty(locationId) && DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Response<Object> response = contactsService.getBranches(page, size, doctorId, locationId, hospitalId, updatedTime,
-				discarded, searchTerm);
+		Response<Object> response = contactsService.getBranches(page, size, doctorId, locationId, hospitalId,
+				updatedTime, discarded, searchTerm);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ContactsUrls.GENERATE_DELIVERY_REPORT)
 	@POST
 	@ApiOperation(value = PathProxy.ContactsUrls.GENERATE_DELIVERY_REPORT, notes = PathProxy.ContactsUrls.GENERATE_DELIVERY_REPORT)
@@ -386,13 +389,12 @@ public class ContactsApi {
 	@GET
 	@ApiOperation(value = PathProxy.ContactsUrls.GET_DELIVERY_REPORT, notes = PathProxy.ContactsUrls.GET_DELIVERY_REPORT)
 	public Response<Object> getDeliveryReports(@QueryParam("page") int page, @QueryParam("size") int size,
-			@QueryParam("doctorId") String doctorId,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+			@QueryParam("doctorId") String doctorId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Response<Object> response = contactsService.getDeliveryReport(page, size, doctorId,updatedTime);
+		Response<Object> response = contactsService.getDeliveryReport(page, size, doctorId, updatedTime);
 		return response;
 	}
 }

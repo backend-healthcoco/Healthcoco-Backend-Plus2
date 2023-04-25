@@ -35,26 +35,29 @@ import io.swagger.annotations.ApiOperation;
 public class UserFavouritesApi {
 
 	private static Logger logger = Logger.getLogger(UserFavouritesApi.class.getName());
-	
+
 	@Autowired
 	private UserFavouriteService userFavouriteService;
-	
+
 	@Path(value = PathProxy.UserFavouritesUrls.ADD_REMOVE_FROM_FAVOURITES)
 	@GET
 	@ApiOperation(value = PathProxy.UserFavouritesUrls.ADD_REMOVE_FROM_FAVOURITES, notes = PathProxy.UserFavouritesUrls.ADD_REMOVE_FROM_FAVOURITES)
-	public Response<Boolean> addRemoveFavourites(@PathParam("resourceType") String resourceType, @PathParam("userId") String userId, @PathParam("resourceId") String resourceId,
-			@QueryParam("locationId") String locationId, @DefaultValue(value = "false") @QueryParam("discarded") Boolean discarded) {
+	public Response<Boolean> addRemoveFavourites(@PathParam("resourceType") String resourceType,
+			@PathParam("userId") String userId, @PathParam("resourceId") String resourceId,
+			@QueryParam("locationId") String locationId,
+			@DefaultValue(value = "false") @QueryParam("discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(userId, resourceId, resourceType)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Boolean addRemoveResponse = userFavouriteService.addRemoveFavourites(userId, resourceId, resourceType, locationId, discarded);
+		Boolean addRemoveResponse = userFavouriteService.addRemoveFavourites(userId, resourceId, resourceType,
+				locationId, discarded);
 
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(addRemoveResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_DOCTORS)
 	@GET
 	@ApiOperation(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_DOCTORS, notes = PathProxy.UserFavouritesUrls.GET_FAVOURITE_DOCTORS)
@@ -74,8 +77,8 @@ public class UserFavouritesApi {
 	@Path(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_PHARMACIES)
 	@GET
 	@ApiOperation(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_PHARMACIES, notes = PathProxy.UserFavouritesUrls.GET_FAVOURITE_PHARMACIES)
-	public Response<ESUserLocaleDocument> getFavouritePharmacies(@QueryParam("page") long page, @QueryParam("size") int size,
-			@PathParam("userId") String userId) {
+	public Response<ESUserLocaleDocument> getFavouritePharmacies(@QueryParam("page") long page,
+			@QueryParam("size") int size, @PathParam("userId") String userId) {
 
 		List<ESUserLocaleDocument> pharmacies = userFavouriteService.getFavouritePharmacies(page, size, userId);
 

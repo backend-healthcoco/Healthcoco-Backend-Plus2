@@ -14,31 +14,31 @@ public class CertificateTemplateCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
-	
+
 	@Field
 	private String type;
-	
+
 	@Field
 	private String htmlText;
-	
+
 	@Field
 	private List<String> specialities;
-	
+
 	@Field
 	private List<Fields> inputElements;
 
 	@Field
 	private ObjectId doctorId;
-	
+
 	@Field
 	private ObjectId locationId;
-	
+
 	@Field
 	private ObjectId hospitalId;
 
 	@Field
 	private Boolean discarded = false;
-	
+
 	public ObjectId getId() {
 		return id;
 	}

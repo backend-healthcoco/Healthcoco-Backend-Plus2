@@ -1,6 +1,5 @@
 package com.dpdocter.collections;
 
-import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -12,8 +11,8 @@ import com.dpdocter.beans.Medication;
 import com.dpdocter.beans.RiskScore;
 import com.dpdocter.beans.VitalSigns;
 
-@Document(collection ="nurses_admission_form_cl")
-public class NursesAdmissionCollection extends GenericCollection{
+@Document(collection = "nurses_admission_form_cl")
+public class NursesAdmissionCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 
@@ -37,23 +36,23 @@ public class NursesAdmissionCollection extends GenericCollection{
 	@Field
 	private String nursingCare;
 	@Field
-	private String coMorbidities;//more than one illness or disease
+	private String coMorbidities;// more than one illness or disease
 	@Field
-    private String advice;
+	private String advice;
 	@Field
 	private List<RiskScore> riskFactor;
 	@Field
 	private int totalRiskScore;
-	
+
 	@Field
 	private boolean discarded = false;
 
 	@Field
 	private String uniqueEmrId;
-	
+
 	@Field
 	private String ipdNumber;
-	
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -94,8 +93,6 @@ public class NursesAdmissionCollection extends GenericCollection{
 		this.patientId = patientId;
 	}
 
-	
-
 	public String getNurseName() {
 		return nurseName;
 	}
@@ -103,8 +100,6 @@ public class NursesAdmissionCollection extends GenericCollection{
 	public void setNurseName(String nurseName) {
 		this.nurseName = nurseName;
 	}
-
-
 
 	public VitalSigns getVitalSigns() {
 		return vitalSigns;
@@ -185,9 +180,5 @@ public class NursesAdmissionCollection extends GenericCollection{
 	public void setIpdNumber(String ipdNumber) {
 		this.ipdNumber = ipdNumber;
 	}
-
-	
-	
-	
 
 }

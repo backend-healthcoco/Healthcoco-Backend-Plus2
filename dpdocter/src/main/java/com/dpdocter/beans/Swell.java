@@ -3,8 +3,8 @@ package com.dpdocter.beans;
 public class Swell {
 
 	private String swell;
-	
-	private Boolean value=false;
+
+	private Boolean value = false;
 
 	public String getSwell() {
 		return swell;
@@ -21,6 +21,5 @@ public class Swell {
 	public void setValue(Boolean value) {
 		this.value = value;
 	}
-	
-	
+
 }

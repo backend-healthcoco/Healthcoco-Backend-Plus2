@@ -8,65 +8,65 @@ import com.dpdocter.enums.AppointmentState;
 
 public class EventRequest {
 
-    private String id;
+	private String id;
 
-    private AppointmentState state;
+	private AppointmentState state;
 
-    private String subject;
+	private String subject;
 
-    private String explanation;
+	private String explanation;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
-    
-    private String doctorId;
+	private String hospitalId;
 
-    private String patientId;
+	private String doctorId;
 
-    private WorkingHours time;
+	private String patientId;
 
-    private Boolean isCalenderBlocked = false;
+	private WorkingHours time;
 
-    private Date fromDate;
-    
-    private Date toDate;
+	private Boolean isCalenderBlocked = false;
 
-    private Boolean isAllDayEvent = false;
-    
-    private List<String> doctorIds;
-    
+	private Date fromDate;
+
+	private Date toDate;
+
+	private Boolean isAllDayEvent = false;
+
+	private List<String> doctorIds;
+
 	private String localPatientName;
 
 	private String mobileNumber;
-	
+
 	private Boolean isPatientRequired;
-	
-    public String getId() {
-	return id;
-    }
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public AppointmentState getState() {
-	return state;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setState(AppointmentState state) {
-	this.state = state;
-    }
+	public AppointmentState getState() {
+		return state;
+	}
 
-    public String getSubject() {
-	return subject;
-    }
+	public void setState(AppointmentState state) {
+		this.state = state;
+	}
 
-    public void setSubject(String subject) {
-	this.subject = subject;
-    }
+	public String getSubject() {
+		return subject;
+	}
 
-    public String getExplanation() {
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+
+	public String getExplanation() {
 		return explanation;
 	}
 
@@ -75,36 +75,36 @@ public class EventRequest {
 	}
 
 	public String getLocationId() {
-	return locationId;
-    }
+		return locationId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public WorkingHours getTime() {
-	return time;
-    }
+	public WorkingHours getTime() {
+		return time;
+	}
 
-    public void setTime(WorkingHours time) {
-	this.time = time;
-    }
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
 
-    public Boolean getIsCalenderBlocked() {
-	return isCalenderBlocked;
-    }
+	public Boolean getIsCalenderBlocked() {
+		return isCalenderBlocked;
+	}
 
-    public void setIsCalenderBlocked(Boolean isCalenderBlocked) {
-	this.isCalenderBlocked = isCalenderBlocked;
-    }
+	public void setIsCalenderBlocked(Boolean isCalenderBlocked) {
+		this.isCalenderBlocked = isCalenderBlocked;
+	}
 
 	public Date getFromDate() {
 		return fromDate;
@@ -137,7 +137,7 @@ public class EventRequest {
 	public void setDoctorIds(List<String> doctorIds) {
 		this.doctorIds = doctorIds;
 	}
-	
+
 	public String getLocalPatientName() {
 		return localPatientName;
 	}

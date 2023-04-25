@@ -5,7 +5,7 @@ import java.util.List;
 public class AppointmentAnalyticResponse {
 
 	private long totalAppointments;
-	
+
 	List<AppointmentDetailAnalyticResponse> appointments;
 
 	public long getTotalAppointments() {

@@ -23,10 +23,8 @@ public class AddMultipleDataRequest {
 	private AppointmentRequest appointmentRequest;
 
 	private PatientTreatmentAddEditRequest treatmentRequest;
-	
+
 	private Date createdTime;
-	
-	
 
 	public Date getCreatedTime() {
 		return createdTime;

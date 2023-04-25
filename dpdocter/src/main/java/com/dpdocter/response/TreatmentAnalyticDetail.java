@@ -15,7 +15,6 @@ public class TreatmentAnalyticDetail {
 	private List<TreatmentService> services;
 	private List<String> status;
 	private String doctorName;
-	
 
 	public List<String> getStatus() {
 		return status;

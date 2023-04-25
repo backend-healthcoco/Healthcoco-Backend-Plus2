@@ -207,11 +207,6 @@ public class PaediatricAPI {
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_VACCINE_BRAND_ASSOCIATION, notes = PathProxy.PaediatricUrls.GET_VACCINE_BRAND_ASSOCIATION)
 	public Response<VaccineBrandAssociationResponse> getVaccineBrandAssociation(
 			@QueryParam("vaccineId") String vaccineId, @QueryParam("vaccineBrandId") String vaccineBrandId) {
-		/*
-		 * if (DPDoctorUtils.allStringsEmpty(vaccineBrandId,vaccineId)) {
-		 * logger.warn("Invalid Input"); throw new
-		 * BusinessException(ServiceError.InvalidInput, "Invalid Input"); }
-		 */
 		List<VaccineBrandAssociationResponse> vaccineResponse = paediatricService.getVaccineBrandAssociation(vaccineId,
 				vaccineBrandId);
 		Response<VaccineBrandAssociationResponse> response = new Response<VaccineBrandAssociationResponse>();
@@ -224,11 +219,6 @@ public class PaediatricAPI {
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_MULTIPLE_VACCINE_BRAND_ASSOCIATION, notes = PathProxy.PaediatricUrls.GET_MULTIPLE_VACCINE_BRAND_ASSOCIATION)
 	public Response<GroupedVaccineBrandAssociationResponse> getMultipleVaccineBrandAssociation(
 			@MatrixParam("vaccineId") List<String> vaccineIds, @QueryParam("vaccineBrandId") String vaccineBrandId) {
-		/*
-		 * if (DPDoctorUtils.allStringsEmpty(vaccineBrandId,vaccineId)) {
-		 * logger.warn("Invalid Input"); throw new
-		 * BusinessException(ServiceError.InvalidInput, "Invalid Input"); }
-		 */
 		List<GroupedVaccineBrandAssociationResponse> vaccineResponse = paediatricService
 				.getGroupedVaccineBrandAssociation(vaccineIds);
 		Response<GroupedVaccineBrandAssociationResponse> response = new Response<GroupedVaccineBrandAssociationResponse>();

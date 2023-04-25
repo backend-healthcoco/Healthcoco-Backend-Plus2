@@ -4,6 +4,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
 @Document(collection = "form_content_cl")
 public class FormContentCollection extends GenericCollection {
 	@Id
@@ -22,8 +23,8 @@ public class FormContentCollection extends GenericCollection {
 	private String type;
 	@Field
 	private boolean discarded = false;
-	
-		public String getType() {
+
+	public String getType() {
 		return type;
 	}
 

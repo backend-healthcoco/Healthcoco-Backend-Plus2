@@ -5,31 +5,29 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class DoctorSignUp {
 
-    private User user;
+	private User user;
 
-    private Hospital hospital;
-    
-    private Boolean isEmailVerified=false;
+	private Hospital hospital;
 
-    public User getUser() {
-	return user;
-    }
+	private Boolean isEmailVerified = false;
 
-    public void setUser(User user) {
-	this.user = user;
-    }
+	public User getUser() {
+		return user;
+	}
 
-    public Hospital getHospital() {
-	return hospital;
-    }
+	public void setUser(User user) {
+		this.user = user;
+	}
 
-    public void setHospital(Hospital hospital) {
-	this.hospital = hospital;
-    }
-    
-    
+	public Hospital getHospital() {
+		return hospital;
+	}
 
-    public Boolean getIsEmailVerified() {
+	public void setHospital(Hospital hospital) {
+		this.hospital = hospital;
+	}
+
+	public Boolean getIsEmailVerified() {
 		return isEmailVerified;
 	}
 
@@ -38,8 +36,8 @@ public class DoctorSignUp {
 	}
 
 	@Override
-    public String toString() {
-	return "DoctorSignUp [user=" + user + ", hospital=" + hospital + "]";
-    }
+	public String toString() {
+		return "DoctorSignUp [user=" + user + ", hospital=" + hospital + "]";
+	}
 
 }

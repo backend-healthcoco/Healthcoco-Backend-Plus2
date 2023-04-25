@@ -14,11 +14,11 @@ import com.dpdocter.enums.Day;
 @Document(collection = "diagnostic_test_pick_up_slot_cl")
 public class DiagnosticTestPickUpSlotCollection extends GenericCollection {
 
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private Map<Day, List<PickUpSlot>> slots;
+	@Field
+	private Map<Day, List<PickUpSlot>> slots;
 
 	public ObjectId getId() {
 		return id;

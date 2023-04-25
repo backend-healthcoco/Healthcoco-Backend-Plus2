@@ -34,14 +34,14 @@ public class DiagnosticTestPackageCollection extends GenericCollection {
 	List<ObjectId> testIds;
 
 	@Field
-    private Double diagnosticTestPackageCost = 0.0;
+	private Double diagnosticTestPackageCost = 0.0;
 
-    @Field
-    private Amount diagnosticTestPackageComission;
+	@Field
+	private Amount diagnosticTestPackageComission;
 
-    @Field
-    private Double diagnosticTestCostPackageForPatient = 0.0;
-    
+	@Field
+	private Double diagnosticTestCostPackageForPatient = 0.0;
+
 	public ObjectId getId() {
 		return id;
 	}

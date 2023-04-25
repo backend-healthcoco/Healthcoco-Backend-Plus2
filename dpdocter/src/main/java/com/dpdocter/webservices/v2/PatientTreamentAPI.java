@@ -43,15 +43,15 @@ public class PatientTreamentAPI {
 
 	@Autowired
 	private OTPService otpService;
-	
+
 	@GET
 	@ApiOperation(value = "GET_PATIENT_TREATMENTS", notes = "GET_PATIENT_TREATMENTS")
 	public Response<PatientTreatmentResponse> getPatientTreatments(@QueryParam("page") int page,
 			@QueryParam("size") int size, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("doctorId") String doctorId,
 			@QueryParam("patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,@QueryParam("from") String from,@QueryParam("to") String to,
-			@QueryParam(value = "status") String status) {
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam("from") String from,
+			@QueryParam("to") String to, @QueryParam(value = "status") String status) {
 		if (DPDoctorUtils.anyStringEmpty(locationId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -59,12 +59,12 @@ public class PatientTreamentAPI {
 
 		List<PatientTreatmentResponse> patientTreatmentResponses = patientTreatmentServices.getPatientTreatments(page,
 				size, doctorId, locationId, hospitalId, patientId, updatedTime,
-				otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), from,to,discarded, false, status);
+				otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), from, to, discarded, false,
+				status);
 
 		Response<PatientTreatmentResponse> response = new Response<PatientTreatmentResponse>();
 		response.setDataList(patientTreatmentResponses);
 		return response;
 	}
 
-	
 }

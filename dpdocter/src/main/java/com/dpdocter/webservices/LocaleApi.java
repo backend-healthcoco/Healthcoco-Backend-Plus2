@@ -199,9 +199,8 @@ public class LocaleApi {
 	@ApiOperation(value = PathProxy.LocaleUrls.UPLOAD_RX_IMAGE, notes = PathProxy.LocaleUrls.UPLOAD_RX_IMAGE)
 	public Response<ImageURLResponse> addLocaleImageMultipart(@FormDataParam("file") FormDataBodyPart file) {
 		/*
-		 * data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		 * LocaleImageAddEditRequest request =
-		 * data.getValueAs(LocaleImageAddEditRequest.class);
+		 * data.setMediaType(MediaType.APPLICATION_JSON_TYPE); LocaleImageAddEditRequest
+		 * request = data.getValueAs(LocaleImageAddEditRequest.class);
 		 */
 		ImageURLResponse imageURLResponse = null;
 		Response<ImageURLResponse> response = null;

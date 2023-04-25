@@ -2,9 +2,9 @@ package com.dpdocter.request;
 
 public class LoginPatientRequest {
 
-    private String mobileNumber;
-    private String otpNumber;
-    private char[] password;
+	private String mobileNumber;
+	private String otpNumber;
+	private char[] password;
 
 	public String getMobileNumber() {
 		return mobileNumber;
@@ -31,7 +31,7 @@ public class LoginPatientRequest {
 	}
 
 	@Override
-    public String toString() {
-	return "LoginPatientRequest [mobileNumber=" + mobileNumber + ", password=" + password + "]";
-    }
+	public String toString() {
+		return "LoginPatientRequest [mobileNumber=" + mobileNumber + ", password=" + password + "]";
+	}
 }

@@ -3,15 +3,15 @@ package com.dpdocter.request;
 public class DoctorAmountRequest {
 
 	private String doctorId;
-	
+
 	private String patientId;
-	
+
 	private String locationId;
-	
+
 	private String hospitalId;
-	
+
 	private Double dueAmount = 0.0;
-	
+
 	private Double remainingAdvanceAmount = 0.0;
 
 	public String getDoctorId() {
@@ -61,6 +61,5 @@ public class DoctorAmountRequest {
 	public void setRemainingAdvanceAmount(Double remainingAdvanceAmount) {
 		this.remainingAdvanceAmount = remainingAdvanceAmount;
 	}
-	
-	
+
 }

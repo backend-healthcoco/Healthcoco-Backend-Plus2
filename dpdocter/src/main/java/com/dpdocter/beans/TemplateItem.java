@@ -28,7 +28,7 @@ public class TemplateItem {
 	private Long inventoryQuantity;
 
 	private Integer quantity = 0;
-	
+
 	private List<GenericCode> genericNames;
 
 	public ObjectId getDrugId() {
@@ -93,8 +93,8 @@ public class TemplateItem {
 
 	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
-	}	
-	
+	}
+
 	public DrugType getDrugType() {
 		return drugType;
 	}

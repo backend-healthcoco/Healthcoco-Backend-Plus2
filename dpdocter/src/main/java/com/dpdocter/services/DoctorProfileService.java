@@ -124,11 +124,7 @@ public interface DoctorProfileService {
 
 	Boolean addEditDrugTypePlacement(String doctorId, String drugTypePlacement);
 
-//	List<Services> getServices(int page, int size, String updatedTime);
-	
 	Boolean addEditOnlineWorkingTime(DoctorOnlineWorkingTimeRequest request);
-
-//	DoctorOnlineWorkingTimeRequest addEditOnlineWorkingTime(DoctorOnlineWorkingTimeRequest request);
 
 	public DoctorOnlineWorkingTimeRequest getOnlineWorkTiming(String doctorId);
 

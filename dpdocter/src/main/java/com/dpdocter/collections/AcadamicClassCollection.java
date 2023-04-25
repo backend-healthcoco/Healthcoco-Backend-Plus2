@@ -71,7 +71,6 @@ public class AcadamicClassCollection extends GenericCollection {
 		this.sectionId = sectionId;
 	}
 
-
 	public ObjectId getTeacherId() {
 		return teacherId;
 	}
@@ -79,6 +78,5 @@ public class AcadamicClassCollection extends GenericCollection {
 	public void setTeacherId(ObjectId teacherId) {
 		this.teacherId = teacherId;
 	}
-
 
 }

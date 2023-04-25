@@ -5,33 +5,33 @@ import java.util.List;
 public class StudentCluster {
 
 	private String id;
-	
+
 	private String branchName;
-	
+
 	private String acadamicClassName;
-	
+
 	private String sectionName;
-	
+
 	private String studentName;
-	
+
 	private String gender;
-	
+
 	private DOB dob;
-	
+
 	private Integer height;
-	
+
 	private Double weight;
-	
+
 	private List<FoodCommunity> communities;
-	
+
 	private String foodPreference;
-	
+
 	private String lifestyle;
-	
+
 	private List<NutritionDisease> diseases;
-	
+
 	private List<String> generalSigns;
-	
+
 	private List<String> deficienciesSuspected;
 
 	public String getId() {
@@ -156,10 +156,10 @@ public class StudentCluster {
 
 	@Override
 	public String toString() {
-		return "StudentCluster [id=" + id + ", branchName=" + branchName + ", acadamicClassName=" + acadamicClassName + ", sectionName="
-				+ sectionName + ", studentName=" + studentName + ", gender=" + gender + ", dob=" + dob + ", height="
-				+ height + ", weight=" + weight + ", communities=" + communities + ", foodPreference=" + foodPreference
-				+ ", lifestyle=" + lifestyle + ", diseases=" + diseases + ", generalSigns=" + generalSigns
-				+ ", deficienciesSuspected=" + deficienciesSuspected + "]";
+		return "StudentCluster [id=" + id + ", branchName=" + branchName + ", acadamicClassName=" + acadamicClassName
+				+ ", sectionName=" + sectionName + ", studentName=" + studentName + ", gender=" + gender + ", dob="
+				+ dob + ", height=" + height + ", weight=" + weight + ", communities=" + communities
+				+ ", foodPreference=" + foodPreference + ", lifestyle=" + lifestyle + ", diseases=" + diseases
+				+ ", generalSigns=" + generalSigns + ", deficienciesSuspected=" + deficienciesSuspected + "]";
 	}
 }

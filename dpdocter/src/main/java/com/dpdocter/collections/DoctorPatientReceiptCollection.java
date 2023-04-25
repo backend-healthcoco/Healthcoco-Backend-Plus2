@@ -40,10 +40,10 @@ public class DoctorPatientReceiptCollection extends GenericCollection {
 
 	@Field
 	private ModeOfPayment modeOfPayment;
-	
+
 	@Field
 	private PaymentDetails paymentDetails;
-	
+
 	@Field
 	private String transactionId;
 
@@ -76,14 +76,12 @@ public class DoctorPatientReceiptCollection extends GenericCollection {
 
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	@Field
-	private Double refundAmount=0.0;
+	private Double refundAmount = 0.0;
 	@Field
 	private String paymentInfo;
 
-	
-	
 	public String getPaymentInfo() {
 		return paymentInfo;
 	}
@@ -235,8 +233,6 @@ public class DoctorPatientReceiptCollection extends GenericCollection {
 	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
-	
-	
 
 	public PaymentDetails getPaymentDetails() {
 		return paymentDetails;
@@ -253,8 +249,6 @@ public class DoctorPatientReceiptCollection extends GenericCollection {
 	public void setTransactionId(String transactionId) {
 		this.transactionId = transactionId;
 	}
-	
-	
 
 	public Double getRefundAmount() {
 		return refundAmount;

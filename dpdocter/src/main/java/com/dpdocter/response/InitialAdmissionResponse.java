@@ -10,41 +10,38 @@ import com.dpdocter.beans.RiskScore;
 import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.collections.GenericCollection;
 
-public class InitialAdmissionResponse extends GenericCollection{
-	
-private String id;
-	
+public class InitialAdmissionResponse extends GenericCollection {
+
+	private String id;
+
 	private String doctorId;
-	
+
 	private String nurseName;
 
 	private String locationId;
 
 	private String hospitalId;
-	
+
 	private String patientId;
-	
+
 	private Date admissionDate;
 	private String timeOfAdmission;
 
-
 	private VitalSigns vitalSigns;
-	
+
 	private List<Medication> oldMedication;
-	
+
 	private String nursingCare;
 
-	private String coMorbidities;//more than one illness or disease
-	
-    private String advice;
+	private String coMorbidities;// more than one illness or disease
+
+	private String advice;
 	private List<RiskScore> riskFactor;
 	private int totalRiskScore;
-	
+
 	private boolean discarded = false;
 
-	
 	private String ipdNumber;
-
 
 	public String getId() {
 		return id;
@@ -181,10 +178,5 @@ private String id;
 	public void setIpdNumber(String ipdNumber) {
 		this.ipdNumber = ipdNumber;
 	}
-
-	
-	
-	
-	
 
 }

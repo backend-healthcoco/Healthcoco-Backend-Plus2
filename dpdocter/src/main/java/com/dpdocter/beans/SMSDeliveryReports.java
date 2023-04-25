@@ -3,54 +3,53 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class SMSDeliveryReports {
 
-    private String requestId;
+	private String requestId;
 
-    private String userId;
+	private String userId;
 
-    private List<SMSReport> report;
+	private List<SMSReport> report;
 
-    private String senderId;
-    
-    private String campaignName;
+	private String senderId;
 
-    public String getRequestId() {
-	return requestId;
-    }
+	private String campaignName;
 
-    public void setRequestId(String requestId) {
-	this.requestId = requestId;
-    }
+	public String getRequestId() {
+		return requestId;
+	}
 
-    public String getUserId() {
-	return userId;
-    }
+	public void setRequestId(String requestId) {
+		this.requestId = requestId;
+	}
 
-    public void setUserId(String userId) {
-	this.userId = userId;
-    }
+	public String getUserId() {
+		return userId;
+	}
 
-    public List<SMSReport> getReport() {
-	return report;
-    }
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
-    public void setReport(List<SMSReport> report) {
-	this.report = report;
-    }
+	public List<SMSReport> getReport() {
+		return report;
+	}
 
-    public String getSenderId() {
-	return senderId;
-    }
+	public void setReport(List<SMSReport> report) {
+		this.report = report;
+	}
 
-    public void setSenderId(String senderId) {
-	this.senderId = senderId;
-    }
-    
-    
+	public String getSenderId() {
+		return senderId;
+	}
 
-    public String getCampaignName() {
+	public void setSenderId(String senderId) {
+		this.senderId = senderId;
+	}
+
+	public String getCampaignName() {
 		return campaignName;
 	}
 
@@ -59,7 +58,8 @@ public class SMSDeliveryReports {
 	}
 
 	@Override
-    public String toString() {
-	return "SMSDeliveryReports [requestId=" + requestId + ", userId=" + userId + ", report=" + report + ", senderId=" + senderId + "]";
-    }
+	public String toString() {
+		return "SMSDeliveryReports [requestId=" + requestId + ", userId=" + userId + ", report=" + report
+				+ ", senderId=" + senderId + "]";
+	}
 }

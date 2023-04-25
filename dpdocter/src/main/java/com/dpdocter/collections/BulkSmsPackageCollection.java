@@ -10,19 +10,18 @@ public class BulkSmsPackageCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
-	
+
 	@Field
 	private String packageName;
 	@Field
-	private Long price=0L;
+	private Long price = 0L;
 	@Field
-	private Long smsCredit=0L;
+	private Long smsCredit = 0L;
 	@Field
-	private Double costPerSms=0.0;
-	
+	private Double costPerSms = 0.0;
 
 	@Field
-	private Boolean discarded=false;
+	private Boolean discarded = false;
 
 	public ObjectId getId() {
 		return id;
@@ -32,8 +31,6 @@ public class BulkSmsPackageCollection extends GenericCollection {
 		this.id = id;
 	}
 
-	
-
 	public String getPackageName() {
 		return packageName;
 	}
@@ -42,8 +39,6 @@ public class BulkSmsPackageCollection extends GenericCollection {
 		this.packageName = packageName;
 	}
 
-	
-	
 	public Long getPrice() {
 		return price;
 	}
@@ -60,8 +55,6 @@ public class BulkSmsPackageCollection extends GenericCollection {
 		this.smsCredit = smsCredit;
 	}
 
-	
-
 	public Double getCostPerSms() {
 		return costPerSms;
 	}
@@ -77,8 +70,5 @@ public class BulkSmsPackageCollection extends GenericCollection {
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
-	
-	
-	
-	
+
 }

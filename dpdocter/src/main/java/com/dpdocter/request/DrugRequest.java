@@ -3,9 +3,9 @@ package com.dpdocter.request;
 public class DrugRequest {
 
 	private String drugId;
-	
+
 	private String drugName;
-	
+
 	private Integer quantity = 0;
 
 	public String getDrugId() {

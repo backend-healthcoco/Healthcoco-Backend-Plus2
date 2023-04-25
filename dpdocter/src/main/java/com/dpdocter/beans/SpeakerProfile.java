@@ -15,7 +15,7 @@ public class SpeakerProfile extends GenericCollection {
 	private String mobileNumber;
 
 	private String emailAddress;
-	
+
 	private String role;
 
 	private Boolean discarded = false;

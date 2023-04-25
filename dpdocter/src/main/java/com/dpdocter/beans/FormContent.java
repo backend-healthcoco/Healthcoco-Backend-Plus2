@@ -15,12 +15,10 @@ public class FormContent extends GenericCollection {
 	private String declaration;
 
 	private String title;
-	
+
 	private String type;
-	
+
 	private boolean discarded = false;
-	
-	
 
 	public String getType() {
 		return type;

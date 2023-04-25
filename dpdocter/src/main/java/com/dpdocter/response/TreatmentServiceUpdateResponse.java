@@ -7,11 +7,11 @@ import org.bson.types.ObjectId;
 public class TreatmentServiceUpdateResponse {
 
 	private String id;
-	
+
 	private String doctorId;
-	
+
 	private String locationId;
-	
+
 	private List<ObjectId> treatmentServiceIds;
 
 	public String getId() {

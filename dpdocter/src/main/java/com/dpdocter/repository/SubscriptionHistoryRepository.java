@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import com.dpdocter.collections.SubscriptionHistoryCollection;
 
 @Repository
-public interface SubscriptionHistoryRepository extends MongoRepository<SubscriptionHistoryCollection, ObjectId>{
-
+public interface SubscriptionHistoryRepository extends MongoRepository<SubscriptionHistoryCollection, ObjectId> {
 
 }

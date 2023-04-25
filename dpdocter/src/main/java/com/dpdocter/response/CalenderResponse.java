@@ -29,7 +29,7 @@ public class CalenderResponse {
 	private String state = "NEW";
 
 	private String doctorId;
-	
+
 	private String category;
 
 	private String branch;

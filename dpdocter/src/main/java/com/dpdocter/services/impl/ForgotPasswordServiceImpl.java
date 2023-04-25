@@ -97,13 +97,12 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
 	@Value(value = "${forgot.password.link}")
 	private String forgotPasswordLink;
-	
+
 	@Value(value = "${reset.password.link}")
 	private String RESET_PASSWORD_LINK;
-	
+
 	@Autowired
 	PushNotificationServices pushNotificationServices;
-
 
 	@Override
 	@Transactional
@@ -118,33 +117,27 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			userCollection = userRepository.findByUserNameAndEmailAddress(request.getUsername(), request.getUsername());
 
 			if (userCollection != null) {
-		//		if (userCollection.getUserState() == UserState.USERSTATECOMPLETE ) {
-					if (userCollection.getEmailAddress().trim().equals(request.getEmailAddress().trim())) {
-						TokenCollection tokenCollection = new TokenCollection();
-						tokenCollection.setResourceId(userCollection.getId());
-						tokenCollection.setCreatedTime(new Date());
-						tokenCollection = tokenRepository.save(tokenCollection);
+				if (userCollection.getEmailAddress().trim().equals(request.getEmailAddress().trim())) {
+					TokenCollection tokenCollection = new TokenCollection();
+					tokenCollection.setResourceId(userCollection.getId());
+					tokenCollection.setCreatedTime(new Date());
+					tokenCollection = tokenRepository.save(tokenCollection);
 
-						String body = mailBodyGenerator.generateForgotPasswordEmailBody(
-								userCollection.getTitle() + " " + userCollection.getFirstName(),
-								tokenCollection.getId());
-						mailService.sendEmail(userCollection.getEmailAddress(), forgotUsernamePasswordSub, body, null);
-						
-						pushNotificationServices.notifyUser(userCollection.getId().toString(),
-								"Your Password has been reset successfully.", ComponentType.EMAIL_VERIFICATION.getType(), null,
-								null);
-						sendForgotPasswordMessage(userCollection.getMobileNumber(), tokenCollection.getId());
-						response = new ForgotPasswordResponse(userCollection.getUserName(),
-								userCollection.getMobileNumber(), userCollection.getEmailAddress(), RoleEnum.DOCTOR);
-						
-					} else {
-						logger.warn("Email address is empty.");
-						throw new BusinessException(ServiceError.InvalidInput, "Email address is empty.");
-					}
-//				} else {
-//					logger.warn("User is not activated");
-//					throw new BusinessException(ServiceError.Unknown, "User is not activated");
-//				}
+					String body = mailBodyGenerator.generateForgotPasswordEmailBody(
+							userCollection.getTitle() + " " + userCollection.getFirstName(), tokenCollection.getId());
+					mailService.sendEmail(userCollection.getEmailAddress(), forgotUsernamePasswordSub, body, null);
+
+					pushNotificationServices.notifyUser(userCollection.getId().toString(),
+							"Your Password has been reset successfully.", ComponentType.EMAIL_VERIFICATION.getType(),
+							null, null);
+					sendForgotPasswordMessage(userCollection.getMobileNumber(), tokenCollection.getId());
+					response = new ForgotPasswordResponse(userCollection.getUserName(),
+							userCollection.getMobileNumber(), userCollection.getEmailAddress(), RoleEnum.DOCTOR);
+
+				} else {
+					logger.warn("Email address is empty.");
+					throw new BusinessException(ServiceError.InvalidInput, "Email address is empty.");
+				}
 			} else {
 				logger.warn("No account present with email address, please sign up");
 				throw new BusinessException(ServiceError.Unknown,
@@ -152,8 +145,9 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			}
 			return response;
 		} catch (BusinessException be) {
-			logger.error(be + "No account present with email address, please sign up"+request.getEmailAddress());
-			throw new BusinessException(ServiceError.Unknown, "No account present with email address, please sign up"+request.getEmailAddress());
+			logger.error(be + "No account present with email address, please sign up" + request.getEmailAddress());
+			throw new BusinessException(ServiceError.Unknown,
+					"No account present with email address, please sign up" + request.getEmailAddress());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -171,7 +165,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			List<UserCollection> userCollections = null;
 
 			if (request.getMobileNumber() != null) {
-				userCollections = userRepository.findByMobileNumberAndUserState(request.getMobileNumber(), UserState.USERSTATECOMPLETE.getState());
+				userCollections = userRepository.findByMobileNumberAndUserState(request.getMobileNumber(),
+						UserState.USERSTATECOMPLETE.getState());
 			}
 
 			if (userCollections != null) {
@@ -269,7 +264,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 					flag = true;
 				}
 			} else if (request.getMobileNumber() != null && !request.getMobileNumber().isEmpty()) {
-				userCollections = userRepository.findByMobileNumberAndUserState(request.getMobileNumber(), UserState.USERSTATECOMPLETE.getState());
+				userCollections = userRepository.findByMobileNumberAndUserState(request.getMobileNumber(),
+						UserState.USERSTATECOMPLETE.getState());
 				if (userCollections != null) {
 					// SMS logic will go here.
 					flag = true;
@@ -291,11 +287,10 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	public String resetPassword(ResetPasswordRequest request) {
 		try {
 			TokenCollection tokenCollection = tokenRepository.findById(new ObjectId(request.getUserId())).orElse(null);
-			if (tokenCollection == null)
-			{
+			if (tokenCollection == null) {
 				return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you.";
-			
-			}else if (tokenCollection.getIsUsed())
+
+			} else if (tokenCollection.getIsUsed())
 				return "Your password has already been reset.";
 			else {
 				if (!isLinkValid(tokenCollection.getCreatedTime()))
@@ -305,10 +300,12 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 					return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you.";
 				}
 				if (!(userCollection.getUserState() == UserState.USERSTATECOMPLETE)
-						&& !(userCollection.getUserState() == UserState.NOTACTIVATED) && !(userCollection.getUserState() == UserState.DELIVERY_BOY && !(userCollection.getUserState() == UserState.VENDOR))) {
+						&& !(userCollection.getUserState() == UserState.NOTACTIVATED)
+						&& !(userCollection.getUserState() == UserState.DELIVERY_BOY
+								&& !(userCollection.getUserState() == UserState.VENDOR))) {
 					return "User is not verified";
 				}
-				//userCollection.setPassword(request.getPassword());
+				// userCollection.setPassword(request.getPassword());
 				userCollection.setIsPasswordSet(true);
 				userCollection.setPassword(passwordEncoder.encode(String.valueOf(request.getPassword())).toCharArray());
 				userRepository.save(userCollection);
@@ -321,9 +318,9 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 				mailService.sendEmail(userCollection.getEmailAddress(), resetPasswordSub, body, null);
 
 				pushNotificationServices.notifyUser(userCollection.getId().toString(),
-						" You have successfully changed your password.", ComponentType.RESET_PASSWORD.getType(), null, null);
+						" You have successfully changed your password.", ComponentType.RESET_PASSWORD.getType(), null,
+						null);
 
-				
 				return "You have successfully changed your password.";
 			}
 		} catch (IllegalArgumentException argumentException) {
@@ -375,7 +372,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	public Boolean resetPasswordPatient(ResetPasswordRequest request) {
 		Boolean response = false;
 		try {
-			List<UserCollection> userCollections = userRepository.findByMobileNumberAndUserState(request.getMobileNumber(), UserState.USERSTATECOMPLETE.getState());
+			List<UserCollection> userCollections = userRepository
+					.findByMobileNumberAndUserState(request.getMobileNumber(), UserState.USERSTATECOMPLETE.getState());
 			if (userCollections != null && !userCollections.isEmpty()) {
 				char[] salt = DPDoctorUtils.generateSalt();
 				char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
@@ -430,7 +428,6 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 				if (!accessTokenCollections.isEmpty() && accessTokenCollections != null) {
 					oAuth2AccessTokenRepository.deleteAll(accessTokenCollections);
 				}
-				//userCollection.setPassword(request.getPassword());
 				userCollection.setPassword(passwordEncoder.encode(request.getPassword().toString()).toCharArray());
 
 				userRepository.save(userCollection);
@@ -452,12 +449,12 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	public String resetPasswordCB(ResetPasswordRequest request) {
 		UserCollection userCollection = null;
 		try {
-			List<UserCollection> userCollections = userRepository.findByMobileNumberAndUserState(request.getMobileNumber(), UserState.COLLECTION_BOY.getState());
-			if(userCollections== null || userCollections.isEmpty()) {
+			List<UserCollection> userCollections = userRepository
+					.findByMobileNumberAndUserState(request.getMobileNumber(), UserState.COLLECTION_BOY.getState());
+			if (userCollections == null || userCollections.isEmpty()) {
 				return "Sorry user not found with this mobile number.";
 			}
 			userCollection = userCollections.get(0);
-			//userCollection.setPassword(request.getPassword());
 			userCollection.setPassword(passwordEncoder.encode(request.getPassword().toString()).toCharArray());
 			userRepository.save(userCollection);
 			return "You have successfully changed your password.";
@@ -504,7 +501,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 					oAuth2AccessTokenRepository.deleteAll(accessTokenCollections);
 				}
 				if (userCollection != null) {
-					//userCollection.setPassword(request.getPassword());
+					// userCollection.setPassword(request.getPassword());
 					userCollection.setPassword(passwordEncoder.encode(request.getPassword().toString()).toCharArray());
 					confexUserRepository.save(userCollection);
 				}
@@ -521,33 +518,32 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
 	}
 
-
-    
-    private void sendForgotPasswordMessage(String mobileNumber , String tokenId) {
+	private void sendForgotPasswordMessage(String mobileNumber, String tokenId) {
 		try {
-				String link = RESET_PASSWORD_LINK + "?uid=" + tokenId;
-				String shortUrl = DPDoctorUtils.urlShortner(link);
-				String message = "Please click on the button below and follow the subsequent instructions to reset your account’s password. "+shortUrl;
-			//	System.out.println(message);
-				
-				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-				smsTrackDetail.setType("RESET_PASSWORD_SMS");
-				SMSDetail smsDetail = new SMSDetail();
-				SMS sms = new SMS();
-				sms.setSmsText(message);
+			String link = RESET_PASSWORD_LINK + "?uid=" + tokenId;
+			String shortUrl = DPDoctorUtils.urlShortner(link);
+			String message = "Please click on the button below and follow the subsequent instructions to reset your account’s password. "
+					+ shortUrl;
+			// System.out.println(message);
 
-				SMSAddress smsAddress = new SMSAddress();
-				smsAddress.setRecipient(mobileNumber);
-				sms.setSmsAddress(smsAddress);
+			SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+			smsTrackDetail.setType("RESET_PASSWORD_SMS");
+			SMSDetail smsDetail = new SMSDetail();
+			SMS sms = new SMS();
+			sms.setSmsText(message);
 
-				smsDetail.setSms(sms);
-				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-				smsDetails.add(smsDetail);
-				smsTrackDetail.setSmsDetails(smsDetails);
-				smsTrackDetail.setTemplateId("1307161191415913366");
-				sMSServices.sendSMS(smsTrackDetail, true);
-			
+			SMSAddress smsAddress = new SMSAddress();
+			smsAddress.setRecipient(mobileNumber);
+			sms.setSmsAddress(smsAddress);
+
+			smsDetail.setSms(sms);
+			smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+			List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+			smsDetails.add(smsDetail);
+			smsTrackDetail.setSmsDetails(smsDetails);
+			smsTrackDetail.setTemplateId("1307161191415913366");
+			sMSServices.sendSMS(smsTrackDetail, true);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

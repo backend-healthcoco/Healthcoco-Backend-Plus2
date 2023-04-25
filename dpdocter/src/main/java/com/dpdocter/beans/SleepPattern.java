@@ -4,9 +4,9 @@ import com.dpdocter.enums.TimeUnit;
 
 public class SleepPattern {
 	private WorkingHours hours;
-	
+
 	private TimeUnit timeType;
-	
+
 	private Integer noOfminute;
 
 	public WorkingHours getHours() {
@@ -32,8 +32,5 @@ public class SleepPattern {
 	public void setNoOfminute(Integer noOfminute) {
 		this.noOfminute = noOfminute;
 	}
-	
-	
-	
-	
+
 }

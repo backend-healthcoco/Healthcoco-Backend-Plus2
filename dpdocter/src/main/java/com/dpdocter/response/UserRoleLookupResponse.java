@@ -3,19 +3,19 @@ package com.dpdocter.response;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.collections.RoleCollection;
 
-public class UserRoleLookupResponse extends GenericCollection{
-	
+public class UserRoleLookupResponse extends GenericCollection {
+
 	private String id;
 
-    private String userId;
+	private String userId;
 
-    private String roleId;
-    
-    private RoleCollection roleCollection;
+	private String roleId;
 
-    private String locationId;
+	private RoleCollection roleCollection;
 
-    private String hospitalId;
+	private String locationId;
+
+	private String hospitalId;
 
 	public String getId() {
 		return id;

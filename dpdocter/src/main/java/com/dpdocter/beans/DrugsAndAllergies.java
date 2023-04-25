@@ -6,7 +6,6 @@ public class DrugsAndAllergies {
 
 	private List<Drug> drugs;
 	private String allergies;
-	
 
 	public List<Drug> getDrugs() {
 		return drugs;

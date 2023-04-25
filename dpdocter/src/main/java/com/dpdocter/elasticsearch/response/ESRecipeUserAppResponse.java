@@ -116,6 +116,4 @@ public class ESRecipeUserAppResponse {
 		this.recipeDescription = recipeDescription;
 	}
 
-	
-
 }

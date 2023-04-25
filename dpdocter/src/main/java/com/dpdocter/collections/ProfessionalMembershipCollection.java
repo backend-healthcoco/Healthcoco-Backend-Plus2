@@ -7,31 +7,31 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "professional_membership_cl")
 public class ProfessionalMembershipCollection extends GenericCollection {
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private String membership;
+	@Field
+	private String membership;
 
-    public ObjectId getId() {
-	return id;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public String getMembership() {
-	return membership;
-    }
+	public String getMembership() {
+		return membership;
+	}
 
-    public void setMembership(String membership) {
-	this.membership = membership;
-    }
+	public void setMembership(String membership) {
+		this.membership = membership;
+	}
 
-    @Override
-    public String toString() {
-	return "ProfessionalMembershipCollection [id=" + id + ", membership=" + membership + "]";
-    }
+	@Override
+	public String toString() {
+		return "ProfessionalMembershipCollection [id=" + id + ", membership=" + membership + "]";
+	}
 
 }

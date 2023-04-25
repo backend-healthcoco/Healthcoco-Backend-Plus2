@@ -12,162 +12,160 @@ import com.dpdocter.enums.AppType;
 import com.dpdocter.enums.FeedbackType;
 
 @Document(collection = "feedback_cl")
-@CompoundIndexes({
-    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
-})
+@CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
 public class FeedbackCollection extends GenericCollection {
 
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private FeedbackType type;
+	@Field
+	private FeedbackType type;
 
-    @Field
-    private AppType appType;
+	@Field
+	private AppType appType;
 
-    @Field
-    private ObjectId resourceId;
+	@Field
+	private ObjectId resourceId;
 
-    @Indexed
-    private ObjectId doctorId;
+	@Indexed
+	private ObjectId doctorId;
 
-    @Field
-    private ObjectId locationId;
+	@Field
+	private ObjectId locationId;
 
-    @Field
-    private ObjectId hospitalId;
+	@Field
+	private ObjectId hospitalId;
 
-    @Field
-    private ObjectId userId;
+	@Field
+	private ObjectId userId;
 
-    @Field
-    private String explanation;
+	@Field
+	private String explanation;
 
-    @Field
-    private String deviceType;
+	@Field
+	private String deviceType;
 
-    @Field
-    private String deviceInfo;
+	@Field
+	private String deviceInfo;
 
-    @Field
-    private Boolean isVisible = false;
+	@Field
+	private Boolean isVisible = false;
 
-    @Field
-    private Boolean isRecommended = false;
+	@Field
+	private Boolean isRecommended = false;
 
-    @Field
-    private String uniqueFeedbackId;
+	@Field
+	private String uniqueFeedbackId;
 
-    @Field
-    private String emailAddress;
-    
-    @Field
-    private Boolean isUserAnonymous = false;
-    
-    public ObjectId getId() {
-	return id;
-    }
+	@Field
+	private String emailAddress;
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	@Field
+	private Boolean isUserAnonymous = false;
 
-    public FeedbackType getType() {
-	return type;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public void setType(FeedbackType type) {
-	this.type = type;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public AppType getAppType() {
-	return appType;
-    }
+	public FeedbackType getType() {
+		return type;
+	}
 
-    public void setAppType(AppType appType) {
-	this.appType = appType;
-    }
+	public void setType(FeedbackType type) {
+		this.type = type;
+	}
 
-    public ObjectId getDoctorId() {
-	return doctorId;
-    }
+	public AppType getAppType() {
+		return appType;
+	}
 
-    public void setDoctorId(ObjectId doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setAppType(AppType appType) {
+		this.appType = appType;
+	}
 
-    public ObjectId getLocationId() {
-	return locationId;
-    }
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
 
-    public void setLocationId(ObjectId locationId) {
-	this.locationId = locationId;
-    }
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public ObjectId getHospitalId() {
-	return hospitalId;
-    }
+	public ObjectId getLocationId() {
+		return locationId;
+	}
 
-    public void setHospitalId(ObjectId hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
 
-    public ObjectId getUserId() {
-	return userId;
-    }
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setUserId(ObjectId userId) {
-	this.userId = userId;
-    }
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public String getExplanation() {
-	return explanation;
-    }
+	public ObjectId getUserId() {
+		return userId;
+	}
 
-    public void setExplanation(String explanation) {
-	this.explanation = explanation;
-    }
+	public void setUserId(ObjectId userId) {
+		this.userId = userId;
+	}
 
-    public String getDeviceType() {
-	return deviceType;
-    }
+	public String getExplanation() {
+		return explanation;
+	}
 
-    public void setDeviceType(String deviceType) {
-	this.deviceType = deviceType;
-    }
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
 
-    public String getDeviceInfo() {
-	return deviceInfo;
-    }
+	public String getDeviceType() {
+		return deviceType;
+	}
 
-    public void setDeviceInfo(String deviceInfo) {
-	this.deviceInfo = deviceInfo;
-    }
+	public void setDeviceType(String deviceType) {
+		this.deviceType = deviceType;
+	}
 
-    public Boolean getIsVisible() {
-	return isVisible;
-    }
+	public String getDeviceInfo() {
+		return deviceInfo;
+	}
 
-    public void setIsVisible(Boolean isVisible) {
-	this.isVisible = isVisible;
-    }
+	public void setDeviceInfo(String deviceInfo) {
+		this.deviceInfo = deviceInfo;
+	}
 
-    public Boolean getIsRecommended() {
-	return isRecommended;
-    }
+	public Boolean getIsVisible() {
+		return isVisible;
+	}
 
-    public void setIsRecommended(Boolean isRecommended) {
-	this.isRecommended = isRecommended;
-    }
+	public void setIsVisible(Boolean isVisible) {
+		this.isVisible = isVisible;
+	}
 
-    public ObjectId getResourceId() {
-	return resourceId;
-    }
+	public Boolean getIsRecommended() {
+		return isRecommended;
+	}
 
-    public void setResourceId(ObjectId resourceId) {
-	this.resourceId = resourceId;
-    }
+	public void setIsRecommended(Boolean isRecommended) {
+		this.isRecommended = isRecommended;
+	}
+
+	public ObjectId getResourceId() {
+		return resourceId;
+	}
+
+	public void setResourceId(ObjectId resourceId) {
+		this.resourceId = resourceId;
+	}
 
 	public String getUniqueFeedbackId() {
 		return uniqueFeedbackId;

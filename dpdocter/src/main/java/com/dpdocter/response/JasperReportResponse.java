@@ -5,7 +5,7 @@ import org.springframework.core.io.FileSystemResource;
 public class JasperReportResponse {
 
 	private FileSystemResource fileSystemResource;
-	
+
 	private String path;
 
 	public FileSystemResource getFileSystemResource() {
@@ -28,4 +28,4 @@ public class JasperReportResponse {
 	public String toString() {
 		return "JasperReportResponse [fileSystemResource=" + fileSystemResource + ", path=" + path + "]";
 	}
-	}
+}

@@ -3,7 +3,6 @@ package com.dpdocter.beans;
 import com.dpdocter.collections.GenericCollection;
 
 public class BloodGlucose extends GenericCollection {
-
 	private String id;
 	private String patientId;
 	private String bloodGlucose;

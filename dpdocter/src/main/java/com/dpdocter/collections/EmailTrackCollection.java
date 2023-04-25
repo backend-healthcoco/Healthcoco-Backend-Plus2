@@ -11,112 +11,110 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "email_track_cl")
-@CompoundIndexes({
-    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
-})
+@CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
 public class EmailTrackCollection {
 
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Indexed
-    private ObjectId doctorId;
+	@Indexed
+	private ObjectId doctorId;
 
-    @Field
-    private ObjectId locationId;
+	@Field
+	private ObjectId locationId;
 
-    @Field
-    private ObjectId hospitalId;
+	@Field
+	private ObjectId hospitalId;
 
-    @Field
-    private ObjectId patientId;
+	@Field
+	private ObjectId patientId;
 
-    @Field
-    private String patientName;
+	@Field
+	private String patientName;
 
-    @Field
-    private String subject;
+	@Field
+	private String subject;
 
-    @Field
-    private String type;
+	@Field
+	private String type;
 
-    @Field
-    private Date sentTime = new Date();
+	@Field
+	private Date sentTime = new Date();
 
-    @Field
+	@Field
 	private Boolean isPatientDiscarded = false;
-    
-    public ObjectId getId() {
-	return id;
-    }
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public ObjectId getDoctorId() {
-	return doctorId;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public void setDoctorId(ObjectId doctorId) {
-	this.doctorId = doctorId;
-    }
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
 
-    public ObjectId getLocationId() {
-	return locationId;
-    }
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public void setLocationId(ObjectId locationId) {
-	this.locationId = locationId;
-    }
+	public ObjectId getLocationId() {
+		return locationId;
+	}
 
-    public ObjectId getHospitalId() {
-	return hospitalId;
-    }
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
 
-    public void setHospitalId(ObjectId hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
 
-    public ObjectId getPatientId() {
-	return patientId;
-    }
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public void setPatientId(ObjectId patientId) {
-	this.patientId = patientId;
-    }
+	public ObjectId getPatientId() {
+		return patientId;
+	}
 
-    public String getPatientName() {
-	return patientName;
-    }
+	public void setPatientId(ObjectId patientId) {
+		this.patientId = patientId;
+	}
 
-    public void setPatientName(String patientName) {
-	this.patientName = patientName;
-    }
+	public String getPatientName() {
+		return patientName;
+	}
 
-    public String getSubject() {
-	return subject;
-    }
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
+	}
 
-    public void setSubject(String subject) {
-	this.subject = subject;
-    }
+	public String getSubject() {
+		return subject;
+	}
 
-    public String getType() {
-	return type;
-    }
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
 
-    public void setType(String type) {
-	this.type = type;
-    }
+	public String getType() {
+		return type;
+	}
 
-    public Date getSentTime() {
-	return sentTime;
-    }
+	public void setType(String type) {
+		this.type = type;
+	}
 
-    public void setSentTime(Date sentTime) {
-	this.sentTime = sentTime;
-    }
+	public Date getSentTime() {
+		return sentTime;
+	}
+
+	public void setSentTime(Date sentTime) {
+		this.sentTime = sentTime;
+	}
 
 	public Boolean getIsPatientDiscarded() {
 		return isPatientDiscarded;

@@ -1,10 +1,10 @@
 package com.dpdocter.beans;
 
 public class StructuredCardiorespiratoryProgram {
-	
+
 	private int daysPerWeek;
 
-    private int minutesPerDay;
+	private int minutesPerDay;
 
 	public int getDaysPerWeek() {
 		return daysPerWeek;
@@ -21,6 +21,5 @@ public class StructuredCardiorespiratoryProgram {
 	public void setMinutesPerDay(int minutesPerDay) {
 		this.minutesPerDay = minutesPerDay;
 	}
-    
 
 }

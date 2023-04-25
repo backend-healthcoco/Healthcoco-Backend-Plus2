@@ -26,7 +26,7 @@ import com.dpdocter.response.DoctorStatisticsResponse;
 import com.dpdocter.services.DoctorStatsService;
 
 @Service
-public class DoctorStatsServiceImpl implements DoctorStatsService{
+public class DoctorStatsServiceImpl implements DoctorStatsService {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -59,7 +59,7 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 			doctorStatisticsResponse
 					.setPreviousVisitCount(getPatientVisitStatsByMonth(doctorId, locationId, month - 1));
 			doctorStatisticsResponse.setCurrentRecommendationCount(getRecommendationCountByMonth(doctorId, month));
-			doctorStatisticsResponse.setPreviousRecommendationCount(getRecommendationCountByMonth(doctorId, month -1));
+			doctorStatisticsResponse.setPreviousRecommendationCount(getRecommendationCountByMonth(doctorId, month - 1));
 			break;
 
 		case "YEAR":
@@ -82,7 +82,8 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 			doctorStatisticsResponse
 					.setPreviousVisitCount(getPatientVisitStatsByWeek(doctorId, locationId, interval - 1));
 			doctorStatisticsResponse.setCurrentRecommendationCount(getRecommendationCountByWeek(doctorId, interval));
-			doctorStatisticsResponse.setPreviousRecommendationCount(getRecommendationCountByWeek(doctorId, interval - 1));
+			doctorStatisticsResponse
+					.setPreviousRecommendationCount(getRecommendationCountByWeek(doctorId, interval - 1));
 			break;
 		}
 
@@ -96,7 +97,7 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 			ProjectionOperation projectList = new ProjectionOperation(
 					Fields.from(Fields.field("doctorId", "$doctorId"), Fields.field("locationId", "$locationId"),
 							Fields.field("createdTime", "$createdTime"), Fields.field("discarded", "$discarded")))
-									.andExpression("week(createdTime)").as("week");
+					.andExpression("week(createdTime)").as("week");
 			Criteria criteria = new Criteria("discarded").is(false);
 			criteria.and("doctorId").is(new ObjectId(doctorId));
 			if (locationId != null) {
@@ -125,7 +126,7 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 			ProjectionOperation projectList = new ProjectionOperation(
 					Fields.from(Fields.field("doctorId", "$doctorId"), Fields.field("locationId", "$locationId"),
 							Fields.field("createdTime", "$createdTime"), Fields.field("discarded", "$discarded")))
-									.andExpression("month(createdTime)").as("month");
+					.andExpression("month(createdTime)").as("month");
 			Criteria criteria = new Criteria("discarded").is(false);
 			criteria.and("doctorId").is(new ObjectId(doctorId));
 			if (locationId != null) {
@@ -152,7 +153,7 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 			ProjectionOperation projectList = new ProjectionOperation(
 					Fields.from(Fields.field("doctorId", "$doctorId"), Fields.field("locationId", "$locationId"),
 							Fields.field("createdTime", "$createdTime"), Fields.field("discarded", "$discarded")))
-									.andExpression("year(createdTime)").as("year");
+					.andExpression("year(createdTime)").as("year");
 			Criteria criteria = new Criteria("discarded").is(false);
 			criteria.and("doctorId").is(new ObjectId(doctorId));
 			if (locationId != null) {
@@ -178,7 +179,7 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 		try {
 			ProjectionOperation projectList = new ProjectionOperation(
 					Fields.from(Fields.field("doctorId", "$doctorId"), Fields.field("createdTime", "$createdTime")))
-							.andExpression("month(createdTime)").as("month");
+					.andExpression("month(createdTime)").as("month");
 			Criteria criteria = new Criteria("doctorId").is(new ObjectId(doctorId));
 			criteria.and("month").is(month);
 			Aggregation aggregation = Aggregation.newAggregation(projectList, Aggregation.match(criteria),
@@ -200,7 +201,7 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 		try {
 			ProjectionOperation projectList = new ProjectionOperation(
 					Fields.from(Fields.field("doctorId", "$doctorId"), Fields.field("createdTime", "$createdTime")))
-							.andExpression("week(createdTime)").as("week");
+					.andExpression("week(createdTime)").as("week");
 			Criteria criteria = new Criteria("doctorId").is(new ObjectId(doctorId));
 			criteria.and("week").is(week);
 			Aggregation aggregation = Aggregation.newAggregation(projectList, Aggregation.match(criteria),
@@ -222,7 +223,7 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 		try {
 			ProjectionOperation projectList = new ProjectionOperation(
 					Fields.from(Fields.field("doctorId", "$doctorId"), Fields.field("createdTime", "$createdTime")))
-							.andExpression("year(createdTime)").as("year");
+					.andExpression("year(createdTime)").as("year");
 			Criteria criteria = new Criteria("doctorId").is(new ObjectId(doctorId));
 			criteria.and("year").is(year);
 			Aggregation aggregation = Aggregation.newAggregation(projectList, Aggregation.match(criteria),
@@ -237,16 +238,14 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 		}
 		return doctorStats.size();
 	}
-	
-	public Integer getRecommendationCountByWeek(String doctorId , int week)
-	{
+
+	public Integer getRecommendationCountByWeek(String doctorId, int week) {
 		List<DoctorStats> doctorStats = null;
 		try {
 			ProjectionOperation projectList = new ProjectionOperation(
 					Fields.from(Fields.field("doctorId", "$doctorId"), Fields.field("createdTime", "$createdTime")))
-							.andExpression("week(createdTime)").as("week");
+					.andExpression("week(createdTime)").as("week");
 			Criteria criteria = new Criteria("doctorId").is(new ObjectId(doctorId));
-		//criteria.and("createdTime").ne(null);
 			criteria.and("week").is(week);
 			Aggregation aggregation = Aggregation.newAggregation(projectList, Aggregation.match(criteria),
 					Aggregation.sort(Sort.Direction.DESC, "createdTime"));
@@ -261,15 +260,13 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 		return doctorStats.size();
 	}
 
-	public Integer getRecommendationCountByMonth(String doctorId , int month)
-	{
+	public Integer getRecommendationCountByMonth(String doctorId, int month) {
 		List<DoctorStats> doctorStats = null;
 		try {
 			ProjectionOperation projectList = new ProjectionOperation(
 					Fields.from(Fields.field("doctorId", "$doctorId"), Fields.field("createdTime", "$createdTime")))
-							.andExpression("month(createdTime)").as("month");
+					.andExpression("month(createdTime)").as("month");
 			Criteria criteria = new Criteria("doctorId").is(new ObjectId(doctorId));
-		//criteria.and("createdTime").ne(null);
 			criteria.and("month").is(month);
 			Aggregation aggregation = Aggregation.newAggregation(projectList, Aggregation.match(criteria),
 					Aggregation.sort(Sort.Direction.DESC, "createdTime"));
@@ -284,15 +281,13 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 		return doctorStats.size();
 	}
 
-	public Integer getRecommendationCountByYear(String doctorId , int year)
-	{
+	public Integer getRecommendationCountByYear(String doctorId, int year) {
 		List<DoctorStats> doctorStats = null;
 		try {
 			ProjectionOperation projectList = new ProjectionOperation(
 					Fields.from(Fields.field("doctorId", "$doctorId"), Fields.field("createdTime", "$createdTime")))
-							.andExpression("year(createdTime)").as("year");
+					.andExpression("year(createdTime)").as("year");
 			Criteria criteria = new Criteria("doctorId").is(new ObjectId(doctorId));
-		//criteria.and("createdTime").ne(null);
 			criteria.and("year").is(year);
 			Aggregation aggregation = Aggregation.newAggregation(projectList, Aggregation.match(criteria),
 					Aggregation.sort(Sort.Direction.DESC, "createdTime"));

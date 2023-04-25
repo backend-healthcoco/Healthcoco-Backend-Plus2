@@ -11,15 +11,15 @@ import com.dpdocter.beans.v2.TreatmentService;
 public class TreatmentResponse {
 
 	private String doctorId;
-	
+
 	private String doctorName;
-	
+
 	private Date treatmentDate;
-	
+
 	private TreatmentService treatmentService;
 
 	private String treatmentServiceId;
-	
+
 	private String status;
 
 	private double cost = 0.0;

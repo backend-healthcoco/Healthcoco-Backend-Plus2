@@ -21,7 +21,7 @@ public class FlowsheetCollection extends GenericCollection {
 	private String uniqueId;
 	@Field
 	private List<FlowSheet> flowSheets;
-	
+
 	@Field
 	private List<MonitoringChart> monitoringChart;
 
@@ -39,7 +39,7 @@ public class FlowsheetCollection extends GenericCollection {
 	private String dischargeSummaryUniqueEMRId;
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	public String getUniqueId() {
 		return uniqueId;
 	}

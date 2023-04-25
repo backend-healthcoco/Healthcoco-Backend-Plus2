@@ -92,17 +92,16 @@ public class ESPVDocument {
 	public String getSpeciality() {
 		return speciality;
 	}
-	
+
 	public void setSpeciality(String speciality) {
 		this.speciality = speciality;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "ESPVDocument [id=" + id + ", pv=" + pv + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", updatedTime=" + updatedTime
 				+ ", speciality=" + speciality + "]";
 	}
-
 
 }

@@ -1,12 +1,20 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 public class GenericCodeWithStrengthCollection extends GenericCollection {
-
+	@Id
 	private ObjectId id;
+
+	@Field
 	private ObjectId genericId;
+
+	@Field
 	private String strength;
+
+	@Field
 	private Boolean discarded = false;
 
 	public ObjectId getId() {

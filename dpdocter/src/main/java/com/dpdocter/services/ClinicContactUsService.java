@@ -9,8 +9,6 @@ public interface ClinicContactUsService {
 	
 	public String submitClinicContactUSInfo(ClinicContactUs clinicContactUs);
 
-	//public List<DoctorContactUs> getDoctorContactList(long page, int size);
-
 	public ClinicContactUs updateClinicContactState(String contactId, DoctorContactStateType contactState);
 
 	public List<ClinicContactUs> getDoctorContactList(long page, int size, String searchTerm);

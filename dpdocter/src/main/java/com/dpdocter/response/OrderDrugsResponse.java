@@ -8,10 +8,10 @@ import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.WayOfOrder;
 import com.dpdocter.request.PrescriptionRequest;
 
-public class OrderDrugsResponse extends GenericCollection{
+public class OrderDrugsResponse extends GenericCollection {
 
 	private String id;
-	
+
 	private String localeId;
 
 	private String userId;
@@ -21,31 +21,31 @@ public class OrderDrugsResponse extends GenericCollection{
 	private String uniqueResponseId;
 
 	private WayOfOrder wayOfOrder;
-	
+
 	private LocaleWorkingHours pickUpTime;
-	
+
 	private Long pickUpDate;
-	
+
 	private UserAddress pickUpAddress;
 
 	private String pickUpFormattedAddress;
-	
+
 	private Discount discount;
-	
-    private Double discountedPrice;
-	
+
+	private Double discountedPrice;
+
 	private Double realPrice;
 
 	private PrescriptionRequest prescriptionRequest;
 
 	private String localeName;
-	
+
 	private Address localeAddress;
-	
+
 	private String localeFormattedAddress;
-	
+
 	private Boolean isCancelled = false;
-	
+
 	public String getLocaleId() {
 		return localeId;
 	}

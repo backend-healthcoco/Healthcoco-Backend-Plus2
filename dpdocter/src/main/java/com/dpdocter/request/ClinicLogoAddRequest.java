@@ -4,28 +4,28 @@ import com.dpdocter.beans.FileDetails;
 
 public class ClinicLogoAddRequest {
 
-    private String id;
+	private String id;
 
-    private FileDetails image;
+	private FileDetails image;
 
-    public String getId() {
-	return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public FileDetails getImage() {
-	return image;
-    }
+	public FileDetails getImage() {
+		return image;
+	}
 
-    public void setImage(FileDetails image) {
-	this.image = image;
-    }
+	public void setImage(FileDetails image) {
+		this.image = image;
+	}
 
-    @Override
-    public String toString() {
-	return "ClinicLogoAddRequest [id=" + id + ", image=" + image + "]";
-    }
+	@Override
+	public String toString() {
+		return "ClinicLogoAddRequest [id=" + id + ", image=" + image + "]";
+	}
 }

@@ -3,9 +3,9 @@ package com.dpdocter.beans;
 import com.dpdocter.enums.DistanceEnum;
 
 public class Distance {
-	
+
 	private double value;
-	
+
 	private DistanceEnum type;
 
 	public double getValue() {
@@ -23,6 +23,5 @@ public class Distance {
 	public void setType(DistanceEnum type) {
 		this.type = type;
 	}
-	
 
 }

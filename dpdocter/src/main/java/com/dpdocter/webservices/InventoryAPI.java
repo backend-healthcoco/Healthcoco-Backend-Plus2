@@ -43,22 +43,19 @@ public class InventoryAPI {
 
 	@Autowired
 	InventoryService inventoryService;
-	
+
 	@POST
 	@ApiOperation(value = PathProxy.InventoryUrls.ADD_INVENTORY_ITEM, notes = PathProxy.InventoryUrls.ADD_INVENTORY_ITEM)
 	@Path(PathProxy.InventoryUrls.ADD_INVENTORY_ITEM)
-	public Response<InventoryItem> addInventoryItem(InventoryItem request)
-	{
+	public Response<InventoryItem> addInventoryItem(InventoryItem request) {
 		Response<InventoryItem> response = new Response<>();
 		InventoryItem inventoryItem = null;
 		try {
-			if(request == null)
-			{
-				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
+			if (request == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 			}
 			inventoryItem = inventoryService.addItem(request);
-			if(inventoryItem != null)
-			{
+			if (inventoryItem != null) {
 				response.setData(inventoryItem);
 			}
 		} catch (Exception e) {
@@ -68,22 +65,19 @@ public class InventoryAPI {
 		}
 		return response;
 	}
-	
+
 	@POST
 	@ApiOperation(value = PathProxy.InventoryUrls.ADD_INVENTORY_STOCK, notes = PathProxy.InventoryUrls.ADD_INVENTORY_STOCK)
 	@Path(PathProxy.InventoryUrls.ADD_INVENTORY_STOCK)
-	public Response<InventoryStock> addInventoryStock(InventoryStock request)
-	{
+	public Response<InventoryStock> addInventoryStock(InventoryStock request) {
 		Response<InventoryStock> response = new Response<>();
 		InventoryStock inventoryStock = null;
 		try {
-			if(request == null)
-			{
-				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
+			if (request == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 			}
 			inventoryStock = inventoryService.addInventoryStock(request);
-			if(inventoryStock != null)
-			{
+			if (inventoryStock != null) {
 				response.setData(inventoryStock);
 			}
 		} catch (Exception e) {
@@ -93,22 +87,19 @@ public class InventoryAPI {
 		}
 		return response;
 	}
-	
+
 	@POST
 	@ApiOperation(value = PathProxy.InventoryUrls.ADD_MANUFACTURER, notes = PathProxy.InventoryUrls.ADD_MANUFACTURER)
 	@Path(PathProxy.InventoryUrls.ADD_MANUFACTURER)
-	public Response<Manufacturer> addManufacturer(Manufacturer request)
-	{
+	public Response<Manufacturer> addManufacturer(Manufacturer request) {
 		Response<Manufacturer> response = new Response<>();
 		Manufacturer manufacturer = null;
 		try {
-			if(request == null)
-			{
-				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
+			if (request == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 			}
 			manufacturer = inventoryService.addManufacturer(request);
-			if(manufacturer != null)
-			{
+			if (manufacturer != null) {
 				response.setData(manufacturer);
 			}
 		} catch (Exception e) {
@@ -118,23 +109,19 @@ public class InventoryAPI {
 		}
 		return response;
 	}
-	
-	
+
 	@POST
 	@ApiOperation(value = PathProxy.InventoryUrls.ADD_INVENTORY_BATCH, notes = PathProxy.InventoryUrls.ADD_INVENTORY_BATCH)
 	@Path(PathProxy.InventoryUrls.ADD_INVENTORY_BATCH)
-	public Response<InventoryBatch> addInventoryBatch(InventoryBatch request)
-	{
+	public Response<InventoryBatch> addInventoryBatch(InventoryBatch request) {
 		Response<InventoryBatch> response = new Response<>();
 		InventoryBatch inventoryBatch = null;
 		try {
-			if(request == null)
-			{
-				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
+			if (request == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 			}
 			inventoryBatch = inventoryService.addInventoryBatch(request);
-			if(inventoryBatch != null)
-			{
+			if (inventoryBatch != null) {
 				response.setData(inventoryBatch);
 			}
 		} catch (Exception e) {
@@ -144,22 +131,22 @@ public class InventoryAPI {
 		}
 		return response;
 	}
-	
+
 	@GET
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_ITEMS, notes = PathProxy.InventoryUrls.GET_INVENTORY_ITEMS)
 	@Path(PathProxy.InventoryUrls.GET_INVENTORY_ITEMS)
-	public Response<Object> getInventoryItem(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("searchTerm") String searchTerm , @QueryParam("type") String type , @QueryParam("page") long page ,@QueryParam("size") int size  )
-	{
+	public Response<Object> getInventoryItem(@QueryParam("hospitalId") String hospitalId,
+			@QueryParam("locationId") String locationId, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("type") String type, @QueryParam("page") long page, @QueryParam("size") int size) {
 		Response<Object> response = new Response<>();
 		List<InventoryItemLookupResposne> inventoryItems = null;
 		try {
-			if(DPDoctorUtils.anyStringEmpty(hospitalId,locationId))
-			{
-				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
+			if (DPDoctorUtils.anyStringEmpty(hospitalId, locationId)) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 			}
-			inventoryItems = inventoryService.getInventoryItemList(locationId, hospitalId, type, searchTerm, page, size);
-			if(inventoryItems != null)
-			{
+			inventoryItems = inventoryService.getInventoryItemList(locationId, hospitalId, type, searchTerm, page,
+					size);
+			if (inventoryItems != null) {
 				response.setDataList(inventoryItems);
 			}
 			response.setData(inventoryService.getInventoryItemListCount(locationId, hospitalId, type, searchTerm));
@@ -170,22 +157,19 @@ public class InventoryAPI {
 		}
 		return response;
 	}
-	
+
 	@GET
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_ITEM_BY_ID, notes = PathProxy.InventoryUrls.GET_INVENTORY_ITEM_BY_ID)
 	@Path(PathProxy.InventoryUrls.GET_INVENTORY_ITEM_BY_ID)
-	public Response<InventoryItemLookupResposne> getInventoryItemById(@PathParam("id") String id)
-	{
+	public Response<InventoryItemLookupResposne> getInventoryItemById(@PathParam("id") String id) {
 		Response<InventoryItemLookupResposne> response = new Response<>();
 		InventoryItemLookupResposne inventoryItem = null;
 		try {
-			if(DPDoctorUtils.anyStringEmpty(id))
-			{
-				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
+			if (DPDoctorUtils.anyStringEmpty(id)) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 			}
 			inventoryItem = inventoryService.getInventoryItem(id);
-			if(inventoryItem != null)
-			{
+			if (inventoryItem != null) {
 				response.setData(inventoryItem);
 			}
 		} catch (Exception e) {
@@ -195,22 +179,21 @@ public class InventoryAPI {
 		}
 		return response;
 	}
-	
+
 	@GET
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_MANUFACTURERS, notes = PathProxy.InventoryUrls.GET_MANUFACTURERS)
 	@Path(PathProxy.InventoryUrls.GET_MANUFACTURERS)
-	public Response<Manufacturer> getManufacturers(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("searchTerm") String searchTerm, @QueryParam("page") long page ,@QueryParam("size") int size  )
-	{
+	public Response<Manufacturer> getManufacturers(@QueryParam("hospitalId") String hospitalId,
+			@QueryParam("locationId") String locationId, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("page") long page, @QueryParam("size") int size) {
 		Response<Manufacturer> response = new Response<>();
 		List<Manufacturer> manufacturers = null;
 		try {
-			if(DPDoctorUtils.anyStringEmpty(hospitalId,locationId))
-			{
-				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
+			if (DPDoctorUtils.anyStringEmpty(hospitalId, locationId)) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 			}
 			manufacturers = inventoryService.getManufacturerList(locationId, hospitalId, searchTerm, page, size);
-			if(manufacturers != null)
-			{
+			if (manufacturers != null) {
 				response.setDataList(manufacturers);
 			}
 		} catch (Exception e) {
@@ -220,26 +203,27 @@ public class InventoryAPI {
 		}
 		return response;
 	}
-	
-	
+
 	@GET
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_STOCKS, notes = PathProxy.InventoryUrls.GET_INVENTORY_STOCKS)
 	@Path(PathProxy.InventoryUrls.GET_INVENTORY_STOCKS)
-	public Response<Object> getInventoryStock(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId ,@QueryParam("itemId") String itemId,@QueryParam("stockType") String stockType, @QueryParam("searchTerm") String searchTerm , @QueryParam("page") long page ,@QueryParam("size") int size  )
-	{
+	public Response<Object> getInventoryStock(@QueryParam("hospitalId") String hospitalId,
+			@QueryParam("locationId") String locationId, @QueryParam("itemId") String itemId,
+			@QueryParam("stockType") String stockType, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("page") long page, @QueryParam("size") int size) {
 		Response<Object> response = new Response<>();
 		List<InventoryStockLookupResponse> inventoryStocks = null;
 		try {
-			if(DPDoctorUtils.anyStringEmpty(hospitalId,locationId))
-			{
-				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
+			if (DPDoctorUtils.anyStringEmpty(hospitalId, locationId)) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 			}
-			inventoryStocks = inventoryService.getInventoryStockList(locationId, hospitalId, itemId, stockType, searchTerm, page, size);
-			if(inventoryStocks != null)
-			{
+			inventoryStocks = inventoryService.getInventoryStockList(locationId, hospitalId, itemId, stockType,
+					searchTerm, page, size);
+			if (inventoryStocks != null) {
 				response.setDataList(inventoryStocks);
 			}
-			response.setData(inventoryService.getInventoryStockListCount(locationId, hospitalId, itemId, stockType, searchTerm));
+			response.setData(
+					inventoryService.getInventoryStockListCount(locationId, hospitalId, itemId, stockType, searchTerm));
 		} catch (Exception e) {
 			// TODO: handle exception
 			LOGGER.warn("Error while getting inventory stocks");
@@ -247,22 +231,22 @@ public class InventoryAPI {
 		}
 		return response;
 	}
-	
+
 	@GET
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_BATCHES, notes = PathProxy.InventoryUrls.GET_INVENTORY_BATCHES)
 	@Path(PathProxy.InventoryUrls.GET_INVENTORY_BATCHES)
-	public Response<InventoryBatch> getInventoryBatches(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("itemId") String itemId ,@QueryParam("searchTerm") String searchTerm, @QueryParam("page") long page ,@QueryParam("size") int size  )
-	{
+	public Response<InventoryBatch> getInventoryBatches(@QueryParam("hospitalId") String hospitalId,
+			@QueryParam("locationId") String locationId, @QueryParam("itemId") String itemId,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("page") long page, @QueryParam("size") int size) {
 		Response<InventoryBatch> response = new Response<>();
 		List<InventoryBatch> inventoryBatches = null;
 		try {
-			if(DPDoctorUtils.anyStringEmpty(hospitalId,locationId))
-			{
-				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
+			if (DPDoctorUtils.anyStringEmpty(hospitalId, locationId)) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 			}
-			inventoryBatches = inventoryService.getInventoryBatchList(locationId, hospitalId,itemId, searchTerm, page, size);
-			if(inventoryBatches != null)
-			{
+			inventoryBatches = inventoryService.getInventoryBatchList(locationId, hospitalId, itemId, searchTerm, page,
+					size);
+			if (inventoryBatches != null) {
 				response.setDataList(inventoryBatches);
 			}
 		} catch (Exception e) {
@@ -272,22 +256,19 @@ public class InventoryAPI {
 		}
 		return response;
 	}
-	
+
 	@POST
 	@ApiOperation(value = PathProxy.InventoryUrls.ADD_EDIT_SETTINGS, notes = PathProxy.InventoryUrls.ADD_EDIT_SETTINGS)
 	@Path(PathProxy.InventoryUrls.ADD_EDIT_SETTINGS)
-	public Response<InventorySettings> addEditSettings(InventorySettingRequest request)
-	{
+	public Response<InventorySettings> addEditSettings(InventorySettingRequest request) {
 		Response<InventorySettings> response = new Response<>();
 		InventorySettings inventorySetting = null;
 		try {
-			if(request == null)
-			{
-				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
+			if (request == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 			}
 			inventorySetting = inventoryService.addEditInventorySetting(request);
-			if(inventorySetting != null)
-			{
+			if (inventorySetting != null) {
 				response.setData(inventorySetting);
 			}
 		} catch (Exception e) {
@@ -297,22 +278,21 @@ public class InventoryAPI {
 		}
 		return response;
 	}
-	
+
 	@GET
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_SETTINGS, notes = PathProxy.InventoryUrls.GET_SETTINGS)
 	@Path(PathProxy.InventoryUrls.GET_SETTINGS)
-	public Response<InventorySettings> getInventorySettings(  @QueryParam("id") String id ,  @QueryParam("doctorId") String doctorId ,@QueryParam("locationId") String locationId ,@QueryParam("hospitalId") String hospitalId)
-	{
+	public Response<InventorySettings> getInventorySettings(@QueryParam("id") String id,
+			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId) {
 		Response<InventorySettings> response = new Response<>();
 		InventorySettings inventorySettings = null;
 		try {
-			if(DPDoctorUtils.allStringsEmpty(id,hospitalId,locationId ,doctorId))
-			{
-				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
+			if (DPDoctorUtils.allStringsEmpty(id, hospitalId, locationId, doctorId)) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 			}
-			inventorySettings = inventoryService.getInventorySetting(id ,doctorId, locationId, hospitalId);
-			if(inventorySettings != null)
-			{
+			inventorySettings = inventoryService.getInventorySetting(id, doctorId, locationId, hospitalId);
+			if (inventorySettings != null) {
 				response.setData(inventorySettings);
 			}
 		} catch (Exception e) {
@@ -322,23 +302,20 @@ public class InventoryAPI {
 		}
 		return response;
 	}
-	
-	
+
 	@GET
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_BATCHES_BY_RESOURCE_ID, notes = PathProxy.InventoryUrls.GET_INVENTORY_BATCHES_BY_RESOURCE_ID)
 	@Path(PathProxy.InventoryUrls.GET_INVENTORY_BATCHES_BY_RESOURCE_ID)
-	public Response<InventoryBatch> getInventoryBatchesBResourceId( @QueryParam("resourceId") String resourceId ,@QueryParam("locationId") String locationId ,@QueryParam("hospitalId") String hospitalId)
-	{
+	public Response<InventoryBatch> getInventoryBatchesBResourceId(@QueryParam("resourceId") String resourceId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId) {
 		Response<InventoryBatch> response = new Response<>();
 		List<InventoryBatch> inventoryBatchs = null;
 		try {
-			if(DPDoctorUtils.anyStringEmpty(hospitalId,locationId ,resourceId))
-			{
-				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
+			if (DPDoctorUtils.anyStringEmpty(hospitalId, locationId, resourceId)) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 			}
 			inventoryBatchs = inventoryService.getInventoryBatchByResourceId(locationId, hospitalId, resourceId);
-			if(inventoryBatchs != null)
-			{
+			if (inventoryBatchs != null) {
 				response.setDataList(inventoryBatchs);
 			}
 		} catch (Exception e) {
@@ -348,7 +325,5 @@ public class InventoryAPI {
 		}
 		return response;
 	}
-	
-	
-	
+
 }

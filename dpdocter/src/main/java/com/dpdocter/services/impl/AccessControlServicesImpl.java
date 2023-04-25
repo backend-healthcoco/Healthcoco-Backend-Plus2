@@ -37,185 +37,205 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class AccessControlServicesImpl implements AccessControlServices {
 
-    @Autowired
-    private ArosRepository arosRepository;
+	@Autowired
+	private ArosRepository arosRepository;
 
-    @Autowired
-    private AcosRepository acosRepository;
+	@Autowired
+	private AcosRepository acosRepository;
 
-    @Autowired
-    private ArosAcosRepository arosAcosRepository;
+	@Autowired
+	private ArosAcosRepository arosAcosRepository;
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
-    
-    @Override
-    @Transactional
-    public AccessControl getAccessControls(ObjectId roleOrUserId, ObjectId locationId, ObjectId hospitalId) {
-	AccessControl response = null;
-	try {	
-	    response = new AccessControl();
-	    Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("roleOrUserId").is(roleOrUserId).and("locationId").is(locationId).and("hospitalId").is(hospitalId)),
-	    		Aggregation.lookup("aros_acos_cl", "_id", "arosId", "arosAcos"), Aggregation.unwind("arosAcos"), Aggregation.unwind("arosAcos.acosIds"),
-	    		Aggregation.lookup("acos_cl", "arosAcos.acosIds", "_id", "acos"), Aggregation.unwind("acos"));
-	    
-	    List<ArosAcosLookupResponse> acosLookupResponses = mongoTemplate.aggregate(aggregation, ArosCollection.class, ArosAcosLookupResponse.class).getMappedResults();
-		if (acosLookupResponses != null && !acosLookupResponses.isEmpty()) {
-			List<AccessModule> accessModules = new ArrayList<AccessModule>();
+	@Autowired
 
-		    for (ArosAcosLookupResponse arosAcosLookupResponse : acosLookupResponses) {
-			AccessModule accessModule = new AccessModule();
-			BeanUtil.map(arosAcosLookupResponse.getAcos(), accessModule);
-			accessModules.add(accessModule);
-			response.setId(arosAcosLookupResponse.getArosAcos().getId().toString());
-		    }
-		    response.setAccessModules(accessModules);
-		}
-	    response.setRoleOrUserId(roleOrUserId.toString());
-	    if(!DPDoctorUtils.anyStringEmpty(locationId))response.setLocationId(locationId.toString());
-	    if(!DPDoctorUtils.anyStringEmpty(hospitalId))response.setHospitalId(hospitalId.toString());
-	} catch (Exception e) {
-	    throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
-	}
-	return response;
-    }
+	private MongoTemplate mongoTemplate;
 
-    @SuppressWarnings("unchecked")
-    @Override
-    @Transactional
-    public AccessControl setAccessControls(AccessControl accessControl) {
-	AccessControl response = null;
-	try {
-		
-		ObjectId roleOrUserObjectId = null, locationObjectId = null , hospitalObjectId= null;
-		if(!DPDoctorUtils.anyStringEmpty(accessControl.getRoleOrUserId()))roleOrUserObjectId = new ObjectId(accessControl.getRoleOrUserId());
-    	if(!DPDoctorUtils.anyStringEmpty(accessControl.getLocationId()))locationObjectId = new ObjectId(accessControl.getLocationId());
-    	if(!DPDoctorUtils.anyStringEmpty(accessControl.getHospitalId()))hospitalObjectId = new ObjectId(accessControl.getHospitalId());
-    	
-    	List<ArosCollection> arosCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("roleOrUserId").is(roleOrUserObjectId)
-    			.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId))), ArosCollection.class, ArosCollection.class).getMappedResults();
-	    ArosCollection arosCollection = null;
-	    if(arosCollections!=null && !arosCollections.isEmpty())arosCollection = arosCollections.get(0);
-	    ArosAcosCollection arosAcosCollection = null;
-	    List<AcosCollection> acosCollections = null;
-	    if (arosCollection != null) {
-		arosAcosCollection = arosAcosRepository.findByArosId(arosCollection.getId());
+	@Override
+	@Transactional
+	public AccessControl getAccessControls(ObjectId roleOrUserId, ObjectId locationId, ObjectId hospitalId) {
+		AccessControl response = null;
+		try {
+			response = new AccessControl();
+			Aggregation aggregation = Aggregation.newAggregation(
+					Aggregation.match(new Criteria("roleOrUserId").is(roleOrUserId).and("locationId").is(locationId)
+							.and("hospitalId").is(hospitalId)),
+					Aggregation.lookup("aros_acos_cl", "_id", "arosId", "arosAcos"), Aggregation.unwind("arosAcos"),
+					Aggregation.unwind("arosAcos.acosIds"),
+					Aggregation.lookup("acos_cl", "arosAcos.acosIds", "_id", "acos"), Aggregation.unwind("acos"));
 
-		Iterator<AcosCollection> acosCollectionIterator = acosRepository.findAllById(arosAcosCollection.getAcosIds()).iterator();
+			List<ArosAcosLookupResponse> acosLookupResponses = mongoTemplate
+					.aggregate(aggregation, ArosCollection.class, ArosAcosLookupResponse.class).getMappedResults();
+			if (acosLookupResponses != null && !acosLookupResponses.isEmpty()) {
+				List<AccessModule> accessModules = new ArrayList<AccessModule>();
 
-		acosCollections = IteratorUtils.toList(acosCollectionIterator);
-
-		if (acosCollections != null) {
-		    for (AccessModule accessModule : accessControl.getAccessModules()) {
-			    boolean match = false;
-				for (AcosCollection acosCollection : acosCollections) {
-				    if (accessModule.getModule() != null && accessModule.getUrl() != null  && accessModule.getModule().trim().equals(acosCollection.getModule())  && accessModule.getUrl().trim().equals(acosCollection.getUrl())) {
-					BeanUtil.map(accessModule, acosCollection);
-					match = true;
-					break;
-				    }
+				for (ArosAcosLookupResponse arosAcosLookupResponse : acosLookupResponses) {
+					AccessModule accessModule = new AccessModule();
+					BeanUtil.map(arosAcosLookupResponse.getAcos(), accessModule);
+					accessModules.add(accessModule);
+					response.setId(arosAcosLookupResponse.getArosAcos().getId().toString());
 				}
-				if (!match) {
-				    AcosCollection acosCollection = new AcosCollection();
-				    BeanUtil.map(accessModule, acosCollection);
-				    acosCollections.add(acosCollection);
-				}
-		    }
-		} else {
-		    acosCollections = new ArrayList<AcosCollection>();
-		    if (accessControl.getAccessModules() != null && !accessControl.getAccessModules().isEmpty()) {
-			for (AccessModule accessModule : accessControl.getAccessModules()) {
-				AcosCollection acosCollection = new AcosCollection();
-			    BeanUtil.map(accessModule, acosCollection);
-			    acosCollections.add(acosCollection);
+				response.setAccessModules(accessModules);
 			}
-		    }
+			response.setRoleOrUserId(roleOrUserId.toString());
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				response.setLocationId(locationId.toString());
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				response.setHospitalId(hospitalId.toString());
+		} catch (Exception e) {
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 		}
-		acosCollections = acosRepository.saveAll(acosCollections);
-	    } else {
-		arosCollection = new ArosCollection();
-		acosCollections = new ArrayList<AcosCollection>();
-		arosAcosCollection = new ArosAcosCollection();
-		if (accessControl.getAccessModules() != null && !accessControl.getAccessModules().isEmpty()) {
-		    for (AccessModule accessModule : accessControl.getAccessModules()) {
-		    	AcosCollection acosCollection = new AcosCollection();
-				BeanUtil.map(accessModule, acosCollection);
-				acosCollections.add(acosCollection);
-		    }
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	@Transactional
+	public AccessControl setAccessControls(AccessControl accessControl) {
+		AccessControl response = null;
+		try {
+
+			ObjectId roleOrUserObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(accessControl.getRoleOrUserId()))
+				roleOrUserObjectId = new ObjectId(accessControl.getRoleOrUserId());
+			if (!DPDoctorUtils.anyStringEmpty(accessControl.getLocationId()))
+				locationObjectId = new ObjectId(accessControl.getLocationId());
+			if (!DPDoctorUtils.anyStringEmpty(accessControl.getHospitalId()))
+				hospitalObjectId = new ObjectId(accessControl.getHospitalId());
+
+			List<ArosCollection> arosCollections = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("roleOrUserId").is(roleOrUserObjectId)
+							.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId))),
+					ArosCollection.class, ArosCollection.class).getMappedResults();
+			ArosCollection arosCollection = null;
+			if (arosCollections != null && !arosCollections.isEmpty())
+				arosCollection = arosCollections.get(0);
+			ArosAcosCollection arosAcosCollection = null;
+			List<AcosCollection> acosCollections = null;
+			if (arosCollection != null) {
+				arosAcosCollection = arosAcosRepository.findByArosId(arosCollection.getId());
+
+				Iterator<AcosCollection> acosCollectionIterator = acosRepository
+						.findAllById(arosAcosCollection.getAcosIds()).iterator();
+
+				acosCollections = IteratorUtils.toList(acosCollectionIterator);
+
+				if (acosCollections != null) {
+					for (AccessModule accessModule : accessControl.getAccessModules()) {
+						boolean match = false;
+						for (AcosCollection acosCollection : acosCollections) {
+							if (accessModule.getModule() != null && accessModule.getUrl() != null
+									&& accessModule.getModule().trim().equals(acosCollection.getModule())
+									&& accessModule.getUrl().trim().equals(acosCollection.getUrl())) {
+								BeanUtil.map(accessModule, acosCollection);
+								match = true;
+								break;
+							}
+						}
+						if (!match) {
+							AcosCollection acosCollection = new AcosCollection();
+							BeanUtil.map(accessModule, acosCollection);
+							acosCollections.add(acosCollection);
+						}
+					}
+				} else {
+					acosCollections = new ArrayList<AcosCollection>();
+					if (accessControl.getAccessModules() != null && !accessControl.getAccessModules().isEmpty()) {
+						for (AccessModule accessModule : accessControl.getAccessModules()) {
+							AcosCollection acosCollection = new AcosCollection();
+							BeanUtil.map(accessModule, acosCollection);
+							acosCollections.add(acosCollection);
+						}
+					}
+				}
+				acosCollections = acosRepository.saveAll(acosCollections);
+			} else {
+				arosCollection = new ArosCollection();
+				acosCollections = new ArrayList<AcosCollection>();
+				arosAcosCollection = new ArosAcosCollection();
+				if (accessControl.getAccessModules() != null && !accessControl.getAccessModules().isEmpty()) {
+					for (AccessModule accessModule : accessControl.getAccessModules()) {
+						AcosCollection acosCollection = new AcosCollection();
+						BeanUtil.map(accessModule, acosCollection);
+						acosCollections.add(acosCollection);
+					}
+				}
+				BeanUtil.map(accessControl, arosCollection);
+			}
+
+			arosCollection = arosRepository.save(arosCollection);
+			acosCollections = acosRepository.saveAll(acosCollections);
+			arosAcosCollection.setArosId(arosCollection.getId());
+			List<ObjectId> acosIds = new ArrayList<ObjectId>(
+					CollectionUtils.collect(acosCollections, new BeanToPropertyValueTransformer("id")));
+			List<ObjectId> finalAcosIds = arosAcosCollection.getAcosIds();
+			if (finalAcosIds == null)
+				finalAcosIds = new ArrayList<ObjectId>();
+			finalAcosIds.addAll(acosIds);
+			finalAcosIds = new ArrayList<ObjectId>(new LinkedHashSet<ObjectId>(finalAcosIds));
+			arosAcosCollection.setAcosIds(finalAcosIds);
+			arosAcosCollection = arosAcosRepository.save(arosAcosCollection);
+
+			response = new AccessControl();
+			BeanUtil.map(arosCollection, response);
+			List<AccessModule> accessModules = new ArrayList<AccessModule>();
+			for (AcosCollection acosCollection : acosCollections) {
+				AccessModule accessModule = new AccessModule();
+				BeanUtil.map(acosCollection, accessModule);
+				accessModules.add(accessModule);
+			}
+			response.setAccessModules(accessModules);
+		} catch (Exception e) {
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 		}
-		BeanUtil.map(accessControl, arosCollection);
-	    }
-
-	    arosCollection = arosRepository.save(arosCollection);
-	    acosCollections = acosRepository.saveAll(acosCollections);
-	    arosAcosCollection.setArosId(arosCollection.getId());
-	    List<ObjectId> acosIds = new ArrayList<ObjectId>(CollectionUtils.collect(acosCollections, new BeanToPropertyValueTransformer("id")));
-	    List<ObjectId> finalAcosIds = arosAcosCollection.getAcosIds();
-	    if (finalAcosIds == null)
-		finalAcosIds = new ArrayList<ObjectId>();
-	    finalAcosIds.addAll(acosIds);
-	    finalAcosIds = new ArrayList<ObjectId>(new LinkedHashSet<ObjectId>(finalAcosIds));
-	    arosAcosCollection.setAcosIds(finalAcosIds);
-	    arosAcosCollection = arosAcosRepository.save(arosAcosCollection);
-
-	    response = new AccessControl();
-	    BeanUtil.map(arosCollection, response);
-	    List<AccessModule> accessModules = new ArrayList<AccessModule>();
-	    for(AcosCollection acosCollection : acosCollections){
-	    	AccessModule accessModule = new AccessModule();
-	    	BeanUtil.map(acosCollection, accessModule);
-	    	accessModules.add(accessModule);
-	    }
-	    response.setAccessModules(accessModules);
-	} catch (Exception e) {
-	    throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		return response;
 	}
-	return response;
-    }
-    
-    @Override
-    @Transactional
-    public List<AccessControl> getAllAccessControls(Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId) {
-    	List<AccessControl> response = null;
-	try {	
-		
-		Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("roleOrUserId").in(roleIds)
-				.and("locationId").is(locationId).and("hospitalId").is(hospitalId)),
-				Aggregation.lookup("aros_acos_cl", "id", "arosId", "arosAcosCollection"), Aggregation.unwind("arosAcosCollection"));
-	    List<ArosLookupResponse> arosLookupResponses = mongoTemplate.aggregate(aggregation, ArosCollection.class, ArosLookupResponse.class).getMappedResults();
-	    if (arosLookupResponses != null && !arosLookupResponses.isEmpty()) {
-	    	for(ArosLookupResponse arosCollection : arosLookupResponses){
-	    		AccessControl accessControl = new AccessControl();
-	    		ArosAcosCollection arosAcosCollection = arosCollection.getArosAcosCollection();
-	    		if (arosAcosCollection != null && !arosAcosCollection.getAcosIds().isEmpty()) {
-	    			Iterator<AcosCollection> acosCollections = acosRepository.findAllById(arosAcosCollection.getAcosIds()).iterator();
-	    			List<AccessModule> accessModules = new ArrayList<AccessModule>();
 
-	    			while(acosCollections.hasNext()) {
-	    				AcosCollection acosCollection = acosCollections.next();
-	    				AccessModule accessModule = new AccessModule();
-	    				BeanUtil.map(acosCollection, accessModule);
-    					accessModules.add(accessModule);
-	    			}
-//	    			for (AcosCollection acosCollection : acosCollections.) {
-//	    					AccessModule accessModule = new AccessModule();
-//	    					BeanUtil.map(acosCollection, accessModule);
-//	    					accessModules.add(accessModule);
-//	    			}
-	    			accessControl.setAccessModules(accessModules);
-	    			accessControl.setId(arosAcosCollection.getId().toString());
-	    			accessControl.setRoleOrUserId(arosCollection.getRoleOrUserId().toString());
-	    			if(!DPDoctorUtils.anyStringEmpty(locationId))accessControl.setLocationId(locationId.toString());
-	    			if(!DPDoctorUtils.anyStringEmpty(hospitalId))accessControl.setHospitalId(hospitalId.toString());
-	    		}
-	    		if(response == null)response = new ArrayList<AccessControl>();
-	    		response.add(accessControl);
-	    	}
-	    }
-	   
-	} catch (Exception e) {
-	    throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+	@Override
+	@Transactional
+	public List<AccessControl> getAllAccessControls(Collection<ObjectId> roleIds, ObjectId locationId,
+			ObjectId hospitalId) {
+		List<AccessControl> response = null;
+		try {
+
+			Aggregation aggregation = Aggregation.newAggregation(
+					Aggregation.match(new Criteria("roleOrUserId").in(roleIds).and("locationId").is(locationId)
+							.and("hospitalId").is(hospitalId)),
+					Aggregation.lookup("aros_acos_cl", "id", "arosId", "arosAcosCollection"),
+					Aggregation.unwind("arosAcosCollection"));
+			List<ArosLookupResponse> arosLookupResponses = mongoTemplate
+					.aggregate(aggregation, ArosCollection.class, ArosLookupResponse.class).getMappedResults();
+			if (arosLookupResponses != null && !arosLookupResponses.isEmpty()) {
+				for (ArosLookupResponse arosCollection : arosLookupResponses) {
+					AccessControl accessControl = new AccessControl();
+					ArosAcosCollection arosAcosCollection = arosCollection.getArosAcosCollection();
+					if (arosAcosCollection != null && !arosAcosCollection.getAcosIds().isEmpty()) {
+						Iterator<AcosCollection> acosCollections = acosRepository
+								.findAllById(arosAcosCollection.getAcosIds()).iterator();
+						List<AccessModule> accessModules = new ArrayList<AccessModule>();
+
+						while (acosCollections.hasNext()) {
+							AcosCollection acosCollection = acosCollections.next();
+							AccessModule accessModule = new AccessModule();
+							BeanUtil.map(acosCollection, accessModule);
+							accessModules.add(accessModule);
+						}
+						accessControl.setAccessModules(accessModules);
+						accessControl.setId(arosAcosCollection.getId().toString());
+						accessControl.setRoleOrUserId(arosCollection.getRoleOrUserId().toString());
+						if (!DPDoctorUtils.anyStringEmpty(locationId))
+							accessControl.setLocationId(locationId.toString());
+						if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+							accessControl.setHospitalId(hospitalId.toString());
+					}
+					if (response == null)
+						response = new ArrayList<AccessControl>();
+					response.add(accessControl);
+				}
+			}
+
+		} catch (Exception e) {
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
 	}
-	return response;
-    }
 }

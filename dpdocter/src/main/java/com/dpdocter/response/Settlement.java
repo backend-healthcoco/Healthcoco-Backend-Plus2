@@ -11,6 +11,5 @@ public class Settlement {
 	public void setEntity(SettlementEntity entity) {
 		this.entity = entity;
 	}
-	
-	
+
 }

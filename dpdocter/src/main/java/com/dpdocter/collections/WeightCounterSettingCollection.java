@@ -37,7 +37,6 @@ public class WeightCounterSettingCollection extends GenericCollection {
 		this.userId = userId;
 	}
 
-	
 	public Boolean getShowCounter() {
 		return showCounter;
 	}

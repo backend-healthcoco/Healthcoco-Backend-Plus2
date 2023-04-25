@@ -14,32 +14,37 @@ import com.dpdocter.collections.PatientCollection;
 
 @Repository
 public interface PatientRepository extends MongoRepository<PatientCollection, ObjectId> {
-	
+
 	List<PatientCollection> findByUserId(ObjectId userId);
 
-	PatientCollection findByUserIdAndDoctorIdAndLocationIdAndHospitalId(ObjectId userId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId);
+	PatientCollection findByUserIdAndDoctorIdAndLocationIdAndHospitalId(ObjectId userId, ObjectId doctorId,
+			ObjectId locationId, ObjectId hospitalId);
 
 	PatientCollection findByUserIdAndLocationIdAndHospitalId(ObjectId userId, ObjectId locationId, ObjectId hospitalId);
 
-	PatientCollection findByUserIdAndLocationIdAndHospitalIdAndDiscarded(ObjectId userId, ObjectId locationId, ObjectId hospitalId,Boolean discarded);
+	PatientCollection findByUserIdAndLocationIdAndHospitalIdAndDiscarded(ObjectId userId, ObjectId locationId,
+			ObjectId hospitalId, Boolean discarded);
 
 	List<PatientCollection> findByDoctorIdAndUpdatedTimeGreaterThan(ObjectId doctorId, Date date, Sort sort);
-	
+
 	PatientCollection findByUserIdAndDoctorId(ObjectId patientId, ObjectId doctorId);
-	
+
 	List<PatientCollection> findByLocationIdAndHospitalIdAndPNUMNull(ObjectId locationId, ObjectId hospitalId);
-	
+
 	@Query("{'locationId': ?0, 'hospitalId': ?1, 'PNUM': ?2}")
 	PatientCollection findByLocationIdAndHospitalIdAndPNUM(ObjectId locationId, ObjectId hospitalId, String pnum);
 
-	List<PatientCollection> findByLocationIdAndHospitalIdAndRegistrationDateBetween(ObjectId locationId, ObjectId hospitalId, Long startTimeinMillis, Long endTimeinMillis, Pageable pageRequest);
-	
-	@Query("{'locationId': ?0, 'hospitalId': ?1, 'PNUM': {$ne: null}}")
-	PatientCollection findByLocationIdAndHospitalIdAndPNUMNotNull(ObjectId locationObjectId, ObjectId hospitalObjectId, Sort sort);
+	List<PatientCollection> findByLocationIdAndHospitalIdAndRegistrationDateBetween(ObjectId locationId,
+			ObjectId hospitalId, Long startTimeinMillis, Long endTimeinMillis, Pageable pageRequest);
 
 	@Query("{'locationId': ?0, 'hospitalId': ?1, 'PNUM': {$ne: null}}")
-	List<PatientCollection> findByLocationIdAndHospitalIdAndPNUMNotNull(ObjectId locationObjectId, ObjectId hospitalObjectId, Pageable pageRequest);
-	
+	PatientCollection findByLocationIdAndHospitalIdAndPNUMNotNull(ObjectId locationObjectId, ObjectId hospitalObjectId,
+			Sort sort);
+
+	@Query("{'locationId': ?0, 'hospitalId': ?1, 'PNUM': {$ne: null}}")
+	List<PatientCollection> findByLocationIdAndHospitalIdAndPNUMNotNull(ObjectId locationObjectId,
+			ObjectId hospitalObjectId, Pageable pageRequest);
+
 	@Query(value = "{'userId': ?0, 'locationId': ?1, 'hospitalId': ?2}", count = true)
 	Integer findCount(ObjectId userId, ObjectId locationId, ObjectId hospitalId);
 
@@ -50,8 +55,9 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
 	Integer findPatientByPID(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, String generatedId);
 
 	@Query(value = "{'doctorId':?0, 'locationId':?1, 'hospitalId': ?2, 'PID':?3, 'userId': {'$ne' : ?4}}", count = true)
-	Integer findPatientByPID(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, String generatedId, ObjectId userId);
-	
+	Integer findPatientByPID(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, String generatedId,
+			ObjectId userId);
+
 	@Query(value = "{'locationId': ?0, 'hospitalId': ?1, 'pNUM': {'$ne' : ?2}}", count = true)
 	Integer findCountByLocationIDHospitalIDAndNotPNUM(ObjectId locationId, ObjectId hospitalId, String pnum);
 

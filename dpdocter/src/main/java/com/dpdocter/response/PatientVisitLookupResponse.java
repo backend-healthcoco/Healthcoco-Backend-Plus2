@@ -16,7 +16,7 @@ import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.VisitedFor;
 
-public class PatientVisitLookupResponse extends GenericCollection{
+public class PatientVisitLookupResponse extends GenericCollection {
 
 	private ObjectId id;
 
@@ -45,7 +45,7 @@ public class PatientVisitLookupResponse extends GenericCollection{
 	private List<ObjectId> recordId;
 
 	private ObjectId eyePrescriptionId;
-	
+
 	private List<PrescriptionCollection> prescriptions;
 
 	private List<ClinicalNotesCollection> clinicalNotes;
@@ -61,11 +61,11 @@ public class PatientVisitLookupResponse extends GenericCollection{
 	private Date fromDate;
 
 	private UserCollection doctor;
-	
+
 	private LocationCollection location;
-	
+
 	private PatientCollection patient;
-	
+
 	private UserCollection patientUser;
 
 	public ObjectId getId() {

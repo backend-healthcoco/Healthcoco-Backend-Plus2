@@ -9,38 +9,38 @@ import com.dpdocter.enums.ReceiptType;
 import com.dpdocter.request.PaymentDetails;
 import com.dpdocter.response.AdvanceReceiptIdWithAmountResponse;
 
-public class DoctorPatientReceipt extends GenericCollection{
+public class DoctorPatientReceipt extends GenericCollection {
 
 	private String id;
-	
+
 	private String uniqueReceiptId;
-	
-	private ReceiptType receiptType; 
-	
+
+	private ReceiptType receiptType;
+
 	private String doctorId;
-	
+
 	private String locationId;
-	
+
 	private String hospitalId;
-	
+
 	private String patientId;
-	
+
 	private ModeOfPayment modeOfPayment;
-	
+
 	private String transactionId;
-	
-	private List<AdvanceReceiptIdWithAmountResponse> advanceReceiptIdWithAmounts;   
-	
-	private String invoiceId; 
-	
+
+	private List<AdvanceReceiptIdWithAmountResponse> advanceReceiptIdWithAmounts;
+
+	private String invoiceId;
+
 	private String uniqueInvoiceId;
-	
+
 	private Double amountPaid = 0.0;
-	
+
 	private Double remainingAdvanceAmount = 0.0;
-	
+
 	private Double balanceAmount = 0.0;
-	
+
 	private Double refundAmount = 0.0;
 
 	private Date receivedDate;
@@ -48,13 +48,11 @@ public class DoctorPatientReceipt extends GenericCollection{
 	private Boolean discarded = false;
 
 	private Double usedAdvanceAmount = 0.0;
-	
+
 	private PaymentDetails paymentDetails;
-	
+
 	private String paymentInfo;
 
-	
-	
 	public String getPaymentInfo() {
 		return paymentInfo;
 	}
@@ -190,6 +188,7 @@ public class DoctorPatientReceipt extends GenericCollection{
 	public void setUniqueInvoiceId(String uniqueInvoiceId) {
 		this.uniqueInvoiceId = uniqueInvoiceId;
 	}
+
 	public Double getUsedAdvanceAmount() {
 		return usedAdvanceAmount;
 	}
@@ -197,10 +196,6 @@ public class DoctorPatientReceipt extends GenericCollection{
 	public void setUsedAdvanceAmount(Double usedAdvanceAmount) {
 		this.usedAdvanceAmount = usedAdvanceAmount;
 	}
-	
-	
-	
-	
 
 	public Double getRefundAmount() {
 		return refundAmount;
@@ -236,6 +231,5 @@ public class DoctorPatientReceipt extends GenericCollection{
 				+ ", balanceAmount=" + balanceAmount + ", receivedDate=" + receivedDate + ", discarded=" + discarded
 				+ ", usedAdvanceAmount=" + usedAdvanceAmount + "]";
 	}
-
 
 }

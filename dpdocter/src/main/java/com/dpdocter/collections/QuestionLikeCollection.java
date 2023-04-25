@@ -17,7 +17,7 @@ public class QuestionLikeCollection extends GenericCollection {
 	private ObjectId userId;
 
 	@Field
-	private Boolean discarded=false;
+	private Boolean discarded = false;
 
 	public ObjectId getId() {
 		return id;
@@ -50,6 +50,5 @@ public class QuestionLikeCollection extends GenericCollection {
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
-	
-	
+
 }

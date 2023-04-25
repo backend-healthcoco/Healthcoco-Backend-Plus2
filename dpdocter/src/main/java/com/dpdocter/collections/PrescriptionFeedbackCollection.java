@@ -32,7 +32,7 @@ public class PrescriptionFeedbackCollection extends GenericCollection {
 
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	public ObjectId getId() {
 		return id;
 	}

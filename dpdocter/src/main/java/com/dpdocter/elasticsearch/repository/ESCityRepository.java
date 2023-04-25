@@ -12,12 +12,6 @@ public interface ESCityRepository extends ElasticsearchRepository<ESCityDocument
 	@Query("{\"bool\": {\"must\": [{\"prefix\": {\"city\": \"?0\"}}]}}")
 	List<ESCityDocument> findByQueryAnnotation(String searchTerm);
 
-//    @Query("city:?0* AND isActivated:true AND !geofilt sfield='geoLocation'  pt=?1,?2 d=10")
-//    List<ESCityDocument> findByQueryAnnotation(String searchTerm, double latitude, double longitude);
-//
-//    @Query("isActivated:true AND !geofilt sfield='geoLocation'  pt=?0,?1 d=10")
-//    List<ESCityDocument> findByQueryAnnotation(double latitude, double longitude);
-//
 	@Query("{\"bool\": {\"must\": [{\"prefix\": {\"city\": \"?0\"}}]}}")
 	ESCityDocument findByName(String city);
 

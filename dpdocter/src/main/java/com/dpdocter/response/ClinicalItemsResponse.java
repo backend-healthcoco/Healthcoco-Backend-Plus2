@@ -6,16 +6,16 @@ import org.bson.types.ObjectId;
 
 public class ClinicalItemsResponse {
 
-	ObjectId keepResourceId;
-	
-	List<ObjectId> resourceIds;
-	
-	List<String> resourceIdsForEs;
-	
-	String resourceName;
-	
+	private ObjectId keepResourceId;
+
+	private List<ObjectId> resourceIds;
+
+	private List<String> resourceIdsForEs;
+
+	private String resourceName;
+
 	long count = 0;
-	
+
 	public ObjectId getKeepResourceId() {
 		return keepResourceId;
 	}

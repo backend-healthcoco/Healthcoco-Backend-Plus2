@@ -11,13 +11,11 @@ public class ConsentFormItemJasperdetails {
 	private String emailAddress = "--";
 	private String landLineNumber = "--";
 	private String address = "--";
-	private String title="CONSENT FORM";
+	private String title = "CONSENT FORM";
 	private String medicalHistory = "--";
 	private String declaration = "--";
 	private String signImageUrl = "--";
 	private String dateOfSign = "--";
-	
-	
 
 	public String getTitle() {
 		return title;

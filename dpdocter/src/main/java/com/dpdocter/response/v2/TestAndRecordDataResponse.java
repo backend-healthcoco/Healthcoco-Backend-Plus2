@@ -2,12 +2,12 @@ package com.dpdocter.response.v2;
 
 import com.dpdocter.beans.v2.DiagnosticTest;
 
-public class TestAndRecordDataResponse{
+public class TestAndRecordDataResponse {
 
-    private DiagnosticTest test;
+	private DiagnosticTest test;
 
-    private String recordId;
-    
+	private String recordId;
+
 	public TestAndRecordDataResponse(DiagnosticTest test, String recordId) {
 		this.test = test;
 		this.recordId = recordId;

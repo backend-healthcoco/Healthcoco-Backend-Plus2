@@ -1,17 +1,25 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.OrderStatus;
 
-public class TrackingOrderCollection extends GenericCollection{
-
+public class TrackingOrderCollection extends GenericCollection {
+	@Id
 	private ObjectId id;
+	@Field
 	private ObjectId orderId;
+	@Field
 	private ObjectId productId;
+	@Field
 	private Long timestamp;
+	@Field
 	private String city;
+	@Field
 	private OrderStatus status;
+	@Field
 	private String location;
 
 	public ObjectId getId() {

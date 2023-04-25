@@ -74,5 +74,4 @@ public class VersionControl {
 				+ majorVersion + ", minorVersion=" + minorVersion + ", patchVersion=" + patchVersion + "]";
 	}
 
-
 }

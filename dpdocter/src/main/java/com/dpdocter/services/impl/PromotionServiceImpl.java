@@ -14,39 +14,34 @@ import com.dpdocter.repository.InternalPromotionGroupRepository;
 import com.dpdocter.services.PromotionService;
 
 @Service
-public class PromotionServiceImpl implements PromotionService{
-	
-	
+public class PromotionServiceImpl implements PromotionService {
+
 	@Autowired
 	private InternalPromocodeRepository internalPromocodeRepository;
-	
+
 	@Autowired
 	private InternalPromotionGroupRepository internalPromotionGroupRepository;
-	
-	
+
 	@Override
 	@Transactional
-	public InternalPromotionGroup getPromotionGroup(String promocode)
-	{
+	public InternalPromotionGroup getPromotionGroup(String promocode) {
 		InternalPromotionGroup response = null;
-		InternalPromotionGroupCollection internalPromotionGroupCollection = internalPromotionGroupRepository.findByPromoCode(promocode);
-	
-		if(internalPromotionGroupCollection != null)
-		{
+		InternalPromotionGroupCollection internalPromotionGroupCollection = internalPromotionGroupRepository
+				.findByPromoCode(promocode);
+
+		if (internalPromotionGroupCollection != null) {
 			response = new InternalPromotionGroup();
 			BeanUtil.map(internalPromotionGroupCollection, response);
 		}
-		
+
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public void addInternalPromoCode(InternalPromoCode request)
-	{
+	public void addInternalPromoCode(InternalPromoCode request) {
 		InternalPromoCodeCollection internalPromoCodeCollection = null;
-		if(request != null)
-		{
+		if (request != null) {
 			internalPromoCodeCollection = new InternalPromoCodeCollection();
 			BeanUtil.map(request, internalPromoCodeCollection);
 			internalPromoCodeCollection = internalPromocodeRepository.save(internalPromoCodeCollection);

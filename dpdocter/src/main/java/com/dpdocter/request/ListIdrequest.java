@@ -5,7 +5,7 @@ import java.util.List;
 public class ListIdrequest {
 
 	private List<String> ids;
-	
+
 	private String emailAddress;
 
 	public List<String> getIds() {

@@ -3,7 +3,7 @@ package com.dpdocter.beans;
 public class EyeFungus {
 
 	private String leftEye;
-	
+
 	private String rightEye;
 
 	public String getLeftEye() {
@@ -21,6 +21,5 @@ public class EyeFungus {
 	public void setRightEye(String rightEye) {
 		this.rightEye = rightEye;
 	}
-	
-	
+
 }

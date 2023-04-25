@@ -8,7 +8,6 @@ public class FeedbackGetRequest {
 	private String patientId;
 	private String appointmentId;
 	private String prescriptionId;
-	// private FeedbackType type;
 	private int size;
 	private long page;
 
@@ -44,10 +43,6 @@ public class FeedbackGetRequest {
 		this.patientId = patientId;
 	}
 
-	/*
-	 * public FeedbackType getType() { return type; } public void
-	 * setType(FeedbackType type) { this.type = type; }
-	 */
 	public int getSize() {
 		return size;
 	}

@@ -1,31 +1,29 @@
 package com.dpdocter.response;
 
-
 import com.dpdocter.collections.GenericCollection;
 
-public class InitialAssessmentResponse extends GenericCollection{
+public class InitialAssessmentResponse extends GenericCollection {
 
+	private String id;
 
-private String id;
-	
 	private String doctorId;
 
 	private String locationId;
 
 	private String hospitalId;
-	
+
 	private String patientId;
 
 	private String observation;
 
 	private String investigation;
-	
+
 	private String provisionalDiagnosis;
 
 	private String generalExam;
 
 	private String presentComplaint;
-	
+
 	private String noseExam;
 
 	private String oralCavityThroatExam;
@@ -37,11 +35,11 @@ private String id;
 	private String pastHistory;
 
 	private String psychologicalAssessment;
-	
+
 	private boolean discarded = false;
 
 	private String treatmentsPlan;
-	 
+
 	private String ipdNumber;
 
 	public String getId() {
@@ -140,7 +138,6 @@ private String id;
 		this.oralCavityThroatExam = oralCavityThroatExam;
 	}
 
-
 	public String getNeckExam() {
 		return neckExam;
 	}
@@ -197,7 +194,4 @@ private String id;
 		this.ipdNumber = ipdNumber;
 	}
 
-	
-	
-	
 }

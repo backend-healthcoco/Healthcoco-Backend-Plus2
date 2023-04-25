@@ -6,12 +6,12 @@ import com.dpdocter.beans.Fields;
 
 public class ResourcesCountResponse {
 
-	String resourceType;
-	
-	List<Fields> fields;
+	private String resourceType;
 
-	String totalCount;
-	
+	private List<Fields> fields;
+
+	private String totalCount;
+
 	public String getResourceType() {
 		return resourceType;
 	}
@@ -41,5 +41,5 @@ public class ResourcesCountResponse {
 		return "ResourcesCountResponse [resourceType=" + resourceType + ", fields=" + fields + ", totalCount="
 				+ totalCount + "]";
 	}
-	
+
 }

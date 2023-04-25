@@ -8,7 +8,7 @@ public class LocationWithAppointmentCount {
 	
 	private long noOfAppointments;
 	
-	List<DoctorWithAppointmentCount> doctors;
+	private List<DoctorWithAppointmentCount> doctors;
 
 	public String getLocationId() {
 		return locationId;

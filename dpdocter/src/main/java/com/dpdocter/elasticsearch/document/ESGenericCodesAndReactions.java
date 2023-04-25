@@ -15,12 +15,12 @@ public class ESGenericCodesAndReactions {
 
 	@Id
 	private String id;
-	
+
 	@Field(type = FieldType.Nested)
 	private List<Code> codes;
-	
-    @Field(type = FieldType.Date)
-    private Date updatedTime = new Date();
+
+	@Field(type = FieldType.Date)
+	private Date updatedTime = new Date();
 
 	public String getId() {
 		return id;

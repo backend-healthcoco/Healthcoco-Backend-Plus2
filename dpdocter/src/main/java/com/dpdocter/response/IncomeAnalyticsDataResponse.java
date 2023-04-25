@@ -6,23 +6,23 @@ import java.util.List;
 public class IncomeAnalyticsDataResponse {
 
 	private String serviceName;
-	
+
 	private String title;
-	
+
 	private String doctorName;
-	
+
 	private String groupName;
-	
+
 	private Date date;
-	
+
 	private Double cost;
-	
+
 	private Double discount;
-	
+
 	private Double tax;
-	
+
 	private Double invoiceAmount;
-	
+
 	List<InvoiceAnalyticsDataDetailResponse> invoices;
 
 	public String getServiceName() {

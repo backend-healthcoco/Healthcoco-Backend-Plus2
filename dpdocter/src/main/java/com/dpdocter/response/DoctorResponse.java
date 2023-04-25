@@ -5,19 +5,19 @@ import com.dpdocter.enums.UserState;
 public class DoctorResponse {
 
 	private String id;
-	
+
 	private String firstName;
-	
+
 	private Boolean isActive = false;
-	
+
 	private String emailAddress;
-	
+
 	private UserState userState = UserState.USERSTATECOMPLETE;
 
-    private String userUId;
+	private String userUId;
 
-    private String role;
-    
+	private String role;
+
 	public String getId() {
 		return id;
 	}

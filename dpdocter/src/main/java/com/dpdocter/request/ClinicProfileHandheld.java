@@ -4,41 +4,41 @@ import java.util.List;
 
 public class ClinicProfileHandheld {
 
-    private String id;
+	private String id;
 
-    private String websiteUrl;
+	private String websiteUrl;
 
-    private String locationEmailAddress;
+	private String locationEmailAddress;
 
-    private String clinicNumber;
+	private String clinicNumber;
 
-    private List<String> alternateClinicNumbers;
+	private List<String> alternateClinicNumbers;
 
-    private String googleMapShortUrl;
-    
-    public String getId() {
-	return id;
-    }
+	private String googleMapShortUrl;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getWebsiteUrl() {
-	return websiteUrl;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setWebsiteUrl(String websiteUrl) {
-	this.websiteUrl = websiteUrl;
-    }
+	public String getWebsiteUrl() {
+		return websiteUrl;
+	}
 
-    public String getLocationEmailAddress() {
-	return locationEmailAddress;
-    }
+	public void setWebsiteUrl(String websiteUrl) {
+		this.websiteUrl = websiteUrl;
+	}
 
-    public void setLocationEmailAddress(String locationEmailAddress) {
-	this.locationEmailAddress = locationEmailAddress;
-    }
+	public String getLocationEmailAddress() {
+		return locationEmailAddress;
+	}
+
+	public void setLocationEmailAddress(String locationEmailAddress) {
+		this.locationEmailAddress = locationEmailAddress;
+	}
 
 	public String getClinicNumber() {
 		return clinicNumber;

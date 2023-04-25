@@ -45,8 +45,6 @@ public interface ESClinicalNotesService {
 
 	boolean addDiagrams(ESDiagramsDocument request);
 
-	// List<ESDiagramsDocument> searchDiagramsBySpeciality(String searchTerm);
-
 	boolean addInvestigations(ESInvestigationsDocument request);
 
 	boolean addObservations(ESObservationsDocument request);

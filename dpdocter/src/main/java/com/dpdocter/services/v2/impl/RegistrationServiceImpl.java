@@ -26,14 +26,12 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
-import com.dpdocter.repository.DoctorLabReportRepository;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.response.v2.ClinicDoctorResponse;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.DynamicUIService;
 import com.dpdocter.services.PushNotificationServices;
-import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.v2.RegistrationService;
 import com.mongodb.BasicDBObject;
 
@@ -43,9 +41,6 @@ import common.util.web.DPDoctorUtils;
 public class RegistrationServiceImpl implements RegistrationService {
 
 	private static Logger logger = Logger.getLogger(RegistrationServiceImpl.class.getName());
-
-	// @Autowired
-	// private GroupRepository groupRepository;
 
 	@Autowired
 	private AccessControlServices accessControlServices;
@@ -106,12 +101,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Value(value = "${patient.welcome.message}")
 	private String patientWelcomeMessage;
-
-	@Autowired
-	private DoctorLabReportRepository doctorLabReportRepository;
-
-	@Autowired
-	private SMSServices smsServices;
 
 	@Autowired
 	DoctorClinicProfileRepository doctorClinicProfileRepository;
@@ -269,25 +258,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 							}
 
 							 clinicDoctorResponse.setRole(roles);
-
-							/*
-							 * if (clinicDoctorResponse.getRole() != null) { List<String> roleList = new
-							 * ArrayList<>(); for (Role userRole : clinicDoctorResponse.getRole()) { if
-							 * (userRole.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole()) ||
-							 * userRole.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())) {
-							 * clinicDoctorResponse.setWebRole(RoleEnum.ADMIN.getRole()); }
-							 * roleList.add(userRole.getRole()); }
-							 * 
-							 * if (roleList.contains(RoleEnum.HOSPITAL_ADMIN.getRole()) &&
-							 * roleList.contains(RoleEnum.LOCATION_ADMIN.getRole())) {
-							 * clinicDoctorResponse.setIsSuperAdmin(true); }
-							 * 
-							 * } if (clinicDoctorResponse.getWebRole() == null ||
-							 * clinicDoctorResponse.getWebRole().isEmpty()) { if
-							 * (clinicDoctorResponse.getRole() != null) {
-							 * clinicDoctorResponse.setWebRole(clinicDoctorResponse.getRole().get(0).getRole
-							 * ()); } }
-							 */
 							response.add(clinicDoctorResponse);
 						}
 					}

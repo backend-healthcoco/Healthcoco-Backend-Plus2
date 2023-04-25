@@ -26,6 +26,4 @@ public class NutritionPlanWithCategoryResponse {
 		this.nutritionPlan = nutritionPlan;
 	}
 
-	
-
 }

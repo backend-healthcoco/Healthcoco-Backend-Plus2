@@ -67,8 +67,6 @@ public class DentalWorksInvoiceResponse extends GenericCollection {
 	private Location clinic;
 
 	private Location dentalLab;
-	
-	
 
 	public String getId() {
 		return id;

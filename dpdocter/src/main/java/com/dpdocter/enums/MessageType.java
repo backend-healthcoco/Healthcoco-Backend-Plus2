@@ -2,8 +2,8 @@ package com.dpdocter.enums;
 
 public enum MessageType {
 
-	ENGLISH("ENGLISH"),OTHERS("OTHERS");
-	
+	ENGLISH("ENGLISH"), OTHERS("OTHERS");
+
 	private String type;
 
 	private MessageType(String type) {
@@ -14,7 +14,4 @@ public enum MessageType {
 		return type;
 	}
 
-	
-	
-	
 }

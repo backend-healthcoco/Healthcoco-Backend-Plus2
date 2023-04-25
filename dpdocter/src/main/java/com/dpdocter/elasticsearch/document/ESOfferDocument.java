@@ -78,7 +78,7 @@ public class ESOfferDocument {
 
 	@Field(type = FieldType.Date)
 	private Date updatedTime = new Date();
-	
+
 	public String getId() {
 		return id;
 	}

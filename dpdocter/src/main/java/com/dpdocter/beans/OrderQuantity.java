@@ -5,7 +5,7 @@ import com.dpdocter.enums.MedicineQuantityType;
 public class OrderQuantity {
 
 	private int number;
-	
+
 	private MedicineQuantityType type;
 
 	public int getNumber() {
@@ -23,7 +23,5 @@ public class OrderQuantity {
 	public void setType(MedicineQuantityType type) {
 		this.type = type;
 	}
-	
-	
 
 }

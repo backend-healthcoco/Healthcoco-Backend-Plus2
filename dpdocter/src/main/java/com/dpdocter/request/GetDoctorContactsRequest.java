@@ -3,71 +3,71 @@ package com.dpdocter.request;
 import java.util.List;
 
 public class GetDoctorContactsRequest {
-    private String doctorId;
+	private String doctorId;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private String updatedTime = "0";
+	private String updatedTime = "0";
 
-    private Boolean discarded = true;
+	private Boolean discarded = true;
 
-    private long page;
+	private long page;
 
-    private int size;
+	private int size;
 
-    private List<String> groups;
+	private List<String> groups;
 
-    private String role;
-    
-    public String getLocationId() {
-	return locationId;
-    }
+	private String role;
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public long getPage() {
-	return page;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public void setPage(long page) {
-	this.page = page;
-    }
+	public long getPage() {
+		return page;
+	}
 
-    public int getSize() {
-	return size;
-    }
+	public void setPage(long page) {
+		this.page = page;
+	}
 
-    public void setSize(int size) {
-	this.size = size;
-    }
+	public int getSize() {
+		return size;
+	}
 
-    public List<String> getGroups() {
-	return groups;
-    }
+	public void setSize(int size) {
+		this.size = size;
+	}
 
-    public void setGroups(List<String> groups) {
-	this.groups = groups;
-    }
+	public List<String> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(List<String> groups) {
+		this.groups = groups;
+	}
 
 	public String getUpdatedTime() {
 		return updatedTime;

@@ -948,8 +948,6 @@ public class DischargeSummaryCollection extends GenericCollection {
 		this.monitoringChart = monitoringChart;
 	}
 
-	
-
 	public AnaesthesiaTypeEnum getAnaesthesiaType() {
 		return anaesthesiaType;
 	}

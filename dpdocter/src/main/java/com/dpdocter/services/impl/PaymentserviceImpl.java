@@ -6,14 +6,12 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.dpdocter.beans.OnlineConsultionPaymentCollection;
 import com.dpdocter.collections.BankDetailsCollection;
 import com.dpdocter.collections.SettlementCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.BankDetailsRepository;
-import com.dpdocter.repository.OnlineConsultationPaymentRepository;
 import com.dpdocter.repository.SettlementRepository;
 import com.dpdocter.response.SettlementResponse;
 import com.dpdocter.services.PaymentServices;

@@ -72,84 +72,103 @@ public class OTPServiceImpl implements OTPService {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
-	
-    @Value(value = "${mail.recordsShareOtpBeforeVerification.subject}")
-    private String recordsShareOtpBeforeVerification;
 
-    @Value(value = "${mail.recordsShareOtpAfterVerification.subject}")
-    private String recordsShareOtpAfterVerification;
+	@Value(value = "${mail.recordsShareOtpBeforeVerification.subject}")
+	private String recordsShareOtpBeforeVerification;
 
-    @Override
-    @Transactional
-    public String otpGenerator(String doctorId, String locationId, String hospitalId, String patientId) {
-	String OTP = null;
-	try {
-		ObjectId patientObjectId =null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
-		if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
-		if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
-		if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
-    		if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
-    	
-	    OTP = LoginUtils.generateOTP();
-	    UserCollection userCollection = userRepository.findById(new ObjectId(doctorId)).orElse(null);
-	    //UserCollection patient = userRepository.findById(patientObjectId);
-	    //PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
-	    PatientCard patientCard = null;
-	    
-	    List<PatientCard> patientCards = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(patientObjectId)
-				.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId)), 
-				Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")), PatientCollection.class, PatientCard.class).getMappedResults();
-	    if(patientCards != null && !patientCards.isEmpty())patientCard = patientCards.get(0);
-	    if (userCollection != null && patientCard != null) {
+	@Value(value = "${mail.recordsShareOtpAfterVerification.subject}")
+	private String recordsShareOtpAfterVerification;
 
-		    	if(DPDoctorUtils.anyStringEmpty(patientCard.getUser().getMobileNumber())) {
-		    		logger.error("Patient Mobile Number is not available");
-				throw new BusinessException(ServiceError.InvalidInput, "Patient Mobile Number is not available");
-		    	}
-			String doctorName = (userCollection.getTitle() != null ? userCollection.getTitle() : "") + " " + userCollection.getFirstName();
-	
-			OTPCollection otpCollection = new OTPCollection();
-			otpCollection.setCreatedTime(new Date());
-			otpCollection.setOtpNumber(OTP);
-	
-			if (userCollection != null)
-			    otpCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
-			otpCollection.setGeneratorId(doctorId);
-			otpCollection = otpRepository.save(otpCollection);
-	
-			DoctorOTPCollection doctorOTPCollection = new DoctorOTPCollection();
-			doctorOTPCollection.setCreatedTime(new Date());
-			doctorOTPCollection.setOtpId(otpCollection.getId());
-			doctorOTPCollection.setDoctorId(doctorObjectId);
-			doctorOTPCollection.setLocationId(locationObjectId);
-			doctorOTPCollection.setPatientId(new ObjectId(patientId));
-			doctorOTPCollection = doctorOTPRepository.save(doctorOTPCollection);
-	
-			SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(doctorId, locationId, hospitalId, patientId, patientCard.getLocalPatientName(),
-					"OTP to share Healthcoco records with "+doctorName+" is "+OTP+". Pls don't share this with anyone. Stay Healthy and Happy!!",
-					patientCard.getUser().getMobileNumber(), "OTPVerification");
-			
-			sMSServices.sendSMS(smsTrackDetail, false);
-	
-			if (patientCard != null && patientCard.getEmailAddress() != null && !patientCard.getEmailAddress().isEmpty()) {
-			    String body = mailBodyGenerator.generateRecordsShareOtpBeforeVerificationEmailBody(patientCard.getEmailAddress(),
-			    		patientCard.getLocalPatientName(), doctorName);
-			    mailService.sendEmail(patientCard.getEmailAddress(), recordsShareOtpBeforeVerification, body, null);
+	@Override
+	@Transactional
+	public String otpGenerator(String doctorId, String locationId, String hospitalId, String patientId) {
+		String OTP = null;
+		try {
+			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(patientId))
+				patientObjectId = new ObjectId(patientId);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+
+			OTP = LoginUtils.generateOTP();
+			UserCollection userCollection = userRepository.findById(new ObjectId(doctorId)).orElse(null);
+			// UserCollection patient = userRepository.findById(patientObjectId);
+			// PatientCollection patientCollection =
+			// patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientObjectId,
+			// doctorObjectId, locationObjectId, hospitalObjectId);
+			PatientCard patientCard = null;
+
+			List<PatientCard> patientCards = mongoTemplate.aggregate(
+					Aggregation.newAggregation(
+							Aggregation.match(
+									new Criteria("userId").is(patientObjectId).and("locationId").is(locationObjectId)
+											.and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId)),
+							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")),
+					PatientCollection.class, PatientCard.class).getMappedResults();
+			if (patientCards != null && !patientCards.isEmpty())
+				patientCard = patientCards.get(0);
+			if (userCollection != null && patientCard != null) {
+
+				if (DPDoctorUtils.anyStringEmpty(patientCard.getUser().getMobileNumber())) {
+					logger.error("Patient Mobile Number is not available");
+					throw new BusinessException(ServiceError.InvalidInput, "Patient Mobile Number is not available");
+				}
+				String doctorName = (userCollection.getTitle() != null ? userCollection.getTitle() : "") + " "
+						+ userCollection.getFirstName();
+
+				OTPCollection otpCollection = new OTPCollection();
+				otpCollection.setCreatedTime(new Date());
+				otpCollection.setOtpNumber(OTP);
+
+				if (userCollection != null)
+					otpCollection
+							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+									+ userCollection.getFirstName());
+				otpCollection.setGeneratorId(doctorId);
+				otpCollection = otpRepository.save(otpCollection);
+
+				DoctorOTPCollection doctorOTPCollection = new DoctorOTPCollection();
+				doctorOTPCollection.setCreatedTime(new Date());
+				doctorOTPCollection.setOtpId(otpCollection.getId());
+				doctorOTPCollection.setDoctorId(doctorObjectId);
+				doctorOTPCollection.setLocationId(locationObjectId);
+				doctorOTPCollection.setPatientId(new ObjectId(patientId));
+				doctorOTPCollection = doctorOTPRepository.save(doctorOTPCollection);
+
+				SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(doctorId, locationId, hospitalId,
+						patientId, patientCard.getLocalPatientName(),
+						"OTP to share Healthcoco records with " + doctorName + " is " + OTP
+								+ ". Pls don't share this with anyone. Stay Healthy and Happy!!",
+						patientCard.getUser().getMobileNumber(), "OTPVerification");
+
+				sMSServices.sendSMS(smsTrackDetail, false);
+
+				if (patientCard != null && patientCard.getEmailAddress() != null
+						&& !patientCard.getEmailAddress().isEmpty()) {
+					String body = mailBodyGenerator.generateRecordsShareOtpBeforeVerificationEmailBody(
+							patientCard.getEmailAddress(), patientCard.getLocalPatientName(), doctorName);
+					mailService.sendEmail(patientCard.getEmailAddress(), recordsShareOtpBeforeVerification, body, null);
+				}
+				pushNotificationServices.notifyUser(patientCard.getId().toString(), userCollection.getTitle() + " "
+						+ userCollection.getFirstName()
+						+ " has requested to view your medical history, share OTP that was sent to your registered mobile number to provide access",
+						null, null, null);
+			} else {
+				logger.error("Invalid doctorId or patientId");
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid doctorId or patientId");
 			}
-			pushNotificationServices.notifyUser(patientCard.getId().toString(), userCollection.getTitle()+" "+userCollection.getFirstName()+" has requested to view your medical history, share OTP that was sent to your registered mobile number to provide access", null, null, null);
-	    } else {
-			logger.error("Invalid doctorId or patientId");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid doctorId or patientId");
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error While Generating OTP");
-	    throw new BusinessException(ServiceError.Unknown, "Error While Generating OTP");
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error While Generating OTP");
+			throw new BusinessException(ServiceError.Unknown, "Error While Generating OTP");
+		}
+
+		return OTP;
 	}
-
-	return OTP;
-    }
-
 
 	@Override
 	@Transactional
@@ -186,10 +205,12 @@ public class OTPServiceImpl implements OTPService {
 			if (userCollection != null && patientCard != null && patientId != null) {
 				String doctorName = (userCollection.getTitle() != null ? userCollection.getTitle() : "") + " "
 						+ userCollection.getFirstName();
-				List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.findByDoctorIdAndLocationIdAndPatientId(doctorObjectId,
-						locationObjectId, patientObjectId, PageRequest.of(0, 1, new Sort(Sort.Direction.DESC, "createdTime")));
+				List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository
+						.findByDoctorIdAndLocationIdAndPatientId(doctorObjectId, locationObjectId, patientObjectId,
+								PageRequest.of(0, 1, new Sort(Sort.Direction.DESC, "createdTime")));
 				if (doctorOTPCollection != null) {
-					OTPCollection otpCollection = otpRepository.findById(doctorOTPCollection.get(0).getOtpId()).orElse(null);
+					OTPCollection otpCollection = otpRepository.findById(doctorOTPCollection.get(0).getOtpId())
+							.orElse(null);
 					if (otpCollection != null) {
 						if (otpCollection.getOtpNumber().equals(otpNumber)) {
 							if (isOTPValid(otpCollection.getCreatedTime())) {
@@ -226,8 +247,8 @@ public class OTPServiceImpl implements OTPService {
 			logger.error(e + " Error While Verifying OTP");
 			throw new BusinessException(ServiceError.Unknown, "Error While Verifying OTP");
 		}
-	return response;
-    }
+		return response;
+	}
 
 	@Override
 	@Transactional
@@ -242,10 +263,12 @@ public class OTPServiceImpl implements OTPService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				locationObjectId = new ObjectId(locationId);
 
-			List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.findByDoctorIdAndLocationIdAndPatientId(doctorObjectId, locationObjectId,
-					patientObjectId, PageRequest.of(0, 1, new Sort(Sort.Direction.DESC, "createdTime")));
+			List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.findByDoctorIdAndLocationIdAndPatientId(
+					doctorObjectId, locationObjectId, patientObjectId,
+					PageRequest.of(0, 1, new Sort(Sort.Direction.DESC, "createdTime")));
 			if (doctorOTPCollection != null && !doctorOTPCollection.isEmpty() && doctorOTPCollection.size() > 0) {
-				OTPCollection otpCollection = otpRepository.findById(doctorOTPCollection.get(0).getOtpId()).orElse(null);
+				OTPCollection otpCollection = otpRepository.findById(doctorOTPCollection.get(0).getOtpId())
+						.orElse(null);
 				if (otpCollection != null && otpCollection.getState().equals(OTPState.VERIFIED)) {
 					if (isOTPValid(otpCollection.getCreatedTime()))
 						response = true;
@@ -279,7 +302,7 @@ public class OTPServiceImpl implements OTPService {
 		Boolean response = false;
 		String OTP = null;
 		try {
-			
+
 			OTP = LoginUtils.generateOTP();
 			SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null, OTP
 					+ " is your Healthcoco OTP. Code is valid for 30 minutes only, one time use. Stay Healthy and Happy!",
@@ -299,7 +322,7 @@ public class OTPServiceImpl implements OTPService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error While Generating OTP");
-			throw new BusinessException(ServiceError.Unknown, "Error While Generating OTP "+e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error While Generating OTP " + e.getMessage());
 		}
 		return response;
 	}
@@ -309,7 +332,8 @@ public class OTPServiceImpl implements OTPService {
 	public boolean verifyOTP(String mobileNumber, String otpNumber) {
 		Boolean response = false;
 		try {
-			OTPCollection otpCollection = otpRepository.findByMobileNumberAndOtpNumberAndGeneratorId(mobileNumber, otpNumber, mobileNumber);
+			OTPCollection otpCollection = otpRepository.findByMobileNumberAndOtpNumberAndGeneratorId(mobileNumber,
+					otpNumber, mobileNumber);
 			if (otpCollection != null) {
 				if (isOTPValid(otpCollection.getCreatedTime())) {
 					otpCollection.setState(OTPState.VERIFIED);
@@ -337,7 +361,8 @@ public class OTPServiceImpl implements OTPService {
 	public Boolean checkOTPVerifiedForPatient(String mobileNumber, String otpNumber) {
 		Boolean response = false;
 		try {
-			OTPCollection otpCollection = otpRepository.findByMobileNumberAndOtpNumberAndGeneratorId(mobileNumber, otpNumber, mobileNumber);
+			OTPCollection otpCollection = otpRepository.findByMobileNumberAndOtpNumberAndGeneratorId(mobileNumber,
+					otpNumber, mobileNumber);
 			if (otpCollection != null && otpCollection.getState().equals(OTPState.VERIFIED))
 				response = true;
 
@@ -348,14 +373,14 @@ public class OTPServiceImpl implements OTPService {
 		}
 		return response;
 	}
-	
-	
+
 	@Override
 	@Transactional
-	public Boolean verifyOTP(String mobileNumber, String otpNumber,String countryCode) {
+	public Boolean verifyOTP(String mobileNumber, String otpNumber, String countryCode) {
 		Boolean response = false;
 		try {
-			OTPCollection otpCollection = otpRepository.findByMobileNumberAndOtpNumberAndCountryCode(mobileNumber, otpNumber, countryCode);
+			OTPCollection otpCollection = otpRepository.findByMobileNumberAndOtpNumberAndCountryCode(mobileNumber,
+					otpNumber, countryCode);
 			System.out.println(otpCollection);
 			if (otpCollection != null) {
 				if (isOTPValid(otpCollection.getCreatedTime())) {

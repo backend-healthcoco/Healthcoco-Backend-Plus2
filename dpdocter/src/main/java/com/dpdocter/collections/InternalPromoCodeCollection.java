@@ -1,13 +1,17 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "internal_promo_code_cl")
 public class InternalPromoCodeCollection extends GenericCollection {
-
+	@Id
 	private ObjectId id;
+	@Field
 	private String mobileNumber;
+	@Field
 	private String promoCode;
 
 	public ObjectId getId() {

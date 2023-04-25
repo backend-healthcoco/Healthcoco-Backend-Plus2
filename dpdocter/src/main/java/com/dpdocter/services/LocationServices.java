@@ -38,11 +38,6 @@ public interface LocationServices {
 
 	Boolean verifyCRN(String locationId, String crn, String requestId);
 
-	// List<CollectionBoyResponse> getCollectionBoyList(int size, long page, String
-	// locationId, String searchTerm);
-
-	// List<Location> getAssociatedLabs(String locationId, Boolean isParent);
-
 	RateCardTestAssociation addEditRateCardTestAssociation(RateCardTestAssociation request);
 
 	List<Location> addCollectionBoyAssociatedLabs(List<CollectionBoyLabAssociation> collectionBoyLabAssociations);
@@ -57,9 +52,6 @@ public interface LocationServices {
 	List<Location> getCBAssociatedLabs(String parentLabId, String daughterLabId, String collectionBoyId, int size,
 			long page);
 
-	// List<LabTestPickupLookupResponse> getRequestForCB(String collectionBoyId,
-	// int size, long page);
-
 	LabTestPickupLookupResponse getLabTestPickupByRequestId(String requestId);
 
 	LabTestPickupLookupResponse getLabTestPickupById(String id);
@@ -71,40 +63,19 @@ public interface LocationServices {
 	RateCardLabAssociation addEditRateCardAssociatedLab(RateCardLabAssociation rateCardLabAssociation);
 
 	RateCardLabAssociation getRateCardAssociatedLab(String daughterLabId, String parentLabId);
-	/*
-	 * List<Location> getClinics(long page, int size, String hospitalId, Boolean
-	 * isClinic, Boolean isLab, Boolean isParent, String searchTerm);
-	 */
-
-	// Integer getCBCount(int size, long page, String locationId, String
-	// searchTerm);
 
 	List<Specimen> getSpecimenList(long page, int size, String searchTerm);
 
 	Integer getRateCardCount(String searchTerm, String locationId);
 
-	// List<Location> getAssociatedLabs(String locationId, Boolean isParent,
-	// String searchTerm);
-
 	CollectionBoy editCollectionBoy(CollectionBoy collectionBoy);
 
 	Boolean addEditRateCardTestAssociation(List<RateCardTestAssociation> request);
-
-	/*
-	 * List<RateCardTestAssociationLookupResponse> getRateCardTests(long page, int
-	 * size, String searchTerm, String daughterLabId, String parentLabId, String
-	 * labId);
-	 */
-	// List<LabTestPickupLookupResponse> getRequestForDL(String daughterLabId,
-	// int size, long page);
 
 	List<RateCardTestAssociationByLBResponse> getRateCardTests(long page, int size, String searchTerm,
 			String daughterLabId, String parentLabId, String labId, String specimen);
 
 	RateCard getDLRateCard(String daughterLabId, String parentLabId);
-
-	// List<LabTestPickupLookupResponse> getRequestForPL(String parentLabId, int
-	// size, long page);
 
 	Integer getCBCount(String locationId, String searchTerm, String labType);
 

@@ -6,29 +6,29 @@ import java.util.Map;
 public class OrderReponse {
 
 	private String id;
-	
+
 	private String entity;
-	
+
 	private Integer amount;
-	
+
 	private String currency;
-	
+
 	private String receipt;
-	
+
 	private Integer amount_paid;
-	
+
 	private Integer amount_due;
-	
+
 	private String status;
-	
+
 	private Long created_at;
-	
+
 	private String offer_id;
-	
+
 	private Integer attempts;
-	
-	private List<String>notes;
-	
+
+	private List<String> notes;
+
 	private List<String> offers;
 
 	public String getId() {
@@ -134,10 +134,5 @@ public class OrderReponse {
 	public void setOffers(List<String> offers) {
 		this.offers = offers;
 	}
-
-	
-
-	
-	
 
 }

@@ -53,10 +53,8 @@ public class RecordsLookupResponse extends GenericCollection {
 	private PatientVisit patientVisit;
 
 	private Boolean shareWithPatient = false;
-	
-	private List<RecordsUrlData> recordsUrls;
 
-	
+	private List<RecordsUrlData> recordsUrls;
 
 	public Boolean getShareWithPatient() {
 		return shareWithPatient;

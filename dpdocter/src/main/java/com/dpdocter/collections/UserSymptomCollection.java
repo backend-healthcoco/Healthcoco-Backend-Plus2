@@ -10,40 +10,40 @@ import com.dpdocter.beans.Symptom;
 
 @Document(collection = "user_symptom_cl")
 public class UserSymptomCollection extends GenericCollection {
-	
+
 	@Id
 	private ObjectId id;
-	
+
 	@Field
 	private String name;
-	
+
 	@Field
 	private String mobile;
-	
+
 	@Field
 	private String gender;
-	
+
 	@Field
 	private Integer age;
-	
+
 	@Field
 	private Symptom symtoms;
-	
+
 	@Field
-	private Boolean discarded=false;
-	
+	private Boolean discarded = false;
+
 	@Field
 	private String covid19Possibilities;
-	
+
 	@Field
 	private String commonColdPossibilities;
-	
+
 	@Field
 	private String fluPossibilities;
-	
+
 	@Field
 	private String allergiesPossibilities;
-	
+
 	@Field
 	private Address address;
 
@@ -94,8 +94,6 @@ public class UserSymptomCollection extends GenericCollection {
 	public void setSymtoms(Symptom symtoms) {
 		this.symtoms = symtoms;
 	}
-	
-	
 
 	public Boolean getDiscarded() {
 		return discarded;
@@ -104,7 +102,7 @@ public class UserSymptomCollection extends GenericCollection {
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
-	
+
 	public String getCovid19Possibilities() {
 		return covid19Possibilities;
 	}
@@ -150,7 +148,5 @@ public class UserSymptomCollection extends GenericCollection {
 		return "UserSymptomCollection [id=" + id + ", name=" + name + ", mobile=" + mobile + ", gender=" + gender
 				+ ", age=" + age + ", symtoms=" + symtoms + "]";
 	}
-	
-	
 
 }

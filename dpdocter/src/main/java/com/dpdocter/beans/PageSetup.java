@@ -7,37 +7,37 @@ import com.dpdocter.enums.PageSize;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PageSetup {
 
-    private String layout;
+	private String layout;
 
-    private String color;
+	private String color;
 
-    private Integer leftMargin = 20;
-    
-    private Integer rightMargin = 20;
-    
-    private Integer topMargin = 20;
-    
-    private Integer bottomMargin = 20 ;
+	private Integer leftMargin = 20;
 
-    private String pageSize = PageSize.A4.name();
+	private Integer rightMargin = 20;
 
-    public String getLayout() {
-	return layout;
-    }
+	private Integer topMargin = 20;
 
-    public void setLayout(String layout) {
-	this.layout = layout;
-    }
+	private Integer bottomMargin = 20;
 
-    public String getColor() {
-	return color;
-    }
+	private String pageSize = PageSize.A4.name();
 
-    public void setColor(String color) {
-	this.color = color;
-    }
-    
-    public Integer getLeftMargin() {
+	public String getLayout() {
+		return layout;
+	}
+
+	public void setLayout(String layout) {
+		this.layout = layout;
+	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
+	}
+
+	public Integer getLeftMargin() {
 		return leftMargin;
 	}
 
@@ -70,12 +70,12 @@ public class PageSetup {
 	}
 
 	public String getPageSize() {
-	return pageSize;
-    }
+		return pageSize;
+	}
 
-    public void setPageSize(String pageSize) {
-	this.pageSize = pageSize;
-    }
+	public void setPageSize(String pageSize) {
+		this.pageSize = pageSize;
+	}
 
 	@Override
 	public String toString() {
@@ -84,5 +84,4 @@ public class PageSetup {
 				+ "]";
 	}
 
-    
 }

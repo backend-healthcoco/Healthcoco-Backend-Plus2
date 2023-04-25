@@ -80,8 +80,6 @@ public class Appointment extends GenericCollection {
 
 	private QueueStatus status = QueueStatus.SCHEDULED;
 
-	//private RegisteredPatientDetails registeredPatientDetails;
-
     private long waitedFor = 0;
     
     private long engagedFor = 0;
@@ -483,11 +481,6 @@ public class Appointment extends GenericCollection {
 	public void setConsultationStartedOn(Date consultationStartedOn) {
 		this.consultationStartedOn = consultationStartedOn;
 	}
-	
-	
-	
-
-	
 
 	public Long getCallDurationInMinutes() {
 		return callDurationInMinutes;
@@ -504,27 +497,5 @@ public class Appointment extends GenericCollection {
 	public void setOnlineConsultationSlot(AppointmentSlot onlineConsultationSlot) {
 		this.onlineConsultationSlot = onlineConsultationSlot;
 	}
-	
-	
 
-	@Override
-	public String toString() {
-		return "Appointment [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", patientId=" + patientId + ", time=" + time + ", patient=" + patient + ", state="
-				+ state + ", isRescheduled=" + isRescheduled + ", fromDate=" + fromDate + ", toDate=" + toDate
-				+ ", appointmentId=" + appointmentId + ", subject=" + subject + ", explanation=" + explanation
-				+ ", type=" + type + ", isCalenderBlocked=" + isCalenderBlocked + ", isFeedbackAvailable="
-				+ isFeedbackAvailable + ", isAllDayEvent=" + isAllDayEvent + ", doctorName=" + doctorName
-				+ ", locationName=" + locationName + ", clinicAddress=" + clinicAddress + ", clinicNumber="
-				+ clinicNumber + ", latitude=" + latitude + ", longitude=" + longitude + ", cancelledBy=" + cancelledBy
-				+ ", notifyPatientBySms=" + notifyPatientBySms + ", notifyPatientByEmail=" + notifyPatientByEmail
-				+ ", notifyDoctorBySms=" + notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail
-				+ ", visitId=" + visitId + ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor="
-				+ engagedFor + ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt="
-				+ checkedOutAt + ", count=" + count + ", category=" + category + ", branch=" + branch
-				+ ", cancelledByProfile=" + cancelledByProfile + ", localPatientName=" + localPatientName
-				+ ", isCreatedByPatient=" + isCreatedByPatient + ", treatmentFields=" + treatmentFields
-				+ ", patientTreatmentResponse=" + patientTreatmentResponse + ", consultationType=" + consultationType
-				+ ", consultationStartedOn=" + consultationStartedOn + "]";
-	}
 }

@@ -211,10 +211,10 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 	@Value(value = "${image.path}")
 	private String imagePath;
-	
+
 	@Autowired
 	private ESNursingCareRepository nursingCareRepository;
-	
+
 	@Override
 	public boolean addComplaints(ESComplaintsDocument request) {
 		boolean response = false;
@@ -349,8 +349,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public Response<ESDiagramsDocument> searchDiagrams(String range, int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+	public Response<ESDiagramsDocument> searchDiagrams(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		Response<ESDiagramsDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
 		case GLOBAL:
@@ -437,8 +437,9 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public Response<ESPresentComplaintDocument> searchPresentComplaints(String range, int page, int size, String doctorId,
-			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+	public Response<ESPresentComplaintDocument> searchPresentComplaints(String range, int page, int size,
+			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
+			String searchTerm) {
 		Response<ESPresentComplaintDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
 
@@ -554,8 +555,9 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public Response<ESMenstrualHistoryDocument> searchMenstrualHistory(String range, int page, int size, String doctorId,
-			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+	public Response<ESMenstrualHistoryDocument> searchMenstrualHistory(String range, int page, int size,
+			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
+			String searchTerm) {
 		Response<ESMenstrualHistoryDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
 
@@ -577,8 +579,9 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public Response<ESObstetricHistoryDocument> searchObstetricHistory(String range, int page, int size, String doctorId,
-			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+	public Response<ESObstetricHistoryDocument> searchObstetricHistory(String range, int page, int size,
+			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
+			String searchTerm) {
 		Response<ESObstetricHistoryDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
 
@@ -780,8 +783,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Response<ESComplaintsDocument> getCustomGlobalComplaints(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+	private Response<ESComplaintsDocument> getCustomGlobalComplaints(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		Response<ESComplaintsDocument> response = new Response<ESComplaintsDocument>();
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
@@ -815,9 +818,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.COMPLAINT, page, size, doctorId,
 					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
 					"complaint");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESComplaintsDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESComplaintsDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESComplaintsDocument.class));
 			}
@@ -866,9 +871,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.COMPLAINT, page, size, updatedTime,
 					discarded, null, searchTerm, specialities, null, null, "complaint");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESComplaintsDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESComplaintsDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESComplaintsDocument.class));
 			}
@@ -886,9 +893,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		try {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 					updatedTime, discarded, null, searchTerm, null, null, "complaint");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESComplaintsDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESComplaintsDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response = new Response<ESComplaintsDocument>();
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESComplaintsDocument.class));
@@ -939,22 +948,23 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 					.must(QueryBuilders.rangeQuery("updatedTime").from(new Date().getTime()));
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				boolQueryBuilder.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("doctorId")))
-						 .should(QueryBuilders.termQuery("doctorId", doctorId))
-						 .minimumShouldMatch(1));
+				boolQueryBuilder.must(
+						boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("doctorId")))
+								.should(QueryBuilders.termQuery("doctorId", doctorId)).minimumShouldMatch(1));
 
 			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 				boolQueryBuilder
-				.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")))
-						 .should(QueryBuilders.termQuery("locationId", locationId))
-						 .minimumShouldMatch(1))
-				.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")))
-						 .should(QueryBuilders.termQuery("hospitalId", hospitalId))
-						 .minimumShouldMatch(1));
+						.must(boolQuery()
+								.should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")))
+								.should(QueryBuilders.termQuery("locationId", locationId)).minimumShouldMatch(1))
+						.must(boolQuery()
+								.should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")))
+								.should(QueryBuilders.termQuery("hospitalId", hospitalId)).minimumShouldMatch(1));
 			}
-			
+
 			if (specialities != null && !specialities.isEmpty()) {
-				BoolQueryBuilder specialityQueryBuilder = boolQuery().should(boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
+				BoolQueryBuilder specialityQueryBuilder = boolQuery()
+						.should(boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
 				for (String speciality : specialities) {
 					if (!DPDoctorUtils.anyStringEmpty(speciality)) {
 						specialityQueryBuilder.should(QueryBuilders.matchQuery("speciality", speciality));
@@ -973,16 +983,18 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = null;
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(PageRequest.of((int)page, size, Direction.DESC, "updatedTime")).build();
+						.withPageable(PageRequest.of((int) page, size, Direction.DESC, "updatedTime")).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
-	
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESDiagramsDocument.class);
 
-			if(count > 0) {
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESDiagramsDocument.class);
+
+			if (count > 0) {
 				response.setCount(count);
-				List<ESDiagramsDocument> diagrams = elasticsearchTemplate.queryForList(searchQuery, ESDiagramsDocument.class);
+				List<ESDiagramsDocument> diagrams = elasticsearchTemplate.queryForList(searchQuery,
+						ESDiagramsDocument.class);
 				response.setDataList(getFinalDiagrams(diagrams));
 			}
 		} catch (Exception e) {
@@ -1035,7 +1047,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 					.mustNot(QueryBuilders.existsQuery("hospitalId"));
 
 			if (specialities != null && !specialities.isEmpty()) {
-				BoolQueryBuilder specialityQueryBuilder = boolQuery().should(boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
+				BoolQueryBuilder specialityQueryBuilder = boolQuery()
+						.should(boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
 				for (String speciality : specialities) {
 					if (!DPDoctorUtils.anyStringEmpty(speciality)) {
 						specialityQueryBuilder.should(QueryBuilders.matchQuery("speciality", speciality));
@@ -1046,7 +1059,6 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			} else
 				boolQueryBuilder.mustNot(QueryBuilders.existsQuery("speciality"));
 
-
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("tags", searchTerm));
 			if (!discarded)
@@ -1055,17 +1067,18 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = null;
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(PageRequest.of((int)page, size, Direction.DESC, "updatedTime")).build();
+						.withPageable(PageRequest.of((int) page, size, Direction.DESC, "updatedTime")).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 
-			
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESDiagramsDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESDiagramsDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
-				List<ESDiagramsDocument> diagrams = elasticsearchTemplate.queryForList(searchQuery, ESDiagramsDocument.class);
+				List<ESDiagramsDocument> diagrams = elasticsearchTemplate.queryForList(searchQuery,
+						ESDiagramsDocument.class);
 				response.setDataList(getFinalDiagrams(diagrams));
 			}
 
@@ -1085,9 +1098,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			if (doctorId == null)
 				response.setDataList(new ArrayList<ESDiagramsDocument>());
 			else {
-				BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-						.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime))
-								.to(new Date().getTime()))
+				BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime")
+						.from(Long.parseLong(updatedTime)).to(new Date().getTime()))
 						.must(QueryBuilders.termQuery("doctorId", doctorId));
 
 				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
@@ -1101,15 +1113,18 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 				SearchQuery searchQuery = null;
 				if (size > 0)
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-							.withPageable(PageRequest.of((int)page, size, Direction.DESC, "updatedTime")).build();
+							.withPageable(PageRequest.of((int) page, size, Direction.DESC, "updatedTime")).build();
 				else
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 							.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESDiagramsDocument.class);
-				if(count > 0) {
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESDiagramsDocument.class);
+				if (count > 0) {
 					response.setCount(count);
-					List<ESDiagramsDocument> diagrams = elasticsearchTemplate.queryForList(searchQuery, ESDiagramsDocument.class);
+					List<ESDiagramsDocument> diagrams = elasticsearchTemplate.queryForList(searchQuery,
+							ESDiagramsDocument.class);
 					response.setDataList(getFinalDiagrams(diagrams));
 				}
 			}
@@ -1158,8 +1173,10 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.INVESTIGATION, page, size,
 					doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null,
 					null, "investigation");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESInvestigationsDocument.class);
-			if(count > 0) {
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESInvestigationsDocument.class);
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESInvestigationsDocument.class));
 			}
@@ -1207,9 +1224,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.INVESTIGATION, page, size, updatedTime,
 					discarded, null, searchTerm, specialities, null, null, "investigation");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESInvestigationsDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESInvestigationsDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESInvestigationsDocument.class));
 			}
@@ -1231,11 +1250,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "investigation");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESInvestigationsDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESInvestigationsDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
-					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESInvestigationsDocument.class));
+					response.setDataList(
+							elasticsearchTemplate.queryForList(searchQuery, ESInvestigationsDocument.class));
 				}
 			}
 		} catch (Exception e) {
@@ -1283,9 +1305,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.OBSERVATION, page, size, doctorId,
 					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
 					"observation");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESObservationsDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESObservationsDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESObservationsDocument.class));
 			}
@@ -1299,8 +1323,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Response<ESObservationsDocument> getGlobalObservations(int page, int size, String doctorId, String updatedTime,
-			Boolean discarded, String searchTerm) {
+	private Response<ESObservationsDocument> getGlobalObservations(int page, int size, String doctorId,
+			String updatedTime, Boolean discarded, String searchTerm) {
 		Response<ESObservationsDocument> response = new Response<ESObservationsDocument>();
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
@@ -1334,10 +1358,12 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.OBSERVATION, page, size, updatedTime,
 					discarded, null, searchTerm, specialities, null, null, "observation");
-			
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESObservationsDocument.class);
 
-			if(count > 0) {
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESObservationsDocument.class);
+
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESInvestigationsDocument.class));
 			}
@@ -1349,8 +1375,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	private Response<ESObservationsDocument> getCustomObservations(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+	private Response<ESObservationsDocument> getCustomObservations(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		Response<ESObservationsDocument> response = new Response<ESObservationsDocument>();
 		try {
 			if (doctorId == null)
@@ -1358,9 +1384,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "observation");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESObservationsDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESObservationsDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
 					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESObservationsDocument.class));
 				}
@@ -1374,8 +1402,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Response<ESDiagnosesDocument> getCustomGlobalDiagnosis(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+	private Response<ESDiagnosesDocument> getCustomGlobalDiagnosis(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		Response<ESDiagnosesDocument> response = new Response<ESDiagnosesDocument>();
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
@@ -1410,9 +1438,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DIAGNOSIS, page, size, doctorId,
 					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
 					"diagnosis");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESDiagnosesDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESDiagnosesDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESDiagnosesDocument.class));
 			}
@@ -1461,9 +1491,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.DIAGNOSIS, page, size, updatedTime,
 					discarded, null, searchTerm, specialities, null, null, "diagnosis");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESDiagnosesDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESDiagnosesDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESDiagnosesDocument.class));
 			}
@@ -1485,9 +1517,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "diagnosis");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESDiagnosesDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESDiagnosesDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
 					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESDiagnosesDocument.class));
 				}
@@ -1537,9 +1571,10 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.NOTES, page, size, doctorId,
 					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null, "note");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESNotesDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESNotesDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESNotesDocument.class));
 			}
@@ -1588,9 +1623,10 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.NOTES, page, size, updatedTime,
 					discarded, null, searchTerm, specialities, null, null, "note");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESNotesDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESNotesDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESNotesDocument.class));
 			}
@@ -1611,8 +1647,10 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "note");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESNotesDocument.class);
-				if(count > 0) {
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESNotesDocument.class);
+				if (count > 0) {
 					response.setCount(count);
 					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESNotesDocument.class));
 				}
@@ -1663,9 +1701,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.PRESENT_COMPLAINT, page, size,
 					doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null,
 					null, "presentComplaint");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPresentComplaintDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESPresentComplaintDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPresentComplaintDocument.class));
 			}
@@ -1714,9 +1754,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.PRESENT_COMPLAINT, page, size,
 					updatedTime, discarded, null, searchTerm, specialities, null, null, "presentComplaint");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPresentComplaintDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESPresentComplaintDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPresentComplaintDocument.class));
 			}
@@ -1737,11 +1779,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "presentComplaint");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPresentComplaintDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESPresentComplaintDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
-					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPresentComplaintDocument.class));
+					response.setDataList(
+							elasticsearchTemplate.queryForList(searchQuery, ESPresentComplaintDocument.class));
 				}
 			}
 		} catch (Exception e) {
@@ -1790,11 +1835,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.HISTORY_OF_PRESENT_COMPLAINT, page,
 					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities,
 					null, null, "presentComplaintHistory");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPresentComplaintHistoryDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESPresentComplaintHistoryDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
-				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPresentComplaintHistoryDocument.class));
+				response.setDataList(
+						elasticsearchTemplate.queryForList(searchQuery, ESPresentComplaintHistoryDocument.class));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1842,11 +1890,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.HISTORY_OF_PRESENT_COMPLAINT, page, size,
 					updatedTime, discarded, null, searchTerm, specialities, null, null, "presentComplaintHistory");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPresentComplaintHistoryDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESPresentComplaintHistoryDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
-				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPresentComplaintHistoryDocument.class));
+				response.setDataList(
+						elasticsearchTemplate.queryForList(searchQuery, ESPresentComplaintHistoryDocument.class));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1867,11 +1918,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "presentComplaintHistory");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPresentComplaintHistoryDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESPresentComplaintHistoryDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
-					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPresentComplaintHistoryDocument.class));
+					response.setDataList(
+							elasticsearchTemplate.queryForList(searchQuery, ESPresentComplaintHistoryDocument.class));
 				}
 			}
 		} catch (Exception e) {
@@ -1921,11 +1975,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.PROVISIONAL_DIAGNOSIS, page, size,
 					doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null,
 					null, "provisionalDiagnosis");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESProvisionalDiagnosisDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESProvisionalDiagnosisDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
-				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESProvisionalDiagnosisDocument.class));
+				response.setDataList(
+						elasticsearchTemplate.queryForList(searchQuery, ESProvisionalDiagnosisDocument.class));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1972,11 +2029,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.PROVISIONAL_DIAGNOSIS, page, size,
 					updatedTime, discarded, null, searchTerm, specialities, null, null, "provisionalDiagnosis");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESProvisionalDiagnosisDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESProvisionalDiagnosisDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
-				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESProvisionalDiagnosisDocument.class));
+				response.setDataList(
+						elasticsearchTemplate.queryForList(searchQuery, ESProvisionalDiagnosisDocument.class));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1995,11 +2055,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "provisionalDiagnosis");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESProvisionalDiagnosisDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESProvisionalDiagnosisDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
-					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESProvisionalDiagnosisDocument.class));
+					response.setDataList(
+							elasticsearchTemplate.queryForList(searchQuery, ESProvisionalDiagnosisDocument.class));
 				}
 			}
 		} catch (Exception e) {
@@ -2047,9 +2110,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.GENERAL_EXAMINATION, page, size,
 					doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null,
 					null, "generalExam");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESGeneralExamDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESGeneralExamDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESGeneralExamDocument.class));
 			}
@@ -2063,8 +2128,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Response<ESGeneralExamDocument> getGlobalGeneralExam(int page, int size, String doctorId, String updatedTime,
-			Boolean discarded, String searchTerm) {
+	private Response<ESGeneralExamDocument> getGlobalGeneralExam(int page, int size, String doctorId,
+			String updatedTime, Boolean discarded, String searchTerm) {
 		Response<ESGeneralExamDocument> response = new Response<ESGeneralExamDocument>();
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
@@ -2098,9 +2163,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.GENERAL_EXAMINATION, page, size,
 					updatedTime, discarded, null, searchTerm, specialities, null, null, "generalExam");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESGeneralExamDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESGeneralExamDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESGeneralExamDocument.class));
 			}
@@ -2121,9 +2188,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "generalExam");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESGeneralExamDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESGeneralExamDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
 					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESGeneralExamDocument.class));
 				}
@@ -2137,8 +2206,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Response<ESSystemExamDocument> getCustomGlobalSystemExam(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+	private Response<ESSystemExamDocument> getCustomGlobalSystemExam(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		Response<ESSystemExamDocument> response = new Response<ESSystemExamDocument>();
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
@@ -2173,9 +2242,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.SYSTEMIC_EXAMINATION, page, size,
 					doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null,
 					null, "systemExam");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESSystemExamDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESSystemExamDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESSystemExamDocument.class));
 			}
@@ -2224,9 +2295,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.SYSTEMIC_EXAMINATION, page, size,
 					updatedTime, discarded, null, searchTerm, specialities, null, null, "systemExam");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESSystemExamDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESSystemExamDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESSystemExamDocument.class));
 			}
@@ -2247,9 +2320,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "systemExam");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESSystemExamDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESSystemExamDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
 					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESSystemExamDocument.class));
 				}
@@ -2299,9 +2374,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.MENSTRUAL_HISTORY, page, size,
 					doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null,
 					null, "menstrualHistory");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESMenstrualHistoryDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESMenstrualHistoryDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESMenstrualHistoryDocument.class));
 			}
@@ -2350,9 +2427,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.MENSTRUAL_HISTORY, page, size,
 					updatedTime, discarded, null, searchTerm, specialities, null, null, "menstrualHistory");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESMenstrualHistoryDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESMenstrualHistoryDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESMenstrualHistoryDocument.class));
 			}
@@ -2373,11 +2452,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "menstrualHistory");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESMenstrualHistoryDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESMenstrualHistoryDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
-					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESMenstrualHistoryDocument.class));
+					response.setDataList(
+							elasticsearchTemplate.queryForList(searchQuery, ESMenstrualHistoryDocument.class));
 				}
 			}
 		} catch (Exception e) {
@@ -2530,9 +2612,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.OBSTETRIC_HISTORY, page, size,
 					doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null,
 					null, "obstetricHistory");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESObstetricHistoryDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESObstetricHistoryDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESObstetricHistoryDocument.class));
 			}
@@ -2581,9 +2665,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.OBSTETRIC_HISTORY, page, size,
 					updatedTime, discarded, null, searchTerm, specialities, null, null, "obstetricHistory");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESObstetricHistoryDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESObstetricHistoryDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESObstetricHistoryDocument.class));
 			}
@@ -2604,11 +2690,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "obstetricHistory");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESObstetricHistoryDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESObstetricHistoryDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
-					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESObstetricHistoryDocument.class));
+					response.setDataList(
+							elasticsearchTemplate.queryForList(searchQuery, ESObstetricHistoryDocument.class));
 				}
 			}
 		} catch (Exception e) {
@@ -2684,9 +2773,10 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.PA, page, size, doctorId,
 					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null, "pa");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPADocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPADocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPADocument.class));
 			}
@@ -2700,8 +2790,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Response<ESPADocument> getGlobalPA(int page, int size, String doctorId, String updatedTime, Boolean discarded,
-			String searchTerm) {
+	private Response<ESPADocument> getGlobalPA(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded, String searchTerm) {
 		Response<ESPADocument> response = new Response<ESPADocument>();
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
@@ -2735,9 +2825,10 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.PA, page, size, updatedTime, discarded,
 					null, searchTerm, specialities, null, null, "pa");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPADocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPADocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPADocument.class));
 			}
@@ -2749,8 +2840,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	private Response<ESPADocument> getCustomPA(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded, String searchTerm) {
+	private Response<ESPADocument> getCustomPA(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		Response<ESPADocument> response = new Response<ESPADocument>();
 		try {
 			if (doctorId == null)
@@ -2758,9 +2849,10 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "pa");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPADocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPADocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
 					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPADocument.class));
 				}
@@ -2773,8 +2865,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	private Response<ESProcedureNoteDocument> getCustomProcedureNote(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+	private Response<ESProcedureNoteDocument> getCustomProcedureNote(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		Response<ESProcedureNoteDocument> response = new Response<ESProcedureNoteDocument>();
 		try {
 			if (doctorId == null)
@@ -2782,11 +2874,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "procedureNote");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESProcedureNoteDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESProcedureNoteDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
-					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESProcedureNoteDocument.class));
+					response.setDataList(
+							elasticsearchTemplate.queryForList(searchQuery, ESProcedureNoteDocument.class));
 				}
 			}
 		} catch (Exception e) {
@@ -2849,9 +2944,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.INDICATION_OF_USG, page, size,
 					doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null,
 					null, "indicationOfUSG");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESIndicationOfUSGDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESIndicationOfUSGDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESIndicationOfUSGDocument.class));
 			}
@@ -2900,9 +2997,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.INDICATION_OF_USG, page, size,
 					updatedTime, discarded, null, searchTerm, specialities, null, null, "indicationOfUSG");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESIndicationOfUSGDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESIndicationOfUSGDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESIndicationOfUSGDocument.class));
 			}
@@ -2923,11 +3022,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "indicationOfUSG");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESIndicationOfUSGDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESIndicationOfUSGDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
-					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESIndicationOfUSGDocument.class));
+					response.setDataList(
+							elasticsearchTemplate.queryForList(searchQuery, ESIndicationOfUSGDocument.class));
 				}
 			}
 		} catch (Exception e) {
@@ -2992,9 +3094,10 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.PV, page, size, doctorId,
 					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null, "pv");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPVDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPVDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPVDocument.class));
 			}
@@ -3044,9 +3147,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.PROCEDURE_NOTE, page, size,
 					doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null,
 					null, "procedureNote");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESProcedureNoteDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESProcedureNoteDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESProcedureNoteDocument.class));
 			}
@@ -3070,8 +3175,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private Response<ESPVDocument> getGlobalPV(int page, int size, String doctorId, String updatedTime, Boolean discarded,
-			String searchTerm) {
+	private Response<ESPVDocument> getGlobalPV(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded, String searchTerm) {
 		Response<ESPVDocument> response = new Response<ESPVDocument>();
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
@@ -3105,9 +3210,10 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.PV, page, size, updatedTime, discarded,
 					null, searchTerm, specialities, null, null, "pv");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPVDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPVDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPVDocument.class));
 			}
@@ -3119,8 +3225,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	private Response<ESPVDocument> getCustomPV(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded, String searchTerm) {
+	private Response<ESPVDocument> getCustomPV(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		Response<ESPVDocument> response = new Response<ESPVDocument>();
 		try {
 			if (doctorId == null)
@@ -3128,9 +3234,10 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "pv");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPVDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPVDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
 					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPVDocument.class));
 				}
@@ -3228,17 +3335,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 	/**
 	 * 
-	 * @param page
-	 *            - page no for pagination
-	 * @param size
-	 *            - size for pagination
+	 * @param page        - page no for pagination
+	 * @param size        - size for pagination
 	 * @param doctorId
 	 * @param locationId
 	 * @param hospitalId
 	 * @param updatedTime
 	 * @param discarded
-	 * @param searchTerm
-	 *            - searchterm for search
+	 * @param searchTerm  - searchterm for search
 	 * @return
 	 */
 
@@ -3278,9 +3382,10 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.PS, page, size, doctorId,
 					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null, "ps");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPSDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPSDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPSDocument.class));
 			}
@@ -3304,8 +3409,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private Response<ESPSDocument> getGlobalPS(int page, int size, String doctorId, String updatedTime, Boolean discarded,
-			String searchTerm) {
+	private Response<ESPSDocument> getGlobalPS(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded, String searchTerm) {
 		Response<ESPSDocument> response = new Response<ESPSDocument>();
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
@@ -3339,9 +3444,10 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.PS, page, size, updatedTime, discarded,
 					null, searchTerm, specialities, null, null, "ps");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPSDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPSDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPSDocument.class));
 			}
@@ -3389,9 +3495,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.PROCEDURE_NOTE, page, size, updatedTime,
 					discarded, null, searchTerm, specialities, null, null, "procedureNote");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESProcedureNoteDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESProcedureNoteDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESProcedureNoteDocument.class));
 			}
@@ -3415,8 +3523,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @param searchTerm
 	 * @return
 	 */
-	private Response<ESPSDocument> getCustomPS(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded, String searchTerm) {
+	private Response<ESPSDocument> getCustomPS(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		Response<ESPSDocument> response = new Response<ESPSDocument>();
 		try {
 			if (doctorId == null)
@@ -3424,9 +3532,10 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "ps");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPSDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPSDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
 					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPSDocument.class));
 				}
@@ -3438,7 +3547,6 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		}
 		return response;
 	}
-
 
 	@SuppressWarnings("unchecked")
 	private Response<ESXRayDetailsDocument> getCustomGlobalXRayDetails(int page, int size, String doctorId,
@@ -3477,9 +3585,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.XRAY, page, size, doctorId,
 					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
 					"xRayDetails");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESXRayDetailsDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESXRayDetailsDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESXRayDetailsDocument.class));
 			}
@@ -3493,8 +3603,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Response<ESXRayDetailsDocument> getGlobalXRayDetails(int page, int size, String doctorId, String updatedTime,
-			Boolean discarded, String searchTerm) {
+	private Response<ESXRayDetailsDocument> getGlobalXRayDetails(int page, int size, String doctorId,
+			String updatedTime, Boolean discarded, String searchTerm) {
 		Response<ESXRayDetailsDocument> response = new Response<ESXRayDetailsDocument>();
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
@@ -3528,9 +3638,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.XRAY, page, size, updatedTime, discarded,
 					null, searchTerm, specialities, null, null, "xRayDetails");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESXRayDetailsDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESXRayDetailsDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESXRayDetailsDocument.class));
 			}
@@ -3551,9 +3663,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "xRayDetails");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESXRayDetailsDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESXRayDetailsDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
 					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESXRayDetailsDocument.class));
 				}
@@ -3602,9 +3716,10 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.ECHO, page, size, doctorId,
 					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null, "echo");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESEchoDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESEchoDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESEchoDocument.class));
 			}
@@ -3653,9 +3768,10 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.ECHO, page, size, updatedTime, discarded,
 					null, searchTerm, specialities, null, null, "echo");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESEchoDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESEchoDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESEchoDocument.class));
 			}
@@ -3676,9 +3792,10 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "echo");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESEchoDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESEchoDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
 					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESEchoDocument.class));
 				}
@@ -3728,9 +3845,10 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.HOLTER, page, size, doctorId,
 					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
 					"holter");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESHolterDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESHolterDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESHolterDocument.class));
 			}
@@ -3779,9 +3897,10 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.HOLTER, page, size, updatedTime,
 					discarded, null, searchTerm, specialities, null, null, "holter");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESHolterDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESHolterDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESHolterDocument.class));
 			}
@@ -3802,9 +3921,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "holter");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESHolterDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESHolterDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
 					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESHolterDocument.class));
 				}
@@ -3818,8 +3939,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Response<ESECGDetailsDocument> getCustomGlobalECGDetails(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+	private Response<ESECGDetailsDocument> getCustomGlobalECGDetails(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		Response<ESECGDetailsDocument> response = new Response<ESECGDetailsDocument>();
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
@@ -3854,9 +3975,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.ECG, page, size, doctorId,
 					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
 					"ecgDetails");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESECGDetailsDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESECGDetailsDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESECGDetailsDocument.class));
 			}
@@ -3905,9 +4028,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.ECG, page, size, updatedTime, discarded,
 					null, searchTerm, specialities, null, null, "ecgDetails");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESECGDetailsDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESECGDetailsDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESECGDetailsDocument.class));
 			}
@@ -3928,9 +4053,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "ecgDetails");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESECGDetailsDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESECGDetailsDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
 					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESECGDetailsDocument.class));
 				}
@@ -4163,8 +4290,9 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public Response<ESPresentingComplaintThroatDocument> searchPCThroat(String range, int page, int size, String doctorId,
-			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+	public Response<ESPresentingComplaintThroatDocument> searchPCThroat(String range, int page, int size,
+			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
+			String searchTerm) {
 		Response<ESPresentingComplaintThroatDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
 
@@ -4279,8 +4407,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public Response<ESOralCavityAndThroatExaminationDocument> searchOralCavityThroatExam(String range, int page, int size,
-			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
+	public Response<ESOralCavityAndThroatExaminationDocument> searchOralCavityThroatExam(String range, int page,
+			int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 			String searchTerm) {
 		Response<ESOralCavityAndThroatExaminationDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -4363,11 +4491,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.PC_EARS, page, size, doctorId,
 					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
 					"pcEars");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPresentingComplaintEarsDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESPresentingComplaintEarsDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
-				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintEarsDocument.class));
+				response.setDataList(
+						elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintEarsDocument.class));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4414,11 +4545,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.PC_EARS, page, size, updatedTime,
 					discarded, null, searchTerm, specialities, null, null, "pcEars");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPresentingComplaintEarsDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESPresentingComplaintEarsDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
-				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintEarsDocument.class));
+				response.setDataList(
+						elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintEarsDocument.class));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4437,11 +4571,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "pcEars");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPresentingComplaintEarsDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESPresentingComplaintEarsDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
-					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintEarsDocument.class));
+					response.setDataList(
+							elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintEarsDocument.class));
 				}
 			}
 		} catch (Exception e) {
@@ -4489,11 +4626,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.PC_THROAT, page, size, doctorId,
 					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
 					"pcThroat");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPresentingComplaintThroatDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESPresentingComplaintThroatDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
-				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintThroatDocument.class));
+				response.setDataList(
+						elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintThroatDocument.class));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4540,11 +4680,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.PC_THROAT, page, size, updatedTime,
 					discarded, null, searchTerm, specialities, null, null, "pcThroat");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPresentingComplaintThroatDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESPresentingComplaintThroatDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
-				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintThroatDocument.class));
+				response.setDataList(
+						elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintThroatDocument.class));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4563,11 +4706,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "pcThroat");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPresentingComplaintThroatDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESPresentingComplaintThroatDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
-					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintThroatDocument.class));
+					response.setDataList(
+							elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintThroatDocument.class));
 				}
 			}
 		} catch (Exception e) {
@@ -4616,11 +4762,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.PC_ORAL_CAVITY, page, size,
 					doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null,
 					null, "pcOralCavity");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPresentingComplaintOralCavityDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESPresentingComplaintOralCavityDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
-				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintOralCavityDocument.class));
+				response.setDataList(
+						elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintOralCavityDocument.class));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4667,11 +4816,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.PC_ORAL_CAVITY, page, size, updatedTime,
 					discarded, null, searchTerm, specialities, null, null, "pcOralCavity");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPresentingComplaintOralCavityDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESPresentingComplaintOralCavityDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
-				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintOralCavityDocument.class));
+				response.setDataList(
+						elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintOralCavityDocument.class));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4690,11 +4842,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "pcOralCavity");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPresentingComplaintOralCavityDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESPresentingComplaintOralCavityDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
-					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintOralCavityDocument.class));
+					response.setDataList(elasticsearchTemplate.queryForList(searchQuery,
+							ESPresentingComplaintOralCavityDocument.class));
 				}
 			}
 		} catch (Exception e) {
@@ -4742,11 +4897,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.PC_NOSE, page, size, doctorId,
 					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
 					"pcNose");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPresentingComplaintNoseDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESPresentingComplaintNoseDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
-				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintNoseDocument.class));
+				response.setDataList(
+						elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintNoseDocument.class));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4793,11 +4951,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.PC_NOSE, page, size, updatedTime,
 					discarded, null, searchTerm, specialities, null, null, "pcNose");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPresentingComplaintNoseDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESPresentingComplaintNoseDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
-				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintNoseDocument.class));
+				response.setDataList(
+						elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintNoseDocument.class));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4828,11 +4989,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "pcNose");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESPresentingComplaintNoseDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESPresentingComplaintNoseDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
-					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintNoseDocument.class));
+					response.setDataList(
+							elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintNoseDocument.class));
 				}
 			}
 		} catch (Exception e) {
@@ -4880,9 +5044,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.NECK_EXAM, page, size, doctorId,
 					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
 					"neckExam");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESNeckExaminationDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESNeckExaminationDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESNeckExaminationDocument.class));
 			}
@@ -4896,8 +5062,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Response<ESNeckExaminationDocument> getGlobalNeckExam(int page, int size, String doctorId, String updatedTime,
-			Boolean discarded, String searchTerm) {
+	private Response<ESNeckExaminationDocument> getGlobalNeckExam(int page, int size, String doctorId,
+			String updatedTime, Boolean discarded, String searchTerm) {
 		Response<ESNeckExaminationDocument> response = new Response<ESNeckExaminationDocument>();
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
@@ -4931,9 +5097,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.NECK_EXAM, page, size, updatedTime,
 					discarded, null, searchTerm, specialities, null, null, "neckExam");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESNeckExaminationDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESNeckExaminationDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESNeckExaminationDocument.class));
 			}
@@ -4945,7 +5113,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	 private Response<ESNeckExaminationDocument> getCustomNeckExam(int page, int size, String doctorId,
+	private Response<ESNeckExaminationDocument> getCustomNeckExam(int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		Response<ESNeckExaminationDocument> response = new Response<ESNeckExaminationDocument>();
 		try {
@@ -4954,11 +5122,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "neckExam");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESNeckExaminationDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESNeckExaminationDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
-					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESNeckExaminationDocument.class));
+					response.setDataList(
+							elasticsearchTemplate.queryForList(searchQuery, ESNeckExaminationDocument.class));
 				}
 			}
 		} catch (Exception e) {
@@ -5006,9 +5177,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.NOSE_EXAM, page, size, doctorId,
 					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
 					"noseExam");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESNoseExaminationDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESNoseExaminationDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESNoseExaminationDocument.class));
 			}
@@ -5021,9 +5194,9 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 	}
 
-    @SuppressWarnings("unchecked")
-	private Response<ESNoseExaminationDocument> getGlobalNoseExam(int page, int size, String doctorId, String updatedTime,
-			Boolean discarded, String searchTerm) {
+	@SuppressWarnings("unchecked")
+	private Response<ESNoseExaminationDocument> getGlobalNoseExam(int page, int size, String doctorId,
+			String updatedTime, Boolean discarded, String searchTerm) {
 		Response<ESNoseExaminationDocument> response = new Response<ESNoseExaminationDocument>();
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
@@ -5057,9 +5230,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.NOSE_EXAM, page, size, updatedTime,
 					discarded, null, searchTerm, specialities, null, null, "noseExam");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESNoseExaminationDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESNoseExaminationDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESNoseExaminationDocument.class));
 			}
@@ -5080,11 +5255,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "noseExam");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESNoseExaminationDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESNoseExaminationDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
-					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESNoseExaminationDocument.class));
+					response.setDataList(
+							elasticsearchTemplate.queryForList(searchQuery, ESNoseExaminationDocument.class));
 				}
 			}
 		} catch (Exception e) {
@@ -5132,9 +5310,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.EARS_EXAM, page, size, doctorId,
 					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
 					"earsExam");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESEarsExaminationDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESEarsExaminationDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESEarsExaminationDocument.class));
 			}
@@ -5148,8 +5328,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Response<ESEarsExaminationDocument> getGlobalEarsExam(int page, int size, String doctorId, String updatedTime,
-			Boolean discarded, String searchTerm) {
+	private Response<ESEarsExaminationDocument> getGlobalEarsExam(int page, int size, String doctorId,
+			String updatedTime, Boolean discarded, String searchTerm) {
 		Response<ESEarsExaminationDocument> response = new Response<ESEarsExaminationDocument>();
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
@@ -5183,9 +5363,11 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.EARS_EXAM, page, size, updatedTime,
 					discarded, null, searchTerm, specialities, null, null, "earsExam");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESEarsExaminationDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESEarsExaminationDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESEarsExaminationDocument.class));
 			}
@@ -5206,11 +5388,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "earsExam");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESEarsExaminationDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESEarsExaminationDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
-					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESEarsExaminationDocument.class));
+					response.setDataList(
+							elasticsearchTemplate.queryForList(searchQuery, ESEarsExaminationDocument.class));
 				}
 			}
 		} catch (Exception e) {
@@ -5222,8 +5407,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Response<ESIndirectLarygoscopyExaminationDocument> getCustomGlobalIndirectLarygoscopyExam(int page, int size,
-			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
+	private Response<ESIndirectLarygoscopyExaminationDocument> getCustomGlobalIndirectLarygoscopyExam(int page,
+			int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 			String searchTerm) {
 		Response<ESIndirectLarygoscopyExaminationDocument> response = new Response<ESIndirectLarygoscopyExaminationDocument>();
 		try {
@@ -5259,11 +5444,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.INDIRECT_LARYGOSCOPY_EXAM, page,
 					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities,
 					null, null, "indirectLarygoscopyExam");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESIndirectLarygoscopyExaminationDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESIndirectLarygoscopyExaminationDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
-				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESIndirectLarygoscopyExaminationDocument.class));
+				response.setDataList(elasticsearchTemplate.queryForList(searchQuery,
+						ESIndirectLarygoscopyExaminationDocument.class));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -5310,11 +5498,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.INDIRECT_LARYGOSCOPY_EXAM, page, size,
 					updatedTime, discarded, null, searchTerm, specialities, null, null, "indirectLarygoscopyExam");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESIndirectLarygoscopyExaminationDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESIndirectLarygoscopyExaminationDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
-				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESIndirectLarygoscopyExaminationDocument.class));
+				response.setDataList(elasticsearchTemplate.queryForList(searchQuery,
+						ESIndirectLarygoscopyExaminationDocument.class));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -5324,7 +5515,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	 private Response<ESIndirectLarygoscopyExaminationDocument> getCustomIndierctLarygoscopyExam(int page, int size,
+	private Response<ESIndirectLarygoscopyExaminationDocument> getCustomIndierctLarygoscopyExam(int page, int size,
 			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 			String searchTerm) {
 		Response<ESIndirectLarygoscopyExaminationDocument> response = new Response<ESIndirectLarygoscopyExaminationDocument>();
@@ -5334,11 +5525,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "indirectLarygoscopyExam");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESIndirectLarygoscopyExaminationDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESIndirectLarygoscopyExaminationDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
-					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESIndirectLarygoscopyExaminationDocument.class));
+					response.setDataList(elasticsearchTemplate.queryForList(searchQuery,
+							ESIndirectLarygoscopyExaminationDocument.class));
 				}
 			}
 		} catch (Exception e) {
@@ -5387,11 +5581,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.ORAL_CAVITY_THROAT_EXAM, page,
 					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities,
 					null, null, "oralCavityThroatExam");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESOralCavityAndThroatExaminationDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESOralCavityAndThroatExaminationDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
-				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESOralCavityAndThroatExaminationDocument.class));
+				response.setDataList(elasticsearchTemplate.queryForList(searchQuery,
+						ESOralCavityAndThroatExaminationDocument.class));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -5438,11 +5635,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.INDIRECT_LARYGOSCOPY_EXAM, page, size,
 					updatedTime, discarded, null, searchTerm, specialities, null, null, "oralCavityThroatExam");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESOralCavityAndThroatExaminationDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESOralCavityAndThroatExaminationDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
-				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESOralCavityAndThroatExaminationDocument.class));
+				response.setDataList(elasticsearchTemplate.queryForList(searchQuery,
+						ESOralCavityAndThroatExaminationDocument.class));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -5452,7 +5652,6 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	
 	private Response<ESOralCavityAndThroatExaminationDocument> getCustomOralCavityThroatExam(int page, int size,
 			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 			String searchTerm) {
@@ -5463,11 +5662,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "oralCavityThroatExam");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESOralCavityAndThroatExaminationDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESOralCavityAndThroatExaminationDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
-					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESOralCavityAndThroatExaminationDocument.class));
+					response.setDataList(elasticsearchTemplate.queryForList(searchQuery,
+							ESOralCavityAndThroatExaminationDocument.class));
 				}
 			}
 		} catch (Exception e) {
@@ -5486,7 +5688,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		}
 		return diagrams;
 	}
-	
+
 	private String getFinalImageURL(String imageURL) {
 		if (imageURL != null) {
 			return imagePath + imageURL;
@@ -5500,15 +5702,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		try {
 			nursingCareRepository.save(nursingCareExaminationDocument);
 			response = true;
-			transnationalService.addResource(new ObjectId(nursingCareExaminationDocument.getId()), Resource.NURSING_CAREEXAM, true);
+			transnationalService.addResource(new ObjectId(nursingCareExaminationDocument.getId()),
+					Resource.NURSING_CAREEXAM, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving Notes");
 		}
-		return response;		
+		return response;
 	}
-
-	
 
 	@Override
 	public Response<ESNursingCareExaminationDocument> searchNursingCareExam(String range, int page, int size,
@@ -5521,8 +5722,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			response = getGlobalNursingCareExam(page, size, doctorId, updatedTime, discarded, searchTerm);
 			break;
 		case CUSTOM:
-			response = getCustomNursingCareExam(page, size, doctorId, locationId, hospitalId, updatedTime,
-					discarded, searchTerm);
+			response = getCustomNursingCareExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+					searchTerm);
 			break;
 		case BOTH:
 			response = getCustomGlobalNursingCareExam(page, size, doctorId, locationId, hospitalId, updatedTime,
@@ -5537,7 +5738,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	@SuppressWarnings("unchecked")
 	private Response<ESNursingCareExaminationDocument> getGlobalNursingCareExam(int page, int size, String doctorId,
 			String updatedTime, Boolean discarded, String searchTerm) {
-		
+
 		Response<ESNursingCareExaminationDocument> response = new Response<ESNursingCareExaminationDocument>();
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
@@ -5569,13 +5770,16 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 				}
 			}
 
-			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.NURSING_CAREEXAM, page, size, updatedTime,
-					discarded, null, searchTerm, specialities, null, null, "nursingCare");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESNursingCareExaminationDocument.class);
+			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.NURSING_CAREEXAM, page, size,
+					updatedTime, discarded, null, searchTerm, specialities, null, null, "nursingCare");
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESNursingCareExaminationDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
-				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESNursingCareExaminationDocument.class));
+				response.setDataList(
+						elasticsearchTemplate.queryForList(searchQuery, ESNursingCareExaminationDocument.class));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -5594,11 +5798,14 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 						updatedTime, discarded, null, searchTerm, null, null, "nursingCare");
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESNursingCareExaminationDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+						ESNursingCareExaminationDocument.class);
 
-				if(count > 0) {
+				if (count > 0) {
 					response.setCount(count);
-					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESNursingCareExaminationDocument.class));
+					response.setDataList(
+							elasticsearchTemplate.queryForList(searchQuery, ESNursingCareExaminationDocument.class));
 				}
 			}
 		} catch (Exception e) {
@@ -5644,14 +5851,17 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 				}
 			}
 
-			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.NURSING_CAREEXAM, page, size, doctorId,
-					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
-					"nursingCare");
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESNursingCareExaminationDocument.class);
+			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.NURSING_CAREEXAM, page, size,
+					doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null,
+					null, "nursingCare");
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(),
+					ESNursingCareExaminationDocument.class);
 
-			if(count > 0) {
+			if (count > 0) {
 				response.setCount(count);
-				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESNursingCareExaminationDocument.class));
+				response.setDataList(
+						elasticsearchTemplate.queryForList(searchQuery, ESNursingCareExaminationDocument.class));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

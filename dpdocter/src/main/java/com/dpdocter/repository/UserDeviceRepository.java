@@ -8,7 +8,8 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.dpdocter.collections.UserDeviceCollection;
 
-public interface UserDeviceRepository extends MongoRepository<UserDeviceCollection, ObjectId>, PagingAndSortingRepository<UserDeviceCollection, ObjectId> {
+public interface UserDeviceRepository extends MongoRepository<UserDeviceCollection, ObjectId>,
+		PagingAndSortingRepository<UserDeviceCollection, ObjectId> {
 
 	List<UserDeviceCollection> findByUserIds(ObjectId userId);
 

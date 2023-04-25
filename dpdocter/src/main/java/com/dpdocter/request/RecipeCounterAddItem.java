@@ -26,9 +26,9 @@ public class RecipeCounterAddItem {
 	private MealQuantity carbohydrate;
 
 	private MealQuantity fiber;
-	
+
 	private Map<String, String> multilingualName;
-	
+
 	public Map<String, String> getMultilingualName() {
 		return multilingualName;
 	}
@@ -36,6 +36,7 @@ public class RecipeCounterAddItem {
 	public void setMultilingualName(Map<String, String> multilingualName) {
 		this.multilingualName = multilingualName;
 	}
+
 	public String getId() {
 		return id;
 	}

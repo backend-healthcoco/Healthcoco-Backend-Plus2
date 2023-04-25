@@ -6,7 +6,7 @@ import com.dpdocter.enums.ModeOfPayment;
 import com.dpdocter.enums.ReceiptType;
 
 public class PaymentDetailsAnalyticsDataResponse {
-	
+
 	private String id;
 
 	private Date date;

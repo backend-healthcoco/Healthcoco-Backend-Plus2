@@ -42,9 +42,9 @@ public class OPDReports extends GenericCollection {
 		this.hospitalId = hospitalId;
 		super.setCreatedTime(createdTime);
 	}
-	
+
 	public OPDReports(String patientId, String prescriptionId, String doctorId, String locationId, String hospitalId,
-			String visitId,Date createdTime) {
+			String visitId, Date createdTime) {
 		super();
 		this.patientId = patientId;
 		this.prescriptionId = prescriptionId;
@@ -106,8 +106,6 @@ public class OPDReports extends GenericCollection {
 	public void setReceiptNo(String receiptNo) {
 		this.receiptNo = receiptNo;
 	}
-
-	
 
 	public Date getReceiptDate() {
 		return receiptDate;
@@ -204,7 +202,6 @@ public class OPDReports extends GenericCollection {
 	public void setVisitId(String visitId) {
 		this.visitId = visitId;
 	}
-	
 
 	public String getTreatmentId() {
 		return treatmentId;

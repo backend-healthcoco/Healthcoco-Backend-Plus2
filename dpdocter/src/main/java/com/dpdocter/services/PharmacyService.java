@@ -13,17 +13,9 @@ public interface PharmacyService {
 
 	UserSearchRequest addSearchRequest(UserSearchRequest request);
 
-	/* Boolean addResponseInQueue(PharmacyResponse request); */
-
 	OrderDrugsRequest orderDrugs(OrderDrugsRequest request);
 
 	List<SearchRequestFromUserResponse> getPatientOrderHistoryList(String userId, long page, int size);
-
-	/*
-	 * List<SearchRequestToPharmacyResponse>
-	 * getPharmacyListbyOrderHistory(String userId, String uniqueRequestId,
-	 * String replyType, long page, int size);
-	 */
 
 	Integer getPharmacyListCountbyOrderHistory(String uniqueRequestId, String replyType);
 

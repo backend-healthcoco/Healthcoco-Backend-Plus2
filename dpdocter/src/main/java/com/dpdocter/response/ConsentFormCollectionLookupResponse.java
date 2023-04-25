@@ -12,7 +12,7 @@ import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.UserCollection;
 
-public class ConsentFormCollectionLookupResponse extends GenericCollection{
+public class ConsentFormCollectionLookupResponse extends GenericCollection {
 
 	private String id;
 
@@ -59,21 +59,21 @@ public class ConsentFormCollectionLookupResponse extends GenericCollection{
 	private Boolean discarded = false;
 
 	private ObjectId templateId;
-	
+
 	private List<Fields> inputElements;
-	
+
 	private String type;
-	
+
 	private PatientCollection patientCollection;
-	
+
 	private UserCollection patientUser;
 
 	private CertificateTemplateCollection certificateTemplate;
-	
+
 	private String templateHtmlText;
-	
+
 	private String PNUM;
-	
+
 	public String getId() {
 		return id;
 	}

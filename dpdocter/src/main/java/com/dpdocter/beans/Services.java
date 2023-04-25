@@ -5,25 +5,26 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Services extends GenericCollection {
-    private String id;
+	private String id;
 
-    private String service;
+	private String service;
 
-    private Boolean toShow = true;
+	private Boolean toShow = true;
 
-    private List<String> specialities;
-    
-    private List<String> specialityIds;
-    
-    public String getId() {
-	return id;
-    }
+	private List<String> specialities;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	private List<String> specialityIds;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public String getService() {
 		return service;

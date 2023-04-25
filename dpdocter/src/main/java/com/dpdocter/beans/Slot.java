@@ -44,10 +44,4 @@ public class Slot {
 	public String toString() {
 		return "Slot [time=" + time + ", isAvailable=" + isAvailable + ", minutesOfDay=" + minutesOfDay + "]";
 	}
-
-//	@Override
-//	public int hashCode() {
-//		// TODO Auto-generated method stub
-//		return super.hashCode();
-//	}
 }

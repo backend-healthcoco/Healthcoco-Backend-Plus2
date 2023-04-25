@@ -251,7 +251,6 @@ public class ClinicalNotesAddRequest {
 
 	private String familyHistory;
 
-
 	private String personalHistoryTobacco;
 	private String personalHistoryAlcohol;
 	private String personalHistorySmoking;
@@ -264,19 +263,16 @@ public class ClinicalNotesAddRequest {
 
 	private String painScale;
 	private Date createdTime;
-	
+
 	private String priorConsultations;
 
 	private Boolean sendNotificationToDoctor = true;
-	
+
 	private EyeSpecialityObservation eyeObservation;
-	
-	private PhysioExamination physioExamination;	
-	
+
+	private PhysioExamination physioExamination;
+
 	private String vaccinationHistory;
-
-//	private TreatmentObservationRequest treatmentObservation;
-
 
 	public Date getCreatedTime() {
 		return createdTime;
@@ -1224,7 +1220,7 @@ public class ClinicalNotesAddRequest {
 	public void setPainScale(String painScale) {
 		this.painScale = painScale;
 	}
-	
+
 	public String getPriorConsultations() {
 		return priorConsultations;
 	}
@@ -1240,8 +1236,6 @@ public class ClinicalNotesAddRequest {
 	public void setSendNotificationToDoctor(Boolean sendNotificationToDoctor) {
 		this.sendNotificationToDoctor = sendNotificationToDoctor;
 	}
-	
-	
 
 	public EyeSpecialityObservation getEyeObservation() {
 		return eyeObservation;
@@ -1250,8 +1244,6 @@ public class ClinicalNotesAddRequest {
 	public void setEyeObservation(EyeSpecialityObservation eyeObservation) {
 		this.eyeObservation = eyeObservation;
 	}
-	
-	
 
 	public PhysioExamination getPhysioExamination() {
 		return physioExamination;
@@ -1260,14 +1252,6 @@ public class ClinicalNotesAddRequest {
 	public void setPhysioExamination(PhysioExamination physioExamination) {
 		this.physioExamination = physioExamination;
 	}
-	
-	
-
-	
-
-	
-
-	
 
 //	public TreatmentObservationRequest getTreatmentObservation() {
 //		return treatmentObservation;

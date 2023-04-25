@@ -31,42 +31,44 @@ import common.util.web.Response;
 public class TestExceptionAPI {
 
 	@Autowired
-    ESProfessionRepository esProfessionRepository;
-	
+	ESProfessionRepository esProfessionRepository;
+
 	@Autowired
 	MailService mailService;
-	
+
 	@Value("${doctor.android.google.services.api.key}")
-    private String DOCTOR_GEOCODING_SERVICES_API_KEY;
+	private String DOCTOR_GEOCODING_SERVICES_API_KEY;
 
 	@Value("${patient.android.google.services.api.key}")
-    private String PATIENT_GEOCODING_SERVICES_API_KEY;
-	
-    @GET
-    @Path("/exception/{id}")
-    public String exceptionTest(@PathParam("id") String id) throws BusinessException {
-	throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
-    }
-    
-    @GET
-    @Path("/get")
-    public Response<ESProfessionDocument> get(@PathParam("id") String id) {
-	
-    	ESProfessionDocument documents = null;
+	private String PATIENT_GEOCODING_SERVICES_API_KEY;
+
+	@GET
+	@Path("/exception/{id}")
+	public String exceptionTest(@PathParam("id") String id) throws BusinessException {
+		throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
+	}
+
+	@GET
+	@Path("/get")
+	public Response<ESProfessionDocument> get(@PathParam("id") String id) {
+
+		ESProfessionDocument documents = null;
 //    			esProfessionRepository.findById("55f40520e4b0cb1d08c1700d").orElse(null);
-    	
-    	Response<ESProfessionDocument> response = new Response<ESProfessionDocument>();
-    	response.setData(documents);
-    	return response;
-    }
-    
+
+		Response<ESProfessionDocument> response = new Response<ESProfessionDocument>();
+		response.setData(documents);
+		return response;
+	}
+
 	@GET
 	@Path("/mail")
 	public Response<Boolean> testMail() throws MessagingException {
-		/*Boolean status = mailService.sendExceptionMail("Testing Business Exception mail");
-		Response<Boolean> response = new Response<>();
-		response.setData(status);
-		return response;*/
+		/*
+		 * Boolean status =
+		 * mailService.sendExceptionMail("Testing Business Exception mail");
+		 * Response<Boolean> response = new Response<>(); response.setData(status);
+		 * return response;
+		 */
 		throw new MessagingException("testing advice");
 	}
 
@@ -78,29 +80,28 @@ public class TestExceptionAPI {
 		Thread t = new Thread() {
 			public void run() {
 				try {
-					if(id == 1)
-					{
-					Sender sender = new FCMSender(PATIENT_GEOCODING_SERVICES_API_KEY.trim());
-					Message message = new Message.Builder().collapseKey("message").timeToLive(3).delayWhileIdle(true)
-							.addData("message", "FCM Notification from Java application").build();
+					if (id == 1) {
+						Sender sender = new FCMSender(PATIENT_GEOCODING_SERVICES_API_KEY.trim());
+						Message message = new Message.Builder().collapseKey("message").timeToLive(3)
+								.delayWhileIdle(true).addData("message", "FCM Notification from Java application")
+								.build();
 
-					// Use the same token(or registration id) that was earlier
-					// used to send the message to the client directly from
-					// Firebase Console's Notification tab.
-					Result result = sender.send(message, patientToken, 1);
-					}
-					else
-					{
+						// Use the same token(or registration id) that was earlier
+						// used to send the message to the client directly from
+						// Firebase Console's Notification tab.
+						Result result = sender.send(message, patientToken, 1);
+					} else {
 						Sender sender = new FCMSender(DOCTOR_GEOCODING_SERVICES_API_KEY.trim());
-						Message message = new Message.Builder().collapseKey("message").timeToLive(3).delayWhileIdle(true)
-								.addData("message", "FCM Notification from Java application").build();
+						Message message = new Message.Builder().collapseKey("message").timeToLive(3)
+								.delayWhileIdle(true).addData("message", "FCM Notification from Java application")
+								.build();
 
 						// Use the same token(or registration id) that was earlier
 						// used to send the message to the client directly from
 						// Firebase Console's Notification tab.
 						Result result = sender.send(message, doctorToken, 1);
 					}
-						
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -114,5 +115,5 @@ public class TestExceptionAPI {
 		}
 		return true;
 	}
-	
+
 }

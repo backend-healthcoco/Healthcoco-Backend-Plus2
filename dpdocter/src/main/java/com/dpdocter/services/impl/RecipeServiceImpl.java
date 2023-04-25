@@ -25,7 +25,6 @@ import com.dpdocter.beans.Nutrient;
 import com.dpdocter.beans.NutrientGoal;
 import com.dpdocter.beans.NutritionDisease;
 import com.dpdocter.beans.Recipe;
-import com.dpdocter.beans.RecipeItem;
 import com.dpdocter.beans.RecipeNutrientType;
 import com.dpdocter.beans.RecipeTemplate;
 import com.dpdocter.collections.FavouriteRecipeCollection;
@@ -82,7 +81,7 @@ public class RecipeServiceImpl implements RecipeService {
 
 	@Autowired
 	private RecipeTemplateRepository recipeTemplateRepository;
-	
+
 	@Autowired
 	private UserRepository userRepository;
 
@@ -167,7 +166,7 @@ public class RecipeServiceImpl implements RecipeService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long) page * size),
 						Aggregation.limit(size), Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -234,8 +233,6 @@ public class RecipeServiceImpl implements RecipeService {
 	@Override
 	public Recipe addEditRecipe(Recipe request) {
 		Recipe response = null;
-		List<RecipeItem> recipeItems = null;
-
 		try {
 			if (request != null) {
 				if (request.getRecipeImages() != null && !request.getRecipeImages().isEmpty())
@@ -296,7 +293,7 @@ public class RecipeServiceImpl implements RecipeService {
 
 	@Override
 	public List<Recipe> getRecipeList(int size, int page, boolean discarded, String searchTerm, String doctorId,
-			String locationId, String hospitalId , String planId) {
+			String locationId, String hospitalId, String planId) {
 		List<Recipe> response = null;
 		try {
 			Criteria criteria = new Criteria("discarded").is(discarded);
@@ -313,12 +310,10 @@ public class RecipeServiceImpl implements RecipeService {
 			if (!DPDoctorUtils.allStringsEmpty(planId))
 				criteria.and("planIds").is(new ObjectId(planId));
 
-		
-
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long) page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -464,25 +459,11 @@ public class RecipeServiceImpl implements RecipeService {
 				criteria.and("locationId").is(new ObjectId(locationId));
 			if (!DPDoctorUtils.allStringsEmpty(hospitalId))
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
-			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
-					new BasicDBObject("_id", "$_id").append("quantity", new BasicDBObject("$first", "$quantity"))
-							.append("name", new BasicDBObject("$first", "$name"))
-							.append("note", new BasicDBObject("$first", "$note"))
-							.append("locationId", new BasicDBObject("$first", "$locationId"))
-							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-							.append("nutrients", new BasicDBObject("$first", "$nutrients"))
-							.append("equivalentMeasurements", new BasicDBObject("$first", "$equivalentMeasurements"))
-							.append("calaries", new BasicDBObject("$first", "$calaries"))
-							.append("discarded", new BasicDBObject("$first", "$discarded"))
-							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long) page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -557,8 +538,8 @@ public class RecipeServiceImpl implements RecipeService {
 	public Boolean addFavouriteRecipe(String userId, String recipeId) {
 		Boolean response = true;
 		try {
-			FavouriteRecipeCollection recipeCollection = favouriteRecipeRepository.findByRecipeIdAndUserId(new ObjectId(userId),
-					new ObjectId(recipeId));
+			FavouriteRecipeCollection recipeCollection = favouriteRecipeRepository
+					.findByRecipeIdAndUserId(new ObjectId(userId), new ObjectId(recipeId));
 
 			if (recipeCollection != null) {
 				recipeCollection.setDiscarded(!recipeCollection.getDiscarded());
@@ -597,7 +578,7 @@ public class RecipeServiceImpl implements RecipeService {
 		try {
 			Criteria criteria = new Criteria("favRecipe.discarded").is(discarded);
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
-				criteria = criteria.orOperator(new Criteria("name").regex("/^" + searchTerm+"/", "i"),
+				criteria = criteria.orOperator(new Criteria("name").regex("/^" + searchTerm + "/", "i"),
 						new Criteria("name").regex("^" + searchTerm));
 			if (!DPDoctorUtils.allStringsEmpty(userId))
 				criteria.and("favRecipe.userId").is(new ObjectId(userId));
@@ -607,7 +588,7 @@ public class RecipeServiceImpl implements RecipeService {
 				aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("discarded").is(false)),
 						Aggregation.lookup("favourite_recipes_cl", "_id", "recipeId", "favRecipe"),
 						Aggregation.unwind("favRecipe"), Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.DESC, "updatedTime")), Aggregation.skip((long)page * size),
+						Aggregation.sort(new Sort(Direction.DESC, "updatedTime")), Aggregation.skip((long) page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("discarded").is(false)),
@@ -650,7 +631,7 @@ public class RecipeServiceImpl implements RecipeService {
 						Aggregation.lookup("recipe_cl", "recipes._id", "_id", "recipe"), Aggregation.unwind("recipe"),
 						Aggregation.match(new Criteria("recipe.discarded").is(false)),
 						Aggregation.sort(new Sort(Direction.DESC, "date")), aggregationOperation,
-						Aggregation.skip((long)page * size), Aggregation.limit(size));
+						Aggregation.skip((long) page * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("recipes"),
 						Aggregation.lookup("recipe_cl", "recipes._id", "recipeId", "recipe"),
@@ -684,7 +665,7 @@ public class RecipeServiceImpl implements RecipeService {
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 
-						Aggregation.sort(new Sort(Direction.DESC, "date")), Aggregation.skip((long)page * size),
+						Aggregation.sort(new Sort(Direction.DESC, "date")), Aggregation.skip((long) page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -733,7 +714,8 @@ public class RecipeServiceImpl implements RecipeService {
 	public RecipeTemplate discardRecipeTemplate(String recipeId, Boolean discarded) {
 		RecipeTemplate response = null;
 		try {
-			RecipeTemplateCollection recipeTemplateCollection = recipeTemplateRepository.findById(new ObjectId(recipeId)).orElse(null);
+			RecipeTemplateCollection recipeTemplateCollection = recipeTemplateRepository
+					.findById(new ObjectId(recipeId)).orElse(null);
 			if (recipeTemplateCollection == null) {
 				throw new BusinessException(ServiceError.NotFound, "recipe Not found with Id");
 			}
@@ -769,22 +751,24 @@ public class RecipeServiceImpl implements RecipeService {
 				criteria.and("locationId").is(new ObjectId(locationId));
 			if (!DPDoctorUtils.allStringsEmpty(hospitalId))
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
-			
+
 			int count = (int) mongoTemplate.count(new Query(criteria), RecipeTemplateCollection.class);
-			if(count > 0) {
+			if (count > 0) {
 				Aggregation aggregation = null;
 				if (size > 0) {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
-							Aggregation.limit(size));
+							Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
+							Aggregation.skip((long) page * size), Aggregation.limit(size));
 				} else {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 				}
 
-				response.setDataList(mongoTemplate.aggregate(aggregation, RecipeTemplateCollection.class, RecipeTemplate.class).getMappedResults());
+				response.setDataList(
+						mongoTemplate.aggregate(aggregation, RecipeTemplateCollection.class, RecipeTemplate.class)
+								.getMappedResults());
 			}
-			
+
 			response.setCount(count);
 		} catch (BusinessException e) {
 			logger.error("Error while getting Recipe Templates " + e.getMessage());
@@ -799,7 +783,8 @@ public class RecipeServiceImpl implements RecipeService {
 	public RecipeTemplate getRecipeTemplate(String id) {
 		RecipeTemplate response = null;
 		try {
-			RecipeTemplateCollection recipeTemplateCollection = recipeTemplateRepository.findById(new ObjectId(id)).orElse(null);
+			RecipeTemplateCollection recipeTemplateCollection = recipeTemplateRepository.findById(new ObjectId(id))
+					.orElse(null);
 			response = new RecipeTemplate();
 			BeanUtil.map(recipeTemplateCollection, response);
 		} catch (BusinessException e) {
@@ -823,7 +808,8 @@ public class RecipeServiceImpl implements RecipeService {
 					throw new BusinessException(ServiceError.NotFound, "doctor Not found with Id");
 				}
 				if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-					recipeTemplateCollection = recipeTemplateRepository.findById(new ObjectId(request.getId())).orElse(null);
+					recipeTemplateCollection = recipeTemplateRepository.findById(new ObjectId(request.getId()))
+							.orElse(null);
 					if (recipeTemplateCollection == null) {
 						throw new BusinessException(ServiceError.NotFound, "Recipe Not found with Id");
 					}
@@ -836,11 +822,13 @@ public class RecipeServiceImpl implements RecipeService {
 					BeanUtil.map(request, recipeTemplateCollection);
 
 				} else {
-					recipeTemplateCollection = recipeTemplateRepository.findByNameAndDoctorIdAndLocationIdAndHospitalId(request.getName(),
-							new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
-					if(recipeTemplateCollection != null) {
+					recipeTemplateCollection = recipeTemplateRepository.findByNameAndDoctorIdAndLocationIdAndHospitalId(
+							request.getName(), new ObjectId(request.getDoctorId()),
+							new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+					if (recipeTemplateCollection != null) {
 						logger.error("Recipe Template already exist with this name");
-						throw new BusinessException(ServiceError.Unknown, "Recipe Template already exist with this name");
+						throw new BusinessException(ServiceError.Unknown,
+								"Recipe Template already exist with this name");
 					}
 					recipeTemplateCollection = new RecipeTemplateCollection();
 					BeanUtil.map(request, recipeTemplateCollection);
@@ -864,7 +852,7 @@ public class RecipeServiceImpl implements RecipeService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	public Integer countFoodCommunities(Boolean discarded, String searchTerm) {
 		Integer response = 0;
@@ -873,12 +861,13 @@ public class RecipeServiceImpl implements RecipeService {
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 				criteria = criteria.orOperator(new Criteria("value").regex("^" + searchTerm, "i"),
 						new Criteria("value").regex("^" + searchTerm));
-			
+
 			response = (int) mongoTemplate.count(new Query(criteria), FoodCommunityCollection.class);
 		} catch (BusinessException e) {
 			logger.error("Error while counting food communities " + e.getMessage());
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error while counting food communities " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while counting food communities " + e.getMessage());
 
 		}
 		return response;
@@ -896,7 +885,7 @@ public class RecipeServiceImpl implements RecipeService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long) page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -921,7 +910,7 @@ public class RecipeServiceImpl implements RecipeService {
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 				criteria = criteria.orOperator(new Criteria("value").regex("^" + searchTerm, "i"),
 						new Criteria("value").regex("^" + searchTerm));
-			
+
 			response = (int) mongoTemplate.count(new Query(criteria), FoodGroupCollection.class);
 		} catch (BusinessException e) {
 			logger.error("Error while counting food groups " + e.getMessage());
@@ -944,7 +933,7 @@ public class RecipeServiceImpl implements RecipeService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long) page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -969,7 +958,7 @@ public class RecipeServiceImpl implements RecipeService {
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 				criteria = criteria.orOperator(new Criteria("value").regex("^" + searchTerm, "i"),
 						new Criteria("value").regex("^" + searchTerm));
-			
+
 			response = (int) mongoTemplate.count(new Query(criteria), NutrientGoalCollection.class);
 		} catch (BusinessException e) {
 			logger.error("Error while counting Nutrient Goals " + e.getMessage());
@@ -992,7 +981,7 @@ public class RecipeServiceImpl implements RecipeService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long) page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1017,12 +1006,13 @@ public class RecipeServiceImpl implements RecipeService {
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 				criteria = criteria.orOperator(new Criteria("value").regex("^" + searchTerm, "i"),
 						new Criteria("value").regex("^" + searchTerm));
-			
+
 			response = (int) mongoTemplate.count(new Query(criteria), RecipeNutrientTypeCollection.class);
 		} catch (BusinessException e) {
 			logger.error("Error while counting Recipe Nutrient Types " + e.getMessage());
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error while counting Recipe Nutrient Types " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while counting Recipe Nutrient Types " + e.getMessage());
 
 		}
 		return response;
@@ -1040,18 +1030,20 @@ public class RecipeServiceImpl implements RecipeService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long) page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}
-			response = mongoTemplate.aggregate(aggregation, RecipeNutrientTypeCollection.class, RecipeNutrientType.class)
+			response = mongoTemplate
+					.aggregate(aggregation, RecipeNutrientTypeCollection.class, RecipeNutrientType.class)
 					.getMappedResults();
 		} catch (BusinessException e) {
 			logger.error("Error while getting Recipe Nutrient Types " + e.getMessage());
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error while getting Recipe Nutrient Types " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while getting Recipe Nutrient Types " + e.getMessage());
 
 		}
 		return response;
@@ -1059,24 +1051,25 @@ public class RecipeServiceImpl implements RecipeService {
 
 	@Override
 	public Integer countDisease(Boolean discarded, String searchTerm) {
-		Integer response=null;
+		Integer response = null;
 		try {
 			Criteria criteria = new Criteria("discarded").is(discarded);
-		    criteria = criteria.orOperator(new Criteria("disease").regex("^" + searchTerm, "i"),
-				new Criteria("disease").regex("^" + searchTerm));
-	
-		    response = (int) mongoTemplate.count(new Query(criteria), NutritionDiseaseCollection.class);
+			criteria = criteria.orOperator(new Criteria("disease").regex("^" + searchTerm, "i"),
+					new Criteria("disease").regex("^" + searchTerm));
+
+			response = (int) mongoTemplate.count(new Query(criteria), NutritionDiseaseCollection.class);
 		} catch (BusinessException e) {
 			logger.error("Error while counting nutrition diseases " + e.getMessage());
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error while counting nutrition diseases " + e.getMessage());
-		
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while counting nutrition diseases " + e.getMessage());
+
 		}
 		return response;
 	}
-	
+
 	@Override
-	public List<NutritionDisease> getDiseases(int size, int page, Boolean discarded,String searchTerm) {
+	public List<NutritionDisease> getDiseases(int size, int page, Boolean discarded, String searchTerm) {
 		List<NutritionDisease> response = null;
 		try {
 			Criteria criteria = new Criteria("discarded").is(discarded);
@@ -1087,7 +1080,7 @@ public class RecipeServiceImpl implements RecipeService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long) page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1098,7 +1091,8 @@ public class RecipeServiceImpl implements RecipeService {
 		} catch (BusinessException e) {
 			logger.error("Error while getting nutrition diseases " + e.getMessage());
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error while getting nutrition diseases " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while getting nutrition diseases " + e.getMessage());
 
 		}
 		return response;

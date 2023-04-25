@@ -6,7 +6,8 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.dpdocter.collections.UserAllowanceDetailsCollection;
 
-public interface UserAllowanceDetailsRepository extends MongoRepository<UserAllowanceDetailsCollection, ObjectId>, PagingAndSortingRepository<UserAllowanceDetailsCollection, ObjectId> {
+public interface UserAllowanceDetailsRepository extends MongoRepository<UserAllowanceDetailsCollection, ObjectId>,
+		PagingAndSortingRepository<UserAllowanceDetailsCollection, ObjectId> {
 
 	UserAllowanceDetailsCollection findByUserIds(ObjectId userId);
 

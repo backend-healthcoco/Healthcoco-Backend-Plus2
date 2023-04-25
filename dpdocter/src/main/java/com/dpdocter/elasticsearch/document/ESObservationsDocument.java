@@ -9,47 +9,47 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 @Document(indexName = "observations_in", type = "observations")
 public class ESObservationsDocument {
-    @Id
-    private String id;
+	@Id
+	private String id;
 
-    @Field(type = FieldType.Text)
-    private String observation;
+	@Field(type = FieldType.Text)
+	private String observation;
 
-    @Field(type = FieldType.Text)
-    private String doctorId;
+	@Field(type = FieldType.Text)
+	private String doctorId;
 
-    @Field(type = FieldType.Text)
-    private String locationId;
+	@Field(type = FieldType.Text)
+	private String locationId;
 
-    @Field(type = FieldType.Text)
-    private String hospitalId;
+	@Field(type = FieldType.Text)
+	private String hospitalId;
 
-    @Field(type = FieldType.Boolean)
-    private Boolean discarded = false;
+	@Field(type = FieldType.Boolean)
+	private Boolean discarded = false;
 
-    @Field(type = FieldType.Date)
-    private Date updatedTime = new Date();
+	@Field(type = FieldType.Date)
+	private Date updatedTime = new Date();
 
-    @Field(type = FieldType.Text)
-    private String speciality;
+	@Field(type = FieldType.Text)
+	private String speciality;
 
-    public String getId() {
-	return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getObservation() {
-	return observation;
-    }
+	public String getObservation() {
+		return observation;
+	}
 
-    public void setObservation(String observation) {
-	this.observation = observation;
-    }
+	public void setObservation(String observation) {
+		this.observation = observation;
+	}
 
-    public String getDoctorId() {
+	public String getDoctorId() {
 		return doctorId;
 	}
 
@@ -73,21 +73,21 @@ public class ESObservationsDocument {
 		this.hospitalId = hospitalId;
 	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
-    public Date getUpdatedTime() {
-	return updatedTime;
-    }
+	public Date getUpdatedTime() {
+		return updatedTime;
+	}
 
-    public void setUpdatedTime(Date updatedTime) {
-	this.updatedTime = updatedTime;
-    }
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
 
 	public String getSpeciality() {
 		return speciality;

@@ -33,7 +33,6 @@ public class TreatmentAndDiagnosis {
 	private Boolean isChronicSleepProblem;
 	private String chronicSleepProblem;
 
-	
 	public String getDoctorId() {
 		return doctorId;
 	}
@@ -220,8 +219,8 @@ public class TreatmentAndDiagnosis {
 
 	@Override
 	public String toString() {
-		return "TreatmentAndDiagnosis [doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", discarded=" + discarded
+		return "TreatmentAndDiagnosis [doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", patientId=" + patientId + ", discarded=" + discarded
 				+ ", treatmentAndDiagnosisBoolen=" + treatmentAndDiagnosisBoolen + ", treatmentAndDiagnosisString="
 				+ treatmentAndDiagnosisString + ", treatmentAndDiagnosisList=" + treatmentAndDiagnosisList
 				+ ", bloodPressureType=" + bloodPressureType + ", diabetesType=" + diabetesType + ", thyroidType="

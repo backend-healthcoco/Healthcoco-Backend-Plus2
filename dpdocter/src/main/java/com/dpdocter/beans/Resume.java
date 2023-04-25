@@ -3,25 +3,26 @@ package com.dpdocter.beans;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class Resume extends GenericCollection{
+public class Resume extends GenericCollection {
 
-    private String id;
+	private String id;
 
-    private String type;
+	private String type;
 
-    private String name;
+	private String name;
 
-    private String emailAddress;
-    
+	private String emailAddress;
+
 	private String countryCode;
 
-    private String mobileNumber;
+	private String mobileNumber;
 
-    private String path;
+	private String path;
 
-    private FileDetails file;
-    
+	private FileDetails file;
+
 	public String getId() {
 		return id;
 	}
@@ -93,4 +94,3 @@ public class Resume extends GenericCollection{
 	}
 
 }
-

@@ -6,7 +6,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-@Document(indexName="presenting_complaint_oral_cavity_in" , type="presenting_complaint_oral_cavity")
+
+@Document(indexName = "presenting_complaint_oral_cavity_in", type = "presenting_complaint_oral_cavity")
 public class ESPresentingComplaintOralCavityDocument {
 	@Id
 	private String id;
@@ -102,5 +103,5 @@ public class ESPresentingComplaintOralCavityDocument {
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
 				+ ", speciality=" + speciality + ", updatedTime=" + updatedTime + "]";
 	}
-	
+
 }

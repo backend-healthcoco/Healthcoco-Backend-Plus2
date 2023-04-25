@@ -7,8 +7,6 @@ import org.apache.commons.collections.IteratorUtils;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.sort.SortBuilders;
-import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
@@ -92,44 +90,6 @@ public class ESCityServiceImpl implements ESCityService {
 		}
 		return response;
 	}
-	// @Override
-	// public List<ESCityDocument> searchCity(String searchTerm) {
-	// List<ESCityDocument> response = null;
-	// try {
-	// response = esCityRepository.findByQueryAnnotation(searchTerm);
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// throw new BusinessException(ServiceError.Unknown, "Error Occurred While
-	// Searching City");
-	// }
-	// return response;
-	//
-	// }
-	//
-	// @Override
-	// public List<ESLocalityLandmarkDocument> searchLandmarkLocality(String
-	// cityId, String type, String searchTerm) {
-	// List<ESLocalityLandmarkDocument> response = null;
-	// try {
-	// if (type == null)
-	// response = esLocalityLandmarkRepository.findByCityId(cityId, searchTerm);
-	// else {
-	// if (type.equalsIgnoreCase(CitySearchType.LANDMARK.getType())) {
-	// response = esLocalityLandmarkRepository.findByCityIdAndLandmark(cityId,
-	// searchTerm);
-	// }
-	// if (type.equalsIgnoreCase(CitySearchType.LOCALITY.getType())) {
-	// response = esLocalityLandmarkRepository.findByCityIdAndLocality(cityId,
-	// searchTerm);
-	// }
-	// }
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// throw new BusinessException(ServiceError.Unknown, "Error Occurred While
-	// Searching Landmark Locality");
-	// }
-	// return response;
-	// }
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -188,8 +148,8 @@ public class ESCityServiceImpl implements ESCityService {
 				}
 			} else {
 				BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-						.filter(QueryBuilders.geoDistanceQuery("geoPoint").point(Double.parseDouble(latitude),
-								Double.parseDouble(longitude)).distance("30km"));
+						.filter(QueryBuilders.geoDistanceQuery("geoPoint")
+								.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).distance("30km"));
 				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 					if (localityLandmarkSize > 0) {
 						landmarks = elasticsearchTemplate
@@ -199,9 +159,8 @@ public class ESCityServiceImpl implements ESCityService {
 														QueryBuilders.matchPhrasePrefixQuery("landmark", searchTerm)))
 												.withPageable(PageRequest.of(0, localityLandmarkSize)).build(),
 										ESLandmarkLocalityDocument.class);
-						boolQueryBuilder = new BoolQueryBuilder()
-								.filter(QueryBuilders.geoDistanceQuery("geoPoint").point(Double.parseDouble(latitude),
-								Double.parseDouble(longitude)).distance("30km"));
+						boolQueryBuilder = new BoolQueryBuilder().filter(QueryBuilders.geoDistanceQuery("geoPoint")
+								.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).distance("30km"));
 						localities = elasticsearchTemplate
 								.queryForList(
 										new NativeSearchQueryBuilder()
@@ -246,7 +205,8 @@ public class ESCityServiceImpl implements ESCityService {
 						boolQueryBuilder = new BoolQueryBuilder()
 								.must(QueryBuilders.matchPhrasePrefixQuery("isActivated", true))
 								.filter(QueryBuilders.geoDistanceQuery("geoPoint")
-										.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).distance("30km"));
+										.point(Double.parseDouble(latitude), Double.parseDouble(longitude))
+										.distance("30km"));
 						cities = elasticsearchTemplate
 								.queryForList(
 										new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
@@ -397,7 +357,7 @@ public class ESCityServiceImpl implements ESCityService {
 			} else {
 				BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 						.filter(QueryBuilders.geoDistanceQuery("geoPoint")
-				.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).distance("30km"));
+								.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).distance("30km"));
 				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 					if (localityLandmarkSize > 0) {
 						landmarks = elasticsearchTemplate
@@ -452,8 +412,9 @@ public class ESCityServiceImpl implements ESCityService {
 					if (citySize > 0) {
 						boolQueryBuilder = new BoolQueryBuilder()
 								.must(QueryBuilders.matchPhrasePrefixQuery("isActivated", true))
-						.filter(QueryBuilders.geoDistanceQuery("geoPoint")
-								.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).distance("30km"));
+								.filter(QueryBuilders.geoDistanceQuery("geoPoint")
+										.point(Double.parseDouble(latitude), Double.parseDouble(longitude))
+										.distance("30km"));
 						cities = elasticsearchTemplate
 								.queryForList(
 										new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)

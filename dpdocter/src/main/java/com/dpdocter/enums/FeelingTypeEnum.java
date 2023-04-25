@@ -2,7 +2,7 @@ package com.dpdocter.enums;
 
 public enum FeelingTypeEnum {
 
-	GOOD("GOOD"), BETTER("BETTER"), OK("OK"), NOT_WELL("NOT_WELL"), SICK("SICK") , GREAT("GREAT");
+	GOOD("GOOD"), BETTER("BETTER"), OK("OK"), NOT_WELL("NOT_WELL"), SICK("SICK"), GREAT("GREAT");
 
 	private String feeling;
 

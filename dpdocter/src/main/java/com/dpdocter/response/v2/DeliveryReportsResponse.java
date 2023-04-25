@@ -4,10 +4,10 @@ import java.util.List;
 
 import com.dpdocter.beans.v2.DeliveryReports;
 
-public class DeliveryReportsResponse  {
+public class DeliveryReportsResponse {
 
-	List<DeliveryReports> deliveryReports;
-	Integer count;
+	private List<DeliveryReports> deliveryReports;
+	private Integer count;
 
 	public List<DeliveryReports> getDeliveryReports() {
 		return deliveryReports;

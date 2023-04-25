@@ -5,16 +5,15 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 public class UserFakeRequestDetailResponse {
-	private Integer noOfAttemptAllowedInHour=3;
-	
-	private Integer noOfAttemptAllowedIn24Hour=10;
-	
-	private Integer noOfAttemptIn24Hour=0;
-	
-	private Integer noOfAttemptInHour=0;
-	
+	private Integer noOfAttemptAllowedInHour = 3;
+
+	private Integer noOfAttemptAllowedIn24Hour = 10;
+
+	private Integer noOfAttemptIn24Hour = 0;
+
+	private Integer noOfAttemptInHour = 0;
+
 	private List<ObjectId> userIds;
-	
 
 	public List<ObjectId> getUserIds() {
 		return userIds;
@@ -55,7 +54,5 @@ public class UserFakeRequestDetailResponse {
 	public void setNoOfAttemptInHour(Integer noOfAttemptInHour) {
 		this.noOfAttemptInHour = noOfAttemptInHour;
 	}
-	
-	
 
 }

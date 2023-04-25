@@ -64,7 +64,7 @@ public class PatientTreatmentCollection extends GenericCollection {
 
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -176,7 +176,6 @@ public class PatientTreatmentCollection extends GenericCollection {
 	public void setInHistory(Boolean inHistory) {
 		this.inHistory = inHistory;
 	}
-	
 
 	public String getAppointmentId() {
 		return appointmentId;

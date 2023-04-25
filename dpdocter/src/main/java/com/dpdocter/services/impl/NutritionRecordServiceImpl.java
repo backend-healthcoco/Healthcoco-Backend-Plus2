@@ -66,7 +66,8 @@ public class NutritionRecordServiceImpl implements NutritionRecordService {
 			Date createdTime = new Date();
 
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
-				UserCollection userCollection = userRepository.findById(new ObjectId(request.getPatientId())).orElse(null);
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getPatientId()))
+						.orElse(null);
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 				}
@@ -205,8 +206,8 @@ public class NutritionRecordServiceImpl implements NutritionRecordService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((long)(page) * size),
-						Aggregation.limit(size));
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+						Aggregation.skip((long) (page) * size), Aggregation.limit(size));
 			} else {
 
 				aggregation = Aggregation.newAggregation(
@@ -245,7 +246,8 @@ public class NutritionRecordServiceImpl implements NutritionRecordService {
 	public NutritionRecord getNutritionRecord(String recordId) {
 		NutritionRecord response;
 		try {
-			NutritionRecordCollection recordsCollection = nutritionRecordRepository.findById(new ObjectId(recordId)).orElse(null);
+			NutritionRecordCollection recordsCollection = nutritionRecordRepository.findById(new ObjectId(recordId))
+					.orElse(null);
 			response = new NutritionRecord();
 			BeanUtil.map(recordsCollection, response);
 		} catch (Exception e) {
@@ -262,7 +264,8 @@ public class NutritionRecordServiceImpl implements NutritionRecordService {
 	public NutritionRecord deleteNutritionRecord(String recordId, Boolean discarded) {
 		NutritionRecord response;
 		try {
-			NutritionRecordCollection recordsCollection = nutritionRecordRepository.findById(new ObjectId(recordId)).orElse(null);
+			NutritionRecordCollection recordsCollection = nutritionRecordRepository.findById(new ObjectId(recordId))
+					.orElse(null);
 			if (recordsCollection == null) {
 				throw new BusinessException(ServiceError.NotFound, "No Nutrition Record found with Id");
 			}
@@ -287,7 +290,8 @@ public class NutritionRecordServiceImpl implements NutritionRecordService {
 		try {
 			Date createdTime = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
-				UserCollection userCollection = userRepository.findById(new ObjectId(request.getPatientId())).orElse(null);
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getPatientId()))
+						.orElse(null);
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 				}
@@ -330,7 +334,8 @@ public class NutritionRecordServiceImpl implements NutritionRecordService {
 	public Boolean updateShareWithPatient(String recordId) {
 		Boolean response = false;
 		try {
-			NutritionRecordCollection recordCollection = nutritionRecordRepository.findById(new ObjectId(recordId)).orElse(null);
+			NutritionRecordCollection recordCollection = nutritionRecordRepository.findById(new ObjectId(recordId))
+					.orElse(null);
 			if (recordCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No record fount with recordId");
 			}

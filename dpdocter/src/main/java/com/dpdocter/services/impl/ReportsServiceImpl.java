@@ -358,10 +358,6 @@ public class ReportsServiceImpl implements ReportsService {
 		List<IPDReportLookupResponse> ipdReportLookupResponses = null;
 		int count = 0;
 		try {
-
-			// long updatedTimeStamp = Long.parseLong(updatedTime);
-			// Criteria criteria = new Criteria("updatedTime").gte(new
-			// Date(updatedTimeStamp));
 			Criteria criteria = new Criteria("isPatientDiscarded").ne(true);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
@@ -469,10 +465,6 @@ public class ReportsServiceImpl implements ReportsService {
 		OPDReportsResponse opdReportsResponse = null;
 		List<OPDReportsLookupResponse> opdReportsLookupResponses = null;
 		try {
-
-			// long updatedTimeStamp = Long.parseLong(updatedTime);
-			// Criteria criteria = new Criteria("updatedTime").gte(new
-			// Date(updatedTimeStamp));
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
@@ -684,10 +676,6 @@ public class ReportsServiceImpl implements ReportsService {
 		List<OTReportsLookupResponse> otReportsLookupResponses = null;
 		int count = 0;
 		try {
-
-			// long updatedTimeStamp = Long.parseLong(updatedTime);
-			// Criteria criteria = new Criteria("updatedTime").gte(new
-			// Date(updatedTimeStamp));
 			Criteria criteria = new Criteria("isPatientDiscarded").ne(true);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
@@ -811,10 +799,6 @@ public class ReportsServiceImpl implements ReportsService {
 		List<DeliveryReportsLookupResponse> deliveryReportsLookupResponses = null;
 		int count = 0;
 		try {
-
-			// long updatedTimeStamp = Long.parseLong(updatedTime);
-			// Criteria criteria = new Criteria("updatedTime").gte(new
-			// Date(updatedTimeStamp));
 			Criteria criteria = new Criteria("isPatientDiscarded").ne(true);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
@@ -1394,7 +1378,8 @@ public class ReportsServiceImpl implements ReportsService {
 									Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 									Aggregation.unwind("location"),
 									Aggregation.lookup("patient_cl", "patientId", "userId", "patientCollection"),
-									new CustomAggregationOperation(new Document("$unwind",
+									new CustomAggregationOperation(new Document(
+											"$unwind",
 											new BasicDBObject("path", "$patientCollection")
 													.append("preserveNullAndEmptyArrays", true))),
 									new CustomAggregationOperation(
@@ -1402,8 +1387,9 @@ public class ReportsServiceImpl implements ReportsService {
 													new BasicDBObject("$cond",
 															new BasicDBObject("if", new BasicDBObject("$eq",
 																	Arrays.asList("$patientCollection.locationId",
-																			"$locationId"))).append("then", "$$KEEP")
-																					.append("else", "$$PRUNE")))),
+																			"$locationId")))
+																	.append("then", "$$KEEP")
+																	.append("else", "$$PRUNE")))),
 
 									Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
 									Aggregation.unwind("patientUser")),
@@ -1448,14 +1434,14 @@ public class ReportsServiceImpl implements ReportsService {
 						new ObjectId(otReportsLookupResponse.getLocationId()),
 						new ObjectId(otReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType(),
 						PrintSettingType.EMR.getType());
-		if (printSettings == null){
+		if (printSettings == null) {
 			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
 					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 							new ObjectId(otReportsLookupResponse.getDoctorId()),
 							new ObjectId(otReportsLookupResponse.getLocationId()),
 							new ObjectId(otReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType(),
-							PrintSettingType.DEFAULT.getType(),new Sort(Sort.Direction.DESC, "updatedTime"));
-			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+							PrintSettingType.DEFAULT.getType(), new Sort(Sort.Direction.DESC, "updatedTime"));
+			if (!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
 				printSettings = printSettingsCollections.get(0);
 		}
 		if (printSettings == null) {
@@ -1808,7 +1794,7 @@ public class ReportsServiceImpl implements ReportsService {
 									new BasicDBObject("$cond", new BasicDBObject("if",
 											new BasicDBObject("$eq",
 													Arrays.asList("$patientCollection.locationId", "$locationId")))
-															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+											.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 
 							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
 							Aggregation.unwind("patientUser")),
@@ -1850,14 +1836,14 @@ public class ReportsServiceImpl implements ReportsService {
 						new ObjectId(deliveryReportsLookupResponse.getLocationId()),
 						new ObjectId(deliveryReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType(),
 						PrintSettingType.EMR.getType());
-		if (printSettings == null){
+		if (printSettings == null) {
 			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
 					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 							new ObjectId(deliveryReportsLookupResponse.getDoctorId()),
 							new ObjectId(deliveryReportsLookupResponse.getLocationId()),
 							new ObjectId(deliveryReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType(),
-							PrintSettingType.DEFAULT.getType(),new Sort(Sort.Direction.DESC, "updatedTime"));
-			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+							PrintSettingType.DEFAULT.getType(), new Sort(Sort.Direction.DESC, "updatedTime"));
+			if (!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
 				printSettings = printSettingsCollections.get(0);
 		}
 		if (printSettings == null) {
@@ -2056,7 +2042,7 @@ public class ReportsServiceImpl implements ReportsService {
 	}
 
 	@Override
-	public Boolean deleteIPDReportById(String reportId,Boolean discarded) {
+	public Boolean deleteIPDReportById(String reportId, Boolean discarded) {
 		Boolean response = false;
 		try {
 			IPDReportsCollection ipdReportsCollection = ipdReportsRepository.findById(new ObjectId(reportId))
@@ -2066,7 +2052,7 @@ public class ReportsServiceImpl implements ReportsService {
 				ipdReportsCollection.setUpdatedTime(new Date());
 				ipdReportsRepository.save(ipdReportsCollection);
 				response = true;
-			}else {
+			} else {
 				logger.warn("Report not found!");
 				throw new BusinessException(ServiceError.NoRecord, "Report not found!");
 			}
@@ -2090,7 +2076,7 @@ public class ReportsServiceImpl implements ReportsService {
 				deliveryReportsCollection.setUpdatedTime(new Date());
 				deliveryReportsRepository.save(deliveryReportsCollection);
 				response = true;
-			}else {
+			} else {
 				logger.warn("Report not found!");
 				throw new BusinessException(ServiceError.NoRecord, "Report not found!");
 			}
@@ -2112,7 +2098,7 @@ public class ReportsServiceImpl implements ReportsService {
 				otReportsCollection.setUpdatedTime(new Date());
 				response = true;
 				otReportsRepository.save(otReportsCollection);
-			}else {
+			} else {
 				logger.warn("Report not found!");
 				throw new BusinessException(ServiceError.NoRecord, "Report not found!");
 			}

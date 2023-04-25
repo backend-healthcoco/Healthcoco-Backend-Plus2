@@ -1,28 +1,24 @@
 package com.dpdocter.beans;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class MessageStatusData {
 
 	private String message_id;
-	
+
 	private String status;
-	
+
 	private String status_details;
-	
+
 	private String recipient;
-	
+
 	private String sent_time;
-	
+
 	private String status_time;
-	
-	
-	
+
 	@JsonIgnore
 	private String price;
-	
+
 	private String error_code;
 
 	public String getMessage_id() {
@@ -88,6 +84,5 @@ public class MessageStatusData {
 	public void setError_code(String error_code) {
 		this.error_code = error_code;
 	}
-	
-	
+
 }

@@ -68,10 +68,12 @@ public class ReportsAPI {
 	@Path(value = PathProxy.ReportsUrls.GET_OPD_REPORTS)
 	@GET
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_OPD_REPORTS, notes = PathProxy.ReportsUrls.GET_OPD_REPORTS)
-	public Response<OPDReportsResponse> getOPDReports(@QueryParam("locationId") String locationId,@QueryParam("doctorId") String doctorId,@QueryParam("patientId") String patientId,@QueryParam("from") String from,
-			@QueryParam("to")String to,@QueryParam("page")  long page, @QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime) {
-		OPDReportsResponse opdReports = reportsService.getOPDReportsList(locationId, doctorId, patientId, from, to, page,
-				size, updatedTime);
+	public Response<OPDReportsResponse> getOPDReports(@QueryParam("locationId") String locationId,
+			@QueryParam("doctorId") String doctorId, @QueryParam("patientId") String patientId,
+			@QueryParam("from") String from, @QueryParam("to") String to, @QueryParam("page") long page,
+			@QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime) {
+		OPDReportsResponse opdReports = reportsService.getOPDReportsList(locationId, doctorId, patientId, from, to,
+				page, size, updatedTime);
 		Response<OPDReportsResponse> response = new Response<OPDReportsResponse>();
 		response.setData(opdReports);
 		return response;
@@ -450,7 +452,7 @@ public class ReportsAPI {
 		response.setData(reportsService.getOTReportsFile(otId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ReportsUrls.DOWNLOAD_DELIVERY_REPORT)
 	@GET
 	@ApiOperation(value = PathProxy.ReportsUrls.DOWNLOAD_DELIVERY_REPORT, notes = PathProxy.ReportsUrls.DOWNLOAD_DELIVERY_REPORT)
@@ -463,7 +465,7 @@ public class ReportsAPI {
 		response.setData(reportsService.getDeliveryReportsFile(reportId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ReportsUrls.UPDATE_OT_REPORTS)
 	@POST
 	@ApiOperation(value = PathProxy.ReportsUrls.UPDATE_OT_REPORTS, notes = PathProxy.ReportsUrls.UPDATE_OT_REPORTS)
@@ -476,13 +478,14 @@ public class ReportsAPI {
 	@Path(value = PathProxy.ReportsUrls.DELETE_IPD_REPORT)
 	@DELETE
 	@ApiOperation(value = PathProxy.ReportsUrls.DELETE_IPD_REPORT, notes = PathProxy.ReportsUrls.DELETE_IPD_REPORT)
-	public Response<Boolean> deletIPDReportById(@PathParam("id") String reportId,@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-		Boolean ipdReports = reportsService.deleteIPDReportById(reportId,discarded);
+	public Response<Boolean> deletIPDReportById(@PathParam("id") String reportId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		Boolean ipdReports = reportsService.deleteIPDReportById(reportId, discarded);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(ipdReports);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ReportsUrls.GET_IPD_REPORT)
 	@GET
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_IPD_REPORT, notes = PathProxy.ReportsUrls.GET_IPD_REPORT)
@@ -522,22 +525,24 @@ public class ReportsAPI {
 		response.setData(deliveryReports);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ReportsUrls.DELETE_DELIVERY_REPORT)
 	@DELETE
 	@ApiOperation(value = PathProxy.ReportsUrls.DELETE_DELIVERY_REPORT, notes = PathProxy.ReportsUrls.DELETE_DELIVERY_REPORT)
-	public Response<Boolean> deleteDeliveryReportById(@PathParam("id") String reportId,@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-		Boolean deliveryReports = reportsService.deleteDeliveryReportById(reportId,discarded);
+	public Response<Boolean> deleteDeliveryReportById(@PathParam("id") String reportId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		Boolean deliveryReports = reportsService.deleteDeliveryReportById(reportId, discarded);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(deliveryReports);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ReportsUrls.DELETE_OT_REPORT)
 	@GET
 	@ApiOperation(value = PathProxy.ReportsUrls.DELETE_OT_REPORT, notes = PathProxy.ReportsUrls.DELETE_OT_REPORT)
-	public Response<Boolean> deleteOTReportById(@PathParam("id") String reportId,@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-		Boolean otReports = reportsService.deleteOTReportById(reportId,discarded);
+	public Response<Boolean> deleteOTReportById(@PathParam("id") String reportId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		Boolean otReports = reportsService.deleteOTReportById(reportId, discarded);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(otReports);
 		return response;

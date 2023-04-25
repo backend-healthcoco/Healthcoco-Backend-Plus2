@@ -7,29 +7,30 @@ import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Treatment extends GenericCollection {
-    
+
 	private ObjectId treatmentServiceId;
 
 	private ObjectId doctorId;
-	
+
 	private Date treatmentDate;
-	
+
 	private String status;
 
 	private double cost = 0.0;
 
 	private String note;
-	
+
 	private Discount discount;
 
-	private double finalCost=0.0;
+	private double finalCost = 0.0;
 
 	private Quantity quantity;
 
 	private List<Fields> treatmentFields;
-	
+
 	public ObjectId getTreatmentServiceId() {
 		return treatmentServiceId;
 	}

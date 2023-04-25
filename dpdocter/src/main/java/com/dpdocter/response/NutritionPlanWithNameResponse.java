@@ -3,7 +3,7 @@ package com.dpdocter.response;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.NutritionPlanType;
 
-public class NutritionPlanWithNameResponse extends GenericCollection{
+public class NutritionPlanWithNameResponse extends GenericCollection {
 
 	private String id;
 

@@ -304,7 +304,8 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		try {
 			Date createdTime = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
-				UserCollection userCollection = userRepository.findById(new ObjectId(request.getPatientId())).orElse(null);
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getPatientId()))
+						.orElse(null);
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 				}
@@ -359,7 +360,8 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			Date createdTime = new Date();
 			Double fileSizeInMB = 0.0;
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
-				UserCollection userCollection = userRepository.findById(new ObjectId(request.getPatientId())).orElse(null);
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getPatientId()))
+						.orElse(null);
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 				}
@@ -511,9 +513,10 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			response = aggregationResults.getMappedResults();
 			for (DoctorLabReportResponse doctorLabReportResponse : response) {
 				if (!DPDoctorUtils.anyStringEmpty(doctorLabReportResponse.getPatientId())) {
-					PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalIdAndDiscarded(
-							new ObjectId(doctorLabReportResponse.getPatientId()), new ObjectId(locationId),
-							new ObjectId(hospitalId), false);
+					PatientCollection patientCollection = patientRepository
+							.findByUserIdAndLocationIdAndHospitalIdAndDiscarded(
+									new ObjectId(doctorLabReportResponse.getPatientId()), new ObjectId(locationId),
+									new ObjectId(hospitalId), false);
 					if (patientCollection != null) {
 						doctorLabReportResponse.setPatientRegistered(true);
 					}
@@ -768,8 +771,8 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("firstName", searchTerm));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(latitude) && !DPDoctorUtils.anyStringEmpty(longitude)) {
-				boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").point(Double.parseDouble(latitude),
-						Double.parseDouble(longitude)).distance(30 + "km"));
+				boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint")
+						.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).distance(30 + "km"));
 
 			}
 
@@ -805,14 +808,14 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 							&& !DPDoctorUtils.anyStringEmpty(doctorSearchResponse.getDoctorId())
 							&& !DPDoctorUtils.anyStringEmpty(doctorSearchResponse.getLocationId())
 							&& !DPDoctorUtils.anyStringEmpty(doctorSearchResponse.getHospitalId())) {
-						
-						fevDoctorCollection = doctorLabFevouriteDoctorRepository.
-								findByDoctorIdAndLocationIdAndHospitalIdAndFavouriteDoctorIdAndFavouriteLocationIdAndFavouriteHospitalIdAndDiscarded
-								(new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId),
+
+						fevDoctorCollection = doctorLabFevouriteDoctorRepository
+								.findByDoctorIdAndLocationIdAndHospitalIdAndFavouriteDoctorIdAndFavouriteLocationIdAndFavouriteHospitalIdAndDiscarded(
+										new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId),
 										new ObjectId(doctorSearchResponse.getDoctorId()),
 										new ObjectId(doctorSearchResponse.getLocationId()),
-										new ObjectId(doctorSearchResponse.getHospitalId()),false);
-								
+										new ObjectId(doctorSearchResponse.getHospitalId()), false);
+
 						if (fevDoctorCollection != null) {
 							doctorSearchResponse.setIsFavourite(true);
 						}
@@ -835,7 +838,8 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		try {
 			DoctorLabDoctorReferenceCollection referenceCollection = new DoctorLabDoctorReferenceCollection();
 			BeanUtil.map(request, referenceCollection);
-			LocationCollection locationCollection = locationRepository.findById(referenceCollection.getLocationId()).orElse(null);
+			LocationCollection locationCollection = locationRepository.findById(referenceCollection.getLocationId())
+					.orElse(null);
 			UserCollection userCollection = userRepository.findById(referenceCollection.getDoctorId()).orElse(null);
 			if (userCollection == null && locationCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "User not found");

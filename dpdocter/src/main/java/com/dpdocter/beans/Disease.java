@@ -1,28 +1,28 @@
 package com.dpdocter.beans;
 
 public class Disease {
-		private String id;
-		
-		private String disease;
+	private String id;
 
-		public String getId() {
-			return id;
-		}
+	private String disease;
 
-		public void setId(String id) {
-			this.id = id;
-		}
+	public String getId() {
+		return id;
+	}
 
-		public String getDisease() {
-			return disease;
-		}
+	public void setId(String id) {
+		this.id = id;
+	}
 
-		public void setDisease(String disease) {
-			this.disease = disease;
-		}
+	public String getDisease() {
+		return disease;
+	}
 
-		@Override
-		public String toString() {
-			return "Disease [id=" + id + ", disease=" + disease + "]";
-		}
+	public void setDisease(String disease) {
+		this.disease = disease;
+	}
+
+	@Override
+	public String toString() {
+		return "Disease [id=" + id + ", disease=" + disease + "]";
+	}
 }

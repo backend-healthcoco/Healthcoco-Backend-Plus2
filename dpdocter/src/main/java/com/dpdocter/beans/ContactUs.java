@@ -11,6 +11,7 @@ public class ContactUs extends GenericCollection {
 	private String name;
 
 	private String countryCode;
+	
 	private String mobileNumber;
 
 	private String emailAddress;

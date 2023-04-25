@@ -5,7 +5,7 @@ import com.dpdocter.collections.GenericCollection;
 public class DoctorOtpRequest extends GenericCollection {
 
 	private String mobileNumber;
-	
+
 	private String countryCode;
 
 	public String getMobileNumber() {
@@ -23,6 +23,5 @@ public class DoctorOtpRequest extends GenericCollection {
 	public void setCountryCode(String countryCode) {
 		this.countryCode = countryCode;
 	}
-	
-	
+
 }

@@ -1,8 +1,5 @@
 package com.dpdocter.services.impl;
 
-import java.util.Date;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +20,6 @@ import com.twilio.jwt.accesstoken.VideoGrant;
 import com.twilio.rest.chat.v2.Service;
 import com.twilio.rest.chat.v2.service.User;
 
-
 @org.springframework.stereotype.Service
 public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationServices {
 
@@ -41,21 +37,18 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 	@Value(value = "${service.sid}")
 	private String SERVICE_SID;
 
-	
 	@Value(value = "${twilio.auth.token}")
 	private String TWILIO_AUTH_TOKEN;
-	
 
 	@Value(value = "${twilio.chat.ttl}")
 	private int TWILIO_CHAT_TTL;
 
 	@Value(value = "${twilio.video.ttl}")
 	private int TWILIO_VIDEO_TTL;
-	
-	
+
 	@Autowired
 	PushNotificationServices pushNotificationServices;
-	
+
 	@Autowired
 	private UnifiedCommunicationDetailsRepository unifiedCommunicationDetailsRepository;
 
@@ -64,20 +57,6 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 		String response = null;
 		UnifiedCommunicationDetailsCollection unifiedCommunicationDetailsCollection = null;
 		try {
-//			List<UnifiedCommunicationDetailsCollection> unifiedCommunicationDetailsCollections = unifiedCommunicationDetailsRepository.findByUserIdAndTypeAndIsExpired(
-//					new ObjectId(userId), ConsultationType.CHAT.getType(), false);
-//			if(unifiedCommunicationDetailsCollections != null && !unifiedCommunicationDetailsCollections.isEmpty()) {
-//				for(UnifiedCommunicationDetailsCollection coll : unifiedCommunicationDetailsCollections) {
-//					if(isExpired(coll.getCreatedTime(), TWILIO_CHAT_TTL)) {
-//						coll.setIsExpired(true);
-//						coll.setUpdatedTime(new Date());
-//						unifiedCommunicationDetailsRepository.save(coll);
-//					}else {
-//						unifiedCommunicationDetailsCollection = coll;
-//					}
-//				}
-//			}
-//		    if(unifiedCommunicationDetailsCollection == null) {
 			ChatGrant grant = new ChatGrant();
 			grant.setServiceSid(SERVICE_SID);
 
@@ -90,7 +69,6 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 			unifiedCommunicationDetailsCollection = unifiedCommunicationDetailsRepository
 					.save(unifiedCommunicationDetailsCollection);
 			response = unifiedCommunicationDetailsCollection.getToken();
-//		    }
 		} catch (Exception e) {
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -98,20 +76,18 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 		return response;
 	}
 
-	
 	@Override
 	public String createUser(String identity) {
 		String response = null;
-	//	UnifiedCommunicationDetailsCollection unifiedCommunicationDetailsCollection = null;
+		// UnifiedCommunicationDetailsCollection unifiedCommunicationDetailsCollection =
+		// null;
 		try {
 
-			Twilio.init(TWILIO_ACCOUNT_SID,TWILIO_AUTH_TOKEN);
-	        User user =
-	            User.creator(SERVICE_SID,identity)
-	            .create();
+			Twilio.init(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+			User user = User.creator(SERVICE_SID, identity).create();
 
-	        System.out.println(user.getSid());
-	        response=user.getSid();
+			System.out.println(user.getSid());
+			response = user.getSid();
 		} catch (Exception e) {
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -119,26 +95,11 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 		return response;
 	}
 
-	
 	@Override
-	public String createChatAccessTokenAndroid(String userId,String pushCredentialSID) {
+	public String createChatAccessTokenAndroid(String userId, String pushCredentialSID) {
 		String response = null;
 		UnifiedCommunicationDetailsCollection unifiedCommunicationDetailsCollection = null;
 		try {
-//			List<UnifiedCommunicationDetailsCollection> unifiedCommunicationDetailsCollections = unifiedCommunicationDetailsRepository.findByUserIdAndTypeAndIsExpired(
-//					new ObjectId(userId), ConsultationType.CHAT.getType(), false);
-//			if(unifiedCommunicationDetailsCollections != null && !unifiedCommunicationDetailsCollections.isEmpty()) {
-//				for(UnifiedCommunicationDetailsCollection coll : unifiedCommunicationDetailsCollections) {
-//					if(isExpired(coll.getCreatedTime(), TWILIO_CHAT_TTL)) {
-//						coll.setIsExpired(true);
-//						coll.setUpdatedTime(new Date());
-//						unifiedCommunicationDetailsRepository.save(coll);
-//					}else {
-//						unifiedCommunicationDetailsCollection = coll;
-//					}
-//				}
-//			}
-//		    if(unifiedCommunicationDetailsCollection == null) {
 			ChatGrant grant = new ChatGrant();
 			grant.setServiceSid(SERVICE_SID);
 			grant.setPushCredentialSid(pushCredentialSID);
@@ -152,7 +113,6 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 			unifiedCommunicationDetailsCollection = unifiedCommunicationDetailsRepository
 					.save(unifiedCommunicationDetailsCollection);
 			response = unifiedCommunicationDetailsCollection.getToken();
-//		    }
 		} catch (Exception e) {
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -160,9 +120,6 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 		return response;
 	}
 
-	
-	
-	
 	@Override
 	public String createVideoAccessToken(String userId, String room) {
 		String response = null;
@@ -187,18 +144,13 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 	}
 
 	@Override
-	public Boolean createpushNotification(String userId, String room, String title,String callType) {
+	public Boolean createpushNotification(String userId, String room, String title, String callType) {
 		Boolean response = false;
 		try {
-
-//			String message = room + " " + title;
-//			pushNotificationServices.notifyUser(userId, message, ComponentType.CONSULTATION_VIDEO_CALL.getType(), null,
-//					null);
-//			response = true;
-			String message="is calling";
-			pushNotificationServices.notifyUserTwilio(userId,
-					message, ComponentType.CONSULTATION_VIDEO_CALL.getType(), null,room,title, null,callType);
-			response=true;
+			String message = "is calling";
+			pushNotificationServices.notifyUserTwilio(userId, message, ComponentType.CONSULTATION_VIDEO_CALL.getType(),
+					null, room, title, null, callType);
+			response = true;
 
 		} catch (Exception e) {
 			logger.error("Error : " + e.getMessage());
@@ -207,31 +159,24 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 		return response;
 
 	}
-	
-	
+
 	@Override
 	public Boolean twilioPushNotification(String serviceSID) {
-		Boolean response=false;
-		try{
+		Boolean response = false;
+		try {
 			Twilio.init(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
-	        Service service = Service.updater(serviceSID)
-	            .setNotificationsAddedToChannelEnabled(
-	                true)
-	            .setNotificationsAddedToChannelSound(
-	                "default")
-	            .setNotificationsAddedToChannelTemplate(
-	                "A New message in ${CHANNEL} from ${USER}: ${MESSAGE}")
-	            .update();
+			Service service = Service.updater(serviceSID).setNotificationsAddedToChannelEnabled(true)
+					.setNotificationsAddedToChannelSound("default")
+					.setNotificationsAddedToChannelTemplate("A New message in ${CHANNEL} from ${USER}: ${MESSAGE}")
+					.update();
 
-	        System.out.println(service.getFriendlyName());
-			response=true;
-		}catch (Exception e) {
+			System.out.println(service.getFriendlyName());
+			response = true;
+		} catch (Exception e) {
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 		}
 		return response;
 	}
-	
-	
 
 }

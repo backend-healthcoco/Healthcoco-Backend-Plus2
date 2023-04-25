@@ -11,7 +11,7 @@ import com.dpdocter.beans.DentalImagingRequest;
 import com.dpdocter.beans.DoctorHospitalDentalImagingAssociation;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Hospital;
-import com.dpdocter.collections.DentalImagingInvoiceResponse;
+import com.dpdocter.elasticsearch.response.DentalImagingInvoiceResponse;
 import com.dpdocter.request.DentalImagingLabDoctorRegistrationRequest;
 import com.dpdocter.request.DentalImagingReportsAddRequest;
 import com.dpdocter.response.AnalyticResponse;

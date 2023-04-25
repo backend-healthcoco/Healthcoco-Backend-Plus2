@@ -94,13 +94,13 @@ public class DietPlansServiceImpl implements DietPlansService {
 
 	@Autowired
 	private DietPlanTemplateRepository dietPlanTemplateRepository;
-	
+
 	@Autowired
 	private RecipeRepository recipeRepository;
-	
+
 	@Autowired
 	private IngredientRepository ingredientRepository;
-	
+
 	@Override
 	public DietPlan addEditDietPlan(DietPlan request) {
 		DietPlan response = null;
@@ -195,21 +195,21 @@ public class DietPlansServiceImpl implements DietPlansService {
 		}
 		return response;
 	}
-	
-	
+
 	@Override
-	public List<DietPlan> getDietPlansForPatient(int page, int size, String patientId, long updatedTime, boolean discarded) {
+	public List<DietPlan> getDietPlansForPatient(int page, int size, String patientId, long updatedTime,
+			boolean discarded) {
 		List<DietPlan> response = null;
 		try {
 
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTime)).and("discarded").is(discarded);
 			ObjectId patientObjectId = null;
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				patientObjectId = new ObjectId(patientId);
 			if (!DPDoctorUtils.anyStringEmpty(patientObjectId))
 				criteria.and("patientId").is(patientObjectId);
-			
+
 			Aggregation aggregation = null;
 
 			if (size > 0) {
@@ -221,11 +221,11 @@ public class DietPlansServiceImpl implements DietPlansService {
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			}
-			
+
 			AggregationResults<DietPlan> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DietPlanCollection.class, DietPlan.class);
 			response = aggregationResults.getMappedResults();
-			
+
 			for (DietPlan dietPlan : response) {
 				for (DietplanAddItem dietplanAddItem : dietPlan.getItems()) {
 					for (DietPlanRecipeAddItem recipeAddItem : dietplanAddItem.getRecipes()) {
@@ -254,23 +254,27 @@ public class DietPlansServiceImpl implements DietPlansService {
 		DietPlan response = null;
 		try {
 			response = mongoTemplate.findById(new ObjectId(planId), DietPlan.class, "diet_plan_cl");
-			
-			if(!DPDoctorUtils.anyStringEmpty(languageId)) {
-				ObjectId languageObjectid = new ObjectId(languageId);
-				for(DietplanAddItem dietplanAddItem : response.getItems()) {
-					for(DietPlanRecipeAddItem recipeAddItem : dietplanAddItem.getRecipes()) {
-						RecipeCollection recipeCollection = recipeRepository.findById(new ObjectId(recipeAddItem.getId())).orElse(null);
 
-						if(recipeCollection.getMultilingualName() != null)
-							recipeAddItem.setName(recipeCollection.getMultilingualName().getOrDefault(languageObjectid, recipeCollection.getName()));
-						
-						for(RecipeAddItem ingredients : recipeAddItem.getIngredients()) {
-							IngredientCollection ingredientCollection = ingredientRepository.findById(new ObjectId(ingredients.getId())).orElse(null);
-							if(ingredientCollection.getMultilingualName() != null) 
-								ingredients.setName(ingredientCollection.getMultilingualName().getOrDefault(languageObjectid, ingredientCollection.getName()));		
+			if (!DPDoctorUtils.anyStringEmpty(languageId)) {
+				ObjectId languageObjectid = new ObjectId(languageId);
+				for (DietplanAddItem dietplanAddItem : response.getItems()) {
+					for (DietPlanRecipeAddItem recipeAddItem : dietplanAddItem.getRecipes()) {
+						RecipeCollection recipeCollection = recipeRepository
+								.findById(new ObjectId(recipeAddItem.getId())).orElse(null);
+
+						if (recipeCollection.getMultilingualName() != null)
+							recipeAddItem.setName(recipeCollection.getMultilingualName().getOrDefault(languageObjectid,
+									recipeCollection.getName()));
+
+						for (RecipeAddItem ingredients : recipeAddItem.getIngredients()) {
+							IngredientCollection ingredientCollection = ingredientRepository
+									.findById(new ObjectId(ingredients.getId())).orElse(null);
+							if (ingredientCollection.getMultilingualName() != null)
+								ingredients.setName(ingredientCollection.getMultilingualName()
+										.getOrDefault(languageObjectid, ingredientCollection.getName()));
 						}
-					}	
-				}	
+					}
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -489,7 +493,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	public DietPlanTemplate addEditDietPlanTemplate(DietPlanTemplate request) {
 		DietPlanTemplate response = null;
@@ -498,7 +502,8 @@ public class DietPlansServiceImpl implements DietPlansService {
 			UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				dietPlanTemplateCollection = dietPlanTemplateRepository.findById(new ObjectId(request.getId())).orElse(null);
+				dietPlanTemplateCollection = dietPlanTemplateRepository.findById(new ObjectId(request.getId()))
+						.orElse(null);
 				if (dietPlanTemplateCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, " No Diet Plan Template found with Id ");
 				}
@@ -516,7 +521,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 
 			} else {
 				dietPlanTemplateCollection = new DietPlanTemplateCollection();
-				
+
 				BeanUtil.map(request, dietPlanTemplateCollection);
 				dietPlanTemplateCollection
 						.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -527,23 +532,22 @@ public class DietPlansServiceImpl implements DietPlansService {
 				dietPlanTemplateCollection.setUpdatedTime(new Date());
 
 			}
-			
-			if(dietPlanTemplateCollection.getFromAge() != null) {
-				double fromYears = dietPlanTemplateCollection.getFromAge().getYears() 
-						+ (double)dietPlanTemplateCollection.getFromAge().getMonths()/12
-						+ (double)dietPlanTemplateCollection.getFromAge().getDays()/365; 
+
+			if (dietPlanTemplateCollection.getFromAge() != null) {
+				double fromYears = dietPlanTemplateCollection.getFromAge().getYears()
+						+ (double) dietPlanTemplateCollection.getFromAge().getMonths() / 12
+						+ (double) dietPlanTemplateCollection.getFromAge().getDays() / 365;
 
 				dietPlanTemplateCollection.setFromAgeInYears(fromYears);
 			}
 
-			if(dietPlanTemplateCollection.getToAge() != null) {
-				double toYears = dietPlanTemplateCollection.getToAge().getYears() 
-						+ (double)dietPlanTemplateCollection.getToAge().getMonths()/12
-						+ (double)dietPlanTemplateCollection.getToAge().getDays()/365; 
+			if (dietPlanTemplateCollection.getToAge() != null) {
+				double toYears = dietPlanTemplateCollection.getToAge().getYears()
+						+ (double) dietPlanTemplateCollection.getToAge().getMonths() / 12
+						+ (double) dietPlanTemplateCollection.getToAge().getDays() / 365;
 
 				dietPlanTemplateCollection.setToAgeInYears(toYears);
 			}
-
 
 			dietPlanTemplateCollection = dietPlanTemplateRepository.save(dietPlanTemplateCollection);
 			response = new DietPlanTemplate();
@@ -560,115 +564,108 @@ public class DietPlansServiceImpl implements DietPlansService {
 	}
 
 	@Override
-	public Response<DietPlanTemplate> getDietPlanTemplates(int page, int size, String doctorId, String hospitalId, String locationId,
-			long updatedTime, boolean discarded, String gender, String country, Double fromAge, Double toAge,
-			String community, String type, String pregnancyCategory, String searchTerm,
-			String foodPreference, List<String> disease, Double bmiFrom, Double bmiTo, String languageId, Double age, Double bmi, boolean allDisease) {
+	public Response<DietPlanTemplate> getDietPlanTemplates(int page, int size, String doctorId, String hospitalId,
+			String locationId, long updatedTime, boolean discarded, String gender, String country, Double fromAge,
+			Double toAge, String community, String type, String pregnancyCategory, String searchTerm,
+			String foodPreference, List<String> disease, Double bmiFrom, Double bmiTo, String languageId, Double age,
+			Double bmi, boolean allDisease) {
 		Response<DietPlanTemplate> response = new Response<DietPlanTemplate>();
 		List<DietPlanTemplate> dietPlanTemplates = null;
 		try {
 
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTime));
-			
-			if(allDisease) {
+
+			if (allDisease) {
 				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-					criteria = criteria.andOperator(new Criteria().orOperator(new Criteria("templateName").regex("^" + searchTerm, "i"),
-							new Criteria("templateName").regex(searchTerm)));
+					criteria = criteria.andOperator(
+							new Criteria().orOperator(new Criteria("templateName").regex("^" + searchTerm, "i"),
+									new Criteria("templateName").regex(searchTerm)));
 				}
-			}else {
-				if (disease!= null && !disease.isEmpty()) {
+			} else {
+				if (disease != null && !disease.isEmpty()) {
 					criteria.and("diseases.disease").in(disease);
 					if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-						criteria = criteria.andOperator(new Criteria().orOperator(new Criteria("templateName").regex("^" + searchTerm, "i"),
-								new Criteria("templateName").regex(searchTerm)));
+						criteria = criteria.andOperator(
+								new Criteria().orOperator(new Criteria("templateName").regex("^" + searchTerm, "i"),
+										new Criteria("templateName").regex(searchTerm)));
 					}
-				}else {
+				} else {
 					List<String> emptyArr = new ArrayList<String>();
 					if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-						criteria = criteria.andOperator(new Criteria().orOperator(new Criteria("templateName").regex("^" + searchTerm, "i"),
-								new Criteria("templateName").regex(searchTerm)), new Criteria().orOperator(new Criteria("diseases").is(null), new Criteria("diseases").is(emptyArr)));
-					}
-					else criteria.andOperator(new Criteria().orOperator(new Criteria("diseases").is(null), new Criteria("diseases").is(emptyArr)));
+						criteria = criteria.andOperator(
+								new Criteria().orOperator(new Criteria("templateName").regex("^" + searchTerm, "i"),
+										new Criteria("templateName").regex(searchTerm)),
+								new Criteria().orOperator(new Criteria("diseases").is(null),
+										new Criteria("diseases").is(emptyArr)));
+					} else
+						criteria.andOperator(new Criteria().orOperator(new Criteria("diseases").is(null),
+								new Criteria("diseases").is(emptyArr)));
 				}
 			}
-			
+
 			if (age != null) {
 				fromAge = toAge = age;
 			}
-			
+
 			if (bmi != null) {
 				bmiFrom = bmiTo = bmi;
 			}
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
-			
-			if (!discarded) 
+
+			if (!discarded)
 				criteria.and("discarded").is(discarded);
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(gender))
 				criteria.and("gender").is(gender);
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(country))
 				criteria.and("country").is(country);
-			
-			if (fromAge!= null)
+
+			if (fromAge != null)
 				criteria.and("fromAgeInYears").lte(fromAge);
-			
-			if (toAge!= null)
+
+			if (toAge != null)
 				criteria.and("toAgeInYears").gte(toAge);
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(community))
 				criteria.and("communities.value").is(community);
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(type))
 				criteria.and("type").is(type);
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(pregnancyCategory))
 				criteria.and("pregnancyCategory").is(pregnancyCategory);
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(foodPreference))
 				criteria.and("foodPreference").is(foodPreference);
-			
+
 			if (bmiFrom != null)
 				criteria.and("bmiFrom").lte(bmiFrom);
-			
+
 			if (bmiTo != null)
 				criteria.and("bmiTo").gte(bmiTo);
-			
+
 			int count = (int) mongoTemplate.count(new Query(criteria), DietPlanTemplateCollection.class);
-			if(count > 0) {
+			if (count > 0) {
 				Aggregation aggregation = null;
+				if (size > 0) {
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+							Aggregation.skip((long) (page) * size), Aggregation.limit(size));
+				} else {
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
-//				if(!DPDoctorUtils.anyStringEmpty(languageId)) {
-//					if (size > 0) {
-//						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-//								new CustomAggregationOperation(new Document("$set", new BasicDBObject(key, value)))
-//								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((long)(page) * size),
-//								Aggregation.limit(size));
-//					} else {
-//						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-//								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-//
-//					}
-//				}else {
-					if (size > 0) {
-						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((long)(page) * size),
-								Aggregation.limit(size));
-					} else {
-						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+				}
 
-					}
-//				}
-				
 				AggregationResults<DietPlanTemplate> aggregationResults = mongoTemplate.aggregate(aggregation,
 						DietPlanTemplateCollection.class, DietPlanTemplate.class);
 				dietPlanTemplates = aggregationResults.getMappedResults();
@@ -684,12 +681,13 @@ public class DietPlansServiceImpl implements DietPlansService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	public DietPlanTemplate getDietPlanTemplateById(String planId, String languageId) {
 		DietPlanTemplate response = null;
 		try {
-			DietPlanTemplateCollection dietPlanTemplateCollection = dietPlanTemplateRepository.findById(new ObjectId(planId)).orElse(null);
+			DietPlanTemplateCollection dietPlanTemplateCollection = dietPlanTemplateRepository
+					.findById(new ObjectId(planId)).orElse(null);
 			response = new DietPlanTemplate();
 			BeanUtil.map(dietPlanTemplateCollection, response);
 		} catch (Exception e) {
@@ -706,7 +704,8 @@ public class DietPlansServiceImpl implements DietPlansService {
 	public DietPlanTemplate deleteDietPlanTemplate(String planId, Boolean discarded) {
 		DietPlanTemplate response = null;
 		try {
-			DietPlanTemplateCollection dietPlanTemplateCollection = dietPlanTemplateRepository.findById(new ObjectId(planId)).orElse(null);
+			DietPlanTemplateCollection dietPlanTemplateCollection = dietPlanTemplateRepository
+					.findById(new ObjectId(planId)).orElse(null);
 			if (dietPlanTemplateCollection == null) {
 				throw new BusinessException(ServiceError.NotFound, "Diet Plan Template not found with Id");
 			}
@@ -729,26 +728,25 @@ public class DietPlansServiceImpl implements DietPlansService {
 	public DietPlanTemplate updateDietPlanTemplate() {
 		try {
 			List<DietPlanTemplateCollection> dietPlanTemplateCollections = dietPlanTemplateRepository.findAll();
-				for(DietPlanTemplateCollection dietPlanTemplateCollection : dietPlanTemplateCollections) {
-					if(dietPlanTemplateCollection.getFromAge() != null) {
-						double fromYears = dietPlanTemplateCollection.getFromAge().getYears() 
-								+ (double)dietPlanTemplateCollection.getFromAge().getMonths()/12
-								+ (double)dietPlanTemplateCollection.getFromAge().getDays()/365; 
+			for (DietPlanTemplateCollection dietPlanTemplateCollection : dietPlanTemplateCollections) {
+				if (dietPlanTemplateCollection.getFromAge() != null) {
+					double fromYears = dietPlanTemplateCollection.getFromAge().getYears()
+							+ (double) dietPlanTemplateCollection.getFromAge().getMonths() / 12
+							+ (double) dietPlanTemplateCollection.getFromAge().getDays() / 365;
 
-						dietPlanTemplateCollection.setFromAgeInYears(fromYears);
-					}
-
-					if(dietPlanTemplateCollection.getToAge() != null) {
-						double toYears = dietPlanTemplateCollection.getToAge().getYears() 
-								+ (double)dietPlanTemplateCollection.getToAge().getMonths()/12
-								+ (double)dietPlanTemplateCollection.getToAge().getDays()/365; 
-
-						dietPlanTemplateCollection.setToAgeInYears(toYears);
-					}
-
-
-					dietPlanTemplateCollection = dietPlanTemplateRepository.save(dietPlanTemplateCollection);
+					dietPlanTemplateCollection.setFromAgeInYears(fromYears);
 				}
+
+				if (dietPlanTemplateCollection.getToAge() != null) {
+					double toYears = dietPlanTemplateCollection.getToAge().getYears()
+							+ (double) dietPlanTemplateCollection.getToAge().getMonths() / 12
+							+ (double) dietPlanTemplateCollection.getToAge().getDays() / 365;
+
+					dietPlanTemplateCollection.setToAgeInYears(toYears);
+				}
+
+				dietPlanTemplateCollection = dietPlanTemplateRepository.save(dietPlanTemplateCollection);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + "Error while deleting Diet Plan Template: " + e.getCause().getMessage());
@@ -758,7 +756,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public Integer countLanguage(Boolean discarded, String searchTerm) {
 		Integer response = null;
@@ -776,7 +774,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	public List<Language> getLanguages(int size, int page, Boolean discarded, String searchTerm) {
 		List<Language> response = null;
@@ -789,7 +787,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long) page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),

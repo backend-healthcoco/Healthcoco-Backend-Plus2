@@ -112,13 +112,13 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-											.append("day", new BasicDBObject("$first", "$day"))
-											.append("month", new BasicDBObject("$first", "$month"))
-											.append("year", new BasicDBObject("$first", "$year"))
-											.append("week", new BasicDBObject("$first", "$week"))
-											.append("date", new BasicDBObject("$first", "$createdTime"))
-											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-											.append("count", new BasicDBObject("$sum", 1))));
+									.append("day", new BasicDBObject("$first", "$day"))
+									.append("month", new BasicDBObject("$first", "$month"))
+									.append("year", new BasicDBObject("$first", "$year"))
+									.append("week", new BasicDBObject("$first", "$week"))
+									.append("date", new BasicDBObject("$first", "$createdTime"))
+									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+									.append("count", new BasicDBObject("$sum", 1))));
 
 					break;
 				}
@@ -128,12 +128,13 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year",
-											"$year")).append("month", new BasicDBObject("$first", "$month"))
-													.append("year", new BasicDBObject("$first", "$year"))
-													.append("week", new BasicDBObject("$first", "$week"))
-													.append("date", new BasicDBObject("$first", "$createdTime"))
-													.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-													.append("count", new BasicDBObject("$sum", 1))));
+											"$year"))
+									.append("month", new BasicDBObject("$first", "$month"))
+									.append("year", new BasicDBObject("$first", "$year"))
+									.append("week", new BasicDBObject("$first", "$week"))
+									.append("date", new BasicDBObject("$first", "$createdTime"))
+									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+									.append("count", new BasicDBObject("$sum", 1))));
 
 					break;
 				}
@@ -294,7 +295,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 																new BasicDBObject("$first",
 																		"$treatmentServices.createdBy"))
 														.append("count", new BasicDBObject("$first", "$count")))),
-								Aggregation.sort(Direction.DESC, "count"), Aggregation.skip((long)page * size),
+								Aggregation.sort(Direction.DESC, "count"), Aggregation.skip((long) page * size),
 								Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation
@@ -418,13 +419,12 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 														.append("totalTreatmentService",
 																new BasicDBObject("$sum", 1)))),
 								Aggregation.sort(new Sort(Sort.Direction.DESC, "totalTreatmentService")),
-								Aggregation.skip((long)(page) * size), Aggregation.limit(size));
+								Aggregation.skip((long) (page) * size), Aggregation.limit(size));
 			} else {
 				size = 10;
 
 				aggregation = Aggregation
-						.newAggregation(Aggregation.match(criteria),
-								Aggregation.unwind("treatments"),
+						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
 								Aggregation.lookup("treatment_services_cl", "$treatments.treatmentServiceId", "_id",
 										"totalTreatmentService"),
 
@@ -447,7 +447,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 														.append("totalTreatmentService",
 																new BasicDBObject("$sum", 1)))),
 								Aggregation.sort(new Sort(Sort.Direction.DESC, "totalTreatmentService")),
-								Aggregation.skip((long)(page) * size), Aggregation.limit(size));
+								Aggregation.skip((long) (page) * size), Aggregation.limit(size));
 			}
 			AggregationResults<TreatmentServiceAnalyticResponse> aggregationResults = mongoTemplate
 					.aggregate(aggregation, PatientTreatmentCollection.class, TreatmentServiceAnalyticResponse.class);
@@ -568,8 +568,8 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 								.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 								.append("doctorName", new BasicDBObject("$first", "$doctor.firstName")))),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((long)(page) * size),
-						Aggregation.limit(size));
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+						Aggregation.skip((long) (page) * size), Aggregation.limit(size));
 			} else {
 
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),

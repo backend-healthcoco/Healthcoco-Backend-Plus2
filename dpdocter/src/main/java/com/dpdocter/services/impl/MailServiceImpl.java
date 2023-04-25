@@ -71,7 +71,7 @@ public class MailServiceImpl implements MailService {
 
 	@Value(value = "${is.env.production}")
 	private String PROD_ENV;
-	
+
 	@Value(value = "${is.qa}")
 	private String QA_ENV;
 
@@ -126,7 +126,7 @@ public class MailServiceImpl implements MailService {
 			BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 			AmazonSimpleEmailServiceClient amazonSimpleEmailServiceClient = new AmazonSimpleEmailServiceClient(
 					credentials);
-			System.out.println("AWS_REGION"+AWS_REGION);
+			System.out.println("AWS_REGION" + AWS_REGION);
 			amazonSimpleEmailServiceClient.setRegion(Region.getRegion(Regions.fromName(AWS_REGION)));
 			amazonSimpleEmailServiceClient.sendRawEmail(rawEmailRequest);
 			outputStream.close();
@@ -138,69 +138,71 @@ public class MailServiceImpl implements MailService {
 		}
 		return respone;
 	}
-	
+
 	@Async
-    @Override
-    @Transactional
-    public Boolean sendEmailMultiAttach(String to, String subject, String body, List<MailAttachment> mailAttachments) throws MessagingException {
-    	Boolean respone = false;
-	try {
-	    Session session = Session.getInstance(new Properties());
-	    MimeMessage mimeMessage = new MimeMessage(session);
-	    mimeMessage.setSubject(subject);
-	    mimeMessage.setFrom(new InternetAddress(FROM, FROM_NAME));
-	    Multipart mainMultipart = new MimeMultipart("related");
-	    Multipart htmlAndTextMultipart = new MimeMultipart("alternative");
-	    MimeBodyPart htmlBodyPart = new MimeBodyPart();
-	    htmlBodyPart.setContent(body, "text/html; charset=utf-8");
-	    htmlAndTextMultipart.addBodyPart(htmlBodyPart);
-	    
-	    MimeBodyPart htmlAndTextBodyPart = new MimeBodyPart();
-	    htmlAndTextBodyPart.setContent(htmlAndTextMultipart);
-	    mainMultipart.addBodyPart(htmlAndTextBodyPart);
+	@Override
+	@Transactional
+	public Boolean sendEmailMultiAttach(String to, String subject, String body, List<MailAttachment> mailAttachments)
+			throws MessagingException {
+		Boolean respone = false;
+		try {
+			Session session = Session.getInstance(new Properties());
+			MimeMessage mimeMessage = new MimeMessage(session);
+			mimeMessage.setSubject(subject);
+			mimeMessage.setFrom(new InternetAddress(FROM, FROM_NAME));
+			Multipart mainMultipart = new MimeMultipart("related");
+			Multipart htmlAndTextMultipart = new MimeMultipart("alternative");
+			MimeBodyPart htmlBodyPart = new MimeBodyPart();
+			htmlBodyPart.setContent(body, "text/html; charset=utf-8");
+			htmlAndTextMultipart.addBodyPart(htmlBodyPart);
 
+			MimeBodyPart htmlAndTextBodyPart = new MimeBodyPart();
+			htmlAndTextBodyPart.setContent(htmlAndTextMultipart);
+			mainMultipart.addBodyPart(htmlAndTextBodyPart);
 
-	    if (mailAttachments != null && !mailAttachments.isEmpty()) {
-		for (MailAttachment mailAttachment : mailAttachments) {
-			mimeMessage.setFileName(mailAttachment.getAttachmentName());
-			DataSource ds;
-			if (mailAttachment.getFileSystemResource() == null)
-			    ds = new ByteArrayDataSource(mailAttachment.getInputStream(), "application/octet-stream");
-			else
-			    ds = new ByteArrayDataSource(new FileInputStream(mailAttachment.getFileSystemResource().getFile()), "application/octet-stream");
-		    
-			MimeBodyPart filePart = new MimeBodyPart();
-		    
-		    filePart.setDataHandler(new DataHandler(ds));
-		    filePart.setFileName(mailAttachment.getAttachmentName());
-		    mainMultipart.addBodyPart(filePart);
-		    }
-	    }
-		    mimeMessage.setContent(mainMultipart);
-		    
-		
-	    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	    mimeMessage.writeTo(outputStream);
-	    RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
+			if (mailAttachments != null && !mailAttachments.isEmpty()) {
+				for (MailAttachment mailAttachment : mailAttachments) {
+					mimeMessage.setFileName(mailAttachment.getAttachmentName());
+					DataSource ds;
+					if (mailAttachment.getFileSystemResource() == null)
+						ds = new ByteArrayDataSource(mailAttachment.getInputStream(), "application/octet-stream");
+					else
+						ds = new ByteArrayDataSource(
+								new FileInputStream(mailAttachment.getFileSystemResource().getFile()),
+								"application/octet-stream");
 
-	    List<String> list = Arrays.asList(to);
-	    SendRawEmailRequest rawEmailRequest = new SendRawEmailRequest(rawMessage);
-	    rawEmailRequest.setDestinations(list);
-	    rawEmailRequest.setSource(FROM);
-	    BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
-	    AmazonSimpleEmailServiceClient amazonSimpleEmailServiceClient = new AmazonSimpleEmailServiceClient(credentials);
-		System.out.println("AWS_REGION"+AWS_REGION);
+					MimeBodyPart filePart = new MimeBodyPart();
 
-	    amazonSimpleEmailServiceClient.setRegion(Region.getRegion(Regions.fromName(AWS_REGION)));
-	    amazonSimpleEmailServiceClient.sendRawEmail(rawEmailRequest);
-	    outputStream.close();
-	    respone = true;
-	} catch (Exception ex) {
-		ex.printStackTrace();
-	    System.out.println("The email was not sent.");
-	    System.out.println("Error message: " + ex.getMessage());
-	}
-	return respone;
+					filePart.setDataHandler(new DataHandler(ds));
+					filePart.setFileName(mailAttachment.getAttachmentName());
+					mainMultipart.addBodyPart(filePart);
+				}
+			}
+			mimeMessage.setContent(mainMultipart);
+
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			mimeMessage.writeTo(outputStream);
+			RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
+
+			List<String> list = Arrays.asList(to);
+			SendRawEmailRequest rawEmailRequest = new SendRawEmailRequest(rawMessage);
+			rawEmailRequest.setDestinations(list);
+			rawEmailRequest.setSource(FROM);
+			BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+			AmazonSimpleEmailServiceClient amazonSimpleEmailServiceClient = new AmazonSimpleEmailServiceClient(
+					credentials);
+			System.out.println("AWS_REGION" + AWS_REGION);
+
+			amazonSimpleEmailServiceClient.setRegion(Region.getRegion(Regions.fromName(AWS_REGION)));
+			amazonSimpleEmailServiceClient.sendRawEmail(rawEmailRequest);
+			outputStream.close();
+			respone = true;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			System.out.println("The email was not sent.");
+			System.out.println("Error message: " + ex.getMessage());
+		}
+		return respone;
 	}
 
 	@Async
@@ -219,14 +221,10 @@ public class MailServiceImpl implements MailService {
 	public Boolean sendExceptionMail(String subject, String body) throws MessagingException {
 		Boolean status = false;
 		if (PROD_ENV.equalsIgnoreCase("true")) {
-			status = sendEmail(TO,"Prod - " + subject, body, null);
+			status = sendEmail(TO, "Prod - " + subject, body, null);
+		} else if (QA_ENV.equalsIgnoreCase("true")) {
+			status = sendEmail(TO, "QA - " + subject, body, null);
 		}
-		else if (QA_ENV.equalsIgnoreCase("true")) {
-			status = sendEmail(TO,"QA - " + subject, body, null);
-		}
-//		else {
-//			status = sendEmail(TO,"DEV - " + subject, body, null);
-//		}
 		return status;
 	}
 
@@ -260,11 +258,10 @@ public class MailServiceImpl implements MailService {
 		}
 		return status;
 	}
-	
+
 	@Override
 	@Transactional
-	public Boolean sendEmailWithoutAttachment(String to, String subject, String body)
-			throws MessagingException {
+	public Boolean sendEmailWithoutAttachment(String to, String subject, String body) throws MessagingException {
 		Boolean respone = false;
 		try {
 			Session session = Session.getInstance(new Properties());
@@ -304,5 +301,5 @@ public class MailServiceImpl implements MailService {
 		}
 		return respone;
 	}
-	
+
 }

@@ -282,7 +282,7 @@ public class AppointmentApi {
 			@QueryParam(value = "type") String type) {
 
 		Response<Appointment> response = appointmentService.getAppointments(locationId, doctorId, patientId, from, to,
-				page, size, updatedTime, status, sortBy, fromTime, toTime, isRegisteredPatientRequired, isWeb,type);
+				page, size, updatedTime, status, sortBy, fromTime, toTime, isRegisteredPatientRequired, isWeb, type);
 		return response;
 	}
 
@@ -293,7 +293,8 @@ public class AppointmentApi {
 			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "patientId") String patientId,
 			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
 			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
-			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime, @QueryParam(value = "type") String type) {
+			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime,
+			@QueryParam(value = "type") String type) {
 
 		Response<Object> response = appointmentService.getPatientAppointments(locationId, doctorId, patientId, from, to,
 				page, size, updatedTime, type);
@@ -323,7 +324,7 @@ public class AppointmentApi {
 	@Path(value = PathProxy.AppointmentUrls.ADD_EDIT_EVENT)
 	@POST
 	@ApiOperation(value = PathProxy.AppointmentUrls.ADD_EDIT_EVENT, notes = PathProxy.AppointmentUrls.ADD_EDIT_EVENT)
-	public Response<Event> addEditEvent(EventRequest request, 
+	public Response<Event> addEditEvent(EventRequest request,
 			@DefaultValue(value = "false") @QueryParam(value = "ALL") Boolean forAllDoctors) throws MessagingException {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId())) {
 			logger.warn("Invalid Input");
@@ -553,9 +554,9 @@ public class AppointmentApi {
 	@Path(PathProxy.AppointmentUrls.GET_CUSTOM_APPOINTMENT_LIST)
 	@GET
 	@ApiOperation(value = PathProxy.AppointmentUrls.GET_CUSTOM_APPOINTMENT_LIST, notes = PathProxy.AppointmentUrls.GET_CUSTOM_APPOINTMENT_LIST)
-	public Response<CustomAppointment> getCustomAppointments(@QueryParam("page") long page, @QueryParam("size") int size,
-			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@QueryParam("doctorId") String doctorId,
+	public Response<CustomAppointment> getCustomAppointments(@QueryParam("page") long page,
+			@QueryParam("size") int size, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId, @QueryParam("doctorId") String doctorId,
 			@DefaultValue(value = "0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId, doctorId)) {
@@ -638,7 +639,8 @@ public class AppointmentApi {
 		}
 		Response<String> response = new Response<String>();
 		response.setData(appointmentService.downloadCalender(doctorIds, locationId, hospitalId, from, to,
-				isGroupByDoctor, showMobileNo, showAppointmentStatus, showNotes, showPatientGroups, showCategory,showTreatment));
+				isGroupByDoctor, showMobileNo, showAppointmentStatus, showNotes, showPatientGroups, showCategory,
+				showTreatment));
 
 		return response;
 	}
@@ -677,7 +679,7 @@ public class AppointmentApi {
 		else
 			response = appointmentService.getEvents(locationId, doctorId, from, to, page, size, updatedTime, sortBy,
 					fromTime, toTime, isCalenderBlocked, state);
-		
+
 		return response;
 	}
 
@@ -711,7 +713,7 @@ public class AppointmentApi {
 		response.setData(appointmentService.addEditNutritionAppointment(request));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.AppointmentUrls.UPDATE_BOOKED_SLOT)
 	@GET
 	public Response<Boolean> update() {
@@ -719,12 +721,12 @@ public class AppointmentApi {
 		response.setData(appointmentService.update());
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.AppointmentUrls.GET_ONLINE_CONSULTATION_TIME_SLOTS)
 	@GET
 	@ApiOperation(value = PathProxy.AppointmentUrls.GET_ONLINE_CONSULTATION_TIME_SLOTS, notes = PathProxy.AppointmentUrls.GET_ONLINE_CONSULTATION_TIME_SLOTS)
 	public Response<SlotDataResponse> getOnlineConsultationTimeSlots(@PathParam("doctorId") String doctorId,
-			@QueryParam(value="consultationType") String consultationtype, @PathParam("date") String date,
+			@QueryParam(value = "consultationType") String consultationtype, @PathParam("date") String date,
 			@DefaultValue(value = "true") @QueryParam(value = "isPatient") Boolean isPatient)
 			throws MessagingException {
 
@@ -734,11 +736,11 @@ public class AppointmentApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 		}
 		Date dateObj = new Date(Long.parseLong(date));
-		SlotDataResponse slotDataResponse = appointmentService.getOnlineConsultationTimeSlots(doctorId, consultationtype, dateObj, isPatient);
+		SlotDataResponse slotDataResponse = appointmentService.getOnlineConsultationTimeSlots(doctorId,
+				consultationtype, dateObj, isPatient);
 		Response<SlotDataResponse> response = new Response<SlotDataResponse>();
 		response.setData(slotDataResponse);
 		return response;
 	}
-
 
 }

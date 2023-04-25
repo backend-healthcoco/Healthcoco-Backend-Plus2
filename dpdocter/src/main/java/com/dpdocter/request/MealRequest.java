@@ -48,7 +48,7 @@ public class MealRequest {
 	private Map<String, String> otherNutrients;
 
 	private boolean verified = false;
-	
+
 	public MealQuantity getCalories() {
 		return calories;
 	}

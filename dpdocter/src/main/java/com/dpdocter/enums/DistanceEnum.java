@@ -13,6 +13,4 @@ public enum DistanceEnum {
 		this.distance = distance;
 	}
 
-	
-
 }

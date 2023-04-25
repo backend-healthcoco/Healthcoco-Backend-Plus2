@@ -1,13 +1,10 @@
 package com.dpdocter.beans;
 
 import java.util.List;
-import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.enums.ConsultationType;
 import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.RegularCheckUpTypeEnum;
@@ -148,7 +145,6 @@ public class DoctorClinicProfile {
 
 	private List<WorkingSchedule> onlineWorkingSchedules;
 
-//<<<<<<< Updated upstream
 	private List<DoctorConsultation> consultationType;
 
 	private Boolean isOnlineConsultationAvailable = false;
@@ -156,12 +152,9 @@ public class DoctorClinicProfile {
 	private String clinicOwnershipImageUrl;
 
 	private AppointmentSlot onlineConsultationSlot;
-//=======
-//	private Map<DoctorConsultation, String> onlineConsultationFees;
 
-//	private List<ConsultationType> onlineConsultationType;
-//>>>>>>> Stashed changes
 	private Boolean isDentalChain = false;
+
 	private Boolean isShowPatientNumber = false;
 
 	private Boolean isShowDoctorInCalender = true;
@@ -727,7 +720,6 @@ public class DoctorClinicProfile {
 	public void setOnlineWorkingSchedules(List<WorkingSchedule> onlineWorkingSchedules) {
 		this.onlineWorkingSchedules = onlineWorkingSchedules;
 	}
-//<<<<<<< Updated upstream
 
 	public List<DoctorConsultation> getConsultationType() {
 		return consultationType;
@@ -735,31 +727,7 @@ public class DoctorClinicProfile {
 
 	public void setConsultationType(List<DoctorConsultation> consultationType) {
 		this.consultationType = consultationType;
-
-//	public Map<DoctorConsultation, String> getOnlineConsultationFees() {
-//		return onlineConsultationFees;
-//	}
-//
-//	public void setOnlineConsultationFees(Map<DoctorConsultation, String> onlineConsultationFees) {
-//		this.onlineConsultationFees = onlineConsultationFees;
-//	}
-
-//	public List<DoctorConsultation> getOnlineConsultationType() {
-//		return onlineConsultationType;
-//	}
-//
-//	public void setOnlineConsultationType(List<DoctorConsultation> onlineConsultationType) {
-//		this.onlineConsultationType = onlineConsultationType;
-//>>>>>>> Stashed changes
 	}
-
-//	public List<ConsultationType> getOnlineConsultationType() {
-//		return onlineConsultationType;
-//	}
-//
-//	public void setOnlineConsultationType(List<ConsultationType> onlineConsultationType) {
-//		this.onlineConsultationType = onlineConsultationType;
-//	}
 
 	public AppointmentSlot getOnlineConsultationSlot() {
 		return onlineConsultationSlot;

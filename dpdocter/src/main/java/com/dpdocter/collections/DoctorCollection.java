@@ -102,29 +102,28 @@ public class DoctorCollection extends GenericCollection {
 
 	@Field
 	private String freshchatRestoreId;
-	
+
 	@Field
 	private String RegistrationImageUrl;
 	@Field
 	private String RegistrationThumbnailUrl;
-	
+
 	@Field
 	private String photoIdImageUrl;
-	
+
 	@Field
 	private BulkSmsCredits bulkSmsCredit;
-	
-	@Field
-    private Boolean isRegistrationDetailsVerified =false;
-	@Field
-	private Boolean isPhotoIdVerified =false;
-	
-	@Field
-	private Boolean isHealthcocoDoctor=false;
-	
-	@Field
-	private Boolean isTransactionalSms=true;
 
+	@Field
+	private Boolean isRegistrationDetailsVerified = false;
+	@Field
+	private Boolean isPhotoIdVerified = false;
+
+	@Field
+	private Boolean isHealthcocoDoctor = false;
+
+	@Field
+	private Boolean isTransactionalSms = true;
 
 	public Boolean getIsPrescriptionSMS() {
 		return isPrescriptionSMS;
@@ -351,8 +350,6 @@ public class DoctorCollection extends GenericCollection {
 	public void setFreshchatRestoreId(String freshchatRestoreId) {
 		this.freshchatRestoreId = freshchatRestoreId;
 	}
-	
-	
 
 	public String getRegistrationImageUrl() {
 		return RegistrationImageUrl;
@@ -370,7 +367,6 @@ public class DoctorCollection extends GenericCollection {
 		RegistrationThumbnailUrl = registrationThumbnailUrl;
 	}
 
-	
 	public String getPhotoIdImageUrl() {
 		return photoIdImageUrl;
 	}
@@ -379,8 +375,6 @@ public class DoctorCollection extends GenericCollection {
 		this.photoIdImageUrl = photoIdImageUrl;
 	}
 
-	
-	
 	public BulkSmsCredits getBulkSmsCredit() {
 		return bulkSmsCredit;
 	}
@@ -388,8 +382,6 @@ public class DoctorCollection extends GenericCollection {
 	public void setBulkSmsCredit(BulkSmsCredits bulkSmsCredit) {
 		this.bulkSmsCredit = bulkSmsCredit;
 	}
-	
-	
 
 	public Boolean getIsRegistrationDetailsVerified() {
 		return isRegistrationDetailsVerified;
@@ -406,9 +398,6 @@ public class DoctorCollection extends GenericCollection {
 	public void setIsPhotoIdVerified(Boolean isPhotoIdVerified) {
 		this.isPhotoIdVerified = isPhotoIdVerified;
 	}
-	
-	
-	
 
 	public Boolean getIsHealthcocoDoctor() {
 		return isHealthcocoDoctor;
@@ -417,8 +406,6 @@ public class DoctorCollection extends GenericCollection {
 	public void setIsHealthcocoDoctor(Boolean isHealthcocoDoctor) {
 		this.isHealthcocoDoctor = isHealthcocoDoctor;
 	}
-	
-	
 
 	public Boolean getIsTransactionalSms() {
 		return isTransactionalSms;

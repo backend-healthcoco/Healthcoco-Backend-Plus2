@@ -20,9 +20,6 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.MultipartUploadFile;
@@ -157,7 +154,8 @@ public class RecordsApi {
 			@QueryParam("page") int page, @QueryParam("size") int size,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded,
-			@DefaultValue("false") @QueryParam("isDoctorApp") Boolean isDoctorApp, @QueryParam(value = "sortBy") String sortBy) {
+			@DefaultValue("false") @QueryParam("isDoctorApp") Boolean isDoctorApp,
+			@QueryParam(value = "sortBy") String sortBy) {
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
 			logger.warn("Patient Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Patient Id Cannot Be Empty");
@@ -372,7 +370,7 @@ public class RecordsApi {
 		response.setData(records);
 		return response;
 	}
-	
+
 	@POST
 	@Path(value = PathProxy.RecordsUrls.UPLOAD_IMAGE)
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
@@ -501,7 +499,7 @@ public class RecordsApi {
 		}
 		Response<Object> response = recordsService.getUserRecordsByuserId(patientId, doctorId, locationId, hospitalId,
 				page, size, updatedTime, discarded);
-		
+
 		return response;
 
 	}

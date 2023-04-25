@@ -1,7 +1,6 @@
 package com.dpdocter.webservices;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -26,38 +25,32 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.RAZORPAY_BASE_URL, description = "Endpoint for razorPay settlement api")
 public class RazorPayPaymentApi {
 
-		
-		 private static Logger logger = Logger.getLogger(BulkMessageApi.class);
-		
-		  @Autowired
-		  private PaymentServices smsServices;
+	private static Logger logger = Logger.getLogger(BulkMessageApi.class);
 
-		    
-	
-		@Path(value = PathProxy.RazorPayUrls.GET_SETTLEMENT)
-	    @POST
-	    @ApiOperation(value = PathProxy.RazorPayUrls.GET_SETTLEMENT, notes = PathProxy.RazorPayUrls.GET_SETTLEMENT)
-	    public String updateDeliveryReports(String request) {
+	@Autowired
+	private PaymentServices smsServices;
+
+	@Path(value = PathProxy.RazorPayUrls.GET_SETTLEMENT)
+	@POST
+	@ApiOperation(value = PathProxy.RazorPayUrls.GET_SETTLEMENT, notes = PathProxy.RazorPayUrls.GET_SETTLEMENT)
+	public String updateDeliveryReports(String request) {
 
 		try {
-		    request = request.replaceFirst("data=", "");
-		    ObjectMapper mapper = new ObjectMapper();
-		    @SuppressWarnings("deprecation")
+			request = request.replaceFirst("data=", "");
+			ObjectMapper mapper = new ObjectMapper();
+			@SuppressWarnings("deprecation")
 			SettlementResponse list = mapper.readValue(request, SettlementResponse.class);
-		    smsServices.updateSettlementReport(list);
+			smsServices.updateSettlementReport(list);
 		} catch (JsonParseException e) {
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.InvalidInput, e.getMessage());
+			logger.error(e);
+			throw new BusinessException(ServiceError.InvalidInput, e.getMessage());
 		} catch (JsonMappingException e) {
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.InvalidInput, e.getMessage());
+			logger.error(e);
+			throw new BusinessException(ServiceError.InvalidInput, e.getMessage());
 		} catch (IOException e) {
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.InvalidInput, e.getMessage());
+			logger.error(e);
+			throw new BusinessException(ServiceError.InvalidInput, e.getMessage());
 		}
 		return "true";
-	    }
+	}
 }
-	
-
-

@@ -115,7 +115,7 @@ public class AppointmentCollection extends GenericCollection {
 
 	@Field
 	private String branch;
-	
+
 	@Field
 	private Boolean isPatientDiscarded = false;
 
@@ -124,7 +124,7 @@ public class AppointmentCollection extends GenericCollection {
 
 	@Field
 	private String localPatientName;
-	
+
 	@Field
 	private List<ObjectId> doctorIds;
 
@@ -133,30 +133,28 @@ public class AppointmentCollection extends GenericCollection {
 
 	@Field
 	private Boolean isCreatedByPatient = false;
-	
+
 	@Field
 	private AppointmentSlot onlineConsultationSlot;
-	
+
 	@Field
 	private ConsultationType consultationType;
-	
+
 	@Field
 	private Date consultationStartedOn;
-	
+
 	@Field
 	private ObjectId problemDetailsId;
-	
+
 	@Field
-	private Long callDurationInMinutes=0L;
-	
+	private Long callDurationInMinutes = 0L;
+
 	@Field
 	private Boolean isAnonymousAppointment = false;
 	@Field
 	private ObjectId specialityId;
 	@Field
 	private Boolean isDentalChainAppointment = false;
-
-	
 
 	public Boolean getIsDentalChainAppointment() {
 		return isDentalChainAppointment;
@@ -453,8 +451,6 @@ public class AppointmentCollection extends GenericCollection {
 	public void setIsCreatedByPatient(Boolean isCreatedByPatient) {
 		this.isCreatedByPatient = isCreatedByPatient;
 	}
-	
-	
 
 	public Boolean getIsAnonymousAppointment() {
 		return isAnonymousAppointment;
@@ -495,8 +491,7 @@ public class AppointmentCollection extends GenericCollection {
 	public void setConsultationStartedOn(Date consultationStartedOn) {
 		this.consultationStartedOn = consultationStartedOn;
 	}
-	
-	
+
 	public Long getCallDurationInMinutes() {
 		return callDurationInMinutes;
 	}

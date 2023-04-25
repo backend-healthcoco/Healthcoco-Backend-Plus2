@@ -38,7 +38,7 @@ public class PharmacyFeedbackCollection extends GenericCollection {
 
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -70,8 +70,6 @@ public class PharmacyFeedbackCollection extends GenericCollection {
 	public void setPharmacyRecommendation(Boolean pharmacyRecommendation) {
 		this.pharmacyRecommendation = pharmacyRecommendation;
 	}
-
-	
 
 	public Double getOverallExperience() {
 		return overallExperience;

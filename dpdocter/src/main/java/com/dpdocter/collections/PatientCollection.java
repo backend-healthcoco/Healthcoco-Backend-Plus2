@@ -62,7 +62,7 @@ public class PatientCollection extends GenericCollection {
 
 	@Field
 	private String landlineNumber;
-	
+
 	@Field
 	private String adhaarId;
 
@@ -139,7 +139,6 @@ public class PatientCollection extends GenericCollection {
 	private Boolean isChild = false;
 	@Field
 	private String language;
-
 
 	public ObjectId getId() {
 		return id;
@@ -458,7 +457,6 @@ public class PatientCollection extends GenericCollection {
 		this.landlineNumber = landlineNumber;
 	}
 
-	
 	public String getLanguage() {
 		return language;
 	}

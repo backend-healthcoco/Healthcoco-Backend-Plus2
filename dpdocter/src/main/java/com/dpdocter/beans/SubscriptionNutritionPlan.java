@@ -121,7 +121,7 @@ public class SubscriptionNutritionPlan {
 				+ discount + ", discountedAmount=" + discountedAmount + ", discarded=" + discarded
 				+ ", nutritionPlanId=" + nutritionPlanId + ", duration=" + duration + "]";
 	}
-	
+
 	public static void main(String[] args) {
 		System.out.println(JacksonUtil.obj2Json(new SubscriptionNutritionPlan()));
 	}

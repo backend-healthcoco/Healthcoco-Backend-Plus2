@@ -10,71 +10,71 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Document(indexName = "diseases_in", type = "diseases")
 public class ESDiseasesDocument {
 
-    @Id
-    private String id;
+	@Id
+	private String id;
 
-    @Field(type = FieldType.Text)
-    private String doctorId;
+	@Field(type = FieldType.Text)
+	private String doctorId;
 
-    @Field(type = FieldType.Text)
-    private String locationId;
+	@Field(type = FieldType.Text)
+	private String locationId;
 
-    @Field(type = FieldType.Text)
-    private String hospitalId;
+	@Field(type = FieldType.Text)
+	private String hospitalId;
 
-    @Field(type = FieldType.Text)
-    private String disease;
+	@Field(type = FieldType.Text)
+	private String disease;
 
-    @Field(type = FieldType.Text)
-    private String explanation;
+	@Field(type = FieldType.Text)
+	private String explanation;
 
-    @Field(type = FieldType.Boolean)
-    private Boolean discarded = false;
+	@Field(type = FieldType.Boolean)
+	private Boolean discarded = false;
 
-    @Field(type = FieldType.Date)
-    private Date updatedTime = new Date();
+	@Field(type = FieldType.Date)
+	private Date updatedTime = new Date();
 
-    public String getId() {
-	return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public String getDisease() {
-	return disease;
-    }
+	public String getDisease() {
+		return disease;
+	}
 
-    public void setDisease(String disease) {
-	this.disease = disease;
-    }
+	public void setDisease(String disease) {
+		this.disease = disease;
+	}
 
-    public String getExplanation() {
+	public String getExplanation() {
 		return explanation;
 	}
 
@@ -83,20 +83,20 @@ public class ESDiseasesDocument {
 	}
 
 	public Boolean getDiscarded() {
-	return discarded;
-    }
+		return discarded;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
-    public Date getUpdatedTime() {
-	return updatedTime;
-    }
+	public Date getUpdatedTime() {
+		return updatedTime;
+	}
 
-    public void setUpdatedTime(Date updatedTime) {
-	this.updatedTime = updatedTime;
-    }
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
 
 	@Override
 	public String toString() {

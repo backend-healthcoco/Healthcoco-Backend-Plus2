@@ -18,13 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.v2.Appointment;
-import com.dpdocter.beans.v2.ClinicalNotes;
-import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.services.MailService;
-import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.services.v2.AppointmentService;
 
 import common.util.web.DPDoctorUtils;
@@ -43,12 +40,6 @@ public class AppointmentApi {
 
 	@Autowired
 	private AppointmentService appointmentService;
-
-	@Autowired
-	private ESCityService esCityService;
-
-	@Autowired
-	private TransactionalManagementService transnationalService;
 
 	@Autowired
 	MailService mailService;
@@ -100,20 +91,10 @@ public class AppointmentApi {
 			@DefaultValue("false") @QueryParam("isRegisteredPatientRequired") Boolean isRegisteredPatientRequired,
 			@DefaultValue(value = "false") @QueryParam(value = "isWeb") Boolean isWeb,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded, @QueryParam("branch") String branch) {
-
-//		if (isWeb) {
-//			Response<Appointment> response = appointmentService.getAppointmentsForWebNew(locationId, doctorId,
-//					patientId, from, to, page, size, updatedTime, status, sortBy, fromTime, toTime,
-//					isRegisteredPatientRequired, isWeb, discarded, branch);
-//
-//			return response;
-//
-//		} else {
-			Response<Appointment> response = appointmentService.getAppointments(locationId, doctorId, patientId, from,
-					to, page, size, updatedTime, status, sortBy, fromTime, toTime, isRegisteredPatientRequired, isWeb,
-					discarded, branch);
-			return response;
-//		}
+		Response<Appointment> response = appointmentService.getAppointments(locationId, doctorId, patientId, from, to,
+				page, size, updatedTime, status, sortBy, fromTime, toTime, isRegisteredPatientRequired, isWeb,
+				discarded, branch);
+		return response;
 	}
 
 	@Path(value = PathProxy.AppointmentUrls.GET_PATIENT_APPOINTMENTS)

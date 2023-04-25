@@ -8,42 +8,42 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "records_tags_cl")
 public class RecordsTagsCollection extends GenericCollection {
 
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private ObjectId recordsId;
+	@Field
+	private ObjectId recordsId;
 
-    @Field
-    private ObjectId tagsId;
+	@Field
+	private ObjectId tagsId;
 
-    public ObjectId getId() {
-	return id;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public ObjectId getrecordsId() {
-	return recordsId;
-    }
+	public ObjectId getrecordsId() {
+		return recordsId;
+	}
 
-    public void setrecordsId(ObjectId recordsId) {
-	this.recordsId = recordsId;
-    }
+	public void setrecordsId(ObjectId recordsId) {
+		this.recordsId = recordsId;
+	}
 
-    public ObjectId getTagsId() {
-	return tagsId;
-    }
+	public ObjectId getTagsId() {
+		return tagsId;
+	}
 
-    public void setTagsId(ObjectId tagsId) {
-	this.tagsId = tagsId;
-    }
+	public void setTagsId(ObjectId tagsId) {
+		this.tagsId = tagsId;
+	}
 
-    @Override
-    public String toString() {
-	return "recordsTagsCollection [id=" + id + ", recordsId=" + recordsId + ", tagsId=" + tagsId + "]";
-    }
+	@Override
+	public String toString() {
+		return "recordsTagsCollection [id=" + id + ", recordsId=" + recordsId + ", tagsId=" + tagsId + "]";
+	}
 
 }

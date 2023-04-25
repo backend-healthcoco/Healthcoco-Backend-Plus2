@@ -10,28 +10,23 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 public class Base64Test {
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 
-	String txt = null;
-	try {
-	    txt = FileUtils.readFileToString(new File("/home/veeraj/pdf-file.txt"));
-
-	    // txt = Base64.encodeBase64String(IOUtils.toByteArray(new
-	    // FileInputStream("/home/veeraj/image.jpg")));
-	    // FileUtils.writeStringToFile(new
-	    // File("/home/veeraj/encodedString.txt"), txt);
-	} catch (IOException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
+		String txt = null;
+		try {
+			txt = FileUtils.readFileToString(new File("/home/veeraj/pdf-file.txt"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			IOUtils.write(Base64.decodeBase64(txt), new FileOutputStream("/home/veeraj/temp123456.pdf"));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	try {
-	    IOUtils.write(Base64.decodeBase64(txt), new FileOutputStream("/home/veeraj/temp123456.pdf"));
-	} catch (FileNotFoundException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (IOException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-    }
 }

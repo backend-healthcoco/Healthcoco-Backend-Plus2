@@ -53,19 +53,19 @@ public class User {
 	private String role;
 
 	private Boolean isSuperstarAssociated;
-	
-	private Boolean isEmailVerified=false;
-	
-	private Boolean isMedicalStudent=false;
-	
+
+	private Boolean isEmailVerified = false;
+
+	private Boolean isMedicalStudent = false;
+
 	private String timeZone;
-	
-	private Boolean isTransactionalSms=true;
-	
+
+	private Boolean isTransactionalSms = true;
+
 	private Boolean isShowPatientNumber = false;
 
 	private Boolean isShowDoctorInCalender = true;
-	
+
 	private Boolean isSuperAdmin = false;
 
 	public User(String firstName, String mobileNumber) {
@@ -251,7 +251,7 @@ public class User {
 	public void setParentSpecialities(List<String> parentSpecialities) {
 		this.parentSpecialities = parentSpecialities;
 	}
-	
+
 	public Boolean getIsShowPatientNumber() {
 		return isShowPatientNumber;
 	}
@@ -335,7 +335,5 @@ public class User {
 	public void setIsTransactionalSms(Boolean isTransactionalSms) {
 		this.isTransactionalSms = isTransactionalSms;
 	}
-	
-	
 
 }

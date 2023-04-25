@@ -14,22 +14,22 @@ import com.dpdocter.enums.PushNotificationType;
 public class PushNotificationCollection {
 
 	@Id
-    private ObjectId id;
+	private ObjectId id;
 
-    @Field
-    private List<String> deviceIds;
+	@Field
+	private List<String> deviceIds;
 
-    @Field
-    private String message;
+	@Field
+	private String message;
 
-    @Field
-    private DeviceType deviceType;
+	@Field
+	private DeviceType deviceType;
 
-    @Field
-    private String imageURL;
+	@Field
+	private String imageURL;
 
-    @Field
-    private PushNotificationType notificationType = PushNotificationType.INDIVIDUAL;
+	@Field
+	private PushNotificationType notificationType = PushNotificationType.INDIVIDUAL;
 
 	public PushNotificationCollection() {
 	}

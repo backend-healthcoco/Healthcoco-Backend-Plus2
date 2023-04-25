@@ -1,17 +1,31 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "crn_cl")
 public class CRNCollection extends GenericCollection {
-
+	@Id
 	private ObjectId id;
+
+	@Field
 	private String crnNumber;
+
+	@Field
 	private Long usedAt;
+
+	@Field
 	private ObjectId doctorId;
+
+	@Field
 	private ObjectId locationId;
+
+	@Field
 	private Boolean isUsed;
+
+	@Field
 	private String requestId;
 
 	public ObjectId getId() {

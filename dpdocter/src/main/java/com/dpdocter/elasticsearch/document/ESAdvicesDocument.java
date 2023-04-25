@@ -31,8 +31,9 @@ public class ESAdvicesDocument {
 
 	@Field(type = FieldType.Date)
 	private Date updatedTime = new Date();
+	
 	@MultiField(mainField = @Field(type = FieldType.Text))
-	 private List<String> diseases;
+	private List<String> diseases;
 
 	public List<String> getDiseases() {
 		return diseases;
@@ -98,5 +99,4 @@ public class ESAdvicesDocument {
 		this.updatedTime = updatedTime;
 	}
 
-	
 }

@@ -70,21 +70,18 @@ public class InventoryServiceImpl implements InventoryService {
 
 	@Autowired
 	private InventorySettingRepository inventorySettingRepository;
-	
+
 	@Autowired
 	private DrugRepository drugRepository;
-	
+
 	@Autowired
 	private TransactionalManagementService transnationalService;
-	
+
 	@Autowired
 	private ESPrescriptionService esPrescriptionService;
-	
+
 	@Autowired
 	private DoctorClinicProfileRepository doctorClinicProfileRepository;
-	
-//	@Autowired
-//	private PrescriptionServices prescriptionServices;
 
 	@Override
 	@Transactional
@@ -169,7 +166,8 @@ public class InventoryServiceImpl implements InventoryService {
 		List<InventoryBatch> inventoryBatchs = null;
 		Aggregation aggregation = null;
 		try {
-			InventoryItemCollection inventoryItemCollection = inventoryItemRepository.findById(new ObjectId(id)).orElse(null);
+			InventoryItemCollection inventoryItemCollection = inventoryItemRepository.findById(new ObjectId(id))
+					.orElse(null);
 			if (inventoryItemCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
@@ -414,9 +412,10 @@ public class InventoryServiceImpl implements InventoryService {
 			inventoryStock.setBatchId(inventoryBatchCollection.getId().toString());
 			BeanUtil.map(inventoryStock, inventoryStockCollection);
 			if (inventoryStockCollection.getItemId() != null) {
-				inventoryItemCollection = inventoryItemRepository.findById(inventoryStockCollection.getItemId()).orElse(null);
+				inventoryItemCollection = inventoryItemRepository.findById(inventoryStockCollection.getItemId())
+						.orElse(null);
 				if (inventoryItemCollection != null) {
-				inventoryStockCollection.setResourceId(inventoryItemCollection.getResourceId());
+					inventoryStockCollection.setResourceId(inventoryItemCollection.getResourceId());
 				}
 			}
 			inventoryStockCollection.setCreatedTime(new Date());
@@ -425,8 +424,8 @@ public class InventoryServiceImpl implements InventoryService {
 			BeanUtil.map(inventoryStockCollection, response);
 
 			if (inventoryStockCollection.getItemId() != null) {
-				inventoryItemCollection = inventoryItemRepository
-						.findById(inventoryStockCollection.getItemId()).orElse(null);
+				inventoryItemCollection = inventoryItemRepository.findById(inventoryStockCollection.getItemId())
+						.orElse(null);
 
 				if (inventoryItemCollection != null) {
 					List<DrugCollection> drugCollections = drugRepository.findByDrugCodeAndLocationIdAndHospitalId(
@@ -610,7 +609,8 @@ public class InventoryServiceImpl implements InventoryService {
 		InventoryItem response = null;
 
 		try {
-			InventoryItemCollection inventoryItemCollection = inventoryItemRepository.findById(new ObjectId(id)).orElse(null);
+			InventoryItemCollection inventoryItemCollection = inventoryItemRepository.findById(new ObjectId(id))
+					.orElse(null);
 			if (inventoryItemCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No record found");
 			}
@@ -633,7 +633,8 @@ public class InventoryServiceImpl implements InventoryService {
 		InventoryBatch response = null;
 
 		try {
-			InventoryBatchCollection inventoryBatchCollection = inventoryBatchRepository.findById(new ObjectId(id)).orElse(null);
+			InventoryBatchCollection inventoryBatchCollection = inventoryBatchRepository.findById(new ObjectId(id))
+					.orElse(null);
 			if (inventoryBatchCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No record found");
 			}
@@ -656,7 +657,8 @@ public class InventoryServiceImpl implements InventoryService {
 		InventoryStock response = null;
 
 		try {
-			InventoryStockCollection inventoryStockCollection = inventoryStockRepository.findById(new ObjectId(id)).orElse(null);
+			InventoryStockCollection inventoryStockCollection = inventoryStockRepository.findById(new ObjectId(id))
+					.orElse(null);
 			if (inventoryStockCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No record found");
 			}
@@ -673,8 +675,6 @@ public class InventoryServiceImpl implements InventoryService {
 		return response;
 	}
 
-	
-
 	@Override
 	@Transactional
 	public InventorySettings addEditInventorySetting(InventorySettingRequest request) {
@@ -682,10 +682,12 @@ public class InventoryServiceImpl implements InventoryService {
 		InventorySettingsCollection inventorySettingsCollection = null;
 		try {
 			if (request != null) {
-				inventorySettingsCollection = inventorySettingRepository.findByDoctorIdAndLocationIdAndHospitalId(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+				inventorySettingsCollection = inventorySettingRepository.findByDoctorIdAndLocationIdAndHospitalId(
+						new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
+						new ObjectId(request.getHospitalId()));
 			}
 			if (inventorySettingsCollection != null) {
-				ObjectId oldId = inventorySettingsCollection.getId(); 
+				ObjectId oldId = inventorySettingsCollection.getId();
 				BeanUtil.map(request, inventorySettingsCollection);
 				inventorySettingsCollection.setId(oldId);
 			} else {
@@ -702,18 +704,18 @@ public class InventoryServiceImpl implements InventoryService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public InventoryItem getInventoryItemByResourceId(String locationId, String hospitalId, String resourceId)
-	{
+	public InventoryItem getInventoryItemByResourceId(String locationId, String hospitalId, String resourceId) {
 		InventoryItem response = null;
 		InventoryItemCollection inventoryItemCollection = null;
 		try {
-			inventoryItemCollection = inventoryItemRepository.findByLocationIdAndHospitalIdAndResourceId(new ObjectId(locationId), new ObjectId(hospitalId), resourceId);
+			inventoryItemCollection = inventoryItemRepository.findByLocationIdAndHospitalIdAndResourceId(
+					new ObjectId(locationId), new ObjectId(hospitalId), resourceId);
 			if (inventoryItemCollection != null) {
 				response = new InventoryItem();
-				BeanUtil.map( inventoryItemCollection, response);
+				BeanUtil.map(inventoryItemCollection, response);
 			} else {
 				logger.warn("Inventory item not found");
 			}
@@ -725,10 +727,9 @@ public class InventoryServiceImpl implements InventoryService {
 		return response;
 	}
 
-
 	@Override
 	@Transactional
-	public InventorySettings getInventorySetting(String id,String doctorId, String locationId, String hospitalId) {
+	public InventorySettings getInventorySetting(String id, String doctorId, String locationId, String hospitalId) {
 		InventorySettings response = null;
 		InventorySettingsCollection inventorySettingsCollection = null;
 		try {
@@ -740,7 +741,7 @@ public class InventoryServiceImpl implements InventoryService {
 			}
 			if (inventorySettingsCollection != null) {
 				response = new InventorySettings();
-				BeanUtil.map( inventorySettingsCollection, response);
+				BeanUtil.map(inventorySettingsCollection, response);
 			} else {
 				response = new InventorySettings();
 				response.setDoctorId(doctorId);
@@ -748,7 +749,7 @@ public class InventoryServiceImpl implements InventoryService {
 				response.setHospitalId(hospitalId);
 				response.setSaveToInventory(false);
 				response.setShowInventoryCount(false);
-			} 
+			}
 		} catch (Exception e) {
 			logger.warn("Error while getting inventory setting");
 			e.printStackTrace();
@@ -758,29 +759,28 @@ public class InventoryServiceImpl implements InventoryService {
 
 	@Override
 	@Transactional
-	public List<InventoryBatch> getInventoryBatchByResourceId(String locationId, String hospitalId, String resourceId)
-	{
+	public List<InventoryBatch> getInventoryBatchByResourceId(String locationId, String hospitalId, String resourceId) {
 		List<InventoryBatch> inventoryBatchs = null;
 		try {
 			InventoryItem inventoryItem = getInventoryItemByResourceId(locationId, hospitalId, resourceId);
-			if(inventoryItem != null)
-			{
+			if (inventoryItem != null) {
 				inventoryBatchs = getInventoryBatchList(locationId, hospitalId, inventoryItem.getId(), null, 0, 0);
 			}
 		} catch (Exception e) {
 		}
 		return inventoryBatchs;
 	}
-	
 
 	@Override
 	@Transactional
-	public InventoryStock getInventoryStockByInvoiceIdResourceId(String locationId, String hospitalId, String resourceId , String invoiceId)
-	{
+	public InventoryStock getInventoryStockByInvoiceIdResourceId(String locationId, String hospitalId,
+			String resourceId, String invoiceId) {
 		InventoryStock inventoryStock = null;
 		try {
-			List<InventoryStockCollection> inventoryStockCollections = inventoryStockRepository.findByLocationIdAndHospitalIdAndResourceIdAndInvoiceId(new ObjectId(locationId), new ObjectId(hospitalId), resourceId, new ObjectId(invoiceId));
-			if(inventoryStockCollections != null && !inventoryStockCollections.isEmpty()) {
+			List<InventoryStockCollection> inventoryStockCollections = inventoryStockRepository
+					.findByLocationIdAndHospitalIdAndResourceIdAndInvoiceId(new ObjectId(locationId),
+							new ObjectId(hospitalId), resourceId, new ObjectId(invoiceId));
+			if (inventoryStockCollections != null && !inventoryStockCollections.isEmpty()) {
 				InventoryStockCollection inventoryStockCollection = inventoryStockCollections.get(0);
 				inventoryStock = new InventoryStock();
 				BeanUtil.map(inventoryStockCollection, inventoryStock);
@@ -793,23 +793,21 @@ public class InventoryServiceImpl implements InventoryService {
 
 	@Override
 	@Transactional
-	public Long getInventoryStockItemCount(String locationId, String hospitalId, String resourceId , String invoiceId)
-	{
+	public Long getInventoryStockItemCount(String locationId, String hospitalId, String resourceId, String invoiceId) {
 		Long quantity = 0l;
 		try {
-			List<InventoryStockCollection> inventoryStockCollections = inventoryStockRepository.findByLocationIdAndHospitalIdAndResourceIdAndInvoiceId(new ObjectId(locationId), new ObjectId(hospitalId), resourceId, new ObjectId(invoiceId));
-			if(inventoryStockCollections != null) {
+			List<InventoryStockCollection> inventoryStockCollections = inventoryStockRepository
+					.findByLocationIdAndHospitalIdAndResourceIdAndInvoiceId(new ObjectId(locationId),
+							new ObjectId(hospitalId), resourceId, new ObjectId(invoiceId));
+			if (inventoryStockCollections != null) {
 				for (InventoryStockCollection inventoryStockCollection : inventoryStockCollections) {
-					if(inventoryStockCollection.getStockType().equalsIgnoreCase("CONSUMED"))
-					{
+					if (inventoryStockCollection.getStockType().equalsIgnoreCase("CONSUMED")) {
 						quantity = quantity + inventoryStockCollection.getQuantity();
-					}
-					else if(inventoryStockCollection.getStockType().equalsIgnoreCase("ADDED"))
-					{
+					} else if (inventoryStockCollection.getStockType().equalsIgnoreCase("ADDED")) {
 						quantity = quantity - inventoryStockCollection.getQuantity();
 					}
 				}
-			
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -822,7 +820,8 @@ public class InventoryServiceImpl implements InventoryService {
 	public InventoryBatch getInventoryBatchById(String id) {
 		InventoryBatch inventoryBatch = null;
 		try {
-			InventoryBatchCollection inventoryBatchCollection = inventoryBatchRepository.findById(new ObjectId(id)).orElse(null);
+			InventoryBatchCollection inventoryBatchCollection = inventoryBatchRepository.findById(new ObjectId(id))
+					.orElse(null);
 			if (inventoryBatchCollection != null) {
 				inventoryBatch = new InventoryBatch();
 				BeanUtil.map(inventoryBatchCollection, inventoryBatch);
@@ -838,20 +837,15 @@ public class InventoryServiceImpl implements InventoryService {
 		Drug response = null;
 
 		try {
-			ObjectId doctorObjectId = new ObjectId(doctorId),
-					locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
-			/*DrugCollection originalDrug = drugRepository.findById(drugObjectId);
-			 * drugCollection = drugRepository.findByDrugCode(drugCode);
-			if (originalDrug == null) {
-				logger.error("Invalid drug Id");
-				throw new BusinessException(ServiceError.Unknown, "Invalid drug Id");
-			}*/
+			ObjectId doctorObjectId = new ObjectId(doctorId), locationObjectId = new ObjectId(locationId),
+					hospitalObjectId = new ObjectId(hospitalId);
 			DrugCollection originalDrug = drugRepository.findByDrugCode(drugCode);
 			if (originalDrug == null) {
 				logger.error("Invalid drug Id");
 				throw new BusinessException(ServiceError.Unknown, "Invalid drug code");
 			}
-			DrugCollection drugCollection = drugRepository.findByDrugCodeAndDoctorIdAndLocationIdAndHospitalId(drugCode, doctorObjectId, locationObjectId, hospitalObjectId);
+			DrugCollection drugCollection = drugRepository.findByDrugCodeAndDoctorIdAndLocationIdAndHospitalId(drugCode,
+					doctorObjectId, locationObjectId, hospitalObjectId);
 			if (drugCollection == null) {
 				drugCollection = originalDrug;
 				drugCollection.setLocationId(locationObjectId);

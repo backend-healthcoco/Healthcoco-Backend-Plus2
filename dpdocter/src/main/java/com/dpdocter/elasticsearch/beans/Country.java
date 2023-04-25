@@ -2,33 +2,33 @@ package com.dpdocter.elasticsearch.beans;
 
 public class Country {
 
-    private String id;
+	private String id;
 
-    private String country;
+	private String country;
 
-    private String explanation;
+	private String explanation;
 
-    private double latitude;
+	private double latitude;
 
-    private double longitude;
+	private double longitude;
 
-    public String getId() {
-	return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getCountry() {
-	return country;
-    }
+	public String getCountry() {
+		return country;
+	}
 
-    public void setCountry(String country) {
-	this.country = country;
-    }
+	public void setCountry(String country) {
+		this.country = country;
+	}
 
-    public String getExplanation() {
+	public String getExplanation() {
 		return explanation;
 	}
 
@@ -37,23 +37,24 @@ public class Country {
 	}
 
 	public double getLatitude() {
-	return latitude;
-    }
+		return latitude;
+	}
 
-    public void setLatitude(double latitude) {
-	this.latitude = latitude;
-    }
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
 
-    public double getLongitude() {
-	return longitude;
-    }
+	public double getLongitude() {
+		return longitude;
+	}
 
-    public void setLongitude(double longitude) {
-	this.longitude = longitude;
-    }
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
 
-    @Override
-    public String toString() {
-	return "Country [id=" + id + ", country=" + country + ", explanation=" + explanation + ", latitude=" + latitude + ", longitude=" + longitude + "]";
-    }
+	@Override
+	public String toString() {
+		return "Country [id=" + id + ", country=" + country + ", explanation=" + explanation + ", latitude=" + latitude
+				+ ", longitude=" + longitude + "]";
+	}
 }

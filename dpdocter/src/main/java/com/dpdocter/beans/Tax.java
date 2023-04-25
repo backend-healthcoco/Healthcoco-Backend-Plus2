@@ -5,7 +5,7 @@ import com.dpdocter.enums.UnitType;
 public class Tax {
 
 	private Double value = 0.0;
-	
+
 	private UnitType unit;
 
 	public Double getValue() {

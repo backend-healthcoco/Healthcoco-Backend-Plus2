@@ -9,15 +9,15 @@ public class ArosLookupResponse {
 
 	private ObjectId id;
 
-    private ObjectId roleOrUserId;
+	private ObjectId roleOrUserId;
 
-    private ObjectId hospitalId;
+	private ObjectId hospitalId;
 
-    private ObjectId locationId;
+	private ObjectId locationId;
 
-    private Type type;
+	private Type type;
 
-    private ArosAcosCollection arosAcosCollection;
+	private ArosAcosCollection arosAcosCollection;
 
 	public ObjectId getId() {
 		return id;

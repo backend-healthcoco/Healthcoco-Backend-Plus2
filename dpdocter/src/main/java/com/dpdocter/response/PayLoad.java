@@ -11,6 +11,5 @@ public class PayLoad {
 	public void setSettlement(Settlement settlement) {
 		this.settlement = settlement;
 	}
-	
-	
+
 }

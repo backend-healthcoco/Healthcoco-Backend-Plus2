@@ -18,11 +18,6 @@ public class EmailThread extends Thread {
 
 	@Override
 	public void run() {
-		/*try {
-			//mailService.sendEmail(to, subject, body, attachment);
-		} catch (MessagingException e) {
-			e.printStackTrace();
-		}*/
 	}
 
 }

@@ -50,7 +50,7 @@ public class ESTreatmentServiceDocument {
 
 	@Field(type = FieldType.Text)
 	private String ratelistId;
-	
+
 	public double getCost() {
 		return cost;
 	}
@@ -142,7 +142,6 @@ public class ESTreatmentServiceDocument {
 		this.updatedTime = updatedTime;
 	}
 
-	
 	@Override
 	public boolean equals(Object obj) {
 		ESTreatmentServiceDocument treatmentServiceDocument = (ESTreatmentServiceDocument) obj;

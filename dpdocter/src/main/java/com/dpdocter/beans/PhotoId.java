@@ -3,7 +3,7 @@ package com.dpdocter.beans;
 public class PhotoId {
 
 	private String photoIdType;
-	
+
 	private String photoIdNumber;
 
 	public String getPhotoIdType() {
@@ -21,6 +21,5 @@ public class PhotoId {
 	public void setPhotoIdNumber(String photoIdNumber) {
 		this.photoIdNumber = photoIdNumber;
 	}
-	
-	
+
 }

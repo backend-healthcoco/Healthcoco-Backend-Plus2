@@ -12,46 +12,46 @@ import com.dpdocter.beans.Duration;
 import com.dpdocter.beans.GenericCode;
 
 @Document(collection = "doctor_drug_cl")
-public class DoctorDrugCollection extends GenericCollection{
+public class DoctorDrugCollection extends GenericCollection {
 
 	@Id
-    private ObjectId id;
+	private ObjectId id;
 
 	@Field
-    private ObjectId drugId;
-	
+	private ObjectId drugId;
+
 	@Field
-    private ObjectId doctorId;
+	private ObjectId doctorId;
 
-    @Field
-    private ObjectId hospitalId;
+	@Field
+	private ObjectId hospitalId;
 
-    @Field
-    private ObjectId locationId;
+	@Field
+	private ObjectId locationId;
 
-    @Field
-    private long rankingCount = 0;
+	@Field
+	private long rankingCount = 0;
 
-    @Field
-    private Boolean discarded = false;
+	@Field
+	private Boolean discarded = false;
 
-    @Field
-    private List<String> genericCodes;
-    
-    @Field
-    private Duration duration;
+	@Field
+	private List<String> genericCodes;
 
-    @Field
-    private String dosage;
+	@Field
+	private Duration duration;
 
-    @Field
-    private List<Long> dosageTime;
-    
-    @Field
-    private List<DrugDirection> direction;
+	@Field
+	private String dosage;
 
-    @Field
-    private List<GenericCode> genericNames;
+	@Field
+	private List<Long> dosageTime;
+
+	@Field
+	private List<DrugDirection> direction;
+
+	@Field
+	private List<GenericCode> genericNames;
 
 	public DoctorDrugCollection() {
 	}

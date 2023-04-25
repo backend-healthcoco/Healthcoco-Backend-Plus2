@@ -30,7 +30,7 @@ public class ESRecipeDocument {
 
 	@Field(type = FieldType.Text)
 	private String recipeDescription;
-	
+
 	@Field(type = FieldType.Nested)
 	private MealQuantity quantity;
 
@@ -126,7 +126,7 @@ public class ESRecipeDocument {
 
 	@Field(type = FieldType.Nested)
 	private MealQuantity carbohydrate;
-	
+
 	@Field(type = FieldType.Nested)
 	private MealQuantity fiber;
 
@@ -156,55 +156,56 @@ public class ESRecipeDocument {
 
 	@Field(type = FieldType.Text)
 	private String dietoryEvaluation;
-	
+
 	@Field(type = FieldType.Text)
 	private String phLevel;
-	
+
 	@Field(type = FieldType.Text)
 	private String giLevel;
-	
+
 	@Field(type = FieldType.Nested)
 	private List<FoodCommunity> communities;
-	
+
 	@Field(type = FieldType.Nested)
 	private List<String> foodCultures;
-	
+
 	@Field(type = FieldType.Nested)
 	private List<String> diseaseFriendly;
-	
+
 	@Field(type = FieldType.Boolean)
 	private Boolean isPrebiotic = false;
-	
+
 	@Field(type = FieldType.Boolean)
 	private Boolean isProBiotic = false;
-	
+
 	@Field(type = FieldType.Text)
 	private String cookingMethod;
-	
+
 	@Field(type = FieldType.Text)
 	private String medicineDosage;
-	
+
 	@Field(type = FieldType.Text)
 	private String foodPreparationTemperature;
-	
+
 	@Field(type = FieldType.Nested)
 	private List<FoodGroup> foodGroups;
-	
+
 	@Field(type = FieldType.Nested)
 	private List<RecipeNutrientType> nutrientTypes;
-	
+
 	@Field(type = FieldType.Nested)
 	private List<NutrientGoal> nutrientGoals;
-	
+
 	@Field(type = FieldType.Nested)
 	private List<Disease> diseases;
-	
+
 	@Field(type = FieldType.Text)
 	private String principle;
-	
+
 	public String getPrinciple() {
 		return principle;
 	}
+
 	public void setPrinciple(String principle) {
 		this.principle = principle;
 	}

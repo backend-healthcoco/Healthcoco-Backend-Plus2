@@ -42,7 +42,7 @@ public class VideoServiceImpl implements VideoService {
 
 	@Autowired
 	private VideoRepository videoRepository;
-	
+
 	@Autowired
 	private MyVideoRepository myVideoRepository;
 
@@ -54,11 +54,10 @@ public class VideoServiceImpl implements VideoService {
 
 	@Autowired
 	private SpecialityRepository specialityRepository;
-	
+
 	@Autowired
 	private MongoTemplate mongoTemplate;
-	
-	
+
 	@Override
 	@Transactional
 	public Video addVideo(FormDataBodyPart file, AddVideoRequest request) {
@@ -89,7 +88,6 @@ public class VideoServiceImpl implements VideoService {
 		}
 		return response;
 	}
-	
 
 	@Override
 	@Transactional
@@ -137,7 +135,8 @@ public class VideoServiceImpl implements VideoService {
 				if (doctorCollection.getSpecialities() != null || !doctorCollection.getSpecialities().isEmpty()) {
 					specialities = new ArrayList<>();
 					for (ObjectId specialityId : doctorCollection.getSpecialities()) {
-						SpecialityCollection specialityCollection = specialityRepository.findById(specialityId).orElse(null);
+						SpecialityCollection specialityCollection = specialityRepository.findById(specialityId)
+								.orElse(null);
 						if (specialityCollection != null) {
 							speciality = specialityCollection.getSpeciality();
 							specialities.add(speciality);
@@ -145,17 +144,15 @@ public class VideoServiceImpl implements VideoService {
 					}
 				}
 			}
-			
-			Criteria criteria =  new Criteria().and("speciality").in(specialities);
-			
-			if(tags != null && !tags.isEmpty())
-			{
+
+			Criteria criteria = new Criteria().and("speciality").in(specialities);
+
+			if (tags != null && !tags.isEmpty()) {
 				criteria.and("tags").in(tags);
 			}
-			
-			aggregation = Aggregation.newAggregation(
-					Aggregation.match(criteria)
-					, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			AggregationResults<Video> aggregationResults = mongoTemplate.aggregate(aggregation, VideoCollection.class,
 					Video.class);
 			response = aggregationResults.getMappedResults();
@@ -165,19 +162,19 @@ public class VideoServiceImpl implements VideoService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public List<MyVideo> getMyVideos(String doctorId, String searchTerm, int page, int size) {
 		Aggregation aggregation = null;
 		List<MyVideo> response = null;
 		try {
-			
+
 			aggregation = Aggregation.newAggregation(
-					Aggregation.match(new Criteria().and("doctorId").in(new ObjectId(doctorId)))
-					, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-			AggregationResults<MyVideo> aggregationResults = mongoTemplate.aggregate(aggregation, MyVideoCollection.class,
-					MyVideo.class);
+					Aggregation.match(new Criteria().and("doctorId").in(new ObjectId(doctorId))),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			AggregationResults<MyVideo> aggregationResults = mongoTemplate.aggregate(aggregation,
+					MyVideoCollection.class, MyVideo.class);
 			response = aggregationResults.getMappedResults();
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -185,10 +182,11 @@ public class VideoServiceImpl implements VideoService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public List<Video> getLocationVideos(String doctorId ,String locationId, String hospitalId, String searchTerm, int page, int size , List<String> tags) {
+	public List<Video> getLocationVideos(String doctorId, String locationId, String hospitalId, String searchTerm,
+			int page, int size, List<String> tags) {
 		Aggregation aggregation = null;
 		List<Video> response = null;
 		try {
@@ -202,13 +200,11 @@ public class VideoServiceImpl implements VideoService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
 				criteria.and("hospitalId").in(new ObjectId(hospitalId));
 			}
-			if(tags != null)
-			{
+			if (tags != null) {
 				criteria.and("tags").in(tags);
 			}
-			aggregation = Aggregation.newAggregation(
-					Aggregation.match(criteria)
-					, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			AggregationResults<Video> aggregationResults = mongoTemplate.aggregate(aggregation, VideoCollection.class,
 					Video.class);
 			response = aggregationResults.getMappedResults();

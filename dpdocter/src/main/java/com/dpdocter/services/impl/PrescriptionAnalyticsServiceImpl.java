@@ -29,7 +29,6 @@ import com.dpdocter.enums.PrescriptionItems;
 import com.dpdocter.enums.SearchType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.DiagnosticTestsAnalyticsData;
 import com.dpdocter.response.DoctorAnalyticPieChartResponse;
@@ -46,9 +45,6 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
-
-	@Autowired
-	private DiagnosticTestRepository diagnosticTestRepository;
 
 	Logger logger = Logger.getLogger(PrescriptionAnalyticsServiceImpl.class);
 
@@ -204,7 +200,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 											.append("name", new BasicDBObject("$first", "$totalCount.drugName"))
 											.append("totalCount", new BasicDBObject("$sum", 1)))),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "totalCount")),
-							Aggregation.skip((long)(page) * size), Aggregation.limit(size));
+							Aggregation.skip((long) (page) * size), Aggregation.limit(size));
 				} else {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("items"),
 							Aggregation.lookup("drug_cl", "items.drugId", "_id", "totalCount"),
@@ -235,7 +231,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 											.append("name", new BasicDBObject("$first", "$totalCount.testName"))
 											.append("totalCount", new BasicDBObject("$sum", 1)))),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "totalCount")),
-							Aggregation.skip((long)(page) * size), Aggregation.limit(size));
+							Aggregation.skip((long) (page) * size), Aggregation.limit(size));
 				} else {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.unwind("diagnosticTests"),
@@ -332,9 +328,6 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 			criteria.and("adminCreatedTime").gte(fromTime).lte(toTime);
 			data.setTotalPrescriptionCreated(
 					(int) mongoTemplate.count(new Query(criteria), PrescriptionCollection.class));
-			// mongoTemplate.aggregate(aggregation,
-			// DoctorClinicProfileCollection.class,
-			// DoctorprescriptionAnalyticResponse.class).getUniqueMappedResult();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -423,11 +416,11 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-											.append("day", new BasicDBObject("$first", "$day"))
-											.append("tests", new BasicDBObject("$push", "$tests"))
-											.append("month", new BasicDBObject("$first", "$month"))
-											.append("year", new BasicDBObject("$first", "$year"))
-											.append("date", new BasicDBObject("$first", "$date"))));
+									.append("day", new BasicDBObject("$first", "$day"))
+									.append("tests", new BasicDBObject("$push", "$tests"))
+									.append("month", new BasicDBObject("$first", "$month"))
+									.append("year", new BasicDBObject("$first", "$year"))
+									.append("date", new BasicDBObject("$first", "$date"))));
 
 					break;
 				}
@@ -436,11 +429,12 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year",
-											"$year")).append("day", new BasicDBObject("$first", "$day"))
-													.append("tests", new BasicDBObject("$push", "$tests"))
-													.append("month", new BasicDBObject("$first", "$month"))
-													.append("year", new BasicDBObject("$first", "$year"))
-													.append("date", new BasicDBObject("$first", "$date"))));
+											"$year"))
+									.append("day", new BasicDBObject("$first", "$day"))
+									.append("tests", new BasicDBObject("$push", "$tests"))
+									.append("month", new BasicDBObject("$first", "$month"))
+									.append("year", new BasicDBObject("$first", "$year"))
+									.append("date", new BasicDBObject("$first", "$date"))));
 
 					break;
 				}
@@ -474,11 +468,11 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 				aggregationOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id",
 								new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-										.append("day", new BasicDBObject("$first", "$day"))
-										.append("tests", new BasicDBObject("$push", "$tests"))
-										.append("month", new BasicDBObject("$first", "$month"))
-										.append("year", new BasicDBObject("$first", "$year"))
-										.append("date", new BasicDBObject("$first", "$date"))));
+								.append("day", new BasicDBObject("$first", "$day"))
+								.append("tests", new BasicDBObject("$push", "$tests"))
+								.append("month", new BasicDBObject("$first", "$month"))
+								.append("year", new BasicDBObject("$first", "$year"))
+								.append("date", new BasicDBObject("$first", "$date"))));
 			}
 
 			Aggregation aggregation = null;
@@ -506,7 +500,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 										.append("year", new BasicDBObject("$year", "$createdTime"))
 										.append("week", new BasicDBObject("$week", "$createdTime")))),
 						aggregationOperation, Aggregation.sort(Direction.DESC, "createdTime"),
-						Aggregation.skip((long)page * size), Aggregation.limit(size));
+						Aggregation.skip((long) page * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.unwind("diagnosticTests"),
@@ -581,11 +575,11 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-											.append("day", new BasicDBObject("$first", "$day"))
-											.append("drugs", new BasicDBObject("$push", "$drugs"))
-											.append("month", new BasicDBObject("$first", "$month"))
-											.append("year", new BasicDBObject("$first", "$year"))
-											.append("date", new BasicDBObject("$first", "$date"))));
+									.append("day", new BasicDBObject("$first", "$day"))
+									.append("drugs", new BasicDBObject("$push", "$drugs"))
+									.append("month", new BasicDBObject("$first", "$month"))
+									.append("year", new BasicDBObject("$first", "$year"))
+									.append("date", new BasicDBObject("$first", "$date"))));
 
 					break;
 				}
@@ -594,11 +588,12 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year",
-											"$year")).append("day", new BasicDBObject("$first", "$day"))
-													.append("drugs", new BasicDBObject("$push", "$drugs"))
-													.append("month", new BasicDBObject("$first", "$month"))
-													.append("year", new BasicDBObject("$first", "$year"))
-													.append("date", new BasicDBObject("$first", "$date"))));
+											"$year"))
+									.append("day", new BasicDBObject("$first", "$day"))
+									.append("drugs", new BasicDBObject("$push", "$drugs"))
+									.append("month", new BasicDBObject("$first", "$month"))
+									.append("year", new BasicDBObject("$first", "$year"))
+									.append("date", new BasicDBObject("$first", "$date"))));
 
 					break;
 				}
@@ -632,11 +627,11 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 				aggregationOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id",
 								new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-										.append("day", new BasicDBObject("$first", "$day"))
-										.append("drugs", new BasicDBObject("$push", "$drugs"))
-										.append("month", new BasicDBObject("$first", "$month"))
-										.append("year", new BasicDBObject("$first", "$year"))
-										.append("date", new BasicDBObject("$first", "$date"))));
+								.append("day", new BasicDBObject("$first", "$day"))
+								.append("drugs", new BasicDBObject("$push", "$drugs"))
+								.append("month", new BasicDBObject("$first", "$month"))
+								.append("year", new BasicDBObject("$first", "$year"))
+								.append("date", new BasicDBObject("$first", "$date"))));
 			}
 			Aggregation aggregation = null;
 			if (size > 0) {
@@ -670,7 +665,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 										.append("year", new BasicDBObject("$year", "$createdTime"))
 										.append("week", new BasicDBObject("$week", "$createdTime")))),
 						aggregationOperation, Aggregation.sort(Direction.DESC, "createdTime"),
-						Aggregation.skip((long)page * size), Aggregation.limit(size));
+						Aggregation.skip((long) page * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("items"),
 						new CustomAggregationOperation(new Document("$group",
@@ -768,7 +763,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 										.append("updatedTime", new BasicDBObject("$first", "$test.updatedTime"))
 										.append("createdBy", new BasicDBObject("$first", "$test.createdBy"))
 										.append("count", new BasicDBObject("$sum", 1)))),
-						Aggregation.sort(Direction.DESC, "count"), Aggregation.skip((long)page * size),
+						Aggregation.sort(Direction.DESC, "count"), Aggregation.skip((long) page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -869,7 +864,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 												.append("updatedTime", new BasicDBObject("$first", "$drug.updatedTime"))
 												.append("createdBy", new BasicDBObject("$first", "$drug.createdBy"))
 												.append("count", new BasicDBObject("$sum", 1)))),
-								Aggregation.sort(Direction.DESC, "count"), Aggregation.skip((long)page * size),
+								Aggregation.sort(Direction.DESC, "count"), Aggregation.skip((long) page * size),
 								Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation
@@ -1029,8 +1024,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("items"),
 					Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"), Aggregation.unwind("drug"),
-					new CustomAggregationOperation(
-							new Document("$group", new BasicDBObject("_id", "$items.drugId"))));
+					new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$items.drugId"))));
 
 			response = mongoTemplate.aggregate(aggregation, PrescriptionCollection.class, Drug.class).getMappedResults()
 					.size();
@@ -1229,13 +1223,13 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-											.append("day", new BasicDBObject("$first", "$day"))
-											.append("month", new BasicDBObject("$first", "$month"))
-											.append("year", new BasicDBObject("$first", "$year"))
-											.append("week", new BasicDBObject("$first", "$week"))
-											.append("date", new BasicDBObject("$first", "$createdTime"))
-											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-											.append("count", new BasicDBObject("$sum", 1))));
+									.append("day", new BasicDBObject("$first", "$day"))
+									.append("month", new BasicDBObject("$first", "$month"))
+									.append("year", new BasicDBObject("$first", "$year"))
+									.append("week", new BasicDBObject("$first", "$week"))
+									.append("date", new BasicDBObject("$first", "$createdTime"))
+									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+									.append("count", new BasicDBObject("$sum", 1))));
 
 					break;
 				}
@@ -1244,12 +1238,13 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year",
-											"$year")).append("month", new BasicDBObject("$first", "$month"))
-													.append("year", new BasicDBObject("$first", "$year"))
-													.append("week", new BasicDBObject("$first", "$week"))
-													.append("date", new BasicDBObject("$first", "$createdTime"))
-													.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-													.append("count", new BasicDBObject("$sum", 1))));
+											"$year"))
+									.append("month", new BasicDBObject("$first", "$month"))
+									.append("year", new BasicDBObject("$first", "$year"))
+									.append("week", new BasicDBObject("$first", "$week"))
+									.append("date", new BasicDBObject("$first", "$createdTime"))
+									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+									.append("count", new BasicDBObject("$sum", 1))));
 
 					break;
 				}
@@ -1399,7 +1394,8 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 										.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 										.append("doctorName", new BasicDBObject("$first", "$doctorName")))),
 
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+						Aggregation.skip((long) page * size),
 
 						Aggregation.limit(size));
 			} else {

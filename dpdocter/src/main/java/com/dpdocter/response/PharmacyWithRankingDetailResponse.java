@@ -3,19 +3,19 @@ package com.dpdocter.response;
 public class PharmacyWithRankingDetailResponse {
 
 	private String localeId;
-	
+
 	private String resourceName;
-	
+
 	private Double genericMedicineCount = 0.0;
-	
+
 	private Double requestCount = 0.0;
-	
+
 	private Double responseCount = 0.0;
-	
+
 	private Double totalCount = 0.0;
-	
+
 	private Double noOfLikes = 0.0;
-	
+
 	private int rankingCount = 0;
 
 	public String getLocaleId() {

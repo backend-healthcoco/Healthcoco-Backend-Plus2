@@ -5,7 +5,7 @@ import java.util.List;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.collections.GenericCollection;
 
-public class PrescriptionLookupResponse extends GenericCollection{
+public class PrescriptionLookupResponse extends GenericCollection {
 
 	private String id;
 
@@ -22,13 +22,13 @@ public class PrescriptionLookupResponse extends GenericCollection{
 	private String patientId;
 
 	private String firstName;
-	
+
 	private String mobileNumber;
-	
+
 	private String doctorName;
-	
+
 	private String locationName;
-	
+
 	public String getId() {
 		return id;
 	}
@@ -121,7 +121,7 @@ public class PrescriptionLookupResponse extends GenericCollection{
 	public String toString() {
 		return "PrescriptionLookupResponse [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", diagnosticTests=" + diagnosticTests
-				+ ", patientId=" + patientId + ", firstName=" + firstName + ", mobileNumber="
-				+ mobileNumber + ", doctorName=" + doctorName + ", locationName=" + locationName + "]";
+				+ ", patientId=" + patientId + ", firstName=" + firstName + ", mobileNumber=" + mobileNumber
+				+ ", doctorName=" + doctorName + ", locationName=" + locationName + "]";
 	}
 }

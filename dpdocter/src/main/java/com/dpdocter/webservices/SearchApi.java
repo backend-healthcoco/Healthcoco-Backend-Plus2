@@ -78,7 +78,8 @@ public class SearchApi {
 			@QueryParam("minExperience") int minExperience, @QueryParam("maxExperience") int maxExperience,
 			@QueryParam("service") String service, @QueryParam("locality") String locality,
 			@DefaultValue(value = "false") @QueryParam("otherArea") Boolean otherArea,
-			@QueryParam("expertIn") String expertIn, @QueryParam("symptomDiseaseCondition") String symptomDiseaseCondition) {
+			@QueryParam("expertIn") String expertIn,
+			@QueryParam("symptomDiseaseCondition") String symptomDiseaseCondition) {
 		SearchDoctorResponse doctors = searchService.searchDoctors(page, size, city, location, latitude, longitude,
 				speciality, symptom, booking, calling, minFee, maxFee, minTime, maxTime, days, gender, minExperience,
 				maxExperience, service, locality, otherArea, expertIn, symptomDiseaseCondition);
@@ -221,7 +222,7 @@ public class SearchApi {
 			logger.warn("Doctor Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 		}
-		
+
 		DoctorProfileBySlugUrlResponse doctorProfile = searchService.getDoctorProfileBySlugUrl(userUId, slugURL);
 		if (doctorProfile != null) {
 			if (doctorProfile.getImageUrl() != null) {
@@ -230,7 +231,7 @@ public class SearchApi {
 			if (doctorProfile.getThumbnailUrl() != null) {
 				doctorProfile.setThumbnailUrl(getFinalImageURL(doctorProfile.getThumbnailUrl()));
 			}
-			
+
 			if (doctorProfile.getClinicProfile() != null & !doctorProfile.getClinicProfile().isEmpty()) {
 				for (DoctorClinicProfileBySlugUrlResponse clinicProfile : doctorProfile.getClinicProfile()) {
 					if (clinicProfile.getImages() != null) {
@@ -250,7 +251,7 @@ public class SearchApi {
 		response.setData(doctorProfile);
 		return response;
 	}
-	
+
 	private String getFinalImageURL(String imageURL) {
 		if (imageURL != null) {
 			return imagePath + imageURL;

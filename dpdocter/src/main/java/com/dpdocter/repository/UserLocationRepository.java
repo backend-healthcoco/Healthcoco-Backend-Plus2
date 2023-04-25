@@ -6,6 +6,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.dpdocter.collections.UserLocationCollection;
 
-public interface UserLocationRepository extends MongoRepository<UserLocationCollection, ObjectId>, PagingAndSortingRepository<UserLocationCollection, ObjectId> {
+public interface UserLocationRepository extends MongoRepository<UserLocationCollection, ObjectId>,
+		PagingAndSortingRepository<UserLocationCollection, ObjectId> {
 
 }

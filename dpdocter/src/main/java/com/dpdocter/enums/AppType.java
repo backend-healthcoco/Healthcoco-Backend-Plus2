@@ -2,16 +2,16 @@ package com.dpdocter.enums;
 
 public enum AppType {
 
-    HEALTHCOCO("HEALTHCOCO"), HEALTHCOCO_PLUS("HEALTHCOCO_PLUS") , HEALTHCOCO_PAD("HEALTHCOCO_PAD");
+	HEALTHCOCO("HEALTHCOCO"), HEALTHCOCO_PLUS("HEALTHCOCO_PLUS"), HEALTHCOCO_PAD("HEALTHCOCO_PAD");
 
-    private String type;
+	private String type;
 
-    private AppType(String type) {
-	this.type = type;
-    }
+	private AppType(String type) {
+		this.type = type;
+	}
 
-    public String getType() {
-	return type;
-    }
+	public String getType() {
+		return type;
+	}
 
 }

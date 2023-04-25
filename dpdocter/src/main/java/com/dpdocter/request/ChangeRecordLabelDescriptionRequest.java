@@ -2,27 +2,27 @@ package com.dpdocter.request;
 
 public class ChangeRecordLabelDescriptionRequest {
 
-    private String recordId;
+	private String recordId;
 
-    private String label;
+	private String label;
 
-    private String explanation;
+	private String explanation;
 
-    public String getRecordId() {
-	return recordId;
-    }
+	public String getRecordId() {
+		return recordId;
+	}
 
-    public void setRecordId(String recordId) {
-	this.recordId = recordId;
-    }
+	public void setRecordId(String recordId) {
+		this.recordId = recordId;
+	}
 
-    public String getLabel() {
-	return label;
-    }
+	public String getLabel() {
+		return label;
+	}
 
-    public void setLabel(String label) {
-	this.label = label;
-    }
+	public void setLabel(String label) {
+		this.label = label;
+	}
 
 	public String getExplanation() {
 		return explanation;

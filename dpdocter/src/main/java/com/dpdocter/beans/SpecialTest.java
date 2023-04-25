@@ -1,9 +1,9 @@
 package com.dpdocter.beans;
 
 public class SpecialTest {
-	
+
 	private ShoulderTest shoulder;
-	
+
 	private HipJointTest hipJoint;
 
 	public ShoulderTest getShoulder() {
@@ -21,6 +21,5 @@ public class SpecialTest {
 	public void setHipJoint(HipJointTest hipJoint) {
 		this.hipJoint = hipJoint;
 	}
-	
-	
+
 }

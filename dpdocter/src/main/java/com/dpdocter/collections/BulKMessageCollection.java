@@ -6,32 +6,31 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-public class BulKMessageCollection extends GenericCollection{
+public class BulKMessageCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
-	
+
 	@Field
 	private String requestId;
-	
+
 	@Field
 	private Integer status;
-	
+
 	@Field
 	private String desc;
-	
+
 	@Field
 	private String mobileNumber;
-	
+
 	@Field
 	private Date date;
-	
+
 	@Field
 	private ObjectId userId;
 	@Field
 	private ObjectId doctorId;
-	
-	
+
 	@Field
 	private String senderId;
 
@@ -42,8 +41,6 @@ public class BulKMessageCollection extends GenericCollection{
 	public void setId(ObjectId id) {
 		this.id = id;
 	}
-
-	
 
 	public Integer getStatus() {
 		return status;
@@ -61,8 +58,6 @@ public class BulKMessageCollection extends GenericCollection{
 		this.desc = desc;
 	}
 
-	
-
 	public Date getDate() {
 		return date;
 	}
@@ -70,8 +65,6 @@ public class BulKMessageCollection extends GenericCollection{
 	public void setDate(Date date) {
 		this.date = date;
 	}
-	
-	
 
 	public String getRequestId() {
 		return requestId;
@@ -96,8 +89,6 @@ public class BulKMessageCollection extends GenericCollection{
 	public void setSenderId(String senderId) {
 		this.senderId = senderId;
 	}
-	
-	
 
 	public ObjectId getUserId() {
 		return userId;
@@ -120,9 +111,5 @@ public class BulKMessageCollection extends GenericCollection{
 		return "BulKMessageCollection [id=" + id + ", requestId=" + requestId + ", status=" + status + ", desc=" + desc
 				+ ", mobileNumber=" + mobileNumber + ", date=" + date + ", senderId=" + senderId + "]";
 	}
-
-	
-	
-	
 
 }

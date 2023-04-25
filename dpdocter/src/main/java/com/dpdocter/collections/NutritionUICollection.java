@@ -27,8 +27,6 @@ public class NutritionUICollection extends GenericCollection {
 		this.id = id;
 	}
 
-	
-
 	public List<NutritionUIPermission> getUiPermission() {
 		return uiPermission;
 	}

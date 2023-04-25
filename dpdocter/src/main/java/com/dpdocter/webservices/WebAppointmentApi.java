@@ -58,10 +58,10 @@ public class WebAppointmentApi {
 
 	@Autowired
 	private WebAppointmentService webAppointmentService;
-	
+
 	@Autowired
 	MailService mailService;
-	
+
 	@Autowired
 	private AppointmentService appointmentService;
 
@@ -70,49 +70,52 @@ public class WebAppointmentApi {
 
 	@Value(value = "${register.first.name.validation}")
 	private String firstNameValidaton;
-	
+
 	@Autowired
 	private LoginService loginService;
 
 	@Autowired
 	private RegistrationService registrationService;
-	
+
 	@Autowired
 	private PromotionService promotionService;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
-	
+
 	@Autowired
-    private OTPService otpService;
-	
+	private OTPService otpService;
+
 	@Path(value = PathProxy.WebAppointmentUrls.GET_CLINICS_BY_DOCTOR_SLUG_URL)
 	@GET
 	@ApiOperation(value = PathProxy.WebAppointmentUrls.GET_CLINICS_BY_DOCTOR_SLUG_URL, notes = PathProxy.WebAppointmentUrls.GET_CLINICS_BY_DOCTOR_SLUG_URL)
-	public Response<WebDoctorClinicsResponse> getClinicsByDoctorSlugURL(@PathParam("doctorSlugUrl") String doctorSlugUrl) {		
-		WebDoctorClinicsResponse webDoctorClinicsResponse = webAppointmentService.getClinicsByDoctorSlugURL(doctorSlugUrl);
+	public Response<WebDoctorClinicsResponse> getClinicsByDoctorSlugURL(
+			@PathParam("doctorSlugUrl") String doctorSlugUrl) {
+		WebDoctorClinicsResponse webDoctorClinicsResponse = webAppointmentService
+				.getClinicsByDoctorSlugURL(doctorSlugUrl);
 		Response<WebDoctorClinicsResponse> response = new Response<WebDoctorClinicsResponse>();
 		response.setData(webDoctorClinicsResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.WebAppointmentUrls.GET_TIME_SLOTS)
 	@GET
 	@ApiOperation(value = PathProxy.WebAppointmentUrls.GET_TIME_SLOTS, notes = PathProxy.WebAppointmentUrls.GET_TIME_SLOTS)
 	public Response<WebAppointmentSlotDataResponse> getTimeSlots(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId, @PathParam("date") String date) {
-		
-		WebAppointmentSlotDataResponse slots = webAppointmentService.getTimeSlots(doctorId, locationId, hospitalId, date);
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@PathParam("date") String date) {
+
+		WebAppointmentSlotDataResponse slots = webAppointmentService.getTimeSlots(doctorId, locationId, hospitalId,
+				date);
 		Response<WebAppointmentSlotDataResponse> response = new Response<WebAppointmentSlotDataResponse>();
 		response.setData(slots);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.WebAppointmentUrls.ADD_APPOINTMENT)
 	@POST
 	@ApiOperation(value = PathProxy.WebAppointmentUrls.ADD_APPOINTMENT, notes = PathProxy.WebAppointmentUrls.ADD_APPOINTMENT)
-	public Response<Appointment> BookAppoinment(AppointmentRequest request)
-			throws MessagingException {
+	public Response<Appointment> BookAppoinment(AppointmentRequest request) throws MessagingException {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId())) {
 			logger.warn("Invalid Input");
@@ -131,7 +134,7 @@ public class WebAppointmentApi {
 		}
 
 		request.setCreatedBy(AppointmentCreatedBy.PATIENT);
-				
+
 		Appointment appointment = null;
 		if (request.getAppointmentId() == null) {
 			appointment = appointmentService.addAppointment(request, true);
@@ -144,7 +147,7 @@ public class WebAppointmentApi {
 		return response;
 
 	}
-	
+
 	@Path(value = PathProxy.WebAppointmentUrls.LOGIN_PATIENT)
 	@POST
 	@ApiOperation(value = PathProxy.LoginUrls.LOGIN_PATIENT, notes = PathProxy.LoginUrls.LOGIN_PATIENT)
@@ -183,7 +186,7 @@ public class WebAppointmentApi {
 			return null;
 
 	}
-	
+
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path(value = PathProxy.WebAppointmentUrls.PATIENT_SIGNUP_MOBILE)
 	@POST
@@ -195,7 +198,8 @@ public class WebAppointmentApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Inavlid Input");
 		}
 		if (request.getInternalPromoCode() != null) {
-			InternalPromotionGroup promotionGroup = promotionService.getPromotionGroup(request.getInternalPromoCode().trim());
+			InternalPromotionGroup promotionGroup = promotionService
+					.getPromotionGroup(request.getInternalPromoCode().trim());
 			if (promotionGroup != null) {
 				InternalPromoCode internalPromoCode = new InternalPromoCode();
 				internalPromoCode.setMobileNumber(request.getMobileNumber());
@@ -206,7 +210,7 @@ public class WebAppointmentApi {
 				throw new BusinessException(ServiceError.InvalidInput, "Promo code not found");
 			}
 		}
-		
+
 		List<RegisteredPatientDetails> users = new ArrayList<RegisteredPatientDetails>();
 
 		if (request.isNewPatientNeedToBeCreated()) {
@@ -232,31 +236,34 @@ public class WebAppointmentApi {
 		return response;
 	}
 
-	 @Path(value = PathProxy.WebAppointmentUrls.OTP_GENERATOR_MOBILE)
-	    @GET
-	    @ApiOperation(value = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE, notes = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE)
-	    public Response<Boolean> otpGenerator(@PathParam("mobileNumber") String mobileNumber, @DefaultValue("false") @QueryParam(value = "isPatientOTP") Boolean isPatientOTP) {
+	@Path(value = PathProxy.WebAppointmentUrls.OTP_GENERATOR_MOBILE)
+	@GET
+	@ApiOperation(value = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE, notes = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE)
+	public Response<Boolean> otpGenerator(@PathParam("mobileNumber") String mobileNumber,
+			@DefaultValue("false") @QueryParam(value = "isPatientOTP") Boolean isPatientOTP) {
 		if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
-		    logger.warn("Invalid Input. Mobile Number Cannot Be Empty");
-		    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Mobile Number Cannot Be Empty");
+			logger.warn("Invalid Input. Mobile Number Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Mobile Number Cannot Be Empty");
 		}
 		Boolean OTP = otpService.otpGenerator(mobileNumber, isPatientOTP);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(OTP);
 		return response;
-	    }
+	}
 
-	    @Path(value = PathProxy.WebAppointmentUrls.VERIFY_OTP_MOBILE)
-	    @GET
-	    @ApiOperation(value = PathProxy.OTPUrls.VERIFY_OTP_MOBILE, notes = PathProxy.OTPUrls.VERIFY_OTP_MOBILE)
-	    public Response<Boolean> verifyOTP(@PathParam("mobileNumber") String mobileNumber, @PathParam("otpNumber") String otpNumber) {
+	@Path(value = PathProxy.WebAppointmentUrls.VERIFY_OTP_MOBILE)
+	@GET
+	@ApiOperation(value = PathProxy.OTPUrls.VERIFY_OTP_MOBILE, notes = PathProxy.OTPUrls.VERIFY_OTP_MOBILE)
+	public Response<Boolean> verifyOTP(@PathParam("mobileNumber") String mobileNumber,
+			@PathParam("otpNumber") String otpNumber) {
 		if (DPDoctorUtils.anyStringEmpty(otpNumber, mobileNumber)) {
-		    logger.warn("Invalid Input. DoctorId, LocationId, HospitalId, PatientId, OTP Number Cannot Be Empty");
-		    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. DoctorId, LocationId, HospitalId, PatientId, OTP Number Cannot Be Empty");
+			logger.warn("Invalid Input. DoctorId, LocationId, HospitalId, PatientId, OTP Number Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input. DoctorId, LocationId, HospitalId, PatientId, OTP Number Cannot Be Empty");
 		}
 		Boolean verifyOTPResponse = otpService.verifyOTP(mobileNumber, otpNumber);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(verifyOTPResponse);
 		return response;
-	    }
+	}
 }

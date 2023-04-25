@@ -13,6 +13,7 @@ public class BabyVaccineReminderResponse {
 	private String mobileNumber;
 	private String clinicNumber;
 	private String googleMapShortUrl;
+
 	public String getPatientName() {
 		return patientName;
 	}

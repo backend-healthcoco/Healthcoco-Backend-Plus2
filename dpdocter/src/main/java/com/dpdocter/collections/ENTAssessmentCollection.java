@@ -42,13 +42,13 @@ public class ENTAssessmentCollection extends GenericCollection {
 	private Boolean discarded = Boolean.FALSE;
 	@Field
 	private List<String> earTest;
-	
+
 	@Field
 	private List<String> noseTest;
-	
+
 	@Field
 	private List<String> throatTest;
-	
+
 	public ObjectId getId() {
 		return id;
 	}

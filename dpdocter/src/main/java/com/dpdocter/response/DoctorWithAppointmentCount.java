@@ -3,11 +3,11 @@ package com.dpdocter.response;
 public class DoctorWithAppointmentCount {
 
 	private String doctorId;
-	
+
 	private String firstName;
-	
+
 	private String colorCode;
-	
+
 	private long noOfAppointments;
 
 	public String getDoctorId() {

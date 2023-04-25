@@ -5,12 +5,12 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection ="pre_operation_form_cl")
+@Document(collection = "pre_operation_form_cl")
 public class PreOperationFormCollection extends GenericCollection {
 
 	@Id
-    private ObjectId id;
-	
+	private ObjectId id;
+
 	@Field
 	private ObjectId doctorId;
 
@@ -19,10 +19,10 @@ public class PreOperationFormCollection extends GenericCollection {
 
 	@Field
 	private ObjectId hospitalId;
-	
+
 	@Field
 	private ObjectId patientId;
-	
+
 	@Field
 	private String complaint;
 
@@ -37,10 +37,10 @@ public class PreOperationFormCollection extends GenericCollection {
 
 	@Field
 	private String diagnosis;
-	
+
 	@Field
 	private String treatmentsPlan;
-	
+
 	@Field
 	private boolean discarded = false;
 
@@ -49,7 +49,7 @@ public class PreOperationFormCollection extends GenericCollection {
 
 	@Field
 	private String uniqueEmrId;
-	
+
 	@Field
 	private String localExam;
 
@@ -183,7 +183,5 @@ public class PreOperationFormCollection extends GenericCollection {
 	public void setIpdNumber(String ipdNumber) {
 		this.ipdNumber = ipdNumber;
 	}
-	
-	
-	
+
 }

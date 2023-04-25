@@ -31,7 +31,7 @@ import io.swagger.annotations.ApiOperation;
 public class DownloadDataApi {
 
 	private static Logger logger = Logger.getLogger(DownloadDataApi.class.getName());
-	
+
 	@Autowired
 	private DownloadDataService downloadDataService;
 
@@ -44,7 +44,8 @@ public class DownloadDataApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		downloadDataService.generatePatientData(new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId));
+		downloadDataService.generatePatientData(new ObjectId(doctorId), new ObjectId(locationId),
+				new ObjectId(hospitalId));
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;
@@ -59,7 +60,8 @@ public class DownloadDataApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		downloadDataService.downloadPrescriptionData(new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId));
+		downloadDataService.downloadPrescriptionData(new ObjectId(doctorId), new ObjectId(locationId),
+				new ObjectId(hospitalId));
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;
@@ -74,7 +76,8 @@ public class DownloadDataApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		downloadDataService.downloadAppointmentData(new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId));
+		downloadDataService.downloadAppointmentData(new ObjectId(doctorId), new ObjectId(locationId),
+				new ObjectId(hospitalId));
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;
@@ -89,7 +92,8 @@ public class DownloadDataApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		downloadDataService.downloadTreatmentData(new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId));
+		downloadDataService.downloadTreatmentData(new ObjectId(doctorId), new ObjectId(locationId),
+				new ObjectId(hospitalId));
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;
@@ -104,7 +108,8 @@ public class DownloadDataApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		downloadDataService.downloadClinicalNotesData(new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId));
+		downloadDataService.downloadClinicalNotesData(new ObjectId(doctorId), new ObjectId(locationId),
+				new ObjectId(hospitalId));
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;
@@ -119,7 +124,8 @@ public class DownloadDataApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		downloadDataService.downloadInvoicesData(new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId));
+		downloadDataService.downloadInvoicesData(new ObjectId(doctorId), new ObjectId(locationId),
+				new ObjectId(hospitalId));
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;
@@ -134,12 +140,13 @@ public class DownloadDataApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		downloadDataService.downloadPaymentsData(new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId));
+		downloadDataService.downloadPaymentsData(new ObjectId(doctorId), new ObjectId(locationId),
+				new ObjectId(hospitalId));
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DownloadDataUrls.CLINICAL_ITEMS)
 	@GET
 	@ApiOperation(value = PathProxy.DownloadDataUrls.CLINICAL_ITEMS, notes = PathProxy.DownloadDataUrls.CLINICAL_ITEMS)
@@ -158,24 +165,25 @@ public class DownloadDataApi {
 	@GET
 	@ApiOperation(value = PathProxy.UploadDataUrls.UPDATE_EMR, notes = PathProxy.UploadDataUrls.UPDATE_EMR)
 	public Response<Boolean> update() {
-		
+
 		Response<Boolean> response = new Response<Boolean>();
-		response.setData(downloadDataService.update("5927cdc6e4b098e7a0b9dd90", "5927cdc7e4b098e7a0b9dd93", "5927cdc6e4b098e7a0b9dd92"));
+		response.setData(downloadDataService.update("5927cdc6e4b098e7a0b9dd90", "5927cdc7e4b098e7a0b9dd93",
+				"5927cdc6e4b098e7a0b9dd92"));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DownloadDataUrls.GET_FILES)
 	@GET
 	@ApiOperation(value = PathProxy.DownloadDataUrls.GET_FILES, notes = PathProxy.DownloadDataUrls.GET_FILES)
 	public Response<Boolean> downloadfiles(@PathParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-			 @QueryParam("page") int page,@QueryParam("size") @DefaultValue("0") int size) {
+			@QueryParam("page") int page, @QueryParam("size") @DefaultValue("0") int size) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<Boolean> response = new Response<Boolean>();
-		response.setData(downloadDataService.downloadfiles(doctorId, locationId, hospitalId,page,size));
+		response.setData(downloadDataService.downloadfiles(doctorId, locationId, hospitalId, page, size));
 		return response;
 	}
 }

@@ -35,67 +35,63 @@ import io.swagger.annotations.ApiOperation;
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.VIDEO_BASE_URL, description = "Endpoint for videos")
 public class VideoApi {
-	
+
 	private static Logger logger = Logger.getLogger(VideoApi.class.getName());
 
-	 
-	 @Autowired
-	 VideoService videoService;
-	 
+	@Autowired
+	VideoService videoService;
 
-	    @Path(value = PathProxy.VideoUrls.ADD_VIDEO)
-	    @POST
-	    @Consumes({ MediaType.MULTIPART_FORM_DATA })
-	    @ApiOperation(value =PathProxy.VideoUrls.ADD_VIDEO, notes = PathProxy.VideoUrls.ADD_VIDEO)
-	    public Response<Video> addVideo(@FormDataParam("file") FormDataBodyPart file,
-				@FormDataParam("data") FormDataBodyPart data)
-	    {
-	    	data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-			AddVideoRequest request = data.getValueAs(AddVideoRequest.class);
-	    	if (file == null) {
-	    	    logger.warn("Request send  is NULL");
-	    	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
-	    	}
-	    	Video video = videoService.addVideo(file, request);
-	    	Response<Video> response = new Response<Video>();
-	    	response.setData(video);
-	    	return response;
-	    }
-	    
-	    @Path(value = PathProxy.VideoUrls.GET_VIDEO)
-	    @GET
-	    @ApiOperation(value =PathProxy.VideoUrls.GET_VIDEO, notes = PathProxy.VideoUrls.GET_VIDEO)
-	    public Response<Video> getVideoss(@QueryParam(value = "doctorId") String doctorId , @QueryParam(value = "searchTerm") String searchTerm, @MatrixParam(value ="tags") List<String> tags, @QueryParam(value = "page") int page , @QueryParam(value = "size") int size)
-	    {
-	    	List<Video> videos = null;
-	    	if (doctorId == null) {
-	    	    logger.warn("Request send  is NULL");
-	    	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
-	    	}
-	    	videos = videoService.getVideos(doctorId, searchTerm, tags, page, size);
-	    	Response<Video> response = new Response<Video>();
-	    	response.setDataList(videos);
-	    	return response;
-	    }
-	    
-	    @Path(value = PathProxy.VideoUrls.ADD_MY_VIDEO)
-	    @POST
-	    @Consumes({ MediaType.MULTIPART_FORM_DATA })
-	    @ApiOperation(value =PathProxy.VideoUrls.ADD_MY_VIDEO, notes = PathProxy.VideoUrls.ADD_MY_VIDEO)
-	    public Response<MyVideo> addMyVideo(@FormDataParam("file") FormDataBodyPart file,
-				@FormDataParam("data") FormDataBodyPart data)
-	    {
-	    	data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-			AddMyVideoRequest request = data.getValueAs(AddMyVideoRequest.class);
-	    	if (file == null) {
-	    	    logger.warn("Request send  is NULL");
-	    	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
-	    	}
-	    	MyVideo video = videoService.addMyVideo(file, request);
-	    	Response<MyVideo> response = new Response<MyVideo>();
-	    	response.setData(video);
-	    	return response;
-	    }
+	@Path(value = PathProxy.VideoUrls.ADD_VIDEO)
+	@POST
+	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@ApiOperation(value = PathProxy.VideoUrls.ADD_VIDEO, notes = PathProxy.VideoUrls.ADD_VIDEO)
+	public Response<Video> addVideo(@FormDataParam("file") FormDataBodyPart file,
+			@FormDataParam("data") FormDataBodyPart data) {
+		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+		AddVideoRequest request = data.getValueAs(AddVideoRequest.class);
+		if (file == null) {
+			logger.warn("Request send  is NULL");
+			throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
+		}
+		Video video = videoService.addVideo(file, request);
+		Response<Video> response = new Response<Video>();
+		response.setData(video);
+		return response;
+	}
 
+	@Path(value = PathProxy.VideoUrls.GET_VIDEO)
+	@GET
+	@ApiOperation(value = PathProxy.VideoUrls.GET_VIDEO, notes = PathProxy.VideoUrls.GET_VIDEO)
+	public Response<Video> getVideoss(@QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "searchTerm") String searchTerm, @MatrixParam(value = "tags") List<String> tags,
+			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size) {
+		List<Video> videos = null;
+		if (doctorId == null) {
+			logger.warn("Request send  is NULL");
+			throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
+		}
+		videos = videoService.getVideos(doctorId, searchTerm, tags, page, size);
+		Response<Video> response = new Response<Video>();
+		response.setDataList(videos);
+		return response;
+	}
+
+	@Path(value = PathProxy.VideoUrls.ADD_MY_VIDEO)
+	@POST
+	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@ApiOperation(value = PathProxy.VideoUrls.ADD_MY_VIDEO, notes = PathProxy.VideoUrls.ADD_MY_VIDEO)
+	public Response<MyVideo> addMyVideo(@FormDataParam("file") FormDataBodyPart file,
+			@FormDataParam("data") FormDataBodyPart data) {
+		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+		AddMyVideoRequest request = data.getValueAs(AddMyVideoRequest.class);
+		if (file == null) {
+			logger.warn("Request send  is NULL");
+			throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
+		}
+		MyVideo video = videoService.addMyVideo(file, request);
+		Response<MyVideo> response = new Response<MyVideo>();
+		response.setData(video);
+		return response;
+	}
 
 }

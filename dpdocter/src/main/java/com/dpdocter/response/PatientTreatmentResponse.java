@@ -38,14 +38,14 @@ public class PatientTreatmentResponse extends GenericCollection {
 	private String appointmentId;
 
 	private WorkingHours time;
-	
+
 	private Appointment appointmentRequest;
 
 	private Date fromDate;
 	private List<TreatmentResponse> treatments;
 
 	private List<TreatmentServicesCollection> treatmentServicesCollections;
-	
+
 	public String getAppointmentId() {
 		return appointmentId;
 	}
@@ -199,5 +199,5 @@ public class PatientTreatmentResponse extends GenericCollection {
 				+ appointmentId + ", time=" + time + ", appointmentRequest=" + appointmentRequest + ", fromDate="
 				+ fromDate + ", treatments=" + treatments + ", treatmentServicesCollections="
 				+ treatmentServicesCollections + "]";
-	}	
+	}
 }

@@ -1,32 +1,46 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 public class RepairRecordsOrComplianceBookCollection extends GenericCollection {
+	@Id
 	private ObjectId id;
-
+	@Field
 	private ObjectId doctorId;
 
+	@Field
 	private ObjectId locationId;
 
+	@Field
 	private ObjectId hospitalId;
 
+	@Field
 	private Long date;
 
+	@Field
 	private String nameOfEquipment;
 
+	@Field
 	private String idNum;
 
+	@Field
 	private String complaints;
 
+	@Field
 	private Long breakDownDateTime;
 
+	@Field
 	private String repairDetail;
 
+	@Field
 	private Long repairDateTime;
 
+	@Field
 	private String remark;
 
+	@Field
 	private Boolean discarded = false;
 
 	public ObjectId getId() {

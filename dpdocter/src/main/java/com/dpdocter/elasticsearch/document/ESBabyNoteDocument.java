@@ -96,6 +96,5 @@ public class ESBabyNoteDocument {
 	public void setSpeciality(String speciality) {
 		this.speciality = speciality;
 	}
-	
-	
+
 }

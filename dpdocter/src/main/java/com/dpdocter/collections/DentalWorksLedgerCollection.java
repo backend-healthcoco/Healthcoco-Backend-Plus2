@@ -6,7 +6,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "dental_works_ledger_cl")
-public class DentalWorksLedgerCollection extends GenericCollection{
+public class DentalWorksLedgerCollection extends GenericCollection {
 
 	private String id;
 
@@ -117,5 +117,5 @@ public class DentalWorksLedgerCollection extends GenericCollection{
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
-	
+
 }

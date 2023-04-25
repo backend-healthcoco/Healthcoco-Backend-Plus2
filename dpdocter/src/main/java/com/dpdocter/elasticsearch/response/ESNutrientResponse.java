@@ -14,7 +14,7 @@ public class ESNutrientResponse {
 	private NutrientType type = NutrientType.MICRO_NUTRIENT;
 
 	private NutrientCategaoryEnum category = NutrientCategaoryEnum.CARBOHYDRATE;
-	
+
 	private String nutrientCode;
 
 	public String getId() {

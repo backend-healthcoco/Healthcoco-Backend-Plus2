@@ -22,12 +22,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.dpdocter.beans.BloodGroup;
 import com.dpdocter.beans.ClinicAddress;
@@ -40,9 +35,7 @@ import com.dpdocter.beans.ClinicTiming;
 import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.beans.DoctorCalendarView;
 import com.dpdocter.beans.Feedback;
-import com.dpdocter.beans.FoodCommunity;
 import com.dpdocter.beans.FormContent;
-import com.dpdocter.beans.Language;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.Profession;
@@ -1400,32 +1393,34 @@ public class RegistrationApi {
 
 	}
 
-
 	@Path(value = PathProxy.RegistrationUrls.UPDATE_SHOW_PATIENT_NUMBER)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_SHOW_PATIENT_NUMBER, notes = PathProxy.RegistrationUrls.UPDATE_SHOW_PATIENT_NUMBER)
-	public Response<Boolean> updateShowPatient(@PathParam("doctorId") String doctorId,@PathParam("locationId") String locationId,
+	public Response<Boolean> updateShowPatient(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId,
 			@DefaultValue("false") @QueryParam("isShowPatientNumber") Boolean isShowPatientNumber) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId,locationId)) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor ,location Id could not null");
 		}
 
 		Response<Boolean> response = new Response<Boolean>();
-		response.setData(registrationService.updateShowPatient(doctorId, isShowPatientNumber,locationId));
+		response.setData(registrationService.updateShowPatient(doctorId, isShowPatientNumber, locationId));
 		return response;
 	}
 
 	@Path(value = PathProxy.RegistrationUrls.UPDATE_IS_SHOW_DOCTOR_IN_CALENDER)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_IS_SHOW_DOCTOR_IN_CALENDER, notes = PathProxy.RegistrationUrls.UPDATE_IS_SHOW_DOCTOR_IN_CALENDER)
-	public Response<Boolean> updateIsShowDoctorInCalender(@PathParam("doctorId") String doctorId,@PathParam("locationId") String locationId,
+	public Response<Boolean> updateIsShowDoctorInCalender(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId,
 			@DefaultValue("false") @QueryParam("isShowDoctorInCalender") Boolean isShowDoctorInCalender) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId,locationId)) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor ,location Id could not null");
 		}
 
 		Response<Boolean> response = new Response<Boolean>();
-		response.setData(registrationService.updateIsShowDoctorInCalender(doctorId, isShowDoctorInCalender,locationId));
+		response.setData(
+				registrationService.updateIsShowDoctorInCalender(doctorId, isShowDoctorInCalender, locationId));
 		return response;
 	}
 }

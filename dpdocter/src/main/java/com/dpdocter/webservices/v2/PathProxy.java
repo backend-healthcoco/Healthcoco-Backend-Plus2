@@ -5,7 +5,7 @@ public interface PathProxy {
 	public static final String HOME_URL = "/";
 
 	public static final String BASE_URL = "/v2";
-	
+
 	public static final String CONTACTS_BASE_URL = BASE_URL + "/contacts";
 
 	public interface ContactsUrls {
@@ -33,11 +33,11 @@ public interface PathProxy {
 		public static final String ADD_GROUP_TO_PATIENT = "/patient/addgroup";
 
 		public static final String SEND_SMS_TO_GROUP = "/group/sms";
-		
+
 		public static final String SEARCH_PATIENT = "searchPatient/{locationId}/{hospitalId}/{searchTerm}";
 
 	}
-	
+
 	public static final String SOLR_REGISTRATION_BASEURL = BASE_URL + "/solr/registration";
 
 	public interface SolrRegistrationUrls {
@@ -45,7 +45,7 @@ public interface PathProxy {
 
 		public static final String SEARCH_PATIENT_ADV = "searchPatient";
 	}
-	
+
 	public static final String APPOINTMENT_BASE_URL = BASE_URL + "/appointment";
 
 	public interface AppointmentUrls {
@@ -123,29 +123,22 @@ public interface PathProxy {
 		public static final String GET_EVENT_BY_ID = "/event/{eventId}";
 	}
 
-	
 	public static final String REGISTRATION_BASE_URL = BASE_URL + "/register";
 
 	public interface RegistrationUrls {
-		
+
 		public static final String GET_USERS = "/users/{locationId}/{hospitalId}";
-		
+
 	}
-	
+
 	public static final String ADMIT_CARD_URL = BASE_URL + "/admitCard";
-	
+
 	public interface AdmitCardUrls {
 
 		public static final String GET_ADMIT_CARDS = "/getAdmitCard";
-		//public static final String ADD_ADMIT_CARD = "/add";
-		//public static final String VIEW_ADMIT_CARD = "/view/{admitCardId}";
-		//public static final String DELETE_ADMIT_CARD = "/{admitCardId}/{doctorId}/{locationId}/{hospitalId}/delete";
-		//public static final String DOWNLOAD_ADMIT_CARD = "/download/{admitCardId}/";
-		//public static final String EMAIL_ADMIT_CARD = "/{admitCardId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
-		//public static final String EMAIL_ADMIT_CARD_WEB = "/{admitCardId}/{emailAddress}/mail";
 
 	}
-	
+
 	public static final String REPORTS_BASE_URL = BASE_URL + "/reports";
 
 	public interface ReportsUrls {
@@ -154,67 +147,66 @@ public interface PathProxy {
 		public static final String GET_OT_REPORTS = "/getOTReports";
 		public static final String GET_DELIVERY_REPORTS = "/getDeliveryReports";
 	}
-	
+
 	public static final String PRESCRIPTION_BASE_URL = BASE_URL + "/prescription";
 
 	public interface PrescriptionUrls {
-		
+
 		public static final String SEARCH_DRUGS = "/searchDrug";
 		public static final String GET_PRESCRIPTIONS_FOR_EMR = "/getEMR";
 		public static final String GET_DRUGS_BY_CODE = "/getDrugByCode";
-		
+
 	}
-	
+
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
 
 	public interface ClinicalNotesUrls {
-		
+
 	}
-	
+
 	public static final String PATIENT_TREATMENT_BASE_URL = BASE_URL + "/treatment";
 
 	public interface PatientTreatmentURLs {
-		
+
 	}
-	
+
 	public static final String PATIENT_VISIT_BASE_URL = BASE_URL + "/patientVisit";
-	
+
 	public interface PatientVisitUrls {
 
 		public static final String GET_VISITS = "/{doctorId}/{locationId}/{hospitalId}/{patientId}";
 
 		public static final String GET_VISITS_FOR_WEB = "/get";
 	}
-	
+
 	public static final String DISCHARGE_SUMMARY_BASE_URL = BASE_URL + "/dischargeSummary";
 
 	public interface DischargeSummaryUrls {
 		public static final String GET_DISCHARGE_SUMMARY = "/getDischargeSummery";
 	}
-	
+
 	public static final String SOLR_PRESCRIPTION_BASEURL = BASE_URL + "/solr/prescription";
-	
+
 	public interface SolrPrescriptionUrls {
 
 		public static final String SEARCH_DRUG = "searchDrug/{range}";
 
 	}
-	
-	public static final String SIGNUP_BASE_URL = BASE_URL + "/signup";
-	
-	public interface SignUpUrls {
-	
-	public static final String DOCTOR_SIGNUP = "/doctor";
-	
-	public static final String VERIFY_USER = "/verify/{tokenId}";
-	
-	public static final String DOCTOR_REGISTER = "/doctorRegister";
-	
-	public static final String RESEND_VERIFICATION_EMAIL_TO_DOCTOR = "/resendVerificationEmail/{emailaddress}";
 
-	
+	public static final String SIGNUP_BASE_URL = BASE_URL + "/signup";
+
+	public interface SignUpUrls {
+
+		public static final String DOCTOR_SIGNUP = "/doctor";
+
+		public static final String VERIFY_USER = "/verify/{tokenId}";
+
+		public static final String DOCTOR_REGISTER = "/doctorRegister";
+
+		public static final String RESEND_VERIFICATION_EMAIL_TO_DOCTOR = "/resendVerificationEmail/{emailaddress}";
+
 	}
-	
+
 	public static final String LOGIN_BASE_URL = BASE_URL + "/login";
 
 	public interface LoginUrls {
@@ -232,6 +224,5 @@ public interface PathProxy {
 		public static final String CHECK_DOCTOR_LOGIN_PIN = "/pin/check";
 
 	}
-
 
 }

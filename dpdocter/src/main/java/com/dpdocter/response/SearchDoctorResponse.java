@@ -24,7 +24,6 @@ public class SearchDoctorResponse {
 	private String symptomDiseaseCondition;
 	private String unformattedSymptomDiseaseCondition;
 
-
 	public String getLocality() {
 		return locality;
 	}

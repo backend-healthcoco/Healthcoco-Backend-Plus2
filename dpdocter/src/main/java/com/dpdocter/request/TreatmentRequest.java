@@ -11,11 +11,11 @@ import com.dpdocter.beans.TreatmentService;
 public class TreatmentRequest {
 
 	private String doctorId;
-	
+
 	private Date treatmentDate;
-	
+
 	private TreatmentService treatmentService;
-	
+
 	private String treatmentServiceId;
 
 	private String status;
@@ -23,15 +23,15 @@ public class TreatmentRequest {
 	private double cost = 0.0;
 
 	private String note;
-	
+
 	private Discount discount;
 
-	private double finalCost=0.0;
+	private double finalCost = 0.0;
 
 	private Quantity quantity;
 
 	private List<TreatmentService> treatmentServices;
-	
+
 	private List<Fields> treatmentFields;
 
 	public TreatmentService getTreatmentService() {

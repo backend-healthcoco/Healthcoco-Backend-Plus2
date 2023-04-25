@@ -6,17 +6,17 @@ public class DoctorServicesAddEditRequest {
 
 	private String doctorId;
 
-    private List<String> services;
+	private List<String> services;
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public List<String> getServices() {
+	public List<String> getServices() {
 		return services;
 	}
 
@@ -25,7 +25,7 @@ public class DoctorServicesAddEditRequest {
 	}
 
 	@Override
-    public String toString() {
-	return "DoctorSpecialityAddEditRequest [doctorId=" + doctorId + ", services=" + services + "]";
- }
+	public String toString() {
+		return "DoctorSpecialityAddEditRequest [doctorId=" + doctorId + ", services=" + services + "]";
+	}
 }

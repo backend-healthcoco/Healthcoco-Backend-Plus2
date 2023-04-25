@@ -17,19 +17,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Consumes(MediaType.APPLICATION_JSON)
 public class Converter {
 
-    public static String ObjectToJSON(Object value) {
-	ObjectMapper objectMapper = new ObjectMapper();
-	String JSONResult = "";
-	try {
-	    JSONResult = objectMapper.writeValueAsString(value);
-	} catch (JsonGenerationException e) {
-	    e.printStackTrace();
-	} catch (JsonMappingException e) {
-	    e.printStackTrace();
-	} catch (IOException e) {
-	    e.printStackTrace();
+	public static String ObjectToJSON(Object value) {
+		ObjectMapper objectMapper = new ObjectMapper();
+		String JSONResult = "";
+		try {
+			JSONResult = objectMapper.writeValueAsString(value);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return JSONResult;
 	}
-	return JSONResult;
-    }
 
 }

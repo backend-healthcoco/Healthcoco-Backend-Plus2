@@ -3,7 +3,7 @@ package com.dpdocter.enums;
 public enum PushNotificationType {
 
 	BROADCAST("BROADCAST"), INDIVIDUAL("INDIVIDUAL");
-	
+
 	private String type;
 
 	public String getType() {

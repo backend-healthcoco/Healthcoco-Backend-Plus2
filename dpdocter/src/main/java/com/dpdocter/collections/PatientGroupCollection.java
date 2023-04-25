@@ -8,52 +8,52 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "patient_group_cl")
 public class PatientGroupCollection extends GenericCollection {
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Indexed
-    private ObjectId groupId;
+	@Indexed
+	private ObjectId groupId;
 
-    @Indexed
-    private ObjectId patientId;
+	@Indexed
+	private ObjectId patientId;
 
-    @Field
-    private Boolean discarded = false;
+	@Field
+	private Boolean discarded = false;
 
-    @Field
+	@Field
 	private Boolean isPatientDiscarded = false;
-    
-    public ObjectId getId() {
-	return id;
-    }
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public ObjectId getGroupId() {
-	return groupId;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public void setGroupId(ObjectId groupId) {
-	this.groupId = groupId;
-    }
+	public ObjectId getGroupId() {
+		return groupId;
+	}
 
-    public ObjectId getPatientId() {
-	return patientId;
-    }
+	public void setGroupId(ObjectId groupId) {
+		this.groupId = groupId;
+	}
 
-    public void setPatientId(ObjectId patientId) {
-	this.patientId = patientId;
-    }
+	public ObjectId getPatientId() {
+		return patientId;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public void setPatientId(ObjectId patientId) {
+		this.patientId = patientId;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
 	public Boolean getIsPatientDiscarded() {
 		return isPatientDiscarded;

@@ -336,8 +336,8 @@ public class ESDischargeSummaryServiceImpl implements ESDischargeSummaryService 
 		return response;
 	}
 
-	private List<ESOperationNoteDocument> getCustomOperationNote(long page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+	private List<ESOperationNoteDocument> getCustomOperationNote(long page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESOperationNoteDocument> response = null;
 		try {
 			if (doctorId == null)
@@ -466,8 +466,8 @@ public class ESDischargeSummaryServiceImpl implements ESDischargeSummaryService 
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<EsLabourNoteDocument> getCustomGlobalLabourNote(long page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+	private List<EsLabourNoteDocument> getCustomGlobalLabourNote(long page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<EsLabourNoteDocument> response = null;
 		try {
 			List<ESDoctorDocument> doctorCollections = null;

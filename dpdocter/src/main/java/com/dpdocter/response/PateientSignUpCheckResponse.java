@@ -3,8 +3,6 @@ package com.dpdocter.response;
 public class PateientSignUpCheckResponse {
 
 	private Boolean isPatientExistWithMobileNumber = false;
-	
-//	private Boolean canAddNewPatient = true;
 
 	public Boolean getIsPatientExistWithMobileNumber() {
 		return isPatientExistWithMobileNumber;
@@ -18,13 +16,5 @@ public class PateientSignUpCheckResponse {
 	public String toString() {
 		return "PateientSignUpCheckResponse [isPatientExistWithMobileNumber=" + isPatientExistWithMobileNumber + "]";
 	}
-
-//	public Boolean getCanAddNewPatient() {
-//		return canAddNewPatient;
-//	}
-//
-//	public void setCanAddNewPatient(Boolean canAddNewPatient) {
-//		this.canAddNewPatient = canAddNewPatient;
-//	}
 
 }

@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.DoctorSignUp;
-import com.dpdocter.beans.v2.DoctorSignupRequest;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LocationAndAccessControl;
 import com.dpdocter.beans.Role;
@@ -30,9 +29,9 @@ import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.User;
+import com.dpdocter.beans.v2.DoctorSignupRequest;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
-import com.dpdocter.collections.DoctorContactUsCollection;
 import com.dpdocter.collections.DoctorOtpSignUpCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -45,17 +44,16 @@ import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.enums.ColorCode;
+import com.dpdocter.enums.ColorCode.RandomEnum;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.enums.UserState;
-import com.dpdocter.enums.ColorCode.RandomEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
-import com.dpdocter.repository.DoctorContactUsRepository;
 import com.dpdocter.repository.DoctorOtpSignUpRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.HospitalRepository;
@@ -328,31 +326,6 @@ public class SignUpServiceImplV2 implements SignUpService {
 			locationCollection.setLocationUId(UniqueIdInitial.LOCATION.getInitial() + DPDoctorUtils.generateRandomId());
 			locationCollection.setHospitalId(hospitalCollection.getId());
 			locationCollection.setIsActivate(true);
-//			List<GeocodedLocation> geocodedLocations = locationServices
-//					.geocodeLocation((!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-//							? locationCollection.getStreetAddress() + ", "
-//							: "")
-//							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-//									? locationCollection.getLandmarkDetails() + ", "
-//									: "")
-//							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-//									? locationCollection.getLocality() + ", "
-//									: "")
-//							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-//									? locationCollection.getCity() + ", "
-//									: "")
-//							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-//									? locationCollection.getState() + ", "
-//									: "")
-//							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-//									? locationCollection.getCountry() + ", "
-//									: "")
-//							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-//									? locationCollection.getPostalCode()
-//									: ""));
-//
-//			if (geocodedLocations != null && !geocodedLocations.isEmpty())
-//				BeanUtil.map(geocodedLocations.get(0), locationCollection);
 
 			locationCollection = locationRepository.save(locationCollection);
 			// save user location.
@@ -471,8 +444,6 @@ public class SignUpServiceImplV2 implements SignUpService {
 
 		Criteria criteria = new Criteria("userState").is("ADMIN");
 		criteria.and("isAnonymousAppointment").is(true);
-		// criteria.and("signedUp").is(true);
-
 		Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 				Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 

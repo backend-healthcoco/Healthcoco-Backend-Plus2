@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class TransactionalSmsReport  extends GenericCollection {
+public class TransactionalSmsReport extends GenericCollection {
 
 	private String id;
 
@@ -12,16 +12,16 @@ public class TransactionalSmsReport  extends GenericCollection {
 
 	private String locationId;
 
-	private List<SMSDetail>smsDetails;
+	private List<SMSDetail> smsDetails;
 
 	private String type;
 
 	private String responseId;
-	
+
 	private Long delivered;
-	
+
 	private Long undelivered;
-	
+
 	private Long totalCreditsSpent;
 
 	public String getId() {
@@ -95,7 +95,5 @@ public class TransactionalSmsReport  extends GenericCollection {
 	public void setTotalCreditsSpent(Long totalCreditsSpent) {
 		this.totalCreditsSpent = totalCreditsSpent;
 	}
-	
-	
 
 }

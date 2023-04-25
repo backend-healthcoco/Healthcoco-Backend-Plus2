@@ -1,16 +1,16 @@
 package com.dpdocter.enums;
 
 public enum DirectionEnum {
-    WITH_MILK("WITH_MILK"), WITH_WATER("WITH_WATER"), WITH_WATER_OR_MILK("WITH_WATER_OR_MILK");
+	WITH_MILK("WITH_MILK"), WITH_WATER("WITH_WATER"), WITH_WATER_OR_MILK("WITH_WATER_OR_MILK");
 
-    private String direction;
+	private String direction;
 
-    DirectionEnum(String direction) {
-	this.direction = direction;
-    }
+	DirectionEnum(String direction) {
+		this.direction = direction;
+	}
 
-    public String getDirection() {
-	return direction;
-    }
+	public String getDirection() {
+		return direction;
+	}
 
 }

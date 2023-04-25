@@ -1,15 +1,21 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "rate_card_lab_association_cl")
 public class RateCardLabAssociationCollection extends GenericCollection {
-
+	@Id
 	private ObjectId id;
+	@Field
 	private ObjectId daughterLabId;
+	@Field
 	private ObjectId parentLabId;
+	@Field
 	private ObjectId rateCardId;
+	@Field
 	private Boolean discarded = false;
 
 	public ObjectId getId() {
@@ -51,6 +57,5 @@ public class RateCardLabAssociationCollection extends GenericCollection {
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
-
 
 }

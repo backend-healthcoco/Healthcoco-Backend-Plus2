@@ -2,15 +2,15 @@ package com.dpdocter.enums;
 
 public enum FONTSTYLE {
 
-    BOLD("BOLD"), ITALIC("ITALIC");
+	BOLD("BOLD"), ITALIC("ITALIC");
 
-    private String style;
+	private String style;
 
-    public String getStyle() {
-	return style;
-    }
+	public String getStyle() {
+		return style;
+	}
 
-    private FONTSTYLE(String style) {
-	this.style = style;
-    }
+	private FONTSTYLE(String style) {
+		this.style = style;
+	}
 }

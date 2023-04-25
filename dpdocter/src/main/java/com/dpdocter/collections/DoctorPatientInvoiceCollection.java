@@ -17,32 +17,32 @@ import com.dpdocter.beans.Tax;
 
 @Document(collection = "doctor_patient_invoice_cl")
 @CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
-public class DoctorPatientInvoiceCollection extends GenericCollection{
+public class DoctorPatientInvoiceCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
-	
+
 	@Indexed
 	private ObjectId doctorId;
-	
+
 	@Field
 	private ObjectId locationId;
-	
+
 	@Field
 	private ObjectId hospitalId;
-	
+
 	@Field
 	private ObjectId patientId;
-	
+
 	@Field
 	private String uniqueInvoiceId;
-	
+
 	@Field
 	private List<ObjectId> receiptIds;
-	
+
 	@Field
-	private List<InvoiceItem> invoiceItems;   
-	
+	private List<InvoiceItem> invoiceItems;
+
 	@Field
 	private Discount totalDiscount;
 
@@ -54,13 +54,13 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 
 	@Field
 	private Double grandTotal = 0.0;
-	
+
 	@Field
 	private Double usedAdvanceAmount = 0.0;
-	
+
 	@Field
 	private Double refundAmount = 0.0;
-	
+
 	@Field
 	private Double balanceAmount = 0.0;
 
@@ -72,7 +72,7 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	@Field
 	private String timeOfAdmission;
 	@Field
@@ -81,7 +81,7 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 	private Date admissionDate;
 	@Field
 	private Date dischargeDate;
-	
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -225,8 +225,6 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
-	
-	
 
 	public String getTimeOfAdmission() {
 		return timeOfAdmission;

@@ -2,25 +2,25 @@ package com.dpdocter.beans;
 
 public class Symptom {
 
-	private Boolean isFever=false;
-	
-	private Boolean isDryCough=false;
-	
-	private Boolean isShortnessOfBreadth=false;
-	
-	private Boolean isHeadaches=false;
-	
-	private Boolean isPain=false;
-	
-	private Boolean isSoreThroat=false;
-	
-	private Boolean isFatigue=false;
-	
-	private Boolean isDiarrhoea=false;
-	
-	private Boolean isRunnynose=false;
-	
-	private Boolean isSneezing=false;
+	private Boolean isFever = false;
+
+	private Boolean isDryCough = false;
+
+	private Boolean isShortnessOfBreadth = false;
+
+	private Boolean isHeadaches = false;
+
+	private Boolean isPain = false;
+
+	private Boolean isSoreThroat = false;
+
+	private Boolean isFatigue = false;
+
+	private Boolean isDiarrhoea = false;
+
+	private Boolean isRunnynose = false;
+
+	private Boolean isSneezing = false;
 
 	public Boolean getIsFever() {
 		return isFever;
@@ -109,7 +109,5 @@ public class Symptom {
 				+ isSoreThroat + ", isFatigue=" + isFatigue + ", isDiarrhoea=" + isDiarrhoea + ", isRunnynose="
 				+ isRunnynose + ", isSneezing=" + isSneezing + "]";
 	}
-	
-	
-	
+
 }

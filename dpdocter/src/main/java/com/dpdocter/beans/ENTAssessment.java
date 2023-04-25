@@ -21,11 +21,10 @@ public class ENTAssessment extends GenericCollection {
 	private String remarks;
 	private List<ImageURLResponse> images;
 	private Boolean discarded = Boolean.FALSE;
-
 	private List<String> earTest;
 	private List<String> noseTest;
 	private List<String> throatTest;
-	
+
 	public String getId() {
 		return id;
 	}

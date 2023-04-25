@@ -30,9 +30,6 @@ public class OPDPrescriptionItemResponse {
 
 	private String drugCode;
 
-	
-
-	
 	@Override
 	public String toString() {
 		return "OPDPrescriptionItemResponse [id=" + id + ", duration=" + duration + ", dosage=" + dosage + ", drugType="

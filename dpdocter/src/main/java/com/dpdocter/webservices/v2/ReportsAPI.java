@@ -8,7 +8,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,8 +27,6 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.REPORTS_BASE_URL, description = "Endpoint for Medical Report Register")
 public class ReportsAPI {
 
-	private static Logger logger = Logger.getLogger(ReportsAPI.class.getName());
-
 	@Autowired
 	private ReportsService reportsService;
 
@@ -39,7 +36,8 @@ public class ReportsAPI {
 	public Response<IPDReportsResponse> getIPDReports(@QueryParam("locationId") String locationId,
 			@QueryParam("doctorId") String doctorId, @QueryParam("patientId") String patientId,
 			@QueryParam("from") String from, @QueryParam("to") String to, @QueryParam("page") int page,
-			@QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+			@QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		IPDReportsResponse ipdReports = reportsService.getIPDReportsList(locationId, doctorId, patientId, from, to,
 				page, size, updatedTime, discarded);
 		Response<IPDReportsResponse> response = new Response<IPDReportsResponse>();
@@ -47,25 +45,14 @@ public class ReportsAPI {
 		return response;
 	}
 
-/*	@Path(value = PathProxy.ReportsUrls.GET_OPD_REPORTS)
-	@GET
-	@ApiOperation(value = PathProxy.ReportsUrls.GET_OPD_REPORTS, notes = PathProxy.ReportsUrls.GET_OPD_REPORTS)
-	public Response<OPDReportsResponse> getOPDReports(@QueryParam("locationId") String locationId,@QueryParam("doctorId") String doctorId,@QueryParam("patientId") String patientId,@QueryParam("from") String from,
-			@QueryParam("to")String to,@QueryParam("page")  int page, @QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime) {
-		OPDReportsResponse opdReports = reportsService.getOPDReportsList(locationId, doctorId, patientId, from, to, page,
-				size, updatedTime);
-		Response<OPDReportsResponse> response = new Response<OPDReportsResponse>();
-		response.setData(opdReports);
-		return response;
-	}*/
-
 	@Path(value = PathProxy.ReportsUrls.GET_OT_REPORTS)
 	@GET
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_OT_REPORTS, notes = PathProxy.ReportsUrls.GET_OT_REPORTS)
 	public Response<OTReportsResponse> getOTReports(@QueryParam("locationId") String locationId,
 			@QueryParam("doctorId") String doctorId, @QueryParam("patientId") String patientId,
 			@QueryParam("from") String from, @QueryParam("to") String to, @QueryParam("page") int page,
-			@QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+			@QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		OTReportsResponse otReports = reportsService.getOTReportsList(locationId, doctorId, patientId, from, to, page,
 				size, updatedTime, discarded);
 		Response<OTReportsResponse> response = new Response<OTReportsResponse>();
@@ -79,7 +66,8 @@ public class ReportsAPI {
 	public Response<DeliveryReportsResponse> getDeliveryReports(@QueryParam("locationId") String locationId,
 			@QueryParam("doctorId") String doctorId, @QueryParam("patientId") String patientId,
 			@QueryParam("from") String from, @QueryParam("to") String to, @QueryParam("page") int page,
-			@QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+			@QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		DeliveryReportsResponse deliveryReports = reportsService.getDeliveryReportsList(locationId, doctorId, patientId,
 				from, to, page, size, updatedTime, discarded);
 		Response<DeliveryReportsResponse> response = new Response<DeliveryReportsResponse>();
@@ -87,5 +75,4 @@ public class ReportsAPI {
 		return response;
 	}
 
-	
 }

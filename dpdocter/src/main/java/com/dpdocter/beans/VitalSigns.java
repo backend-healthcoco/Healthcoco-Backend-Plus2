@@ -96,8 +96,6 @@ public class VitalSigns {
 	public void setBsa(String bsa) {
 		this.bsa = bsa;
 	}
-	
-	
 
 	public String getPefr() {
 		return pefr;

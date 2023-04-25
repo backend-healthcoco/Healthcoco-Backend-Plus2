@@ -22,10 +22,8 @@ import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.type.TypeFactory;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,60 +32,42 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.BulkSmsCredits;
 import com.dpdocter.beans.BulkSmsPackage;
-import com.dpdocter.beans.BulkSmsReport;
-import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.MessageStatus;
-import com.dpdocter.response.OrderReponse;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
-import com.dpdocter.beans.SMSDeliveryReports;
 import com.dpdocter.beans.SMSDetail;
-import com.dpdocter.beans.SMSReport;
 import com.dpdocter.collections.BulkSmsCreditsCollection;
 import com.dpdocter.collections.BulkSmsHistoryCollection;
 import com.dpdocter.collections.BulkSmsPackageCollection;
 import com.dpdocter.collections.BulkSmsPaymentCollection;
-import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
-import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.MessageCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
-import com.dpdocter.enums.PaymentMode;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.repository.BulkSmsCreditsRepository;
 import com.dpdocter.repository.BulkSmsHistoryRepository;
 import com.dpdocter.repository.BulkSmsPackageRepository;
 import com.dpdocter.repository.BulkSmsPaymentRepository;
-import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorRepository;
-import com.dpdocter.repository.MessageRepository;
 import com.dpdocter.repository.SMSTrackRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.OrderRequest;
 import com.dpdocter.request.PaymentSignatureRequest;
 import com.dpdocter.response.BulkSmsPaymentResponse;
-import com.dpdocter.response.MessageData;
 import com.dpdocter.response.MessageResponse;
+import com.dpdocter.response.OrderReponse;
 import com.dpdocter.services.BulkSmsServices;
-import com.dpdocter.services.MailBodyGenerator;
-import com.dpdocter.services.MailService;
 import com.dpdocter.services.SMSServices;
-import com.mongodb.BasicDBObject;
-import com.razorpay.Order;
-import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import com.razorpay.Utils;
-import com.squareup.okhttp.Credentials;
 
 import common.util.web.DPDoctorUtils;
 
@@ -101,9 +81,6 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
-
-	@Autowired
-	private BulkSmsCreditsRepository bulkSmsCreditRepository;
 
 	@Value(value = "${rayzorpay.api.secret}")
 	private String secret;
@@ -129,20 +106,11 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 	@Autowired
 	private BulkSmsHistoryRepository bulkSmsHistoryRepository;
 
-	@Autowired
-	private MailService mailService;
-
-	@Autowired
-	private MailBodyGenerator mailBodyGenerator;
-
 	@Value(value = "${SERVICE_ID}")
 	private String SID;
 
 	@Value(value = "${API_KEY}")
 	private String KEY;
-
-	@Autowired
-	private MessageRepository messageRepository;
 
 	@Override
 	public BulkSmsPackage addEditBulkSmsPackage(BulkSmsPackage request) {
@@ -192,7 +160,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 				aggregation = Aggregation.newAggregation(
 
 						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-						Aggregation.skip((page) * size), Aggregation.limit(size));
+						Aggregation.skip((long) (page) * size), Aggregation.limit(size));
 
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -228,27 +196,6 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 		return count;
 	}
 
-//	@Override
-//	public BulkSmsPackage getBulkSmsPackageByDoctorId(String doctorId,String locationId) {
-//		BulkSmsPackage response=null;
-//		try {
-//			BulkSmsPackageCollection bulkSms=null;
-//			if(!DPDoctorUtils.anyStringEmpty(doctorId)) {
-//				bulkSms=bulkSmsRepository.findById(new ObjectId(doctorId)).orElse(null);
-//				if(bulkSms==null) {
-//					throw new BusinessException(ServiceError.Unknown,"Id not found");
-//				}
-//				response=new BulkSmsPackage();
-//				BeanUtil.map(bulkSms, response);
-//			}
-//	}
-//		catch (BusinessException e) {
-//		e.printStackTrace();
-//		throw new BusinessException(ServiceError.Unknown,"Error while getting Bulksms package"+ e.getMessage());
-//		}
-//	return response;
-//	}
-//	
 	@Override
 	public List<BulkSmsCredits> getCreditsByDoctorIdAndLocationId(int size, int page, String searchTerm,
 			String doctorId, String locationId) {
@@ -275,7 +222,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 				aggregation = Aggregation.newAggregation(
 
 						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-						Aggregation.skip((page) * size), Aggregation.limit(size));
+						Aggregation.skip((long) (page) * size), Aggregation.limit(size));
 
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -316,7 +263,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 				aggregation = Aggregation.newAggregation(
 
 						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-						Aggregation.skip((page) * size), Aggregation.limit(size));
+						Aggregation.skip((long) (page) * size), Aggregation.limit(size));
 
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -333,122 +280,6 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 
 		return response;
 	}
-
-	// old service
-//	@Override
-//	public List<BulkSmsReport> getSmsReport(int page, int size, String doctorId, String locationId) {
-//		List<BulkSmsReport> response=null;
-//		try {
-//	Criteria criteria = new Criteria();
-//			
-//			if(!DPDoctorUtils.anyStringEmpty(doctorId))
-//			{
-//				ObjectId doctorObjectId=new ObjectId(doctorId);
-//				criteria.and("doctorId").is(doctorObjectId);
-//			}
-//			
-//			if(!DPDoctorUtils.anyStringEmpty(locationId))
-//			{
-//				ObjectId locationObjectId=new ObjectId(locationId);
-//				criteria.and("locationId").is(locationObjectId);
-//			}
-//			
-//			
-//				criteria.and("type").is("BULK_SMS");
-//			
-//			
-//			
-//	
-//			
-//			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
-//					new BasicDBObject("_id", "$_id")
-//										
-//					.append("doctorId", "$doctorId")
-//					.append("locationId", "$locationId")					
-//					.append("smsDetails.sms.smsText", "$smsDetail.sms.smsText")
-//					.append("smsDetails.deliveryStatus", "$smsDetail.deliveryStatus")
-//					.append("smsDetails.sentTime", "$smsDetail.sentTime")
-//					.append("type", "$type")					
-//					.append("responseId", "$responseId")
-//					.append("delivered", "$delivered")
-//					.append("undelivered", "$undelivered")	
-//					.append("totalCreditsSpent", "$totalCreditSpent")));
-////			
-//			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
-//					new BasicDBObject("_id", "$_id")
-//					.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-//					.append("locationId", new BasicDBObject("$first", "$locationId"))
-//					.append("smsDetails", new BasicDBObject("$first", "$smsDetails"))
-//						.append("type", new BasicDBObject("$first", "$type"))
-//						.append("responseId", new BasicDBObject("$first", "$responseId"))
-//						.append("delivered", new BasicDBObject("$first", "$delivered"))
-//						.append("undelivered", new BasicDBObject("$first", "$undelivered"))
-//						.append("totalCreditsSpent", new BasicDBObject("$first", "$totalCreditsSpent"))));
-//
-////			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
-////				criteria = criteria.orOperator(new Criteria("smsPackage.packageName").regex("^" + searchTerm, "i"),
-////						new Criteria("smsPackage.packageName").regex("^" + searchTerm));
-//			
-//			
-//			Aggregation aggregation = null;
-//			if (size > 0) {
-//				aggregation = Aggregation.newAggregation(
-//						
-//						Aggregation.match(criteria),
-//						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-//						Aggregation.skip((page) * size), Aggregation.limit(size));
-//				
-//				} else {
-//					aggregation = Aggregation.newAggregation( 
-//							Aggregation.match(criteria),
-//							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-//				}
-//			
-//				System.out.println("Aggregation:"+aggregation);
-//				response = mongoTemplate.aggregate(aggregation, SMSTrackDetail.class, BulkSmsReport.class).getMappedResults();
-//
-//				
-//		
-////				CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
-////						new BasicDBObject("_id", "$_id")
-////						.append("smsDetails", new BasicDBObject("$addToSet", "$smsDetails"))
-////						));
-//
-//				
-//				for(BulkSmsReport credit:response)
-//				{
-//					Long total=(long) credit.getSmsDetails().size();
-////					Integer totalLength=160; 
-////					String message=null;
-////					  Integer messageLength=null;
-////					if(credit.getSmsDetails().equals(null))
-////						messageLength=0;
-////					else {
-////					 message=credit.getSmsDetails().get(1).getSms().getSmsText();
-////					messageLength=message.length();
-////					}
-////					  System.out.println("messageLength:"+messageLength);
-////					  long credits=(messageLength/totalLength);
-////					  
-////					  long temp=messageLength%totalLength;
-////					  if(credits==0 || temp!=0) 
-////					  credits=credits+1;
-////					
-////					  long subCredits=credits*(total);
-//					
-//					Long count= mongoTemplate.count(new Query(new Criteria("smsDetails.deliveryStatus").is("DELIVERED").andOperator(criteria)),SMSTrackDetail.class);
-//					credit.setDelivered(count);
-//					credit.setUndelivered(total-count);
-//					
-//				}
-////			
-//			
-//		}catch (BusinessException e) {
-//			e.printStackTrace();
-//			throw new BusinessException(ServiceError.Unknown,"Error while getting Bulksms package"+ e.getMessage());
-//		}
-//		return response;
-//	}
 
 	@Override
 	public List<MessageResponse> getSmsReport(int page, int size, String doctorId, String locationId) {
@@ -468,36 +299,12 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 
 			criteria.and("messageType").is("BULK_SMS");
 
-			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
-					new BasicDBObject("_id", "$_id")
-
-							.append("doctorId", "$doctorId").append("locationId", "$locationId")
-							.append("smsDetails.sms.smsText", "$smsDetail.sms.smsText")
-							.append("smsDetails.deliveryStatus", "$smsDetail.deliveryStatus")
-							.append("smsDetails.sentTime", "$smsDetail.sentTime").append("type", "$type")
-							.append("responseId", "$responseId").append("delivered", "$delivered")
-							.append("undelivered", "$undelivered").append("totalCreditsSpent", "$totalCreditSpent")));
-//			
-			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
-					new BasicDBObject("_id", "$_id").append("doctorId", new BasicDBObject("$first", "$doctorId"))
-							.append("locationId", new BasicDBObject("$first", "$locationId"))
-							.append("smsDetails", new BasicDBObject("$first", "$smsDetails"))
-							.append("type", new BasicDBObject("$first", "$type"))
-							.append("responseId", new BasicDBObject("$first", "$responseId"))
-							.append("delivered", new BasicDBObject("$first", "$delivered"))
-							.append("undelivered", new BasicDBObject("$first", "$undelivered"))
-							.append("totalCreditsSpent", new BasicDBObject("$first", "$totalCreditsSpent"))));
-
-//			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
-//				criteria = criteria.orOperator(new Criteria("smsPackage.packageName").regex("^" + searchTerm, "i"),
-//						new Criteria("smsPackage.packageName").regex("^" + searchTerm));
-
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
 
 						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-						Aggregation.skip((page) * size), Aggregation.limit(size));
+						Aggregation.skip((long) (page) * size), Aggregation.limit(size));
 
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -506,40 +313,6 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 
 			response = mongoTemplate.aggregate(aggregation, MessageCollection.class, MessageResponse.class)
 					.getMappedResults();
-
-//				CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
-//						new BasicDBObject("_id", "$_id")
-//						.append("smsDetails", new BasicDBObject("$addToSet", "$smsDetails"))
-//						));
-
-			// for(BulkSmsReport credit:response)
-			// {
-			// Long total=(long) credit.getSmsDetails().size();
-			//
-//					Integer totalLength=160; 
-//					String message=null;
-//					  Integer messageLength=null;
-//					if(credit.getSmsDetails().equals(null))
-//						messageLength=0;
-//					else {
-//					 message=credit.getSmsDetails().get(1).getSms().getSmsText();
-//					messageLength=message.length();
-//					}
-//					  System.out.println("messageLength:"+messageLength);
-//					  long credits=(messageLength/totalLength);
-//					  
-//					  long temp=messageLength%totalLength;
-//					  if(credits==0 || temp!=0) 
-//					  credits=credits+1;
-//					
-//					  long subCredits=credits*(total);
-
-//					Long count= mongoTemplate.count(new Query(new Criteria("smsDetails.deliveryStatus").is("DELIVERED").andOperator(criteria)),SMSTrackDetail.class);
-//					credit.setDelivered(count);
-//					credit.setUndelivered(total-count);
-//					
-//				}
-//			
 
 		} catch (BusinessException e) {
 			e.printStackTrace();
@@ -550,11 +323,8 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 
 	@Override
 	public BulkSmsPaymentResponse addCredits(OrderRequest request) {
-		Order order = null;
 		BulkSmsPaymentResponse response = null;
 		try {
-			// RazorpayClient rayzorpayClient = new RazorpayClient(keyId, secret);
-
 			JSONObject orderRequest = new JSONObject();
 			BulkSmsPackageCollection bulkPackage = bulkSmsRepository
 					.findById(new ObjectId(request.getBulkSmsPackageId())).orElse(null);
@@ -610,9 +380,6 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 			ObjectMapper mapper = new ObjectMapper();
 			System.out.println(output.toString());
 			OrderReponse list = mapper.readValue(output.toString(), OrderReponse.class);
-			// OrderReponse res=list.get(0);
-
-			// order = rayzorpayClient.Orders.create(orderRequest);
 
 			if (user != null) {
 				BulkSmsPaymentCollection collection = new BulkSmsPaymentCollection();
@@ -626,14 +393,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 				response = new BulkSmsPaymentResponse();
 				BeanUtil.map(collection, response);
 			}
-		}
-		// catch (RazorpayException e) {
-//			// Handle Exception
-//			
-//			logger.error(e.getMessage());
-//			e.printStackTrace();
-//		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
@@ -677,11 +437,6 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 				bulkSmsPaymentRepository.save(onlinePaymentCollection);
 
 				response = true;
-				// user.setPaymentStatus(true);
-				// String regNo = user.getRegNo().replace("TEM", "");
-				// user.setRegNo(conferenceCollection.getTitle().substring(0, 2).toUpperCase() +
-				// regNo);
-				// doctor = userRepository.save(doctor);
 				if (onlinePaymentCollection.getTransactionStatus().equalsIgnoreCase("SUCCESS")) {
 					if (doctor != null) {
 
@@ -719,27 +474,10 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 							history.setCreatedTime(new Date());
 							history.setUpdatedTime(new Date());
 							bulkSmsHistoryRepository.save(history);
-//							doctorClinicProfileCollections.getBulkSmsCredit().setDoctorId(request.getDoctorId());
-//							doctorClinicProfileCollections.getBulkSmsCredit().setLocationId(request.getLocationId());
-//							doctorClinicProfileCollections.getBulkSmsCredit().setCreditBalance(packageCollection.getSmsCredits());
-//							doctorClinicProfileCollections.getBulkSmsCredit().setDateOfTransaction(new Date());
-//							doctorClinicProfileCollections.getBulkSmsCredit().setPaymentMode(request.getMode());
-//							doctorClinicProfileCollections.getBulkSmsCredit().setSmsPackage(bulkPackage);
 							doctorClinicProfileCollections.setUpdatedTime(new Date());
 							doctorRepository.save(doctorClinicProfileCollections);
 
 						}
-
-//						creditCollection.setDoctorId(doctor.getId());
-//						creditCollection.getSmsPackage().setPackageName(packageCollection.getPackageName());
-//						creditCollection.getSmsPackage().setSmsCredit(packageCollection.getSmsCredits());
-//						creditCollection.getSmsPackage().setPrice(packageCollection.getPrice());
-//						creditCollection.getSmsPackage().setId(packageCollection.getId().toString());
-//						creditCollection.setCreditBalance(packageCollection.getSmsCredits());
-//						creditCollection.setDateOfTransaction(new Date());
-//						creditCollection.setPaymentMode(request.getMode());
-//						creditCollection.setCreatedTime(new Date());
-//						bulkSmsCreditRepository.save(creditCollection);
 
 						String message = "";
 						message = StringEscapeUtils.unescapeJava(message);
@@ -772,32 +510,12 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 						smsDetails.add(smsDetail);
 						smsTrackDetail.setSmsDetails(smsDetails);
 						smsTrackDetail.setTemplateId("1307161561939795948");
-						Boolean res = sMSServices.sendSMS(smsTrackDetail, true);
-
-						String paymentDate = simpleDateFormat.format(onlinePaymentCollection.getCreatedTime());
-
-//						String body ="Hi " + doctor.getFirstName() + ", your Payment has been done successfully on Date: "+simpleDateFormat.format(onlinePaymentCollection.getCreatedTime())
-//						+ " by "+onlinePaymentCollection.getMode()+" and your transactionId is"+onlinePaymentCollection.getTransactionId()+" for the bulk sms package "+bulkPackage.getPackageName()
-//						+" and the total cost is "+ onlinePaymentCollection.getDiscountAmount() + ".";
-
-						String body = mailBodyGenerator.generateBulkSmsPayment(doctor.getFirstName(),
-								onlinePaymentCollection.getMode().getType(), onlinePaymentCollection.getReciept(),
-								onlinePaymentCollection.getDiscountAmount(), bulkPackage.getPackageName(), paymentDate,
-								"bulkSmsTemplate.vm");
-						Boolean mail = mailService.sendEmail(doctor.getEmailAddress(),
-								"Buy Bulk SMS Plan on Healthcoco+", body, null);
-
-//							pushNotificationServices.notifyUser(doctor.getId().toString(),
-//									"You have received a payment from an", ComponentType.APPOINTMENT_REFRESH.getType(), null, null);
-
+						sMSServices.sendSMS(smsTrackDetail, true);
 					}
-
 				}
 			}
 
-		} catch (
-
-		RazorpayException e) {
+		} catch (RazorpayException e) {
 			// Handle Exception
 			logger.error(e.getMessage());
 			e.printStackTrace();
@@ -882,42 +600,13 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 
 		MessageStatus response = null;
 		try {
-			// Set<String> numbers = new HashSet<>(mobileNumbers);
-			// List<String> numberlist = new ArrayList<String>(numbers);
-			// String numberString = StringUtils.join(numberlist, ',');
-			// String password = new String(loginRequest.getPassword());
-
-			// message = StringEscapeUtils.unescapeJava(message);
 			List<String> messageStatus = new ArrayList<String>();
-			// List<MessageCollection> messages=messageRepository.findAll();
 
 			messageStatus.add(messageId);
 			String url = null;
-			// messageStatus.add(message.)
 
 			url = "https://api.ap.kaleyra.io/v1/" + SID + "/messages/status?message_ids=" + messageStatus;
 
-//			URL obj = new URL(url);
-//			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-//
-//			// optional default is POST
-//			con.setRequestMethod("GET");
-//
-//			// add request header
-//			 con.setRequestProperty("api-key", KEY);
-//			con.setRequestProperty("User-Agent",
-//					"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
-//			con.setRequestProperty("Accept-Charset", "UTF-8");
-//
-//			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-//			String inputLine;
-//			/* response = new StringBuffer(); */
-//
-//			while ((inputLine = in.readLine()) != null) {
-//
-//				response.append(inputLine);
-//
-//			}
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			String numberString = StringUtils.join(messageStatus, ',');
 			HttpClient client = HttpClients.custom().build();

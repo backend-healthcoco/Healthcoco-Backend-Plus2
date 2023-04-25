@@ -3,7 +3,7 @@ package com.dpdocter.beans;
 public class MobileNumberDetails {
 
 	private String mobileNumber;
-	
+
 	private String mobileNumberBelongsTo;
 
 	public String getMobileNumber() {
@@ -21,6 +21,5 @@ public class MobileNumberDetails {
 	public void setMobileNumberBelongsTo(String mobileNumberBelongsTo) {
 		this.mobileNumberBelongsTo = mobileNumberBelongsTo;
 	}
-	
-	
+
 }

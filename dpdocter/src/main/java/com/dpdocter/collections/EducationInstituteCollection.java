@@ -8,30 +8,30 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "education_institute_cl")
 public class EducationInstituteCollection extends GenericCollection {
 
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private String name;
+	@Field
+	private String name;
 
-    public ObjectId getId() {
-	return id;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public String getName() {
-	return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-	this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    @Override
-    public String toString() {
-	return "EducationInstituteCollection [id=" + id + ", name=" + name + "]";
-    }
+	@Override
+	public String toString() {
+		return "EducationInstituteCollection [id=" + id + ", name=" + name + "]";
+	}
 }

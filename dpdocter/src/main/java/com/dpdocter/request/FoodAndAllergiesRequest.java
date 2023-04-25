@@ -5,8 +5,6 @@ import java.util.List;
 public class FoodAndAllergiesRequest {
 	private List<MealRequest> foods;
 	private String allergies;
-	
-	
 
 	public List<MealRequest> getFoods() {
 		return foods;

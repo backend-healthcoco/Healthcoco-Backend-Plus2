@@ -10,18 +10,15 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 @XmlRootElement
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class SMS {
-    private String smsText;
+	private String smsText;
 
-    private SMSAddress smsAddress;
-    
-    private String otp;
+	private SMSAddress smsAddress;
 
-    
-    public SMS() {
+	private String otp;
+
+	public SMS() {
 		// TODO Auto-generated constructor stub
 	}
-    
-   
 
 	public SMS(String smsText, SMSAddress smsAddress) {
 		super();
@@ -29,47 +26,39 @@ public class SMS {
 		this.smsAddress = smsAddress;
 	}
 
-
-
 	@JsonProperty("smsText")
-    public String getSmsText() {
-	return smsText;
-    }
+	public String getSmsText() {
+		return smsText;
+	}
 
-    @XmlAttribute(name = "TEXT")
-    @JsonProperty("smsText")
-    public void setSmsText(String smsText) {
-	this.smsText = smsText;
-    }
+	@XmlAttribute(name = "TEXT")
+	@JsonProperty("smsText")
+	public void setSmsText(String smsText) {
+		this.smsText = smsText;
+	}
 
-    @JsonProperty("smsAddress")
-    public SMSAddress getSmsAddress() {
-	return smsAddress;
-    }
+	@JsonProperty("smsAddress")
+	public SMSAddress getSmsAddress() {
+		return smsAddress;
+	}
 
-    @XmlElement(name = "ADDRESS")
-    @JsonProperty("smsAddress")
-    public void setSmsAddress(SMSAddress smsAddress) {
-	this.smsAddress = smsAddress;
-    }
+	@XmlElement(name = "ADDRESS")
+	@JsonProperty("smsAddress")
+	public void setSmsAddress(SMSAddress smsAddress) {
+		this.smsAddress = smsAddress;
+	}
 
-    @Override
-    public String toString() {
-	return "SMS [smsText=" + smsText + ", smsAddress=" + smsAddress + "]";
-    }
-
-
+	@Override
+	public String toString() {
+		return "SMS [smsText=" + smsText + ", smsAddress=" + smsAddress + "]";
+	}
 
 	public String getOtp() {
 		return otp;
 	}
 
-
-
 	public void setOtp(String otp) {
 		this.otp = otp;
 	}
-    
-    
 
 }

@@ -74,7 +74,5 @@ public class DoctorHospitalDentalImagingAssociationResponse {
 				+ ", doctorLocationId=" + doctorLocationId + ", hospitalId=" + hospitalId + ", location=" + location
 				+ ", discarded=" + discarded + ", doctor=" + doctor + "]";
 	}
-	
-	
 
 }

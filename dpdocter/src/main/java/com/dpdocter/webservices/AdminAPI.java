@@ -52,7 +52,7 @@ public class AdminAPI {
 
 	@Autowired
 	private TransactionalManagementService transactionalManagementService;
-	
+
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -136,7 +136,7 @@ public class AdminAPI {
 	@GET
 	@ApiOperation(value = PathProxy.AdminUrls.DISCARD_DUPLICATE_CLINICAL_ITEMS, notes = PathProxy.AdminUrls.DISCARD_DUPLICATE_CLINICAL_ITEMS)
 	public Response<Boolean> discardDuplicateClinicalItems(@PathParam("doctorId") String doctorId) {
-		
+
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(adminServices.discardDuplicateClinicalItems(doctorId));
 		return response;
@@ -145,9 +145,9 @@ public class AdminAPI {
 	@Path(value = PathProxy.AdminUrls.COPY_CLINICAL_ITEMS)
 	@GET
 	@ApiOperation(value = PathProxy.AdminUrls.COPY_CLINICAL_ITEMS, notes = PathProxy.AdminUrls.COPY_CLINICAL_ITEMS)
-	public Response<Boolean> copyClinicalItems(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-			@MatrixParam("drIds") List<String> drIds) {
-		
+	public Response<Boolean> copyClinicalItems(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @MatrixParam("drIds") List<String> drIds) {
+
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(adminServices.copyClinicalItems(doctorId, locationId, drIds));
 		return response;
@@ -157,7 +157,7 @@ public class AdminAPI {
 	@GET
 	@ApiOperation(value = PathProxy.AdminUrls.UPDATE_LOCATION_IN_ROLE, notes = PathProxy.AdminUrls.UPDATE_LOCATION_IN_ROLE)
 	public Response<Boolean> updateLocationIdInRole() {
-		
+
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(adminServices.updateLocationIdInRole());
 		return response;
@@ -167,57 +167,57 @@ public class AdminAPI {
 	@GET
 	@ApiOperation(value = PathProxy.AdminUrls.ADD_SERVICES, notes = PathProxy.AdminUrls.ADD_SERVICES)
 	public Response<Boolean> addServices() {
-		
+
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(adminServices.addServices());
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.AdminUrls.UPDATE_SERVICES_AND_SPECIALITIES_IN_DOCTORS)
 	@GET
 	@ApiOperation(value = PathProxy.AdminUrls.UPDATE_SERVICES_AND_SPECIALITIES_IN_DOCTORS, notes = PathProxy.AdminUrls.UPDATE_SERVICES_AND_SPECIALITIES_IN_DOCTORS)
 	public Response<Boolean> updateServicesAndSpecialities() {
-		
+
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(adminServices.updateServicesAndSpecialities());
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.AdminUrls.ADD_SERVICES_OF_SPECIALITIES_IN_DOCTORS)
 	@GET
 	@ApiOperation(value = PathProxy.AdminUrls.ADD_SERVICES_OF_SPECIALITIES_IN_DOCTORS, notes = PathProxy.AdminUrls.ADD_SERVICES_OF_SPECIALITIES_IN_DOCTORS)
 	public Response<Boolean> addServicesOfSpecialities() {
-		
+
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(adminServices.addServicesOfSpecialities());
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.AdminUrls.ADD_SPECIALITIES)
 	@GET
 	@ApiOperation(value = PathProxy.AdminUrls.ADD_SPECIALITIES, notes = PathProxy.AdminUrls.ADD_SPECIALITIES)
 	public Response<Boolean> addSpecialities() {
-		
+
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(adminServices.addSpecialities());
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.AdminUrls.ADD_SYMPTOMS_DISEASES_CONDITION)
 	@GET
 	@ApiOperation(value = PathProxy.AdminUrls.ADD_SYMPTOMS_DISEASES_CONDITION, notes = PathProxy.AdminUrls.ADD_SYMPTOMS_DISEASES_CONDITION)
 	public Response<Boolean> addSymptomsDiseasesCondition() {
-		
+
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(adminServices.addSymptomsDiseasesCondition());
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.AdminUrls.ADD_ALL_TO_ELASTICSEARCH)
 	@GET
 	@ApiOperation(value = PathProxy.AdminUrls.ADD_ALL_TO_ELASTICSEARCH, notes = PathProxy.AdminUrls.ADD_ALL_TO_ELASTICSEARCH)
 	public Response<Boolean> addDataFromMongoToElasticSearch() {
-		
+
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(transactionalManagementService.addDataFromMongoToElasticSearch());
 		return response;

@@ -21,9 +21,7 @@ public class QuestionCollection extends GenericCollection {
 	@Field
 	private Integer noOfLikes = 0;
 	@Field
-	private Boolean discarded=false;
-	
-
+	private Boolean discarded = false;
 
 	public Boolean getDiscarded() {
 		return discarded;

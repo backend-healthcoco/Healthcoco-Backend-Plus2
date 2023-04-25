@@ -6,69 +6,69 @@ import com.dpdocter.beans.LabTest;
 
 public class LabResponse {
 
-    private String locationId;
+	private String locationId;
 
-    private String locationName;
+	private String locationName;
 
-    private String country;
+	private String country;
 
-    private String state;
+	private String state;
 
-    private String city;
+	private String city;
 
-    private String postalCode;
+	private String postalCode;
 
-    private String websiteUrl;
+	private String websiteUrl;
 
-    private Double latitude;
+	private Double latitude;
 
-    private Double longitude;
+	private Double longitude;
 
-    private String landmarkDetails;
+	private String landmarkDetails;
 
-    private String locationEmailAddress;
+	private String locationEmailAddress;
 
-    private String streetAddress;
+	private String streetAddress;
 
-    private String locality;
+	private String locality;
 
-    private String mobileNumber;
+	private String mobileNumber;
 
-    private String alternateNumber;
+	private String alternateNumber;
 
-    private List<String> specialization;
+	private List<String> specialization;
 
-    private Boolean isLab = false;
+	private Boolean isLab = false;
 
-    private Boolean isOnlineReportsAvailable = false;
+	private Boolean isOnlineReportsAvailable = false;
 
-    private Boolean isNABLAccredited = false;
+	private Boolean isNABLAccredited = false;
 
-    private Boolean isHomeServiceAvailable = false;
+	private Boolean isHomeServiceAvailable = false;
 
-    private LabTest labTest;
+	private LabTest labTest;
 
-    private List<String> images;
+	private List<String> images;
 
-    private String logoUrl;
+	private String logoUrl;
 
-    private Integer noOfReviews = 0;
+	private Integer noOfReviews = 0;
 
-    private Integer noOfRecommenations = 0;
+	private Integer noOfRecommenations = 0;
 
-    private Double distance;
+	private Double distance;
 
-    private String clinicNumber;
+	private String clinicNumber;
 
-    private String clinicAddress;
-    
+	private String clinicAddress;
+
 	private int noOfClinicRecommendations = 0;
-	
+
 	private Integer noOfClinicReview = 0;
 
-    private String googleMapShortUrl;
-	
-    public Integer getNoOfClinicReview() {
+	private String googleMapShortUrl;
+
+	public Integer getNoOfClinicReview() {
 		return noOfClinicReview;
 	}
 
@@ -77,188 +77,188 @@ public class LabResponse {
 	}
 
 	public String getLocationId() {
-	return locationId;
-    }
-    
-    public void setLocationId(String locationId) {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
 		this.locationId = locationId;
 	}
 
 	public String getLocationName() {
-	return locationName;
-    }
+		return locationName;
+	}
 
-    public void setLocationName(String locationName) {
-	this.locationName = locationName;
-    }
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
 
-    public String getCountry() {
-	return country;
-    }
+	public String getCountry() {
+		return country;
+	}
 
-    public void setCountry(String country) {
-	this.country = country;
-    }
+	public void setCountry(String country) {
+		this.country = country;
+	}
 
-    public String getState() {
-	return state;
-    }
+	public String getState() {
+		return state;
+	}
 
-    public void setState(String state) {
-	this.state = state;
-    }
+	public void setState(String state) {
+		this.state = state;
+	}
 
-    public String getCity() {
-	return city;
-    }
+	public String getCity() {
+		return city;
+	}
 
-    public void setCity(String city) {
-	this.city = city;
-    }
+	public void setCity(String city) {
+		this.city = city;
+	}
 
-    public String getPostalCode() {
-	return postalCode;
-    }
+	public String getPostalCode() {
+		return postalCode;
+	}
 
-    public void setPostalCode(String postalCode) {
-	this.postalCode = postalCode;
-    }
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
 
-    public String getWebsiteUrl() {
-	return websiteUrl;
-    }
+	public String getWebsiteUrl() {
+		return websiteUrl;
+	}
 
-    public void setWebsiteUrl(String websiteUrl) {
-	this.websiteUrl = websiteUrl;
-    }
+	public void setWebsiteUrl(String websiteUrl) {
+		this.websiteUrl = websiteUrl;
+	}
 
-    public Double getLatitude() {
-	return latitude;
-    }
+	public Double getLatitude() {
+		return latitude;
+	}
 
-    public void setLatitude(Double latitude) {
-	this.latitude = latitude;
-    }
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
 
-    public Double getLongitude() {
-	return longitude;
-    }
+	public Double getLongitude() {
+		return longitude;
+	}
 
-    public void setLongitude(Double longitude) {
-	this.longitude = longitude;
-    }
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
+	}
 
-    public String getLandmarkDetails() {
-	return landmarkDetails;
-    }
+	public String getLandmarkDetails() {
+		return landmarkDetails;
+	}
 
-    public void setLandmarkDetails(String landmarkDetails) {
-	this.landmarkDetails = landmarkDetails;
-    }
+	public void setLandmarkDetails(String landmarkDetails) {
+		this.landmarkDetails = landmarkDetails;
+	}
 
-    public String getLocationEmailAddress() {
-	return locationEmailAddress;
-    }
+	public String getLocationEmailAddress() {
+		return locationEmailAddress;
+	}
 
-    public void setLocationEmailAddress(String locationEmailAddress) {
-	this.locationEmailAddress = locationEmailAddress;
-    }
+	public void setLocationEmailAddress(String locationEmailAddress) {
+		this.locationEmailAddress = locationEmailAddress;
+	}
 
-    public String getStreetAddress() {
-	return streetAddress;
-    }
+	public String getStreetAddress() {
+		return streetAddress;
+	}
 
-    public void setStreetAddress(String streetAddress) {
-	this.streetAddress = streetAddress;
-    }
+	public void setStreetAddress(String streetAddress) {
+		this.streetAddress = streetAddress;
+	}
 
-    public String getLocality() {
-	return locality;
-    }
+	public String getLocality() {
+		return locality;
+	}
 
-    public void setLocality(String locality) {
-	this.locality = locality;
-    }
+	public void setLocality(String locality) {
+		this.locality = locality;
+	}
 
-    public String getMobileNumber() {
-	return mobileNumber;
-    }
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
 
-    public void setMobileNumber(String mobileNumber) {
-	this.mobileNumber = mobileNumber;
-    }
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
 
-    public String getAlternateNumber() {
-	return alternateNumber;
-    }
+	public String getAlternateNumber() {
+		return alternateNumber;
+	}
 
-    public void setAlternateNumber(String alternateNumber) {
-	this.alternateNumber = alternateNumber;
-    }
+	public void setAlternateNumber(String alternateNumber) {
+		this.alternateNumber = alternateNumber;
+	}
 
-    public List<String> getSpecialization() {
-	return specialization;
-    }
+	public List<String> getSpecialization() {
+		return specialization;
+	}
 
-    public void setSpecialization(List<String> specialization) {
-	this.specialization = specialization;
-    }
+	public void setSpecialization(List<String> specialization) {
+		this.specialization = specialization;
+	}
 
-    public Boolean getIsLab() {
-	return isLab;
-    }
+	public Boolean getIsLab() {
+		return isLab;
+	}
 
-    public void setIsLab(Boolean isLab) {
-	this.isLab = isLab;
-    }
+	public void setIsLab(Boolean isLab) {
+		this.isLab = isLab;
+	}
 
-    public Boolean getIsOnlineReportsAvailable() {
-	return isOnlineReportsAvailable;
-    }
+	public Boolean getIsOnlineReportsAvailable() {
+		return isOnlineReportsAvailable;
+	}
 
-    public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
-	this.isOnlineReportsAvailable = isOnlineReportsAvailable;
-    }
+	public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
+		this.isOnlineReportsAvailable = isOnlineReportsAvailable;
+	}
 
-    public Boolean getIsNABLAccredited() {
-	return isNABLAccredited;
-    }
+	public Boolean getIsNABLAccredited() {
+		return isNABLAccredited;
+	}
 
-    public void setIsNABLAccredited(Boolean isNABLAccredited) {
-	this.isNABLAccredited = isNABLAccredited;
-    }
+	public void setIsNABLAccredited(Boolean isNABLAccredited) {
+		this.isNABLAccredited = isNABLAccredited;
+	}
 
-    public Boolean getIsHomeServiceAvailable() {
-	return isHomeServiceAvailable;
-    }
+	public Boolean getIsHomeServiceAvailable() {
+		return isHomeServiceAvailable;
+	}
 
-    public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
-	this.isHomeServiceAvailable = isHomeServiceAvailable;
-    }
+	public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
+		this.isHomeServiceAvailable = isHomeServiceAvailable;
+	}
 
-    public LabTest getLabTest() {
-	return labTest;
-    }
+	public LabTest getLabTest() {
+		return labTest;
+	}
 
-    public void setLabTest(LabTest labTest) {
-	this.labTest = labTest;
-    }
+	public void setLabTest(LabTest labTest) {
+		this.labTest = labTest;
+	}
 
-    public List<String> getImages() {
-	return images;
-    }
+	public List<String> getImages() {
+		return images;
+	}
 
-    public void setImages(List<String> images) {
-	this.images = images;
-    }
+	public void setImages(List<String> images) {
+		this.images = images;
+	}
 
-    public String getLogoUrl() {
-	return logoUrl;
-    }
+	public String getLogoUrl() {
+		return logoUrl;
+	}
 
-    public void setLogoUrl(String logoUrl) {
-	this.logoUrl = logoUrl;
-    }
+	public void setLogoUrl(String logoUrl) {
+		this.logoUrl = logoUrl;
+	}
 
 	public Integer getNoOfReviews() {
 		return noOfReviews;

@@ -6,7 +6,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
@@ -14,19 +13,17 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.DoctorSignUp;
+import com.dpdocter.beans.v2.DoctorSignupRequest;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DoctorOtpRequest;
 import com.dpdocter.response.DoctorRegisterResponse;
-import com.dpdocter.beans.v2.DoctorSignupRequest;
-import com.dpdocter.services.v2.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
-import com.dpdocter.webservices.v2.PathProxy;
+import com.dpdocter.services.v2.SignUpService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -41,30 +38,28 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.SIGNUP_BASE_URL, description = "")
 
 public class SignupApi {
-	
+
 	@Autowired
 	private SignUpService signUpService;
 
 	@Autowired
 	private TransactionalManagementService transnationalService;
-	
+
 	@Value(value = "${image.path}")
 	private String imagePath;
 
 	@Value(value = "${register.first.name.validation}")
 	private String firstNameValidaton;
 
-
-	
 	private Logger logger = Logger.getLogger(SignupApi.class);
-	
+
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
 	@POST
 	@ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP, notes = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
 	public Response<DoctorSignUp> doctorSignup(DoctorSignupRequest request) {
-		if (request == null || DPDoctorUtils.anyStringEmpty(request.getFirstName(), request.getEmailAddress(),request.getCity(),
-				request.getMobileNumber())) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getFirstName(), request.getEmailAddress(),
+				request.getCity(), request.getMobileNumber())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		} else if (request.getFirstName().length() < 2) {
@@ -96,7 +91,7 @@ public class SignupApi {
 		response.setData(doctorSignUp);
 		return response;
 	}
-	
+
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path(value = PathProxy.SignUpUrls.VERIFY_USER)
 	@GET
@@ -111,33 +106,29 @@ public class SignupApi {
 		response.setData(string);
 		return response;
 	}
-	
+
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path(value = PathProxy.SignUpUrls.DOCTOR_REGISTER)
 	@POST
 	@ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_REGISTER, notes = PathProxy.SignUpUrls.DOCTOR_REGISTER)
-	 public Response<DoctorRegisterResponse> DoctorRegister(@RequestBody DoctorOtpRequest request) {
-	//	@QueryParam(value = "mobileNumber") String mobileNumber,
-	//	 @QueryParam(value = "countryCode") String countryCode
-			if (request == null || request.getMobileNumber().isEmpty()) {
-			    logger.warn("Mobile number is null");
-			    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-			}
-			DoctorRegisterResponse registerResponse = signUpService.DoctorRegister(request);
-		
-			Response<DoctorRegisterResponse> response = new Response<DoctorRegisterResponse>();
-			if (response != null)
-			    response.setData(registerResponse);
-			
-		    
-			return response;
+	public Response<DoctorRegisterResponse> DoctorRegister(@RequestBody DoctorOtpRequest request) {
+		if (request == null || request.getMobileNumber().isEmpty()) {
+			logger.warn("Mobile number is null");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-	
+		DoctorRegisterResponse registerResponse = signUpService.DoctorRegister(request);
+
+		Response<DoctorRegisterResponse> response = new Response<DoctorRegisterResponse>();
+		if (response != null)
+			response.setData(registerResponse);
+
+		return response;
+	}
 
 	private String getFinalImageURL(String imageURL) {
 		return imagePath + imageURL;
 	}
-	
+
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)
 	@GET
@@ -151,6 +142,5 @@ public class SignupApi {
 		response.setData(signUpService.resendVerificationEmail(emailaddress));
 		return response;
 	}
-	
-	
+
 }

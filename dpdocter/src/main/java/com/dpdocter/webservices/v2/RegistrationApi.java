@@ -58,13 +58,6 @@ public class RegistrationApi {
 	@Value(value = "${invalid.input}")
 	private String invalidInput;
 
-	private String getFinalImageURL(String imageURL) {
-		if (imageURL != null) {
-			return imagePath + imageURL;
-		} else
-			return null;
-	}
-
 	@Path(value = PathProxy.RegistrationUrls.GET_USERS)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_USERS, notes = PathProxy.RegistrationUrls.GET_USERS)
@@ -79,8 +72,8 @@ public class RegistrationApi {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 		}
-		List<ClinicDoctorResponse> professionResponse = registrationService.getUsers(page, size, doctorId, locationId, hospitalId,
-				updatedTime, role, active, userState);
+		List<ClinicDoctorResponse> professionResponse = registrationService.getUsers(page, size, doctorId, locationId,
+				hospitalId, updatedTime, role, active, userState);
 		Response<ClinicDoctorResponse> response = new Response<ClinicDoctorResponse>();
 		response.setDataList(professionResponse);
 		return response;

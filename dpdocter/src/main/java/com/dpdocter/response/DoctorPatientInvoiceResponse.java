@@ -11,37 +11,37 @@ import com.dpdocter.beans.Tax;
 import com.dpdocter.collections.DoctorPatientReceiptCollection;
 import com.dpdocter.collections.GenericCollection;
 
-public class DoctorPatientInvoiceResponse extends GenericCollection{
+public class DoctorPatientInvoiceResponse extends GenericCollection {
 
 	private String id;
-	
+
 	private String doctorId;
-	
+
 	private String locationId;
-	
+
 	private String hospitalId;
-	
+
 	private String patientId;
-	
+
 	private String uniqueInvoiceId;
-	
-	private List<InvoiceItem> invoiceItems;   
-	
+
+	private List<InvoiceItem> invoiceItems;
+
 	private List<ObjectId> receiptIds;
-	
+
 	private Discount totalDiscount;
 
 	private double totalCost = 0.0;
 
 	private Tax totalTax;
-	
-	private Double grandTotal= 0.0;
-	
-	private Double usedAdvanceAmount= 0.0;
-	
-	private Double refundAmount= 0.0;
-	
-	private Double balanceAmount= 0.0;
+
+	private Double grandTotal = 0.0;
+
+	private Double usedAdvanceAmount = 0.0;
+
+	private Double refundAmount = 0.0;
+
+	private Double balanceAmount = 0.0;
 
 	private Boolean discarded = false;
 

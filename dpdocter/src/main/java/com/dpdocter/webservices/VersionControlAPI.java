@@ -25,45 +25,40 @@ import io.swagger.annotations.ApiOperation;
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.VERSION_CONTROL_BASE_URL, description = "Endpoint for version controliing")
 public class VersionControlAPI {
-	
-	 private static Logger logger = Logger.getLogger(SignUpApi.class.getName());
 
-	 
-	 @Autowired
-	 VersionControlService versionControlService;
-	 
+	private static Logger logger = Logger.getLogger(SignUpApi.class.getName());
 
-	    @Path(value = PathProxy.VersionControlUrls.CHECK_VERSION)
-	    @POST
-	    @ApiOperation(value =PathProxy.VersionControlUrls.CHECK_VERSION, notes = PathProxy.VersionControlUrls.CHECK_VERSION)
-	    public Response<Integer> checkVersion(VersionControl versionControl)
-	    {
-	    	
-	    	if (versionControl == null) {
-	    	    logger.warn("Request send  is NULL");
-	    	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
-	    	}
-	    	Integer versionControlCode = versionControlService.checkVersion(versionControl);
-	    	Response<Integer> response = new Response<Integer>();
-	    	response.setData(versionControlCode);
-	    	return response;
-	    }
-	    
-	    @Path(value = PathProxy.VersionControlUrls.CHANGE_VERSION)
-	    @POST
-	    @ApiOperation(value =PathProxy.VersionControlUrls.CHANGE_VERSION, notes = PathProxy.VersionControlUrls.CHANGE_VERSION)
-	    public Response<VersionControl> changeVersion(VersionControl versionControl)
-	    {
-	    	
-	    	if (versionControl == null) {
-	    	    logger.warn("Request send  is NULL");
-	    	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
-	    	}
-	    	versionControl = versionControlService.changeVersion(versionControl);
-	    	Response<VersionControl> response = new Response<VersionControl>();
-	    	response.setData(versionControl);
-	    	return response;
-	    }
+	@Autowired
+	VersionControlService versionControlService;
 
+	@Path(value = PathProxy.VersionControlUrls.CHECK_VERSION)
+	@POST
+	@ApiOperation(value = PathProxy.VersionControlUrls.CHECK_VERSION, notes = PathProxy.VersionControlUrls.CHECK_VERSION)
+	public Response<Integer> checkVersion(VersionControl versionControl) {
+
+		if (versionControl == null) {
+			logger.warn("Request send  is NULL");
+			throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
+		}
+		Integer versionControlCode = versionControlService.checkVersion(versionControl);
+		Response<Integer> response = new Response<Integer>();
+		response.setData(versionControlCode);
+		return response;
+	}
+
+	@Path(value = PathProxy.VersionControlUrls.CHANGE_VERSION)
+	@POST
+	@ApiOperation(value = PathProxy.VersionControlUrls.CHANGE_VERSION, notes = PathProxy.VersionControlUrls.CHANGE_VERSION)
+	public Response<VersionControl> changeVersion(VersionControl versionControl) {
+
+		if (versionControl == null) {
+			logger.warn("Request send  is NULL");
+			throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
+		}
+		versionControl = versionControlService.changeVersion(versionControl);
+		Response<VersionControl> response = new Response<VersionControl>();
+		response.setData(versionControl);
+		return response;
+	}
 
 }

@@ -12,6 +12,7 @@ public interface OAuth2RefreshTokenRepository
 		extends MongoRepository<OAuth2AuthenticationRefreshTokenCollection, ObjectId> {
 
 	@Query("{'authentication.userAuthentication.details.client_id':?0,    'authentication.userAuthentication.details.username':?1}")
-	public List<OAuth2AuthenticationRefreshTokenCollection> findByclientIdAndUserName(String clientId, String mobileNumber);
+	public List<OAuth2AuthenticationRefreshTokenCollection> findByclientIdAndUserName(String clientId,
+			String mobileNumber);
 
 }

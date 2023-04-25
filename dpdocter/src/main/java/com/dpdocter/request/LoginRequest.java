@@ -4,27 +4,27 @@ import java.util.Arrays;
 
 public class LoginRequest {
 
-    private String username;
+	private String username;
 
-    private char[] password;
+	private char[] password;
 
-    private String locationId;
-    
-    public String getUsername() {
-	return username;
-    }
+	private String locationId;
 
-    public void setUsername(String username) {
-	this.username = username;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    public char[] getPassword() {
-	return password;
-    }
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-    public void setPassword(char[] password) {
-	this.password = password;
-    }
+	public char[] getPassword() {
+		return password;
+	}
+
+	public void setPassword(char[] password) {
+		this.password = password;
+	}
 
 	public String getLocationId() {
 		return locationId;

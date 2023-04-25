@@ -95,7 +95,7 @@ public class DentalWorksReceiptCollection extends GenericCollection {
 	public void setLocationId(ObjectId locationId) {
 		this.locationId = locationId;
 	}
-	
+
 	public ObjectId getHospitalId() {
 		return hospitalId;
 	}

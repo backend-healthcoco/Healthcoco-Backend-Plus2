@@ -7,7 +7,6 @@ import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.response.PatientTreatmentResponse;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class ClinicalNotes extends GenericCollection {
@@ -15,8 +14,6 @@ public class ClinicalNotes extends GenericCollection {
 	private String id;
 
 	private String uniqueEmrId;
-
-	// private List<Diagnoses> diagnoses;
 
 	private List<ObjectId> diagramIds;
 
@@ -130,15 +127,13 @@ public class ClinicalNotes extends GenericCollection {
 	private int noOfFemaleChildren;
 
 	private int noOfMaleChildren;
-	
+
 	private EyeSpecialityObservation eyeObservation;
-	
+
 	private PhysioExamination physioExamination;
-	
+
 	private TreatmentObservation TreatmentObservation;
 	private String vaccinationHistory;
-
-	
 
 	public String getVaccinationHistory() {
 		return vaccinationHistory;
@@ -163,14 +158,6 @@ public class ClinicalNotes extends GenericCollection {
 	public void setId(String id) {
 		this.id = id;
 	}
-
-	// public List<Diagnoses> getDiagnoses() {
-	// return diagnoses;
-	// }
-	//
-	// public void setDiagnoses(List<Diagnoses> diagnoses) {
-	// this.diagnoses = diagnoses;
-	// }
 
 	public List<Diagram> getDiagrams() {
 		return diagrams;
@@ -659,8 +646,6 @@ public class ClinicalNotes extends GenericCollection {
 	public void setPriorConsultations(String priorConsultations) {
 		this.priorConsultations = priorConsultations;
 	}
-	
-	
 
 	public EyeSpecialityObservation getEyeObservation() {
 		return eyeObservation;
@@ -669,10 +654,6 @@ public class ClinicalNotes extends GenericCollection {
 	public void setEyeObservation(EyeSpecialityObservation eyeObservation) {
 		this.eyeObservation = eyeObservation;
 	}
-	
-
-
-	
 
 	public TreatmentObservation getTreatmentObservation() {
 		return TreatmentObservation;

@@ -33,16 +33,17 @@ import io.swagger.annotations.ApiOperation;
 public class ESDentalLabAPI {
 
 	private static Logger logger = Logger.getLogger(ESDentalLabAPI.class.getName());
-	
+
 	@Autowired
 	ESDentalLabServiceImpl esDentalLabServiceImpl;
-	
+
 	@Path(value = PathProxy.ESDentalLabsUrl.SEARCH_DENTAL_WORKS)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_COMPLAINTS, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_COMPLAINTS)
 	public Response<ESDentalWorksDocument> searchComplaints(@PathParam("range") String range,
-			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
-			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@QueryParam("page") long page, @QueryParam("size") int size,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
@@ -50,10 +51,11 @@ public class ESDentalLabAPI {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESDentalWorksDocument> dentalWorks = esDentalLabServiceImpl.searchDentalworks(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+		List<ESDentalWorksDocument> dentalWorks = esDentalLabServiceImpl.searchDentalworks(range, page, size, doctorId,
+				locationId, hospitalId, updatedTime, discarded, searchTerm);
 		Response<ESDentalWorksDocument> response = new Response<ESDentalWorksDocument>();
 		response.setDataList(dentalWorks);
 		return response;
 	}
-	
+
 }

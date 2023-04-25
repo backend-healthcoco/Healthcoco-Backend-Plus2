@@ -3,7 +3,7 @@ package com.dpdocter.response;
 public class AmountResponse {
 
 	private Double totalDueAmount;
-	
+
 	private Double totalRemainingAdvanceAmount;
 
 	public Double getTotalDueAmount() {

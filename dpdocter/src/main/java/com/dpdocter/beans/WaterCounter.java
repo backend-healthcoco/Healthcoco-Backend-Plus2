@@ -14,7 +14,7 @@ public class WaterCounter extends GenericCollection {
 
 	private Boolean discarded = false;
 
-	private Date date=new Date();
+	private Date date = new Date();
 
 	public Boolean getDiscarded() {
 		return discarded;

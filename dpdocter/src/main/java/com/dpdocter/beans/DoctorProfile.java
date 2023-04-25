@@ -88,30 +88,22 @@ public class DoctorProfile extends GenericCollection {
 	private String drugTypePlacement = "PREFIX";
 
 	private String freshchatRestoreId;
-	
+
 	private List<WorkingSchedule> onlineWorkingSchedules;
-	
+
 	private String RegistrationImageUrl;
-	
+
 	private String RegistrationThumbnailUrl;
-	
+
 	private String photoIdImageUrl;
-	
+
 	private UserState userState = UserState.USERSTATECOMPLETE;
 
 	private Subscription subscriptionDetail;
 
 	private BulkSmsCredits bulkSmsCredit;
-	
-	private Boolean isTransactionalSms=true;
-	
-	
-	//private Map<DoctorConsultation, String> onlineConsultationFees;
-	
-//	private List<DoctorConsultation> consultationType;
-	
-	//private List<ConsultationType> onlineConsultationType;
 
+	private Boolean isTransactionalSms = true;
 
 	public String getId() {
 		return id;
@@ -416,8 +408,6 @@ public class DoctorProfile extends GenericCollection {
 	public void setFreshchatRestoreId(String freshchatRestoreId) {
 		this.freshchatRestoreId = freshchatRestoreId;
 	}
-	
-	
 
 	public List<WorkingSchedule> getOnlineWorkingSchedules() {
 		return onlineWorkingSchedules;
@@ -427,9 +417,6 @@ public class DoctorProfile extends GenericCollection {
 		this.onlineWorkingSchedules = onlineWorkingSchedules;
 	}
 
-	
-	
-	
 	public String getRegistrationImageUrl() {
 		return RegistrationImageUrl;
 	}
@@ -446,9 +433,6 @@ public class DoctorProfile extends GenericCollection {
 		RegistrationThumbnailUrl = registrationThumbnailUrl;
 	}
 
-	
-	
-	
 	public String getPhotoIdImageUrl() {
 		return photoIdImageUrl;
 	}
@@ -465,8 +449,6 @@ public class DoctorProfile extends GenericCollection {
 		this.userState = userState;
 	}
 
-	
-	
 	public BulkSmsCredits getBulkSmsCredit() {
 		return bulkSmsCredit;
 	}
@@ -482,8 +464,6 @@ public class DoctorProfile extends GenericCollection {
 	public void setSubscriptionDetail(Subscription subscriptionDetail) {
 		this.subscriptionDetail = subscriptionDetail;
 	}
-	
-	
 
 	public Boolean getIsTransactionalSms() {
 		return isTransactionalSms;

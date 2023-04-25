@@ -3,7 +3,7 @@ package com.dpdocter.beans;
 import java.util.List;
 
 public class FlowSheetJasperBean {
-	
+
 	private Integer no = 0;
 
 	private String date = " ";
@@ -13,11 +13,12 @@ public class FlowSheetJasperBean {
 	private String complaint;
 
 	private String advice;
-	
+
 	private List<Medication> medication;
-	private String diagnosis;	
+
+	private String diagnosis;
+
 	private String referTo;
-	
 
 	public Integer getNo() {
 		return no;
@@ -59,7 +60,6 @@ public class FlowSheetJasperBean {
 		this.advice = advice;
 	}
 
-	
 	public List<Medication> getMedication() {
 		return medication;
 	}
@@ -83,9 +83,5 @@ public class FlowSheetJasperBean {
 	public void setReferTo(String referTo) {
 		this.referTo = referTo;
 	}
-
-	
-	
-	
 
 }

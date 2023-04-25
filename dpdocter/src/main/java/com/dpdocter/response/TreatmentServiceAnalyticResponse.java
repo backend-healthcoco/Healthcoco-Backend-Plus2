@@ -4,14 +4,15 @@ import java.util.List;
 
 public class TreatmentServiceAnalyticResponse {
 	private int totalTreatmentService;
-	private List<String>totalTreatmentServiceCompleted;
+	private List<String> totalTreatmentServiceCompleted;
 	private List<String> totalTreatmentServiceProgress;
 	private List<String> totalTreatmentServiceNotStarted;
 	private String treatmentServiceName;
+
 	public int getTotalTreatmentService() {
 		return totalTreatmentService;
 	}
-	
+
 	public List<String> getTotalTreatmentServiceCompleted() {
 		return totalTreatmentServiceCompleted;
 	}
@@ -43,6 +44,7 @@ public class TreatmentServiceAnalyticResponse {
 	public String getTreatmentServiceName() {
 		return treatmentServiceName;
 	}
+
 	public void setTreatmentServiceName(String treatmentServiceName) {
 		this.treatmentServiceName = treatmentServiceName;
 	}
@@ -55,5 +57,5 @@ public class TreatmentServiceAnalyticResponse {
 				+ ", totalTreatmentServiceNotStarted=" + totalTreatmentServiceNotStarted + ", treatmentServiceName="
 				+ treatmentServiceName + "]";
 	}
-	
+
 }

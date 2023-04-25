@@ -2,5 +2,5 @@ package com.dpdocter.enums;
 
 public enum InvoiceItemType {
 
-	SERVICE, PRODUCT, TEST , DRUGS;
+	SERVICE, PRODUCT, TEST, DRUGS;
 }

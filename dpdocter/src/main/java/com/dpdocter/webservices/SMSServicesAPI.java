@@ -47,181 +47,186 @@ import io.swagger.annotations.ApiOperation;
 @Path(PathProxy.SMS_BASE_URL)
 @Api(value = PathProxy.SMS_BASE_URL, description = "Endpoint for sms")
 public class SMSServicesAPI {
-    private static Logger logger = Logger.getLogger(SMSServicesAPI.class);
+	private static Logger logger = Logger.getLogger(SMSServicesAPI.class);
 
-    @Autowired
-    private SMSServices smsServices;
+	@Autowired
+	private SMSServices smsServices;
 
-    @Autowired
-    private TransactionalManagementService transactionalManagementService;
+	@Autowired
+	private TransactionalManagementService transactionalManagementService;
 
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.SMSUrls.SEND_SMS)
-    @POST
-    @ApiOperation(value = PathProxy.SMSUrls.SEND_SMS, notes = PathProxy.SMSUrls.SEND_SMS)
-    public Response<Boolean> sendSMS(@RequestBody SmsRequest request) {
-    	SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-    	SMS sms = new SMS();
-    	if(!DPDoctorUtils.anyStringEmpty(request.getMessage()))
-    	sms.setSmsText(request.getMessage());
-    	SMSDetail smsDetail = new SMSDetail();
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SMSUrls.SEND_SMS)
+	@POST
+	@ApiOperation(value = PathProxy.SMSUrls.SEND_SMS, notes = PathProxy.SMSUrls.SEND_SMS)
+	public Response<Boolean> sendSMS(@RequestBody SmsRequest request) {
+		SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+		SMS sms = new SMS();
+		if (!DPDoctorUtils.anyStringEmpty(request.getMessage()))
+			sms.setSmsText(request.getMessage());
+		SMSDetail smsDetail = new SMSDetail();
 		SMSAddress smsAddress = new SMSAddress();
-		if(!DPDoctorUtils.anyStringEmpty(request.getMobileNumber()))
-		smsAddress.setRecipient(request.getMobileNumber());
+		if (!DPDoctorUtils.anyStringEmpty(request.getMobileNumber()))
+			smsAddress.setRecipient(request.getMobileNumber());
 		sms.setSmsAddress(smsAddress);
-		if(!DPDoctorUtils.anyStringEmpty(request.getTemplateId()))
-        smsTrackDetail.setTemplateId(request.getTemplateId());
+		if (!DPDoctorUtils.anyStringEmpty(request.getTemplateId()))
+			smsTrackDetail.setTemplateId(request.getTemplateId());
 		smsDetail.setSms(sms);
 		smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
 		List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 		smsDetails.add(smsDetail);
 		smsTrackDetail.setSmsDetails(smsDetails);
-	smsServices.sendSMS(smsTrackDetail, true);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
-	return response;
-    }
-
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @GET
-    @ApiOperation(value = "GET_SMS", notes = "GET_SMS")
-    public Response<SMSResponse> getSMS(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
-	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId) {
-    	if(DPDoctorUtils.allStringsEmpty(doctorId, locationId)){
-    		logger.warn("Invalid Input");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-    	}
-	SMSResponse smsTrackDetails = smsServices.getSMS(page, size, doctorId, locationId, hospitalId);
-	Response<SMSResponse> response = new Response<SMSResponse>();
-	response.setData(smsTrackDetails);
-	return response;
-    }
-
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.SMSUrls.GET_SMS_DETAILS)
-    @GET
-    @ApiOperation(value = PathProxy.SMSUrls.GET_SMS_DETAILS, notes = PathProxy.SMSUrls.GET_SMS_DETAILS)
-    public Response<SMSTrack> getSMSDetails(@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "patientId") String patientId,
-	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-	    @QueryParam(value = "hospitalId") String hospitalId) {
-    	if(DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)){
-    		logger.warn("Invalid Input");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-    	}
-	List<SMSTrack> smsTrackDetails = smsServices.getSMSDetails(page, size, patientId, doctorId, locationId, hospitalId);
-	Response<SMSTrack> response = new Response<SMSTrack>();
-	response.setDataList(smsTrackDetails);
-	return response;
-    }
-
-    @Path(value = PathProxy.SMSUrls.UPDATE_DELIVERY_REPORTS)
-    @POST
-    @ApiOperation(value = PathProxy.SMSUrls.UPDATE_DELIVERY_REPORTS, notes = PathProxy.SMSUrls.UPDATE_DELIVERY_REPORTS)
-    public String updateDeliveryReports(String request) {
-
-	try {
-	    request = request.replaceFirst("data=", "");
-	    ObjectMapper mapper = new ObjectMapper();
-	    @SuppressWarnings("deprecation")
-		List<SMSDeliveryReports> list = mapper.readValue(request, TypeFactory.collectionType(List.class, SMSDeliveryReports.class));
-	    smsServices.updateDeliveryReports(list);
-	} catch (JsonParseException e) {
-	    logger.error(e);
-	    throw new BusinessException(ServiceError.InvalidInput, e.getMessage());
-	} catch (JsonMappingException e) {
-	    logger.error(e);
-	    throw new BusinessException(ServiceError.InvalidInput, e.getMessage());
-	} catch (IOException e) {
-	    logger.error(e);
-	    throw new BusinessException(ServiceError.InvalidInput, e.getMessage());
+		smsServices.sendSMS(smsTrackDetail, true);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
 	}
-	return "true";
-    }
 
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.SMSUrls.ADD_NUMBER)
-    @GET
-    @ApiOperation(value = PathProxy.SMSUrls.ADD_NUMBER, notes = PathProxy.SMSUrls.ADD_NUMBER)
-    public Response<Boolean> addNumber(@PathParam(value = "mobileNumber") String mobileNumber) {
-	smsServices.addNumber(mobileNumber);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
-	return response;
-    }
-
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.SMSUrls.DELETE_NUMBER)
-    @GET
-    @ApiOperation(value = PathProxy.SMSUrls.DELETE_NUMBER, notes = PathProxy.SMSUrls.DELETE_NUMBER)
-    public Response<Boolean> deleteNumber(@PathParam(value = "mobileNumber") String mobileNumber) {
-	smsServices.deleteNumber(mobileNumber);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
-	return response;
-    }
-
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.SMSUrls.ADD_EDIT_SMS_FORMAT)
-    @POST
-    @ApiOperation(value = PathProxy.SMSUrls.ADD_EDIT_SMS_FORMAT, notes = PathProxy.SMSUrls.ADD_EDIT_SMS_FORMAT)
-    public Response<SMSFormat> addSmsFormat(SMSFormat request) {
-	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),request.getHospitalId())) {
-	    logger.warn("Invalid Input");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@GET
+	@ApiOperation(value = "GET_SMS", notes = "GET_SMS")
+	public Response<SMSResponse> getSMS(@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId) {
+		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		SMSResponse smsTrackDetails = smsServices.getSMS(page, size, doctorId, locationId, hospitalId);
+		Response<SMSResponse> response = new Response<SMSResponse>();
+		response.setData(smsTrackDetails);
+		return response;
 	}
-	SMSFormat smsFormat = smsServices.addSmsFormat(request);
-	Response<SMSFormat> response = new Response<SMSFormat>();
-	response.setData(smsFormat);
-	return response;
-    }
 
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.SMSUrls.GET_SMS_FORMAT)
-    @GET
-    @ApiOperation(value = PathProxy.SMSUrls.GET_SMS_FORMAT, notes = PathProxy.SMSUrls.GET_SMS_FORMAT)
-    public Response<SMSFormat> getSmsFormat(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId, @QueryParam(value = "type") String type) {
-    	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
-    	    logger.warn("Invalid Input");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-    	}
-	List<SMSFormat> smsFormat = smsServices.getSmsFormat(doctorId, locationId, hospitalId, type);
-	Response<SMSFormat> response = new Response<SMSFormat>();
-	response.setDataList(smsFormat);
-	return response;
-    }
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SMSUrls.GET_SMS_DETAILS)
+	@GET
+	@ApiOperation(value = PathProxy.SMSUrls.GET_SMS_DETAILS, notes = PathProxy.SMSUrls.GET_SMS_DETAILS)
+	public Response<SMSTrack> getSMSDetails(@QueryParam("page") long page, @QueryParam("size") int size,
+			@QueryParam(value = "patientId") String patientId, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId) {
+		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<SMSTrack> smsTrackDetails = smsServices.getSMSDetails(page, size, patientId, doctorId, locationId,
+				hospitalId);
+		Response<SMSTrack> response = new Response<SMSTrack>();
+		response.setDataList(smsTrackDetails);
+		return response;
+	}
 
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.SMSUrls.SEND_DOWNLOAD_APP_SMS_TO_PATIENT)
-    @GET
-    @ApiOperation(value = PathProxy.SMSUrls.SEND_DOWNLOAD_APP_SMS_TO_PATIENT, notes = PathProxy.SMSUrls.SEND_DOWNLOAD_APP_SMS_TO_PATIENT)
-    public Response<Boolean> sendPromotionalSMSToPatient() {
-    	
-	Boolean send = transactionalManagementService.sendPromotionalSMSToPatient();
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(send);
-	return response;
-    }
+	@Path(value = PathProxy.SMSUrls.UPDATE_DELIVERY_REPORTS)
+	@POST
+	@ApiOperation(value = PathProxy.SMSUrls.UPDATE_DELIVERY_REPORTS, notes = PathProxy.SMSUrls.UPDATE_DELIVERY_REPORTS)
+	public String updateDeliveryReports(String request) {
 
+		try {
+			request = request.replaceFirst("data=", "");
+			ObjectMapper mapper = new ObjectMapper();
+			@SuppressWarnings("deprecation")
+			List<SMSDeliveryReports> list = mapper.readValue(request,
+					TypeFactory.collectionType(List.class, SMSDeliveryReports.class));
+			smsServices.updateDeliveryReports(list);
+		} catch (JsonParseException e) {
+			logger.error(e);
+			throw new BusinessException(ServiceError.InvalidInput, e.getMessage());
+		} catch (JsonMappingException e) {
+			logger.error(e);
+			throw new BusinessException(ServiceError.InvalidInput, e.getMessage());
+		} catch (IOException e) {
+			logger.error(e);
+			throw new BusinessException(ServiceError.InvalidInput, e.getMessage());
+		}
+		return "true";
+	}
 
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.SMSUrls.SEND_BULK_SMS)
-    @GET
-    @ApiOperation(value = PathProxy.SMSUrls.SEND_BULK_SMS, notes = PathProxy.SMSUrls.SEND_BULK_SMS)
-    public Response<String> sendBulkSMS(@MatrixParam("mobileNumbers") List<String> mobileNumbers, @PathParam(value = "message") String message) {
-    	
-	String send = smsServices.getBulkSMSResponse(mobileNumbers, message, null,null,0L);
-	Response<String> response = new Response<String>();
-	response.setData(send);
-	return response;
-    }
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SMSUrls.ADD_NUMBER)
+	@GET
+	@ApiOperation(value = PathProxy.SMSUrls.ADD_NUMBER, notes = PathProxy.SMSUrls.ADD_NUMBER)
+	public Response<Boolean> addNumber(@PathParam(value = "mobileNumber") String mobileNumber) {
+		smsServices.addNumber(mobileNumber);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
+
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SMSUrls.DELETE_NUMBER)
+	@GET
+	@ApiOperation(value = PathProxy.SMSUrls.DELETE_NUMBER, notes = PathProxy.SMSUrls.DELETE_NUMBER)
+	public Response<Boolean> deleteNumber(@PathParam(value = "mobileNumber") String mobileNumber) {
+		smsServices.deleteNumber(mobileNumber);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
+
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SMSUrls.ADD_EDIT_SMS_FORMAT)
+	@POST
+	@ApiOperation(value = PathProxy.SMSUrls.ADD_EDIT_SMS_FORMAT, notes = PathProxy.SMSUrls.ADD_EDIT_SMS_FORMAT)
+	public Response<SMSFormat> addSmsFormat(SMSFormat request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		SMSFormat smsFormat = smsServices.addSmsFormat(request);
+		Response<SMSFormat> response = new Response<SMSFormat>();
+		response.setData(smsFormat);
+		return response;
+	}
+
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SMSUrls.GET_SMS_FORMAT)
+	@GET
+	@ApiOperation(value = PathProxy.SMSUrls.GET_SMS_FORMAT, notes = PathProxy.SMSUrls.GET_SMS_FORMAT)
+	public Response<SMSFormat> getSmsFormat(@PathParam(value = "doctorId") String doctorId,
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+			@QueryParam(value = "type") String type) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<SMSFormat> smsFormat = smsServices.getSmsFormat(doctorId, locationId, hospitalId, type);
+		Response<SMSFormat> response = new Response<SMSFormat>();
+		response.setDataList(smsFormat);
+		return response;
+	}
+
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SMSUrls.SEND_DOWNLOAD_APP_SMS_TO_PATIENT)
+	@GET
+	@ApiOperation(value = PathProxy.SMSUrls.SEND_DOWNLOAD_APP_SMS_TO_PATIENT, notes = PathProxy.SMSUrls.SEND_DOWNLOAD_APP_SMS_TO_PATIENT)
+	public Response<Boolean> sendPromotionalSMSToPatient() {
+
+		Boolean send = transactionalManagementService.sendPromotionalSMSToPatient();
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(send);
+		return response;
+	}
+
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SMSUrls.SEND_BULK_SMS)
+	@GET
+	@ApiOperation(value = PathProxy.SMSUrls.SEND_BULK_SMS, notes = PathProxy.SMSUrls.SEND_BULK_SMS)
+	public Response<String> sendBulkSMS(@MatrixParam("mobileNumbers") List<String> mobileNumbers,
+			@PathParam(value = "message") String message) {
+
+		String send = smsServices.getBulkSMSResponse(mobileNumbers, message, null, null, 0L);
+		Response<String> response = new Response<String>();
+		response.setData(send);
+		return response;
+	}
 }

@@ -102,7 +102,5 @@ public class ESImplantDocument {
 				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", updatedTime="
 				+ updatedTime + ", speciality=" + speciality + "]";
 	}
-	
-	
 
 }

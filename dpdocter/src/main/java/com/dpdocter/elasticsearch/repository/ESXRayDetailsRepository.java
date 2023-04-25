@@ -4,6 +4,6 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 
 import com.dpdocter.elasticsearch.document.ESXRayDetailsDocument;
 
-public interface ESXRayDetailsRepository extends ElasticsearchRepository<ESXRayDetailsDocument, String>{
+public interface ESXRayDetailsRepository extends ElasticsearchRepository<ESXRayDetailsDocument, String> {
 
 }

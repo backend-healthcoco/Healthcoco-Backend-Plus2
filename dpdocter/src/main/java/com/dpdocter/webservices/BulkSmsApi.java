@@ -15,10 +15,8 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 import com.dpdocter.beans.BulkSmsCredits;
 import com.dpdocter.beans.BulkSmsPackage;
-import com.dpdocter.beans.BulkSmsReport;
 import com.dpdocter.beans.MessageStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -39,86 +37,80 @@ import io.swagger.annotations.ApiOperation;
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.BULK_SMS_PACKAGE_BASE_URL, description = "Endpoint for records")
 public class BulkSmsApi {
-	
-	private static Logger logger = LogManager.getLogger(BulkSmsApi.class.getName());
 
+	private static Logger logger = LogManager.getLogger(BulkSmsApi.class.getName());
 
 	@Autowired
 	private BulkSmsServices bulkSmsServices;
-	
+
 	@Path(value = PathProxy.BulkSmsPackageUrls.GET_SMS_PACKAGE)
 	@ApiOperation(value = PathProxy.BulkSmsPackageUrls.GET_SMS_PACKAGE, notes = PathProxy.BulkSmsPackageUrls.GET_SMS_PACKAGE)
 	@GET
-	public Response<BulkSmsPackage> getBulkSmsPackages(@DefaultValue("0")@QueryParam(value ="size") int size, 
-			@DefaultValue("0")	@QueryParam( value ="page") int page,
-			@QueryParam(value ="discarded") Boolean discarded, 
-			@QueryParam(value ="searchTerm") String searchTerm) {
+	public Response<BulkSmsPackage> getBulkSmsPackages(@DefaultValue("0") @QueryParam(value = "size") int size,
+			@DefaultValue("0") @QueryParam(value = "page") int page, @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
 
 		Response<BulkSmsPackage> response = new Response<BulkSmsPackage>();
-			response.setCount(bulkSmsServices.CountBulkSmsPackage(searchTerm, discarded));
-			response.setDataList(bulkSmsServices.getBulkSmsPackage(page, size, searchTerm, discarded));
-	
+		response.setCount(bulkSmsServices.CountBulkSmsPackage(searchTerm, discarded));
+		response.setDataList(bulkSmsServices.getBulkSmsPackage(page, size, searchTerm, discarded));
+
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.BulkSmsPackageUrls.GET_BULK_SMS_CREDITS)
 	@ApiOperation(value = PathProxy.BulkSmsPackageUrls.GET_BULK_SMS_CREDITS, notes = PathProxy.BulkSmsPackageUrls.GET_BULK_SMS_CREDITS)
-	@GET	
-	public Response<BulkSmsCredits> getBulkSmsCredits(@DefaultValue("0")@QueryParam(value ="size") int size, 
-			@DefaultValue("0")	@QueryParam(value ="page") int page,
-			@QueryParam(value ="doctorId") String doctorId,
-			@QueryParam(value ="locationIdId") String locationId,
-			@QueryParam(value ="searchTerm") String searchTerm) {
+	@GET
+	public Response<BulkSmsCredits> getBulkSmsCredits(@DefaultValue("0") @QueryParam(value = "size") int size,
+			@DefaultValue("0") @QueryParam(value = "page") int page, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationIdId") String locationId,
+			@QueryParam(value = "searchTerm") String searchTerm) {
 
 		Response<BulkSmsCredits> response = new Response<BulkSmsCredits>();
-		if (doctorId == null && locationId==null) {
+		if (doctorId == null && locationId == null) {
 			logger.warn("doctorId or locationid  is NULL");
 			throw new BusinessException(ServiceError.InvalidInput, "doctorId send  is NULL");
 		}
-			response.setDataList(bulkSmsServices.getCreditsByDoctorIdAndLocationId(size, page, searchTerm, doctorId, locationId));
-	
+		response.setDataList(
+				bulkSmsServices.getCreditsByDoctorIdAndLocationId(size, page, searchTerm, doctorId, locationId));
+
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.BulkSmsPackageUrls.GET_SMS_HISTORY)
 	@ApiOperation(value = PathProxy.BulkSmsPackageUrls.GET_SMS_HISTORY, notes = PathProxy.BulkSmsPackageUrls.GET_SMS_HISTORY)
 	@GET
-	public Response<BulkSmsCredits> getBulkSmsHistory(@DefaultValue("0")@QueryParam(value ="size") int size, 
-			@DefaultValue("0")	@QueryParam(value ="page") int page,
-			@QueryParam(value ="doctorId") String doctorId,
-			@QueryParam(value ="locationIdId") String locationId,
-			@QueryParam(value ="searchTerm") String searchTerm) {
+	public Response<BulkSmsCredits> getBulkSmsHistory(@DefaultValue("0") @QueryParam(value = "size") int size,
+			@DefaultValue("0") @QueryParam(value = "page") int page, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationIdId") String locationId,
+			@QueryParam(value = "searchTerm") String searchTerm) {
 
 		Response<BulkSmsCredits> response = new Response<BulkSmsCredits>();
-		if (doctorId == null && locationId==null) {
+		if (doctorId == null && locationId == null) {
 			logger.warn("doctorId or locationid  is NULL");
 			throw new BusinessException(ServiceError.InvalidInput, "doctorId send  is NULL");
 		}
-			response.setDataList(bulkSmsServices.getBulkSmsHistory(page, size, searchTerm, doctorId,locationId));
-	
+		response.setDataList(bulkSmsServices.getBulkSmsHistory(page, size, searchTerm, doctorId, locationId));
+
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.BulkSmsPackageUrls.GET_SMS_REPORT)
 	@ApiOperation(value = PathProxy.BulkSmsPackageUrls.GET_SMS_REPORT, notes = PathProxy.BulkSmsPackageUrls.GET_SMS_REPORT)
 	@GET
-	public Response<MessageResponse> getBulkSmsReport(@DefaultValue("0")@QueryParam(value ="size") int size, 
-			@DefaultValue("0")	@QueryParam(value ="page") int page,
-			@QueryParam(value ="doctorId") String doctorId,
-			@QueryParam(value ="locationIdId") String locationId) {
+	public Response<MessageResponse> getBulkSmsReport(@DefaultValue("0") @QueryParam(value = "size") int size,
+			@DefaultValue("0") @QueryParam(value = "page") int page, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationIdId") String locationId) {
 
 		Response<MessageResponse> response = new Response<MessageResponse>();
-		if (doctorId == null && locationId==null) {
+		if (doctorId == null && locationId == null) {
 			logger.warn("doctorId or locationid  is NULL");
 			throw new BusinessException(ServiceError.InvalidInput, "doctorId send  is NULL");
 		}
-			response.setDataList(bulkSmsServices.getSmsReport(page, size, doctorId, locationId));
-	
+		response.setDataList(bulkSmsServices.getSmsReport(page, size, doctorId, locationId));
+
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.BulkSmsPackageUrls.CREATE_PAYMENT)
 	@ApiOperation(value = PathProxy.BulkSmsPackageUrls.CREATE_PAYMENT, notes = PathProxy.BulkSmsPackageUrls.CREATE_PAYMENT)
 	@POST
@@ -127,9 +119,10 @@ public class BulkSmsApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		if (DPDoctorUtils.anyStringEmpty(request.getBulkSmsPackageId(),request.getDoctorId())) {
+		if (DPDoctorUtils.anyStringEmpty(request.getBulkSmsPackageId(), request.getDoctorId())) {
 			logger.warn(" doctorId should not be Null or empty");
-			throw new BusinessException(ServiceError.InvalidInput, "userId,problemDetailId and doctorId should not be Null or empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"userId,problemDetailId and doctorId should not be Null or empty");
 		}
 
 		Response<BulkSmsPaymentResponse> response = new Response<BulkSmsPaymentResponse>();
@@ -159,18 +152,16 @@ public class BulkSmsApi {
 	@Path(value = PathProxy.BulkSmsPackageUrls.GET_SMS_STATUS)
 	@ApiOperation(value = PathProxy.BulkSmsPackageUrls.GET_SMS_STATUS, notes = PathProxy.BulkSmsPackageUrls.GET_SMS_STATUS)
 	@GET
-	public Response<MessageStatus> getSmsStatus(
-			@QueryParam(value ="messageId") String messageId) {
+	public Response<MessageStatus> getSmsStatus(@QueryParam(value = "messageId") String messageId) {
 
 		Response<MessageStatus> response = new Response<MessageStatus>();
-		if (messageId == null && messageId==null) {
+		if (messageId == null && messageId == null) {
 			logger.warn("messageId  is NULL");
 			throw new BusinessException(ServiceError.InvalidInput, "doctorId send  is NULL");
 		}
-			response.setData(bulkSmsServices.getSmsStatus(messageId));
-	
+		response.setData(bulkSmsServices.getSmsStatus(messageId));
+
 		return response;
 	}
-	
 
 }

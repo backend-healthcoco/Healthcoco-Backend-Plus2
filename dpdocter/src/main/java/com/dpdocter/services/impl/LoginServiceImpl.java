@@ -37,7 +37,6 @@ import com.dpdocter.beans.User;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DoctorLoginPinCollection;
-import com.dpdocter.collections.DoctorSchoolAssociationCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -115,6 +114,7 @@ public class LoginServiceImpl implements LoginService {
 
 	@Autowired
 	private ForgotPasswordService forgotPasswordService;
+
 	/**
 	 * This method is used for login purpose.
 	 */
@@ -128,24 +128,27 @@ public class LoginServiceImpl implements LoginService {
 			Query query = new Query();
 			query.addCriteria(criteria);
 			UserCollection userCollection = userRepository.findByUserName(request.getUsername());
-		
+
 			if (userCollection == null) {
 				logger.warn(login);
 				throw new BusinessException(ServiceError.InvalidInput, login);
 			} else {
-				if(userCollection.getIsPasswordSet() == null || !userCollection.getIsPasswordSet()) {
+				if (userCollection.getIsPasswordSet() == null || !userCollection.getIsPasswordSet()) {
 					ForgotUsernamePasswordRequest forgotUsernamePasswordRequest = new ForgotUsernamePasswordRequest();
 					forgotUsernamePasswordRequest.setEmailAddress(request.getUsername());
 					forgotUsernamePasswordRequest.setUsername(request.getUsername());
-					ForgotPasswordResponse forgotPasswordResponse = forgotPasswordService.forgotPasswordForDoctor(forgotUsernamePasswordRequest);
-					if(forgotPasswordResponse!=null) {
+					ForgotPasswordResponse forgotPasswordResponse = forgotPasswordService
+							.forgotPasswordForDoctor(forgotUsernamePasswordRequest);
+					if (forgotPasswordResponse != null) {
 						logger.warn("Please reset your password and check your email to update your password");
-						throw new BusinessException(ServiceError.InvalidInput, "Please reset your password and check your email to update your password");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Please reset your password and check your email to update your password");
 					}
 				}
-				boolean isPasswordCorrect = new CustomPasswordEncoder().matches(String.valueOf(request.getPassword()), String.valueOf(userCollection.getPassword()));
-				
-				if(!isPasswordCorrect) {
+				boolean isPasswordCorrect = new CustomPasswordEncoder().matches(String.valueOf(request.getPassword()),
+						String.valueOf(userCollection.getPassword()));
+
+				if (!isPasswordCorrect) {
 					logger.warn(login);
 					throw new BusinessException(ServiceError.InvalidInput, login);
 				}
@@ -191,11 +194,10 @@ public class LoginServiceImpl implements LoginService {
 					userCollection.setLastSession(new Date());
 					userCollection = userRepository.save(userCollection);
 					criteria = new Criteria("doctorId").is(userCollection.getId())
-				
-					.and("isActivate").is(true)
-							.and("hasLoginAccess").ne(false);
+
+							.and("isActivate").is(true).and("hasLoginAccess").ne(false);
 //---
-					//criteria.and("isNutritionist").is(isNutritionist);
+					// criteria.and("isNutritionist").is(isNutritionist);
 					List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate
 							.aggregate(
 									Aggregation.newAggregation(Aggregation.match(criteria),
@@ -208,9 +210,11 @@ public class LoginServiceImpl implements LoginService {
 							.getMappedResults();
 					if (doctorClinicProfileLookupResponses == null || doctorClinicProfileLookupResponses.isEmpty()) {
 
-						logger.warn("None of your clinic is active or or you dont have login access,please contact your admin.");
+						logger.warn(
+								"None of your clinic is active or or you dont have login access,please contact your admin.");
 						// user.setUserState(UserState.NOTACTIVATED);
-						throw new BusinessException(ServiceError.NotAuthorized, "None of your clinic is active or you dont have login access,please contact your admin.");
+						throw new BusinessException(ServiceError.NotAuthorized,
+								"None of your clinic is active or you dont have login access,please contact your admin.");
 
 					}
 					if (doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
@@ -229,8 +233,10 @@ public class LoginServiceImpl implements LoginService {
 									.setImages(getFinalClinicImages(locationAndAccessControl.getImages()));
 							locationAndAccessControl.setIsVaccinationModuleOn(
 									doctorClinicProfileLookupResponse.getIsVaccinationModuleOn());
-							locationAndAccessControl.setIsNutritionist(doctorClinicProfileLookupResponse.getIsAdminNutritionist());
-							locationAndAccessControl.setIsAdminNutritionist(doctorClinicProfileLookupResponse.getIsAdminNutritionist());
+							locationAndAccessControl
+									.setIsNutritionist(doctorClinicProfileLookupResponse.getIsAdminNutritionist());
+							locationAndAccessControl
+									.setIsAdminNutritionist(doctorClinicProfileLookupResponse.getIsAdminNutritionist());
 							List<Role> roles = null;
 
 							Boolean isStaff = false;
@@ -273,7 +279,7 @@ public class LoginServiceImpl implements LoginService {
 												otherRoleCollection.getRoleCollection().getId(),
 												otherRoleCollection.getRoleCollection().getLocationId(),
 												otherRoleCollection.getRoleCollection().getHospitalId());
-									
+
 										// set is show patient number true for super admin
 										if (doctorClinicProfileLookupResponse.getIsSuperAdmin()) {
 											user.setIsShowPatientNumber(true);
@@ -286,8 +292,7 @@ public class LoginServiceImpl implements LoginService {
 													doctorClinicProfileLookupResponse.getIsShowDoctorInCalender());
 
 										}
-										
-										
+
 										Role role = new Role();
 										BeanUtil.map(otherRoleCollection.getRoleCollection(), role);
 										role.setAccessModules(accessControl.getAccessModules());
@@ -312,7 +317,8 @@ public class LoginServiceImpl implements LoginService {
 									hospital.setHospitalUId(hospitalCollection.getHospitalUId());
 									hospitals.add(hospital);
 								} else {
-									Hospital hospital = checkHospitalId.get(locationCollection.getHospitalId().toString());
+									Hospital hospital = checkHospitalId
+											.get(locationCollection.getHospitalId().toString());
 									hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
 									hospital.setHospitalUId(hospitalCollection.getHospitalUId());
 									checkHospitalId.put(locationCollection.getHospitalId().toString(), hospital);
@@ -335,9 +341,6 @@ public class LoginServiceImpl implements LoginService {
 							user.setParentSpecialities(parentSpecialities);
 
 						}
-	//comment for new signup
-						//	user.setIsSuperstarAssociated(mongoTemplate.count(new Query(new Criteria("doctorId").is(userCollection.getId())), DoctorSchoolAssociationCollection.class) > 0 ? true : false);
-			//			user.setIsSuperstarAssociated(mongoTemplate.exists(new Query(new Criteria("doctorId").is(userCollection.getId())), DoctorSchoolAssociationCollection.class));
 						response = new LoginResponse();
 						user.setEmailAddress(user.getUserName());
 						response.setUser(user);
@@ -356,7 +359,7 @@ public class LoginServiceImpl implements LoginService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error occured while login");
-			throw new BusinessException(ServiceError.Unknown, "Error occured while login"+e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error occured while login" + e.getMessage());
 		}
 		return response;
 	}
@@ -387,7 +390,8 @@ public class LoginServiceImpl implements LoginService {
 	public List<RegisteredPatientDetails> loginPatient(LoginPatientRequest request) {
 		List<RegisteredPatientDetails> response = null;
 		try {
-			List<UserCollection> userCollections = userRepository.findByMobileNumberAndUserState(request.getMobileNumber(), "USERSTATECOMPLETE");
+			List<UserCollection> userCollections = userRepository
+					.findByMobileNumberAndUserState(request.getMobileNumber(), "USERSTATECOMPLETE");
 
 			for (UserCollection userCollection : userCollections) {
 				if (userCollection.getEmailAddress() != null) {
@@ -405,7 +409,8 @@ public class LoginServiceImpl implements LoginService {
 							throw new BusinessException(ServiceError.InvalidInput, loginPatient);
 						}
 						PatientCollection patientCollection = patientRepository
-								.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(userCollection.getId(), null, null, null);
+								.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(userCollection.getId(), null, null,
+										null);
 						if (patientCollection != null) {
 							Patient patient = new Patient();
 							BeanUtil.map(patientCollection, patient);
@@ -439,7 +444,8 @@ public class LoginServiceImpl implements LoginService {
 						throw new BusinessException(ServiceError.InvalidInput, loginPatient);
 					}
 					PatientCollection patientCollection = patientRepository
-							.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(userCollection.getId(), null, null, null);
+							.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(userCollection.getId(), null, null,
+									null);
 					if (patientCollection != null) {
 						Patient patient = new Patient();
 						BeanUtil.map(patientCollection, patient);
@@ -479,11 +485,13 @@ public class LoginServiceImpl implements LoginService {
 	public List<RegisteredPatientDetails> loginPatientByOtp(LoginPatientRequest request) {
 		List<RegisteredPatientDetails> response = null;
 		try {
-			List<UserCollection> userCollections = userRepository.findByMobileNumberAndUserState(request.getMobileNumber(), "USERSTATECOMPLETE");
+			List<UserCollection> userCollections = userRepository
+					.findByMobileNumberAndUserState(request.getMobileNumber(), "USERSTATECOMPLETE");
 			if (userCollections != null && !userCollections.isEmpty()) {
 				for (UserCollection userCollection : userCollections) {
 					if (userCollection.getEmailAddress() != null) {
-						if(!userCollection.getEmailAddress().equalsIgnoreCase(userCollection.getUserName()) && !DPDoctorUtils.anyStringEmpty(request.getOtpNumber())) {
+						if (!userCollection.getEmailAddress().equalsIgnoreCase(userCollection.getUserName())
+								&& !DPDoctorUtils.anyStringEmpty(request.getOtpNumber())) {
 							Boolean verifyOTPResponse = false;
 							if (!verifyOTPResponse) {
 								verifyOTPResponse = otpService.verifyOTP(request.getMobileNumber(),
@@ -495,8 +503,8 @@ public class LoginServiceImpl implements LoginService {
 							}
 							RegisteredPatientDetails user = new RegisteredPatientDetails();
 							PatientCollection patientCollection = patientRepository
-									.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(userCollection.getId(), null, null,
-											null);
+									.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(userCollection.getId(), null,
+											null, null);
 							if (patientCollection != null) {
 								Patient patient = new Patient();
 								BeanUtil.map(patientCollection, patient);
@@ -528,8 +536,8 @@ public class LoginServiceImpl implements LoginService {
 								}
 							}
 							PatientCollection patientCollection = patientRepository
-									.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(userCollection.getId(), null, null,
-											null);
+									.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(userCollection.getId(), null,
+											null, null);
 							if (patientCollection != null) {
 								Patient patient = new Patient();
 								BeanUtil.map(patientCollection, patient);
@@ -572,55 +580,11 @@ public class LoginServiceImpl implements LoginService {
 	public Boolean adminLogin(String mobileNumber) {
 		Boolean response = false;
 		try {
-			/*
-			 * RoleCollection roleCollection =
-			 * roleRepository.findByRole(RoleEnum.SUPER_ADMIN.getRole()); if (roleCollection
-			 * == null) { logger.warn(role); throw new
-			 * BusinessException(ServiceError.NoRecord, role); } List<UserRoleCollection>
-			 * userRoleCollections =
-			 * userRoleRepository.findByRoleId(roleCollection.getId());
-			 * 
-			 * @SuppressWarnings("unchecked") Collection<String> userIds =
-			 * CollectionUtils.collect(userRoleCollections, new
-			 * BeanToPropertyValueTransformer("userId"));
-			 */
-			/*
-			 * Criteria criteria = new
-			 * Criteria("mobileNumber").is(request.getMobileNumber()).and("id").
-			 * in(userIds); Query query = new Query(); query.addCriteria(criteria);
-			 * List<UserCollection> userCollections = mongoTemplate.find(query,
-			 * UserCollection.class);
-			 */
-			// UserCollection userCollection = null;
-			// if(userCollections != null &&
-			// !userCollections.isEmpty())userCollection =
-			// userCollections.get(0);
-			/*
-			 * if (userCollections == null || userCollections.isEmpty()) {
-			 * logger.warn("Invalid mobile Number and Password"); throw new
-			 * BusinessException(ServiceError.InvalidInput,
-			 * "Invalid mobile Number and Password"); }else{
-			 * 
-			 * for(UserCollection userCollection : userCollections){ char[] salt =
-			 * userCollection.getSalt(); char[] passwordWithSalt = new
-			 * char[request.getPassword().length + salt.length]; for(int i = 0; i <
-			 * request.getPassword().length; i++) passwordWithSalt[i] =
-			 * request.getPassword()[i]; for(int i = 0; i < salt.length; i++)
-			 * passwordWithSalt[i+request.getPassword().length] = salt[i];
-			 * if(Arrays.equals(userCollection.getPassword(),
-			 * DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt))){
-			 * userCollection.setLastSession(new Date()); userCollection =
-			 * userRepository.save(userCollection); response = new User();
-			 * BeanUtil.map(userCollection, response); } } }
-			 */
-			/*
-			 * if(response == null){ logger.warn(login); throw new
-			 * BusinessException(ServiceError.Unknown, login); }
-			 */
 			UserCollection userCollection = null;
 			List<UserCollection> userCollections = userRepository.findByMobileNumberAndUserState(mobileNumber,
 					UserState.ADMIN.getState());
-			if(userCollections!= null && !userCollections.isEmpty())userCollection = userCollections.get(0);
+			if (userCollections != null && !userCollections.isEmpty())
+				userCollection = userCollections.get(0);
 
 			if (userCollection == null) {
 				throw new BusinessException(ServiceError.NotAuthorized, "Admin with provided mobile number not found");
@@ -681,7 +645,6 @@ public class LoginServiceImpl implements LoginService {
 		}
 		return response;
 	}
-
 
 	@Override
 	public DoctorLoginPin AddEditLoginPin(DoctorLoginPin request) {

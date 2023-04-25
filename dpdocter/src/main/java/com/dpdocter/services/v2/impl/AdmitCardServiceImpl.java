@@ -35,7 +35,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
-	
+
 	@Autowired
 	private PatientRepository patientRepository;
 
@@ -44,8 +44,6 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 
 	@Value(value = "${jasper.print.admitCard.a4.fileName}")
 	private String admitCardReportA4FileName;
-
-	
 
 	@Override
 	public List<AdmitCardResponse> getAdmitCards(String doctorId, String locationId, String hospitalId,
@@ -90,14 +88,6 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			PatientCard patient = null;
 
 			for (AdmitCardResponse admitCardResponse : response) {
-				/*
-				 * patientCollection = patientRepository.
-				 * findByUserIdDoctorIdLocationIdAndHospitalId( new
-				 * ObjectId(admitCardResponse.getPatientId()), new
-				 * ObjectId(admitCardResponse.getDoctorId()), new
-				 * ObjectId(admitCardResponse.getLocationId()), new
-				 * ObjectId(admitCardResponse.getHospitalId()));
-				 */
 
 				patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						new ObjectId(admitCardResponse.getPatientId()), new ObjectId(admitCardResponse.getLocationId()),
@@ -116,5 +106,4 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		return response;
 	}
 
-	
 }

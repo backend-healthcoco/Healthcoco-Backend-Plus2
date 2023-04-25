@@ -1,11 +1,11 @@
 package com.dpdocter.beans;
 
 public class PackageAmountObject {
-    
+
 	public int amount;
-	
+
 	public int duration;
-	
+
 	public int offAmount;
 
 	public int getAmount() {
@@ -31,6 +31,5 @@ public class PackageAmountObject {
 	public void setOffAmount(int offAmount) {
 		this.offAmount = offAmount;
 	}
-	
-	
+
 }

@@ -52,12 +52,10 @@ import com.dpdocter.beans.InventoryStock;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
 import com.dpdocter.beans.InvoiceItem;
 import com.dpdocter.beans.InvoiceItemJasperDetails;
-import com.dpdocter.beans.Language;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.beans.ReceiptItemJasperDetails;
 import com.dpdocter.beans.ReceiptJasperDetails;
-
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
@@ -71,12 +69,10 @@ import com.dpdocter.collections.DoctorPatientReceiptCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.ExpenseTypeCollection;
-import com.dpdocter.collections.LanguageCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ReferencesCollection;
-
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.VendorExpenseCollection;
@@ -621,9 +617,6 @@ public class BillingServiceImpl implements BillingService {
 			long createdTimestamp = Long.parseLong(updatedTime);
 
 			Criteria criteria = new Criteria();
-//			("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded")
-//					.ne(true);
-
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
@@ -737,15 +730,8 @@ public class BillingServiceImpl implements BillingService {
 					doctorPatientLedgerRepository.save(patientLedgerCollection);
 
 					receiptCollection.setUpdatedTime(new Date());
-					// receiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 					receiptCollection.setDiscarded(discarded);
 				}
-
-				// for(DoctorPatientReceiptCollection receiptCollection :
-				// doPatientReceiptCollections){
-				// receiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
-				// receiptCollection.setUpdatedTime(new Date());
-				// }
 
 				doctorPatientReceiptRepository.saveAll(doPatientReceiptCollections);
 			}
@@ -889,13 +875,6 @@ public class BillingServiceImpl implements BillingService {
 							// doctorPatientReceiptCollection.setRefundAmount(request.getAmountPaid());
 
 							doPatientReceiptCollection.setUpdatedTime(new Date());
-							// receiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
-
-							// for(DoctorPatientReceiptCollection receiptCollection :
-							// doPatientReceiptCollections){
-							// receiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
-							// receiptCollection.setUpdatedTime(new Date());
-							// }
 
 							doctorPatientReceiptRepository.save(doPatientReceiptCollection);
 						}
@@ -927,7 +906,6 @@ public class BillingServiceImpl implements BillingService {
 							if (receiptCollection.getRemainingAdvanceAmount() > advanceAmountToBeUsed) {
 								receiptCollection.setRemainingAdvanceAmount(
 										receiptCollection.getRemainingAdvanceAmount() - advanceAmountToBeUsed);
-								// receiptCollection.setRefundAmount(advanceAmountToBeUsed);
 								invoiceIdWithAmount.setUsedAdvanceAmount(advanceAmountToBeUsed);
 								advanceAmountToBeUsed = 0.0;
 							} else {
@@ -935,7 +913,6 @@ public class BillingServiceImpl implements BillingService {
 								invoiceIdWithAmount.setUsedAdvanceAmount(receiptCollection.getRemainingAdvanceAmount());
 								advanceAmountToBeUsed = advanceAmountToBeUsed
 										- receiptCollection.getRemainingAdvanceAmount();
-								// receiptCollection.setRefundAmount(advanceAmountToBeUsed);
 							}
 
 							if (receiptIdWithAmounts == null || receiptIdWithAmounts.isEmpty()) {
@@ -946,7 +923,6 @@ public class BillingServiceImpl implements BillingService {
 							receiptCollection.setCreatedTime(new Date());
 							receiptCollection.setUpdatedTime(new Date());
 							doctorPatientReceiptCollection.setAdvanceReceiptIdWithAmounts(receiptIdWithAmounts);
-							// receiptCollection.setRefundAmount(request.getUsedAdvanceAmount());
 							doctorPatientReceiptRepository.save(receiptCollection);
 						}
 					}
@@ -963,11 +939,8 @@ public class BillingServiceImpl implements BillingService {
 						paymentDetails.setPaymentMode(request.getPaymentDetails().getPaymentMode());
 
 						doctorPatientReceiptCollection.setPaymentDetails(paymentDetails);
-						// doctorPatientReceiptCollection.setRefundAmount(request.getUsedAdvanceAmount());
 					}
 				}
-				// advanceAmount = advanceAmount +
-				// doctorPatientReceiptCollection.getUsedAdvanceAmount();
 
 				doctorPatientReceiptCollection.setModeOfPayment(request.getModeOfPayment());
 				doctorPatientReceiptCollection.setPaymentInfo(request.getPaymentInfo());
@@ -1109,9 +1082,6 @@ public class BillingServiceImpl implements BillingService {
 					doctorPatientLedgerCollection.setLocationId(doctorPatientReceiptCollection.getLocationId());
 					doctorPatientLedgerCollection.setHospitalId(doctorPatientReceiptCollection.getHospitalId());
 					doctorPatientLedgerCollection.setReceiptId(doctorPatientReceiptCollection.getId());
-					// doctorPatientLedgerCollection
-					// .setDueAmount(balanceAmount -
-					// doctorPatientReceiptCollection.getAmountPaid());
 					if (doctorPatientReceiptCollection.getReceiptType().equals(ReceiptType.REFUND)) {
 						doctorPatientLedgerCollection.setCreditAmount(doctorPatientReceiptCollection.getRefundAmount());
 						doctorPatientLedgerCollection.setType("RECEIPT");
@@ -1130,9 +1100,6 @@ public class BillingServiceImpl implements BillingService {
 						doctorPatientLedgerCollection.setDebitAmount(doctorPatientReceiptCollection.getAmountPaid());
 						doctorPatientLedgerCollection.setType("RECEIPT");
 					}
-					// doctorPatientLedgerCollection
-					// .setDueAmount(balanceAmount -
-					// doctorPatientReceiptCollection.getAmountPaid());
 					doctorPatientLedgerCollection.setUpdatedTime(new Date());
 				}
 				doctorPatientLedgerCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerCollection);
@@ -1162,24 +1129,6 @@ public class BillingServiceImpl implements BillingService {
 					else
 						doctorPatientDueAmountCollection
 								.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() - dueAmount);
-//					if(request.getReceiptType().equals(ReceiptType.INVOICE) && doctorPatientDueAmountCollection.getDueAmount() < 0.0) {
-//						
-//						//doctorPatientReceiptCollection.setRemainingAdvanceAmount(0.0); -working
-//					//	doctorPatientReceiptCollection.setRemainingAdvanceAmount(doctorPatientReceiptCollection.getRemainingAdvanceAmount()-doctorPatientDueAmountCollection.getDueAmount());
-//						//doctorPatientReceiptCollection.setReceiptType(ReceiptType.REFUND); -working
-//						// doctorPatientReceiptRepository .save(doctorPatientReceiptCollection);
-//						DoctorPatientReceiptCollection reciptCollection=new DoctorPatientReceiptCollection();
-//		
-//					reciptCollection.setDoctorId(doctorPatientReceiptCollection.getDoctorId());
-//					reciptCollection.setHospitalId(doctorPatientReceiptCollection.getHospitalId());
-//					reciptCollection.setLocationId(doctorPatientReceiptCollection.getLocationId());
-//					reciptCollection.setPatientId(doctorPatientReceiptCollection.getPatientId());
-//					
-//					reciptCollection.setReceiptType(ReceiptType.ADVANCE);
-//	
-//					reciptCollection.setRemainingAdvanceAmount(-doctorPatientDueAmountCollection.getDueAmount());
-//					doctorPatientReceiptRepository.save(reciptCollection);
-//					}
 
 				} else {
 					if (doctorPatientReceiptCollection.getReceiptType().equals(ReceiptType.REFUND)) {
@@ -1191,16 +1140,12 @@ public class BillingServiceImpl implements BillingService {
 						else
 							doctorPatientDueAmountCollection.setDueAmount(
 									doctorPatientDueAmountCollection.getDueAmount() + request.getUsedAdvanceAmount());
-						// - advanceAmount);
 
 					}
 
 					else
 						doctorPatientDueAmountCollection
 								.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() - dueAmount);
-					// doctorPatientReceiptCollection.setRemainingAdvanceAmount(-doctorPatientDueAmountCollection.getDueAmount());
-					// doctorPatientReceiptCollection = doctorPatientReceiptRepository
-					// .save(doctorPatientReceiptCollection);
 				}
 
 				doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
@@ -1278,27 +1223,15 @@ public class BillingServiceImpl implements BillingService {
 			}
 
 			if (size > 0) {
-				responses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-						// Aggregation.lookup("doctor_patient_invoice_cl",
-						// "invoiceId", "_id", "invoice"),
-						// new CustomAggregationOperation(new
-						// BasicDBObject("$unwind",
-						// new BasicDBObject("path",
-						// "$invoice").append("preserveNullAndEmptyArrays",
-						// true))),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
-						Aggregation.limit(size)), DoctorPatientReceiptCollection.class, DoctorPatientReceipt.class)
-						.getMappedResults();
+				responses = mongoTemplate.aggregate(
+						Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+								Aggregation.skip((page) * size), Aggregation.limit(size)),
+						DoctorPatientReceiptCollection.class, DoctorPatientReceipt.class).getMappedResults();
 			} else {
-				responses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-						// Aggregation.lookup("doctor_patient_invoice_cl",
-						// "invoiceId", "_id", "invoice"),
-						// new CustomAggregationOperation(new
-						// BasicDBObject("$unwind",
-						// new BasicDBObject("path",
-						// "$invoice").append("preserveNullAndEmptyArrays",
-						// true))),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime"))),
+				responses = mongoTemplate.aggregate(
+						Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime"))),
 						DoctorPatientReceiptCollection.class, DoctorPatientReceipt.class).getMappedResults();
 			}
 		} catch (BusinessException be) {
@@ -1735,13 +1668,9 @@ public class BillingServiceImpl implements BillingService {
 		DoctorPatientLedgerResponse response = null;
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
-			Criteria criteria = new Criteria
-			// ("updatedTime").gte(new Date(updatedTimeStamp)).and
-			("patientId").is(new ObjectId(patientId)).and("locationId").is(new ObjectId(locationId)).and("hospitalId")
-					.is(new ObjectId(hospitalId)).and("isPatientDiscarded").ne(true);
-
-//			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-//				criteria.and("doctorId").is(new ObjectId(doctorId));
+			Criteria criteria = new Criteria("patientId").is(new ObjectId(patientId)).and("locationId")
+					.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId))
+					.and("isPatientDiscarded").ne(true);
 
 			if (!DPDoctorUtils.anyStringEmpty(from)) {
 				criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(new Date(Long.parseLong(from))));
@@ -1791,21 +1720,6 @@ public class BillingServiceImpl implements BillingService {
 					ledger.setBalance(balance);
 
 				}
-
-//				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-//					dueAmount = mongoTemplate.aggregate(
-//							Aggregation.newAggregation(Aggregation.match(criteria),
-//									Aggregation.group("doctorId").sum("dueAmount").as("totalDueAmount")),
-//							DoctorPatientLedgerCollection.class, AmountResponse.class).getUniqueMappedResult();
-//				}
-//				if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-//					dueAmount = mongoTemplate.aggregate(
-//							Aggregation.newAggregation(Aggregation.match(criteria),
-//									Aggregation.group("locationId").sum("dueAmount").as("totalDueAmount")),
-//							DoctorPatientLedgerCollection.class, AmountResponse.class).getUniqueMappedResult();
-//				}
-//				if (dueAmount != null)
-//					response.setTotalDueAmount(dueAmount.getTotalDueAmount());
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting ledger" + e);
@@ -1843,25 +1757,12 @@ public class BillingServiceImpl implements BillingService {
 																	ConsultationType.VIDEO.getType())))
 															.append("then", "$amount").append("else", 0)))
 
-									// .append("consultationType.consultationType",
-									// "$consultationType.consultationType")
-									// .append("consultationType.cost", "$consultationType.cost")
-									// .append("consultationType.healthcocoCharges",
-									// "$consultationType.healthcocoCharges")
 									.append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")));
 
 			CustomAggregationOperation project2 = new CustomAggregationOperation(new Document("$project",
-					new BasicDBObject("_id", "$_id")
-							// .append("totalAmountReceivedByChat", "$totalAmountReceivedByChat")
-
-							.append("totalDebitAmount", "$totalDebitAmount")
+					new BasicDBObject("_id", "$_id").append("totalDebitAmount", "$totalDebitAmount")
 							.append("totalCreditAmount", "$totalCreditAmount")
 
-							// .append("consultationType.consultationType",
-							// "$consultationType.consultationType")
-							// .append("consultationType.cost", "$consultationType.cost")
-							// .append("consultationType.healthcocoCharges",
-							// "$consultationType.healthcocoCharges")
 							.append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")));
 
 			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
@@ -1869,18 +1770,10 @@ public class BillingServiceImpl implements BillingService {
 					new BasicDBObject("_id", "_id")
 							.append("totalDebitAmount", new BasicDBObject("$sum", "$debitAmount"))
 							.append("totalCreditAmount", new BasicDBObject("$sum", "$creditAmount"))
-							// .append("consultationType", new BasicDBObject("$addToSet",
-							// "$consultationType"))
 							.append("createdTime", new BasicDBObject("$first", "$createdTime"))));
 
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria1),
-
-					group,
-
-					project2, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-
-			// }
-
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria1), group, project2,
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			response = mongoTemplate
 					.aggregate(aggregation, DoctorPatientLedgerCollection.class, DoctorPatientLedgerResponse.class)
 					.getUniqueMappedResult();
@@ -3623,44 +3516,6 @@ public class BillingServiceImpl implements BillingService {
 				smsServices.sendSMS(smsTrackDetail, true);
 				response = true;
 
-//				LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
-//				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-//				smsTrackDetail.setDoctorId(new ObjectId(doctorId));
-//				smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
-//				smsTrackDetail.setLocationId(new ObjectId(locationId));
-//				smsTrackDetail.setType(ComponentType.RECEIPT.getType());
-//				SMSDetail smsDetail = new SMSDetail();
-//				smsDetail.setUserId(doctorPatientReceiptCollection.getPatientId());
-//				smsDetail.setUserName(patient.getFirstName());
-//				SMS sms = new SMS();
-//				//String message = invoiceRemainderSMS;
-//							String clinicNumber=locationCollection.getClinicNumber() !=null
-//						?(!DPDoctorUtils.anyStringEmpty(locationCollection.getClinicNumber())
-//								? locationCollection.getClinicNumber()
-//								: "")
-//						: "";
-//								
-//
-//								sms.setSmsText("Received with thanks from  " + patient.getFirstName()
-//										+ ",The sum of Rupees:- " + doctorPatientReceiptCollection.getAmountPaid() + " By "
-//										+ doctorPatientReceiptCollection.getModeOfPayment() + 
-//										" at "+locationCollection.getLocationName()+
-//										" On Date:-"
-//										+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate())+
-//												" .For queries,contact clinic " + clinicNumber + " Stay Healthy & Happy.\n" + 
-//														"Powered by healthcoco.");
-//							
-//							
-//								SMSAddress smsAddress = new SMSAddress();
-//								smsAddress.setRecipient(mobileNumber);
-//								sms.setSmsAddress(smsAddress);
-//								smsDetail.setSms(sms);
-//								smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-//								List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-//								smsDetails.add(smsDetail);
-//								smsTrackDetail.setSmsDetails(smsDetails);
-//								smsServices.sendSMS(smsTrackDetail, true);
-//								response = true;
 			}
 		} catch (BusinessException be) {
 			logger.error(be);
@@ -3842,9 +3697,6 @@ public class BillingServiceImpl implements BillingService {
 				doctorPatientLedgerCollection.setReceiptId(doctorPatientReceiptCollection.getId());
 				doctorPatientLedgerCollection.setDebitAmount(request.getRemainingAdvanceAmount());
 				doctorPatientLedgerCollection.setType("REFUND");
-				// doctorPatientLedgerCollection
-				// .setDueAmount(balanceAmount -
-				// doctorPatientReceiptCollection.getAmountPaid());
 				doctorPatientLedgerCollection.setUpdatedTime(new Date());
 
 				doctorPatientLedgerCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerCollection);

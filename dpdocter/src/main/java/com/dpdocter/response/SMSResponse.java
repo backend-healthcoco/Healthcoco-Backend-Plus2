@@ -4,28 +4,28 @@ import java.util.List;
 
 public class SMSResponse {
 
-    private List<DoctorSMSResponse> doctors;
+	private List<DoctorSMSResponse> doctors;
 
-    private String totalMsgLeft;
+	private String totalMsgLeft;
 
-    public List<DoctorSMSResponse> getDoctors() {
-	return doctors;
-    }
+	public List<DoctorSMSResponse> getDoctors() {
+		return doctors;
+	}
 
-    public void setDoctors(List<DoctorSMSResponse> doctors) {
-	this.doctors = doctors;
-    }
+	public void setDoctors(List<DoctorSMSResponse> doctors) {
+		this.doctors = doctors;
+	}
 
-    public String getTotalMsgLeft() {
-	return totalMsgLeft;
-    }
+	public String getTotalMsgLeft() {
+		return totalMsgLeft;
+	}
 
-    public void setTotalMsgLeft(String totalMsgLeft) {
-	this.totalMsgLeft = totalMsgLeft;
-    }
+	public void setTotalMsgLeft(String totalMsgLeft) {
+		this.totalMsgLeft = totalMsgLeft;
+	}
 
-    @Override
-    public String toString() {
-	return "SMSResponse [doctors=" + doctors + ", totalMsgLeft=" + totalMsgLeft + "]";
-    }
+	@Override
+	public String toString() {
+		return "SMSResponse [doctors=" + doctors + ", totalMsgLeft=" + totalMsgLeft + "]";
+	}
 }

@@ -7,10 +7,6 @@ import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.collections.UserCollection;
 
 public interface MailBodyGenerator {
-	/*
-	 * public String generateActivationEmailBody(String fName, String tokenId,
-	 * String templatePath, String doctorName, String clinicName) throws Exception;
-	 */
 
 	public String generateForgotPasswordEmailBody(String fName, String tokenId);
 

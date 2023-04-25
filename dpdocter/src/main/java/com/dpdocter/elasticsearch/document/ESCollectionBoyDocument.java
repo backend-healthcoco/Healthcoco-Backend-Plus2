@@ -8,7 +8,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.Age;
 
-@Document(indexName = "collection_boy_in" , type = "collection_boy")
+@Document(indexName = "collection_boy_in", type = "collection_boy")
 public class ESCollectionBoyDocument {
 
 	@Id

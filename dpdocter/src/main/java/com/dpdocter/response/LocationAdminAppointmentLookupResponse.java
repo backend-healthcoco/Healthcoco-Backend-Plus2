@@ -10,27 +10,27 @@ import com.dpdocter.collections.UserDeviceCollection;
 public class LocationAdminAppointmentLookupResponse {
 
 	private String locationId;
-	
+
 	private ObjectId userId;
-	
+
 	private String locationName;
-	
+
 	private List<AppointmentDoctorReminderResponse> drAppointments;
-	
+
 	private String locationAdminName;
-	
+
 	private String locationAdminMobileNumber;
-	
+
 	private String locationAdminEmailAddress;
-	
-	private List<UserDeviceCollection> userDevices ;
-	
-	Map<String, DoctorAppointmentSMSResponse> doctorAppointmentSMSResponseMap;
-	
-	int totalAppointments = 0;
-	
-	String message;
-	
+
+	private List<UserDeviceCollection> userDevices;
+
+	private Map<String, DoctorAppointmentSMSResponse> doctorAppointmentSMSResponseMap;
+
+	private int totalAppointments = 0;
+
+	private String message;
+
 	public String getLocationId() {
 		return locationId;
 	}

@@ -84,5 +84,4 @@ public class DentalImagingDoctorBillingResponse {
 		this.date = date;
 	}
 
-	
 }

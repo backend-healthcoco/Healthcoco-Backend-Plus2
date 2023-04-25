@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import com.dpdocter.collections.UserRoleCollection;
 
 public interface UserRoleRepository extends MongoRepository<UserRoleCollection, ObjectId> {
-	
+
 	public List<UserRoleCollection> findByRoleIdAndLocationIdAndHospitalId(ObjectId roleId, ObjectId locationId,
 			ObjectId hospitalId);
 

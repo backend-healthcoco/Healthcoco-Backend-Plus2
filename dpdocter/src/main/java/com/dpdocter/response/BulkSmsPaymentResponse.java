@@ -14,10 +14,8 @@ public class BulkSmsPaymentResponse {
 	private String transactionStatus;
 
 	private String doctorId;
-	
+
 	private String locationId;
-	
-//	private String razorPayAccountId;
 
 	private Discount discount;
 
@@ -28,8 +26,6 @@ public class BulkSmsPaymentResponse {
 	private Double transferAmount = 0.0;
 
 	private PaymentMode mode = PaymentMode.ONLINE;
-
-	//private String chequeNo;
 
 	private String orderId;
 
@@ -43,7 +39,6 @@ public class BulkSmsPaymentResponse {
 		this.id = id;
 	}
 
-	
 	public String getTransactionId() {
 		return transactionId;
 	}
@@ -116,8 +111,6 @@ public class BulkSmsPaymentResponse {
 		this.reciept = reciept;
 	}
 
-	
-
 	public String getBulkSmsPackageId() {
 		return bulkSmsPackageId;
 	}
@@ -141,7 +134,5 @@ public class BulkSmsPaymentResponse {
 	public void setLocationId(String locationId) {
 		this.locationId = locationId;
 	}
-	
-	
-	
+
 }

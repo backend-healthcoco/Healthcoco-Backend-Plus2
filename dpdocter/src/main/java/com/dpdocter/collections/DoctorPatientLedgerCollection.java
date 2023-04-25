@@ -9,44 +9,41 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "doctor_patient_ledger_cl")
 @CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
-public class DoctorPatientLedgerCollection extends GenericCollection{
+public class DoctorPatientLedgerCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
-		
+
 	@Field
 	private ObjectId locationId;
-	
+
 	@Field
 	private ObjectId hospitalId;
-	
+
 	@Field
 	private ObjectId patientId;
-	
+
 	@Field
 	private ObjectId receiptId;
-	
+
 	@Field
-	private ObjectId invoiceId;   
-	
-//	@Field
-//	private Double dueAmount;
+	private ObjectId invoiceId;
 
 	@Field
 	private Double creditAmount = 0.0;
-	
+
 	@Field
 	private Double debitAmount = 0.0;
 
 	@Field
 	private Boolean discarded = false;
-	
+
 	@Field
 	private String type;
 
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -95,14 +92,6 @@ public class DoctorPatientLedgerCollection extends GenericCollection{
 		this.invoiceId = invoiceId;
 	}
 
-//	public Double getDueAmount() {
-//		return dueAmount;
-//	}
-//
-//	public void setDueAmount(Double dueAmount) {
-//		this.dueAmount = dueAmount;
-//	}
-
 	public Double getCreditAmount() {
 		return creditAmount;
 	}
@@ -134,8 +123,6 @@ public class DoctorPatientLedgerCollection extends GenericCollection{
 	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
-	
-	
 
 	public String getType() {
 		return type;

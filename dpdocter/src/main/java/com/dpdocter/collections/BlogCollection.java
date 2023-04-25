@@ -26,7 +26,7 @@ public class BlogCollection extends GenericCollection {
 
 	@Field
 	private BlogSuperCategoryType superCategory;
-	
+
 	@Field
 	private BlogCategoryType category;
 
@@ -61,6 +61,9 @@ public class BlogCollection extends GenericCollection {
 	@Indexed(unique = true)
 
 	private String slugURL;
+
+	@Field
+	private Boolean isSmilebirdBlog = false;
 
 	public String getSlugURL() {
 		return slugURL;
@@ -201,6 +204,14 @@ public class BlogCollection extends GenericCollection {
 
 	public void setMetaDesc(String metaDesc) {
 		this.metaDesc = metaDesc;
+	}
+
+	public Boolean getIsSmilebirdBlog() {
+		return isSmilebirdBlog;
+	}
+
+	public void setIsSmilebirdBlog(Boolean isSmilebirdBlog) {
+		this.isSmilebirdBlog = isSmilebirdBlog;
 	}
 
 }

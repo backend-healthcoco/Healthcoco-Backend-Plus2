@@ -39,7 +39,7 @@ public class PatientFoodAndExcerciseCollection extends GenericCollection {
 	private List<PrescriptionItem> drugs;
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	public List<PrescriptionItem> getDrugs() {
 		return drugs;
 	}

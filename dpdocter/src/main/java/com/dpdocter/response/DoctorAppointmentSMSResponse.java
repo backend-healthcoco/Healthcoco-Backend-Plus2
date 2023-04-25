@@ -21,7 +21,7 @@ public class DoctorAppointmentSMSResponse {
 	private ObjectId locationId;
 
 	private List<String> appointmentIds = new ArrayList<String>();
-	
+
 	public int getNoOfAppointments() {
 		return noOfAppointments;
 	}

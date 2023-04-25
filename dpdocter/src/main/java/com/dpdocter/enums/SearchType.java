@@ -2,7 +2,7 @@ package com.dpdocter.enums;
 
 public enum SearchType {
 
-	DAILY("DAILY"), WEEKLY("WEEKLY"), MONTHLY("MONTHLY"),YEARLY("YEARLY");
+	DAILY("DAILY"), WEEKLY("WEEKLY"), MONTHLY("MONTHLY"), YEARLY("YEARLY");
 
 	private String type;
 

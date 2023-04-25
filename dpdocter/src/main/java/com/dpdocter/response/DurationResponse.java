@@ -1,10 +1,9 @@
 package com.dpdocter.response;
 
 public class DurationResponse {
-	
+
 	private String value;
 
-	// @Field(type = FieldType.Nested)
 	private String durationUnit;
 
 	public String getValue() {
@@ -22,7 +21,5 @@ public class DurationResponse {
 	public void setDurationUnit(String durationUnit) {
 		this.durationUnit = durationUnit;
 	}
-	
-	
 
 }

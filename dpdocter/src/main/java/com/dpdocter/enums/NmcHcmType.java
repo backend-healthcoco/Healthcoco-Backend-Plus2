@@ -2,8 +2,8 @@ package com.dpdocter.enums;
 
 public enum NmcHcmType {
 
-	IMA("IMA"),NMC("NMC");
-	
+	IMA("IMA"), NMC("NMC");
+
 	private String type;
 
 	public String getType() {
@@ -17,6 +17,5 @@ public enum NmcHcmType {
 	private NmcHcmType(String type) {
 		this.type = type;
 	}
-	
-	
+
 }

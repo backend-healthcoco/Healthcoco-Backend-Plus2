@@ -2,7 +2,6 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import com.dpdocter.beans.TransactionalSmsReport;
 import com.dpdocter.response.MessageResponse;
 
 public interface TransactionSmsServices {

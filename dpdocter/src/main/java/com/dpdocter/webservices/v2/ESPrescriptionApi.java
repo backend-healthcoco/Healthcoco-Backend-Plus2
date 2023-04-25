@@ -52,8 +52,8 @@ public class ESPrescriptionApi {
 		// Hack for ios
 		searchByGenericName = false;
 		//
-		Response<Object> response = esPrescriptionService.searchDrug(range, page, size, doctorId, locationId, hospitalId,
-				updatedTime, discarded, searchTerm, category, searchByGenericName);
+		Response<Object> response = esPrescriptionService.searchDrug(range, page, size, doctorId, locationId,
+				hospitalId, updatedTime, discarded, searchTerm, category, searchByGenericName);
 		return response;
 	}
 }

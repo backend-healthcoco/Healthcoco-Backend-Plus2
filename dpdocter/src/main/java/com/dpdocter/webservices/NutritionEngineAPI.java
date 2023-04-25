@@ -41,14 +41,13 @@ public class NutritionEngineAPI {
 	@Path(PathProxy.NutritionEngineUrl.GET_RECIPES)
 	@ApiOperation(value = PathProxy.NutritionEngineUrl.GET_RECIPES)
 	public Response<DietPlan> getRecipes(@PathParam("userId") String userId,
-			@MatrixParam(value = "mealTime") List<MealTimeEnum> mealTime,
-			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId) {
+			@MatrixParam(value = "mealTime") List<MealTimeEnum> mealTime, @QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId) {
 		if (userId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		
+
 		Response<DietPlan> response = new Response<DietPlan>();
 		response.setData(nutritionEngineService.getRecipes(userId, mealTime, doctorId, locationId, hospitalId));
 		return response;

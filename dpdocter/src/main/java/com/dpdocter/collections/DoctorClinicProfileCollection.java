@@ -56,7 +56,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Field
 	private List<WorkingSchedule> workingSchedules;
-	
+
 	@Field
 	private List<WorkingSchedule> onlineWorkingSchedules;
 
@@ -153,7 +153,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Field
 	private List<String> departments;
-	
+
 	@Field
 	private List<DoctorConsultation> consultationType;
 
@@ -164,19 +164,19 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Field
 	private Boolean isOnlineConsultationAvailable = false;
-	
+
 	@Field
 	private AppointmentSlot onlineConsultationSlot;
-	
+
 	@Field
 	private Boolean isPatientWelcomeMessageOn = false;
-	
+
 	@Field
 	private Boolean isShowPatientNumber = false;
-	
+
 	@Field
 	private Boolean isShowDoctorInCalender = true;
-	
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -527,7 +527,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setOnlineWorkingSchedules(List<WorkingSchedule> onlineWorkingSchedules) {
 		this.onlineWorkingSchedules = onlineWorkingSchedules;
-	}	
+	}
 
 //<<<<<<< Updated upstream
 	public List<DoctorConsultation> getConsultationType() {
@@ -537,7 +537,6 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	public void setConsultationType(List<DoctorConsultation> consultationType) {
 		this.consultationType = consultationType;
 	}
-	
 
 	public Boolean getIsOnlineConsultationAvailable() {
 		return isOnlineConsultationAvailable;
@@ -546,8 +545,6 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	public void setIsOnlineConsultationAvailable(Boolean isOnlineConsultationAvailable) {
 		this.isOnlineConsultationAvailable = isOnlineConsultationAvailable;
 	}
-	
-	
 
 	public AppointmentSlot getOnlineConsultationSlot() {
 		return onlineConsultationSlot;
@@ -609,7 +606,6 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 				+ ", mrCode=" + mrCode + ", divisionIds=" + divisionIds + ", cityId=" + cityId
 				+ ", isVaccinationModuleOn=" + isVaccinationModuleOn + ", defaultDoctorId=" + defaultDoctorId
 				+ ", isPidHasDate=" + isPidHasDate + ", feedbackURL=" + feedbackURL + ", departments=" + departments
-				 + ", isOnlineConsultationAvailable="
-				+ isOnlineConsultationAvailable + "]";
+				+ ", isOnlineConsultationAvailable=" + isOnlineConsultationAvailable + "]";
 	}
 }

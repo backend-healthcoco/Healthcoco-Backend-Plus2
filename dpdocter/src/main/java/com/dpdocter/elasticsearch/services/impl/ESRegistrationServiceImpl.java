@@ -100,7 +100,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 
 	@Autowired
 	private ESServicesRepository esServicesRepository;
-	
+
 	@Override
 	public boolean addPatient(ESPatientDocument request) {
 		boolean response = false;
@@ -109,7 +109,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 				String localPatientNameFormatted = request.getLocalPatientName().replaceAll("[^a-zA-Z0-9]", "");
 				request.setLocalPatientNameFormatted(localPatientNameFormatted.toLowerCase());
 			}
-			
+
 			esPatientRepository.save(request);
 			response = true;
 			transnationalService.addResource(new ObjectId(request.getUserId()), Resource.PATIENT, true);
@@ -142,18 +142,15 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					.should(QueryBuilders
 							.matchPhrasePrefixQuery(AdvancedSearchType.MOBILE_NUMBER.getSearchType(), searchTerm)
 							.boost(1.2f))
-					.should(QueryBuilders.matchPhrasePrefixQuery("pid", searchTerm)
-							.boost(1.0f))
-					.should(QueryBuilders.matchPhrasePrefixQuery("pnum", searchTerm)
-							.boost(1.0f))
-					.minimumShouldMatch(1);
+					.should(QueryBuilders.matchPhrasePrefixQuery("pid", searchTerm).boost(1.0f))
+					.should(QueryBuilders.matchPhrasePrefixQuery("pnum", searchTerm).boost(1.0f)).minimumShouldMatch(1);
 			if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
 				boolQueryBuilder.must(QueryBuilders.termQuery("consultantDoctorIds", doctorId));
 			}
 			SearchQuery searchQuery = null;
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(PageRequest.of((int)page, size)).build();
+						.withPageable(PageRequest.of((int) page, size)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("localPatientName").order(SortOrder.ASC)).build();
@@ -168,7 +165,8 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl()));
 
 					BeanUtil.map(patient, patientResponse);
-					ESReferenceDocument esReferenceDocument = esReferenceRepository.findById(patient.getId()).orElse(null);
+					ESReferenceDocument esReferenceDocument = esReferenceRepository.findById(patient.getId())
+							.orElse(null);
 					if (esReferenceDocument != null)
 						patientResponse.setReferredBy(esReferenceDocument.getReference());
 					patientsResponse.add(patientResponse);
@@ -195,9 +193,8 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 			BoolQueryBuilder boolQueryBuilder = createAdvancedSearchCriteria(request);
 			SearchQuery searchQuery = null;
 			if (request.getSize() > 0)
-				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(
-								PageRequest.of((int)request.getPage(), request.getSize(), Direction.DESC, "createdTime"))
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(
+						PageRequest.of((int) request.getPage(), request.getSize(), Direction.DESC, "createdTime"))
 						.build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
@@ -214,7 +211,8 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl()));
 
 					BeanUtil.map(patient, patientResponse);
-					ESReferenceDocument esReferenceDocument = esReferenceRepository.findById(patient.getId()).orElse(null);
+					ESReferenceDocument esReferenceDocument = esReferenceRepository.findById(patient.getId())
+							.orElse(null);
 					if (esReferenceDocument != null)
 						patientResponse.setReferredBy(esReferenceDocument.getReference());
 					response.add(patientResponse);
@@ -255,8 +253,10 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 
 						String[] dob = searchValue.split("/");
 						builder = QueryBuilders.nestedQuery(AdvancedSearchType.DOB.getSearchType(),
-								QueryBuilders.boolQuery().must(QueryBuilders.termQuery("dob.years", dob[2])).must(QueryBuilders.termQuery("dob.months", dob[0]))
-										.must(QueryBuilders.termQuery("dob.days", dob[1])), ScoreMode.None);
+								QueryBuilders.boolQuery().must(QueryBuilders.termQuery("dob.years", dob[2]))
+										.must(QueryBuilders.termQuery("dob.months", dob[0]))
+										.must(QueryBuilders.termQuery("dob.days", dob[1])),
+								ScoreMode.None);
 
 					} else if (searchType.equalsIgnoreCase(AdvancedSearchType.REGISTRATION_DATE.getSearchType())) {
 
@@ -273,12 +273,16 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 
 						if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 							queryBuilderForReference
-									.must(QueryBuilders.boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")))
-													 .should(QueryBuilders.termQuery("locationId", locationId))
-													 .minimumShouldMatch(1))
-									.must(QueryBuilders.boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")))
-											 .should(QueryBuilders.termQuery("hospitalId", hospitalId))
-											 .minimumShouldMatch(1));
+									.must(QueryBuilders.boolQuery()
+											.should(QueryBuilders.boolQuery()
+													.mustNot(QueryBuilders.existsQuery("locationId")))
+											.should(QueryBuilders.termQuery("locationId", locationId))
+											.minimumShouldMatch(1))
+									.must(QueryBuilders.boolQuery()
+											.should(QueryBuilders.boolQuery()
+													.mustNot(QueryBuilders.existsQuery("hospitalId")))
+											.should(QueryBuilders.termQuery("hospitalId", hospitalId))
+											.minimumShouldMatch(1));
 						}
 
 						if (!DPDoctorUtils.anyStringEmpty(searchValue))
@@ -297,12 +301,12 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 									new BeanToPropertyValueTransformer("id"));
 							builder = QueryBuilders.termsQuery(searchType, referenceIds);
 						}
-					} else if (searchType.equalsIgnoreCase(AdvancedSearchType.PID.getSearchType())){
+					} else if (searchType.equalsIgnoreCase(AdvancedSearchType.PID.getSearchType())) {
 						builder = QueryBuilders.matchPhrasePrefixQuery("pid", searchValue);
-					 }else if (searchType.equalsIgnoreCase(AdvancedSearchType.PNUM.getSearchType())){
-							builder = QueryBuilders.matchPhrasePrefixQuery("pnum", searchValue);
+					} else if (searchType.equalsIgnoreCase(AdvancedSearchType.PNUM.getSearchType())) {
+						builder = QueryBuilders.matchPhrasePrefixQuery("pnum", searchValue);
 
-				     }else {
+					} else {
 						builder = QueryBuilders.matchPhrasePrefixQuery(searchType, searchValue);
 					}
 					boolQueryBuilder.must(builder);
@@ -325,13 +329,14 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 
 			if (request.getLatitude() != null && request.getLongitude() != null)
 				request.setGeoPoint(new GeoPoint(request.getLatitude(), request.getLongitude()));
-			
+
 			if (request.getSpecialities() != null && !request.getSpecialities().isEmpty()) {
-				Iterable<ESSpecialityDocument>  iterableSpecialities = esSpecialityRepository.findAllById(request.getSpecialities());
+				Iterable<ESSpecialityDocument> iterableSpecialities = esSpecialityRepository
+						.findAllById(request.getSpecialities());
 				List<String> specialities = new ArrayList<>();
 				List<String> parentSpecialities = new ArrayList<>();
-				if(iterableSpecialities != null) {
-					for(ESSpecialityDocument esSpecialityDocument : iterableSpecialities) {
+				if (iterableSpecialities != null) {
+					for (ESSpecialityDocument esSpecialityDocument : iterableSpecialities) {
 						specialities.add(esSpecialityDocument.getSuperSpeciality().toLowerCase());
 						parentSpecialities.add(esSpecialityDocument.getSpeciality().toLowerCase());
 					}
@@ -339,17 +344,16 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					request.setParentSpecialities(parentSpecialities);
 				}
 			}
-		
 
-			if (request.getServices() != null  && !request.getServices().isEmpty()) {
+			if (request.getServices() != null && !request.getServices().isEmpty()) {
 				Iterable<ESServicesDocument> iterableServices = esServicesRepository.findAllById(request.getServices());
 				List<String> services = new ArrayList<>();
-				if(iterableServices != null) {
-					for(ESServicesDocument esServicesDocument : iterableServices) {
+				if (iterableServices != null) {
+					for (ESServicesDocument esServicesDocument : iterableServices) {
 						services.add(esServicesDocument.getService().toLowerCase());
 					}
 					request.setServicesValue(services);
-				}					
+				}
 			}
 			esDoctorRepository.save(request);
 			transnationalService.addResource(new ObjectId(request.getUserId()), Resource.DOCTOR, true);
@@ -463,29 +467,28 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					.must(QueryBuilders.termQuery("locationId", locationId))
 					.must(QueryBuilders.termQuery("hospitalId", hospitalId))
 					.must(QueryBuilders.termQuery("isPatientDiscarded", true));
-					
-			if(!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				boolQueryBuilder.should(QueryBuilders.queryStringQuery("localPatientNameFormatted:" + "*" + searchTerm + "*"))
-						.should(QueryBuilders
-								.matchPhrasePrefixQuery(AdvancedSearchType.MOBILE_NUMBER.getSearchType(), searchTerm)).minimumShouldMatch(1);
+
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				boolQueryBuilder
+						.should(QueryBuilders.queryStringQuery("localPatientNameFormatted:" + "*" + searchTerm + "*"))
+						.should(QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.MOBILE_NUMBER.getSearchType(),
+								searchTerm))
+						.minimumShouldMatch(1);
 			}
 			SortBuilder sortBuilder = SortBuilders.fieldSort("createdTime").order(SortOrder.DESC);
-					
-			if(!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("localPatientName")) {
+
+			if (!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("localPatientName")) {
 				sortBuilder = SortBuilders.fieldSort("localPatientName").order(SortOrder.ASC);
 			}
-			
+
 			SearchQuery searchQuery = null;
-			if(size > 0) {
-				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withSort(sortBuilder)
+			if (size > 0) {
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(sortBuilder)
 						.withPageable(PageRequest.of(page, size)).build();
+			} else {
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(sortBuilder).build();
 			}
-			else {
-				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withSort(sortBuilder).build();
-			}
-			
+
 			response = elasticsearchTemplate.queryForList(searchQuery, ESPatientDocument.class);
 
 		} catch (Exception e) {

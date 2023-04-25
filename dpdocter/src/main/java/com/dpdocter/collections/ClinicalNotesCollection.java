@@ -209,18 +209,16 @@ public class ClinicalNotesCollection extends GenericCollection {
 
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	@Field
 	private EyeSpecialityObservation eyeObservation;
-	
+
 	@Field
 	private PhysioExamination physioExamination;
 	@Field
 	private String vaccinationHistory;
 
-	
-	//  @Field private List<Observation> treatmentObservation;
-	 
+	// @Field private List<Observation> treatmentObservation;
 
 	public String getVaccinationHistory() {
 		return vaccinationHistory;
@@ -765,10 +763,6 @@ public class ClinicalNotesCollection extends GenericCollection {
 	public void setPriorConsultations(String priorConsultations) {
 		this.priorConsultations = priorConsultations;
 	}
-	
-	
-
-	
 
 //	public List<Observation> getTreatmentObservation() {
 //		return treatmentObservation;
@@ -785,8 +779,6 @@ public class ClinicalNotesCollection extends GenericCollection {
 	public void setEyeObservation(EyeSpecialityObservation eyeObservation) {
 		this.eyeObservation = eyeObservation;
 	}
-	
-	
 
 	public PhysioExamination getPhysioExamination() {
 		return physioExamination;

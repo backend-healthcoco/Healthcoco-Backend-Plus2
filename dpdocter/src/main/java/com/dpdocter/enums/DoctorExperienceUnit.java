@@ -1,16 +1,16 @@
 package com.dpdocter.enums;
 
 public enum DoctorExperienceUnit {
-    MONTH("MONTH"), YEAR("YEAR");
+	MONTH("MONTH"), YEAR("YEAR");
 
-    private String period;
+	private String period;
 
-    DoctorExperienceUnit(String period) {
-	this.period = period;
-    }
+	DoctorExperienceUnit(String period) {
+		this.period = period;
+	}
 
-    public String getExperiencePeriod() {
-	return period;
-    }
+	public String getExperiencePeriod() {
+		return period;
+	}
 
 }

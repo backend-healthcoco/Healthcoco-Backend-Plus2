@@ -15,21 +15,4 @@ public interface ESSpecialityRepository extends ElasticsearchRepository<ESSpecia
     @Query("{\"bool\": {\"must\": [{\"termsQuery\": {\"id\": \"?0\"}}}}")
 	List<ESSpecialityDocument> findById(Collection<List<String>> specialityIds);
 
-//    @Query("{'id': {'$in': ?0}}")
-//    List<SolrSpecialityDocument> findByIds(Collection<String> specialityIds);
-//
-//    @Query("updatedTime: {?0 TO *}")
-//    List<SolrSpecialityDocument> find(Date date, Pageable pageable);
-//
-//    @Query("updatedTime: {?0 TO *}")
-//    List<SolrSpecialityDocument> find(Date date, Sort sort);
-//
-//    @Query("updatedTime: {?0 TO *} AND speciality:?1*")
-//    List<SolrSpecialityDocument> find(Date date, String searchTerm, Pageable pageable);
-//
-//    @Query("updatedTime: {?0 TO *} AND speciality: ?1*")
-//    List<SolrSpecialityDocument> find(Date date, String searchTerm, Sort sort);
-//
-//    @Query("{'id': {$in: ?0}}")
-//	List<SolrSpecialityDocument> findById(List<String> specialities);
 }

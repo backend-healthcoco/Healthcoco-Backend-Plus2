@@ -63,7 +63,6 @@ import com.dpdocter.repository.ENTAssessmentRepository;
 import com.dpdocter.repository.EyeAssessmentRepository;
 import com.dpdocter.repository.GrowthAssessmentAndGeneralBioMetricsRepository;
 import com.dpdocter.repository.NutritionAssessmentRepository;
-import com.dpdocter.repository.PatientLifeStyleRepository;
 import com.dpdocter.repository.PhysicalAssessmentRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserTreatmentRepository;
@@ -72,7 +71,6 @@ import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.NutritionSchoolAssociationResponse;
 import com.dpdocter.response.UserAssessment;
 import com.dpdocter.services.CampVisitService;
-import com.dpdocter.services.FileManager;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
@@ -111,12 +109,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 
 	@Autowired
 	private AcadamicClassSectionRepository acadamicClassSectionRepository;
-
-	@Autowired
-	private FileManager fileManager;
-
-	@Autowired
-	private PatientLifeStyleRepository patientLifeStyleRepository;
 
 	@Autowired
 	private UserTreatmentRepository userTreatmentRepository;
@@ -224,7 +216,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 		List<GrowthAssessmentAndGeneralBioMetrics> growthAssessmentAndGeneralBioMetrics = null;
 		Aggregation aggregation = null;
 		try {
-			// Criteria criteria = new Criteria();
 
 			long createdTimestamp = Long.parseLong(updatedTime);
 
@@ -277,8 +268,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 			String branchId, String doctorId, String updatedTime, int page, int size, Boolean isDiscarded) {
 		Integer count = 0;
 		try {
-			// Criteria criteria = new Criteria();
-
 			long createdTimestamp = Long.parseLong(updatedTime);
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
@@ -366,9 +355,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 	public PhysicalAssessment getPhysicalAssessmentById(String id) {
 		PhysicalAssessment response = null;
 		PhysicalAssessmentCollection physicalAssessmentCollection = null;
-
 		try {
-
 			physicalAssessmentCollection = physicalAssessmentRepository.findById(new ObjectId(id)).orElse(null);
 
 			if (physicalAssessmentCollection == null) {
@@ -424,8 +411,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 		List<PhysicalAssessment> physicalAssessments = null;
 		Aggregation aggregation = null;
 		try {
-			// Criteria criteria = new Criteria();
-
 			long createdTimestamp = Long.parseLong(updatedTime);
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
@@ -477,8 +462,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 			String doctorId, String updatedTime, int page, int size, Boolean isDiscarded) {
 		Integer count = 0;
 		try {
-			// Criteria criteria = new Criteria();
-
 			long createdTimestamp = Long.parseLong(updatedTime);
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
@@ -550,9 +533,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 	public ENTAssessment getENTAssessmentById(String id) {
 		ENTAssessment response = null;
 		ENTAssessmentCollection entAssessmentCollection = null;
-
 		try {
-
 			entAssessmentCollection = entAssessmentRepository.findById(new ObjectId(id)).orElse(null);
 
 			if (entAssessmentCollection == null) {
@@ -660,8 +641,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 			String doctorId, String updatedTime, int page, int size, Boolean isDiscarded) {
 		Integer count = 0;
 		try {
-			// Criteria criteria = new Criteria();
-
 			long createdTimestamp = Long.parseLong(updatedTime);
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
@@ -734,9 +713,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 	public DentalAssessment getDentalAssessmentById(String id) {
 		DentalAssessment response = null;
 		DentalAssessmentCollection dentalAssessmentCollection = null;
-
 		try {
-
 			dentalAssessmentCollection = dentalAssessmentRepository.findById(new ObjectId(id)).orElse(null);
 
 			if (dentalAssessmentCollection == null) {
@@ -792,8 +769,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 		List<DentalAssessment> dentalAssessments = null;
 		Aggregation aggregation = null;
 		try {
-			// Criteria criteria = new Criteria();
-
 			long createdTimestamp = Long.parseLong(updatedTime);
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
@@ -845,8 +820,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 			String doctorId, String updatedTime, int page, int size, Boolean isDiscarded) {
 		Integer count = 0;
 		try {
-			// Criteria criteria = new Criteria();
-
 			long createdTimestamp = Long.parseLong(updatedTime);
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
@@ -945,9 +918,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 	public EyeAssessment discardEyeAssessmentById(String id, Boolean discarded) {
 		EyeAssessment response = null;
 		EyeAssessmentCollection eyeAssessmentCollection = null;
-
 		try {
-
 			eyeAssessmentCollection = eyeAssessmentRepository.findById(new ObjectId(id)).orElse(null);
 
 			if (eyeAssessmentCollection == null) {
@@ -1988,18 +1959,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 						assessmentCriteria.and("branchId").is(new ObjectId(response.getBranchId()));
 					}
 
-//						if (!DPDoctorUtils.anyStringEmpty(campId)) {
-//							assessmentCriteria.and("campId").is(new ObjectId(campId));
-//						}
-//					
-//						if(fromDateTime != null && toDateTime != null) {
-//							assessmentCriteria.and("createdTime").gte(fromDateTime).lte(toDateTime);
-//						}else if(fromDateTime != null) {
-//							assessmentCriteria.and("createdTime").gte(fromDateTime);
-//						}else if(toDateTime != null) {
-//							assessmentCriteria.and("createdTime").lte(toDateTime);
-//						}
-
 					assessmentCriteria.and("academicProfileId").is(new ObjectId(profileId));
 					Integer growthAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria),
 							GrowthAssessmentAndGeneralBioMetricsCollection.class);
@@ -2037,12 +1996,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 					if (dietPlanCount > 0)
 						response.setIsDietPlanPresent(true);
 				}
-				/*
-				 * if (!DPDoctorUtils.anyStringEmpty(response.getImageUrl())) {
-				 * response.setImageUrl(imagePath + response.getImageUrl()); } if
-				 * (!DPDoctorUtils.anyStringEmpty(response.getThumbnailUrl())) {
-				 * response.setThumbnailUrl(imagePath + response.getThumbnailUrl()); }
-				 */
 			}
 		} catch (BusinessException be) {
 			logger.warn(be);
@@ -2249,7 +2202,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 
 						Aggregation.skip((long) (page) * size), Aggregation.limit(size));
 			} else {
-
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("acadamic_class_cl", "classId", "_id", "acadamicClass"),
 						Aggregation.unwind("acadamicClass", true),
@@ -2263,15 +2215,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 			}
 			response = mongoTemplate.aggregate(aggregation, AcademicProfileCollection.class, AcademicProfile.class)
 					.getMappedResults();
-//			for (AcadamicProfile acadamicProfile : response) {
-//				if (!DPDoctorUtils.anyStringEmpty(acadamicProfile.getImageUrl())) {
-//					acadamicProfile.setImageUrl(imagePath + acadamicProfile.getImageUrl());
-//				}
-//				if (!DPDoctorUtils.anyStringEmpty(acadamicProfile.getThumbnailUrl())) {
-//					acadamicProfile.setThumbnailUrl(imagePath + acadamicProfile.getThumbnailUrl());
-//				}
-//			}
-
 		} catch (BusinessException be) {
 			logger.warn(be);
 			throw be;
@@ -2357,12 +2300,14 @@ public class CampVisitServiceImpl implements CampVisitService {
 				throw new BusinessException(ServiceError.InvalidInput, "Patient date of birth is null or empty");
 			}
 
-			NutritionAssessmentCollection nutritionAssessment = mongoTemplate.aggregate(
-					Aggregation.newAggregation(
-							Aggregation.match(new Criteria("academicProfileId").is(new ObjectId(academicProfileId))
-									.and("discarded").is(false)),
-							Aggregation.sort(Direction.DESC, "createdTime"), Aggregation.limit(1)),
-					NutritionAssessmentCollection.class, NutritionAssessmentCollection.class).getUniqueMappedResult();
+			NutritionAssessmentCollection nutritionAssessment = mongoTemplate
+					.aggregate(
+							Aggregation.newAggregation(
+									Aggregation.match(new Criteria("academicProfileId")
+											.is(new ObjectId(academicProfileId)).and("discarded").is(false)),
+									Aggregation.sort(Direction.DESC, "createdTime"), Aggregation.limit(1)),
+							NutritionAssessmentCollection.class, NutritionAssessmentCollection.class)
+					.getUniqueMappedResult();
 
 			if (nutritionAssessment == null) {
 				logger.warn("No assessment is set for this patient");

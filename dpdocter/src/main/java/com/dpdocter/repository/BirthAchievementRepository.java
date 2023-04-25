@@ -7,8 +7,8 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.dpdocter.collections.BirthAchievementCollection;
 
-public interface BirthAchievementRepository extends MongoRepository<BirthAchievementCollection, ObjectId>{
+public interface BirthAchievementRepository extends MongoRepository<BirthAchievementCollection, ObjectId> {
 
-	 public List<BirthAchievementCollection> findByPatientId(ObjectId patientId);
-	
+	public List<BirthAchievementCollection> findByPatientId(ObjectId patientId);
+
 }

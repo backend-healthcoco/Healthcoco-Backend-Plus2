@@ -1,16 +1,16 @@
 package com.dpdocter.enums;
 
 public enum Currency {
-    INR("INR"), USD("USD");
+	INR("INR"), USD("USD");
 
-    private String currency;
+	private String currency;
 
-    Currency(String currency) {
-	this.currency = currency;
-    }
+	Currency(String currency) {
+		this.currency = currency;
+	}
 
-    public String getCurrency() {
-	return currency;
-    }
+	public String getCurrency() {
+		return currency;
+	}
 
 }

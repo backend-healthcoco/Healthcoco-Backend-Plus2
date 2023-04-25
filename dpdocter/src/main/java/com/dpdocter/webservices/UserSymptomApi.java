@@ -28,29 +28,23 @@ import io.swagger.annotations.ApiOperation;
 
 public class UserSymptomApi {
 
-	
-		
-		private Logger logger = LogManager.getLogger(UserSymptomApi.class);	
-		@Autowired
-		private UserSymptomService userSymptomServices;
-		
-		@Path(value = PathProxy.SymptomUrls.GET_USER_SYMPTOM)
-		@ApiOperation(value = PathProxy.SymptomUrls.GET_USER_SYMPTOM, notes = PathProxy.SymptomUrls.GET_USER_SYMPTOM)
-		@GET
-		public Response<UserSymptom> getUserSymptoms(@DefaultValue("0") @QueryParam(value ="size") int size, 
-				@DefaultValue("0") @QueryParam( value ="page") int page,
-				@DefaultValue("false") @QueryParam( value ="discarded" ) Boolean discarded, 
-				@QueryParam(value ="searchTerm") String searchTerm) {
-			Integer count = userSymptomServices.countUserSymptom(discarded, searchTerm);
-			Response<UserSymptom> response = new Response<UserSymptom>();
-			
-			response.setDataList(userSymptomServices.getUserSymptoms(size, page, discarded, searchTerm));
-			response.setCount(count);
-			return response;
-		}
-		
-		
+	private Logger logger = LogManager.getLogger(UserSymptomApi.class);
+	@Autowired
+	private UserSymptomService userSymptomServices;
 
+	@Path(value = PathProxy.SymptomUrls.GET_USER_SYMPTOM)
+	@ApiOperation(value = PathProxy.SymptomUrls.GET_USER_SYMPTOM, notes = PathProxy.SymptomUrls.GET_USER_SYMPTOM)
+	@GET
+	public Response<UserSymptom> getUserSymptoms(@DefaultValue("0") @QueryParam(value = "size") int size,
+			@DefaultValue("0") @QueryParam(value = "page") int page,
+			@DefaultValue("false") @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
+		Integer count = userSymptomServices.countUserSymptom(discarded, searchTerm);
+		Response<UserSymptom> response = new Response<UserSymptom>();
+
+		response.setDataList(userSymptomServices.getUserSymptoms(size, page, discarded, searchTerm));
+		response.setCount(count);
+		return response;
 	}
 
-
+}

@@ -42,7 +42,7 @@ public class ClinicContactUsCollection extends GenericCollection {
 	@Field
 	private String mrCode;
 	@Field
-    private String googleMapShortUrl;
+	private String googleMapShortUrl;
 
 	public ObjectId getId() {
 		return id;
@@ -155,7 +155,7 @@ public class ClinicContactUsCollection extends GenericCollection {
 	public void setMrCode(String mrCode) {
 		this.mrCode = mrCode;
 	}
-	
+
 	public String getGoogleMapShortUrl() {
 		return googleMapShortUrl;
 	}

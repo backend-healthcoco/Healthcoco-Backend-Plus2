@@ -19,11 +19,12 @@ public class OAuth2AuthenticationRefreshTokenCollection extends GenericCollectio
 	@Field
 	private OAuth2Authentication authentication;
 
-	public OAuth2AuthenticationRefreshTokenCollection(OAuth2RefreshToken oAuth2RefreshToken, OAuth2Authentication authentication) {
-	        this.oAuth2RefreshToken = oAuth2RefreshToken;
-	        this.authentication = authentication;
-	        this.tokenId = oAuth2RefreshToken.getValue();
-	    }
+	public OAuth2AuthenticationRefreshTokenCollection(OAuth2RefreshToken oAuth2RefreshToken,
+			OAuth2Authentication authentication) {
+		this.oAuth2RefreshToken = oAuth2RefreshToken;
+		this.authentication = authentication;
+		this.tokenId = oAuth2RefreshToken.getValue();
+	}
 
 	public ObjectId getId() {
 		return id;

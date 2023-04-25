@@ -52,8 +52,6 @@ public class CustomAppointmentCollection extends GenericCollection {
 		this.id = id;
 	}
 
-	
-
 	public ObjectId getDoctorId() {
 		return doctorId;
 	}

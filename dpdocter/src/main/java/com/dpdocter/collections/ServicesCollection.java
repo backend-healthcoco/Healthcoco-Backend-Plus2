@@ -9,34 +9,34 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "services_cl")
 public class ServicesCollection extends GenericCollection {
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private String service;
+	@Field
+	private String service;
 
-    @Field
-    private String formattedService;
-    
-    @Field
-    private Boolean toShow = true;
+	@Field
+	private String formattedService;
 
-    @Field
-    private List<String> specialities;
-    
-    @Field
-    private List<String> formattedSpecialities;
-    
-    @Field
-    private List<ObjectId> specialityIds;
-    
-    public ObjectId getId() {
-	return id;
-    }
+	@Field
+	private Boolean toShow = true;
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	@Field
+	private List<String> specialities;
+
+	@Field
+	private List<String> formattedSpecialities;
+
+	@Field
+	private List<ObjectId> specialityIds;
+
+	public ObjectId getId() {
+		return id;
+	}
+
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
 	public String getService() {
 		return service;

@@ -22,7 +22,7 @@ import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.elasticsearch.beans.DoctorLocation;
 
 @Document(indexName = "doctors_in", type = "doctors")
-public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoctorDocument>{
+public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoctorDocument> {
 
 	@Id
 	private String id;
@@ -70,20 +70,20 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	private List<String> parentSpecialities;
 
 	@MultiField(mainField = @Field(type = FieldType.Text))
-	private List<String> specialitiesValue;//value
+	private List<String> specialitiesValue;// value
 
 	@MultiField(mainField = @Field(type = FieldType.Text))
-	private List<String> servicesValue;//value
-	
+	private List<String> servicesValue;// value
+
 	@MultiField(mainField = @Field(type = FieldType.Keyword))
 	private List<String> formattedParentSpecialities;
 
 	@MultiField(mainField = @Field(type = FieldType.Keyword))
-	private List<String> formattedSpecialitiesValue;//value
+	private List<String> formattedSpecialitiesValue;// value
 
 	@MultiField(mainField = @Field(type = FieldType.Keyword))
-	private List<String> formattedServicesValue;//value
-	
+	private List<String> formattedServicesValue;// value
+
 	@Field(type = FieldType.Nested)
 	private DoctorExperience experience;
 
@@ -119,10 +119,10 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 
 	@Field(type = FieldType.Nested)
 	private List<Education> education;
-	
+
 	@Field(type = FieldType.Nested)
 	private List<DoctorRegistrationDetail> registrationDetails;
-	
+
 	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> professionalMemberships;
 
@@ -148,7 +148,7 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	private Integer noOfRecommenations = 0;
 
 	private String doctorSlugURL;
-	
+
 	@Field(type = FieldType.Boolean)
 	private Boolean isNutritionist = false;
 
@@ -157,48 +157,45 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 
 	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> divisionIds;
-	
+
 	@Field(type = FieldType.Nested)
 	private List<DoctorConsultation> consultationType;
-	
+
 	@Field(type = FieldType.Boolean)
 	private Boolean isOnlineConsultationAvailable = false;
-	
+
 	@Field(type = FieldType.Nested)
 	private List<WorkingSchedule> onlineWorkingSchedules;
-	
+
 	@Field(type = FieldType.Text)
 	private String RegistrationImageUrl;
 	@Field(type = FieldType.Text)
 	private String RegistrationThumbnailUrl;
-	
+
 	@Field(type = FieldType.Text)
 	private String photoIdImageUrl;
-	
+
 	@Field(type = FieldType.Boolean)
-	private Boolean isRegistrationDetailsVerified =false;
-	
+	private Boolean isRegistrationDetailsVerified = false;
+
 	@Field(type = FieldType.Boolean)
-	private Boolean isPhotoIdVerified =false;
-	
-	
+	private Boolean isPhotoIdVerified = false;
+
 	@Field(type = FieldType.Text)
 	private String professionalStatement;
-	
+
 	@Field(type = FieldType.Nested)
 	private List<Achievement> achievements;
 
-	
 	@Field(type = FieldType.Nested)
 	private AppointmentSlot onlineConsultationSlot;
-	
-	@Field(type = FieldType.Boolean)
-	private Boolean isHealthcocoDoctor=false;
-	
-	@Field(type = FieldType.Boolean)
-	private Boolean isExpUpdated=false;
 
-	
+	@Field(type = FieldType.Boolean)
+	private Boolean isHealthcocoDoctor = false;
+
+	@Field(type = FieldType.Boolean)
+	private Boolean isExpUpdated = false;
+
 	public String getDoctorSlugURL() {
 		return doctorSlugURL;
 	}
@@ -529,7 +526,7 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	public void setFormattedServicesValue(List<String> formattedServicesValue) {
 		this.formattedServicesValue = formattedServicesValue;
 	}
-	
+
 	public Boolean getIsNutritionist() {
 		return isNutritionist;
 	}
@@ -556,9 +553,12 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 
 	@Override
 	public int compareTo(ESDoctorDocument o) {
-		if(this.rankingCount < o.rankingCount)return 0;
-		else if(this.rankingCount < o.rankingCount)return -1;
-		else return 1;
+		if (this.rankingCount < o.rankingCount)
+			return 0;
+		else if (this.rankingCount < o.rankingCount)
+			return -1;
+		else
+			return 1;
 	}
 
 	public List<DoctorRegistrationDetail> getRegistrationDetails() {
@@ -600,8 +600,6 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	public void setOnlineWorkingSchedules(List<WorkingSchedule> onlineWorkingSchedules) {
 		this.onlineWorkingSchedules = onlineWorkingSchedules;
 	}
-	
-	
 
 	public String getRegistrationImageUrl() {
 		return RegistrationImageUrl;

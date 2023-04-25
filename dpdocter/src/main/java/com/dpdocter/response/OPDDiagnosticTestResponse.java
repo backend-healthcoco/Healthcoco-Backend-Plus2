@@ -11,9 +11,8 @@ public class OPDDiagnosticTestResponse {
 	private String id;
 
 	private String testName;
-	
-	 private String recordId;
 
+	private String recordId;
 
 	public String getRecordId() {
 		return recordId;

@@ -201,7 +201,7 @@ public class DentalImagingAPI {
 	public Response<Object> getLocationAssociatedServices(@QueryParam("hospitalId") String hospitalId,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") int page) {
 		Response<Object> response = new Response<Object>();
-		response.setData(dentalImagingService.countHospitalAssociatedDoctor(hospitalId,searchTerm));
+		response.setData(dentalImagingService.countHospitalAssociatedDoctor(hospitalId, searchTerm));
 		response.setDataList(dentalImagingService.getHospitalAssociatedDoctor(hospitalId, searchTerm, size, page));
 		return response;
 	}
@@ -227,7 +227,7 @@ public class DentalImagingAPI {
 		}
 		Response<DentalImagingInvoice> response = new Response<DentalImagingInvoice>();
 
-		response.setData(dentalImagingService.addEditInvoice(request , false));
+		response.setData(dentalImagingService.addEditInvoice(request, false));
 
 		return response;
 	}
@@ -353,7 +353,6 @@ public class DentalImagingAPI {
 				dentalImagingHospitalId, patientId, from, to, searchTerm, size, page));
 		return response;
 	}
-
 
 	@Path(value = PathProxy.DentalImagingUrl.GET_DOCTOR_VISIT_ANALYTICS)
 	@GET

@@ -7,7 +7,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-@Document(indexName="presenting_complaint_nose_in" , type="presenting_complaint_nose")
+@Document(indexName = "presenting_complaint_nose_in", type = "presenting_complaint_nose")
 public class ESPresentingComplaintNoseDocument {
 
 	@Id

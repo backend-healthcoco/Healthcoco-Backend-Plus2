@@ -9,7 +9,7 @@ import com.dpdocter.beans.Discount;
 import com.dpdocter.enums.PaymentMode;
 
 @Document(collection = "bulk_sms_payment_cl")
-public class BulkSmsPaymentCollection extends GenericCollection{
+public class BulkSmsPaymentCollection extends GenericCollection {
 
 	@Id
 	private String id;
@@ -19,16 +19,16 @@ public class BulkSmsPaymentCollection extends GenericCollection{
 
 	@Field
 	private String transactionId;
-	
+
 	@Field
 	private String transactionStatus;
 
 	@Field
-	private ObjectId doctorId;	
-	
+	private ObjectId doctorId;
+
 	@Field
-	private ObjectId locationId;	
-	
+	private ObjectId locationId;
+
 //	private String razorPayAccountId;
 
 	@Field
@@ -73,7 +73,6 @@ public class BulkSmsPaymentCollection extends GenericCollection{
 		this.transactionId = transactionId;
 	}
 
-	
 	public Discount getDiscount() {
 		return discount;
 	}
@@ -161,7 +160,5 @@ public class BulkSmsPaymentCollection extends GenericCollection{
 	public void setLocationId(ObjectId locationId) {
 		this.locationId = locationId;
 	}
-	
-	
 
 }

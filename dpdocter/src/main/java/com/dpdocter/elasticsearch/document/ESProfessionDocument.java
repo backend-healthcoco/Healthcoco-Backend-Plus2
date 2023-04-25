@@ -10,41 +10,41 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Document(indexName = "professions_in", type = "professions")
 public class ESProfessionDocument {
 
-    @Id
-    private String id;
+	@Id
+	private String id;
 
-    @Field(type = FieldType.Text)
-    private String profession;
+	@Field(type = FieldType.Text)
+	private String profession;
 
-    @Field(type = FieldType.Text)
-    private String explanation;
+	@Field(type = FieldType.Text)
+	private String explanation;
 
-    @Field(type = FieldType.Date)
-    private Date updatedTime;
+	@Field(type = FieldType.Date)
+	private Date updatedTime;
 
-    public String getId() {
-	return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getProfession() {
-	return profession;
-    }
+	public String getProfession() {
+		return profession;
+	}
 
-    public void setProfession(String profession) {
-	this.profession = profession;
-    }
+	public void setProfession(String profession) {
+		this.profession = profession;
+	}
 
-    public Date getUpdatedTime() {
-	return updatedTime;
-    }
+	public Date getUpdatedTime() {
+		return updatedTime;
+	}
 
-    public void setUpdatedTime(Date updatedTime) {
-	this.updatedTime = updatedTime;
-    }
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
 
 	@Override
 	public String toString() {

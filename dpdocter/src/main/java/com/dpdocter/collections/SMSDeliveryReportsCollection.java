@@ -25,55 +25,52 @@ public class SMSDeliveryReportsCollection {
 	@Field
 	private String campaignName;
 
-		public ObjectId getId() {
-			return id;
-		}
+	public ObjectId getId() {
+		return id;
+	}
 
-		public void setId(ObjectId id) {
-			this.id = id;
-		}
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-		public String getRequestId() {
-			return requestId;
-		}
+	public String getRequestId() {
+		return requestId;
+	}
 
-		public void setRequestId(String requestId) {
-			this.requestId = requestId;
-		}
+	public void setRequestId(String requestId) {
+		this.requestId = requestId;
+	}
 
-		public String getUserId() {
-			return userId;
-		}
+	public String getUserId() {
+		return userId;
+	}
 
-		public void setUserId(String userId) {
-			this.userId = userId;
-		}
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
-		public List<SMSReport> getReport() {
-			return report;
-		}
+	public List<SMSReport> getReport() {
+		return report;
+	}
 
-		public void setReport(List<SMSReport> report) {
-			this.report = report;
-		}
+	public void setReport(List<SMSReport> report) {
+		this.report = report;
+	}
 
-		public String getSenderId() {
-			return senderId;
-		}
+	public String getSenderId() {
+		return senderId;
+	}
 
-		public void setSenderId(String senderId) {
-			this.senderId = senderId;
-		}
+	public void setSenderId(String senderId) {
+		this.senderId = senderId;
+	}
 
-		public String getCampaignName() {
-			return campaignName;
-		}
+	public String getCampaignName() {
+		return campaignName;
+	}
 
-		public void setCampaignName(String campaignName) {
-			this.campaignName = campaignName;
-		}
-	    
-	    
+	public void setCampaignName(String campaignName) {
+		this.campaignName = campaignName;
+	}
 
-	
 }

@@ -3,31 +3,29 @@ package com.dpdocter.beans;
 public class DoctorPatientLedger {
 
 	private String id;
-	
+
 	private String locationId;
-	
+
 	private String hospitalId;
-	
+
 	private String patientId;
-	
+
 	private String receiptId;
-	
-	private String invoiceId;   
-	
-//	private Double dueAmount;
+
+	private String invoiceId;
 
 	private Double creditAmount;
-	
+
 	private Double debitAmount;
 
 	private DoctorPatientInvoice invoice;
-	
+
 	private DoctorPatientReceipt receipt;
-	
-	private Double balance=0.0;
+
+	private Double balance = 0.0;
 
 	private Boolean discarded = false;
-	
+
 	private String type;
 
 	public String getId() {
@@ -78,14 +76,6 @@ public class DoctorPatientLedger {
 		this.invoiceId = invoiceId;
 	}
 
-//	public Double getDueAmount() {
-//		return dueAmount;
-//	}
-//
-//	public void setDueAmount(Double dueAmount) {
-//		this.dueAmount = dueAmount;
-//	}
-
 	public Double getCreditAmount() {
 		return creditAmount;
 	}
@@ -125,8 +115,6 @@ public class DoctorPatientLedger {
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
-	
-	
 
 	public Double getBalance() {
 		return balance;
@@ -152,6 +140,4 @@ public class DoctorPatientLedger {
 				+ ", receipt=" + receipt + ", discarded=" + discarded + ", type=" + type + "]";
 	}
 
-	
 }
-

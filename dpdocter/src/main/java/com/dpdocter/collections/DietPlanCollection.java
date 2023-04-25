@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.DietplanItem;
 import com.dpdocter.beans.MealQuantity;
+
 @Document(collection = "diet_plan_cl")
 @CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
 public class DietPlanCollection extends GenericCollection {
@@ -44,10 +45,11 @@ public class DietPlanCollection extends GenericCollection {
 	private ObjectId cloneTemplateId;
 	@Field
 	private String cloneTemplateName;
-	
+
 	public String getPrinciple() {
 		return principle;
 	}
+
 	public void setPrinciple(String principle) {
 		this.principle = principle;
 	}
@@ -139,24 +141,31 @@ public class DietPlanCollection extends GenericCollection {
 	public void setAdvice(String advice) {
 		this.advice = advice;
 	}
+
 	public long getTimeTaken() {
 		return timeTaken;
 	}
+
 	public void setTimeTaken(long timeTaken) {
 		this.timeTaken = timeTaken;
 	}
+
 	public ObjectId getCloneTemplateId() {
 		return cloneTemplateId;
 	}
+
 	public void setCloneTemplateId(ObjectId cloneTemplateId) {
 		this.cloneTemplateId = cloneTemplateId;
 	}
+
 	public String getCloneTemplateName() {
 		return cloneTemplateName;
 	}
+
 	public void setCloneTemplateName(String cloneTemplateName) {
 		this.cloneTemplateName = cloneTemplateName;
 	}
+
 	@Override
 	public String toString() {
 		return "DietPlanCollection [id=" + id + ", uniquePlanId=" + uniquePlanId + ", doctorId=" + doctorId

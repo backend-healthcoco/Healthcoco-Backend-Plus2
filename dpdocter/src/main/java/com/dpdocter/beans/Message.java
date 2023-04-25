@@ -11,66 +11,65 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Message {
 
-    private String authKey;
+	private String authKey;
 
-    private String route;
+	private String route;
 
-    private String senderId;
+	private String senderId;
 
-    private String countryCode;
+	private String countryCode;
 
-    private String unicode;
-    
-    private List<SMS> sms;
+	private String unicode;
 
-    public String getAuthKey() {
-	return authKey;
-    }
+	private List<SMS> sms;
 
-    @XmlElement(name = "AUTHKEY", defaultValue = "${AUTH_KEY}")
-    public void setAuthKey(String authKey) {
-	this.authKey = authKey;
-    }
+	public String getAuthKey() {
+		return authKey;
+	}
 
-    public String getRoute() {
-	return route;
-    }
+	@XmlElement(name = "AUTHKEY", defaultValue = "${AUTH_KEY}")
+	public void setAuthKey(String authKey) {
+		this.authKey = authKey;
+	}
 
-    @XmlElement(name = "ROUTE")
-    public void setRoute(String route) {
-	this.route = route;
-    }
+	public String getRoute() {
+		return route;
+	}
 
-    public String getSenderId() {
-	return senderId;
-    }
+	@XmlElement(name = "ROUTE")
+	public void setRoute(String route) {
+		this.route = route;
+	}
 
-    @XmlElement(name = "SENDER")
-    public void setSenderId(String senderId) {
-	this.senderId = senderId;
-    }
+	public String getSenderId() {
+		return senderId;
+	}
 
-    public String getCountryCode() {
-	return countryCode;
-    }
+	@XmlElement(name = "SENDER")
+	public void setSenderId(String senderId) {
+		this.senderId = senderId;
+	}
 
-    @XmlElement(name = "COUNTRY")
-    public void setCountryCode(String countryCode) {
-	this.countryCode = countryCode;
-    }
+	public String getCountryCode() {
+		return countryCode;
+	}
 
-    public List<SMS> getSms() {
-	return sms;
-    }
+	@XmlElement(name = "COUNTRY")
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
+	}
 
-    @XmlElement(name = "SMS")
-    public void setSms(List<SMS> sms) {
-	this.sms = sms;
-    }
+	public List<SMS> getSms() {
+		return sms;
+	}
 
+	@XmlElement(name = "SMS")
+	public void setSms(List<SMS> sms) {
+		this.sms = sms;
+	}
 
-    @XmlElement(name = "UNICODE")
-    public String getUnicode() {
+	@XmlElement(name = "UNICODE")
+	public String getUnicode() {
 		return unicode;
 	}
 

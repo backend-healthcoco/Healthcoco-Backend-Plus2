@@ -11,9 +11,7 @@ public class SubscriptionResponse {
 
 	private String transactionStatus;
 
-	private String doctorId;	
-	
-//	private String razorPayAccountId;
+	private String doctorId;
 
 	private Discount discount;
 
@@ -24,8 +22,6 @@ public class SubscriptionResponse {
 	private Double transferAmount = 0.0;
 
 	private PaymentMode mode = PaymentMode.ONLINE;
-
-	//private String chequeNo;
 
 	private String orderId;
 
@@ -118,6 +114,5 @@ public class SubscriptionResponse {
 	public void setReciept(String reciept) {
 		this.reciept = reciept;
 	}
-	
-	
+
 }

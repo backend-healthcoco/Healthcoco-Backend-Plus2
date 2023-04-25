@@ -44,7 +44,7 @@ public class AppointmentGeneralFeedbackCollection extends GenericCollection {
 	private String adminUpdatedExperienceWithDoctor;
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	public ObjectId getId() {
 		return id;
 	}

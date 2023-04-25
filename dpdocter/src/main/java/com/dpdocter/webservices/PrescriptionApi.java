@@ -73,7 +73,7 @@ import io.swagger.annotations.ApiOperation;
 public class PrescriptionApi {
 
 	private static Logger logger = Logger.getLogger(PrescriptionApi.class.getName());
-	
+
 	@Autowired
 	private PrescriptionServices prescriptionServices;
 
@@ -371,13 +371,15 @@ public class PrescriptionApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		} else if ((request.getItems() == null || request.getItems().isEmpty())
-				&& (request.getDiagnosticTests() == null || request.getDiagnosticTests().isEmpty()) && DPDoctorUtils.anyStringEmpty(request.getAdvice())) {
+				&& (request.getDiagnosticTests() == null || request.getDiagnosticTests().isEmpty())
+				&& DPDoctorUtils.anyStringEmpty(request.getAdvice())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		PrescriptionAddEditResponse prescriptionAddEditResponse = prescriptionServices.addPrescription(request, true, null, null);
+		PrescriptionAddEditResponse prescriptionAddEditResponse = prescriptionServices.addPrescription(request, true,
+				null, null);
 
-		 //patient track
+		// patient track
 		if (prescriptionAddEditResponse != null) {
 			String visitId = patientTrackService.addRecord(prescriptionAddEditResponse, VisitedFor.PRESCRIPTION,
 					prescriptionAddEditResponse.getVisitId());
@@ -399,7 +401,8 @@ public class PrescriptionApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		} else if ((request.getItems() == null || request.getItems().isEmpty())
-				&& (request.getDiagnosticTests() == null || request.getDiagnosticTests().isEmpty()) && DPDoctorUtils.anyStringEmpty(request.getAdvice())) {
+				&& (request.getDiagnosticTests() == null || request.getDiagnosticTests().isEmpty())
+				&& DPDoctorUtils.anyStringEmpty(request.getAdvice())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -427,7 +430,8 @@ public class PrescriptionApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		} else if ((request.getItems() == null || request.getItems().isEmpty())
-				&& (request.getDiagnosticTests() == null || request.getDiagnosticTests().isEmpty()) && DPDoctorUtils.anyStringEmpty(request.getAdvice())) {
+				&& (request.getDiagnosticTests() == null || request.getDiagnosticTests().isEmpty())
+				&& DPDoctorUtils.anyStringEmpty(request.getAdvice())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -509,7 +513,8 @@ public class PrescriptionApi {
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Patient Id Cannot Be Empty");
 		}
-		Response<Object> response = prescriptionServices.getPrescriptions(patientId, page, size, updatedTime, discarded);
+		Response<Object> response = prescriptionServices.getPrescriptions(patientId, page, size, updatedTime,
+				discarded);
 		return response;
 	}
 
@@ -723,8 +728,8 @@ public class PrescriptionApi {
 				}
 			}
 		}
-		Response<Object> response = prescriptionServices.getPrescriptionItems(type, range, page, size, doctorId, locationId,
-				hospitalId, updatedTime, discarded, false, disease, null);
+		Response<Object> response = prescriptionServices.getPrescriptionItems(type, range, page, size, doctorId,
+				locationId, hospitalId, updatedTime, discarded, false, disease, null);
 
 		return response;
 	}
@@ -749,7 +754,7 @@ public class PrescriptionApi {
 		response.setData(true);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrescriptionUrls.EMAIL_PRESCRIPTION_WEB)
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.EMAIL_PRESCRIPTION_WEB, notes = PathProxy.PrescriptionUrls.EMAIL_PRESCRIPTION_WEB)
@@ -759,8 +764,7 @@ public class PrescriptionApi {
 			@PathParam(value = "emailAddress") String emailAddress) {
 
 		if (DPDoctorUtils.anyStringEmpty(prescriptionId, emailAddress)) {
-			logger.warn(
-					"Invalid Input. Prescription Id, EmailAddress Cannot Be Empty");
+			logger.warn("Invalid Input. Prescription Id, EmailAddress Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Invalid Input. Prescription Id, EmailAddress Cannot Be Empty");
 		}
@@ -791,7 +795,7 @@ public class PrescriptionApi {
 				mobileNumber, "PRESCRIPTION"));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrescriptionUrls.SMS_PRESCRIPTION_WEB)
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.SMS_PRESCRIPTION_WEB, notes = PathProxy.PrescriptionUrls.SMS_PRESCRIPTION_WEB)
@@ -872,12 +876,14 @@ public class PrescriptionApi {
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT, notes = PathProxy.PrescriptionUrls.CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT)
 	public Response<PrescriptionTestAndRecord> checkPrescriptionExists(@PathParam("uniqueEmrId") String uniqueEmrId,
-			@QueryParam("patientId") String patientId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId) {
+			@QueryParam("patientId") String patientId, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(uniqueEmrId)) {
 			logger.error("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		PrescriptionTestAndRecord dataResponse = prescriptionServices.checkPrescriptionExists(uniqueEmrId, patientId, locationId, hospitalId);
+		PrescriptionTestAndRecord dataResponse = prescriptionServices.checkPrescriptionExists(uniqueEmrId, patientId,
+				locationId, hospitalId);
 
 		Response<PrescriptionTestAndRecord> response = new Response<PrescriptionTestAndRecord>();
 		response.setData(dataResponse);
@@ -887,15 +893,19 @@ public class PrescriptionApi {
 	@Path(value = PathProxy.PrescriptionUrls.DOWNLOAD_PRESCRIPTION)
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.DOWNLOAD_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.DOWNLOAD_PRESCRIPTION)
-	public Response<String> downloadPrescription(@PathParam("prescriptionId") String prescriptionId, @DefaultValue("false") @QueryParam("showPH") Boolean showPH,
-    		@DefaultValue("false") @QueryParam("showPLH") Boolean showPLH, @DefaultValue("false") @QueryParam("showFH") Boolean showFH, 
-    		@DefaultValue("false") @QueryParam("showDA") Boolean showDA, @DefaultValue("false") @QueryParam("isLabPrint") Boolean isLabPrint) {
+	public Response<String> downloadPrescription(@PathParam("prescriptionId") String prescriptionId,
+			@DefaultValue("false") @QueryParam("showPH") Boolean showPH,
+			@DefaultValue("false") @QueryParam("showPLH") Boolean showPLH,
+			@DefaultValue("false") @QueryParam("showFH") Boolean showFH,
+			@DefaultValue("false") @QueryParam("showDA") Boolean showDA,
+			@DefaultValue("false") @QueryParam("isLabPrint") Boolean isLabPrint) {
 		if (DPDoctorUtils.anyStringEmpty(prescriptionId)) {
 			logger.error("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<String> response = new Response<String>();
-		response.setData(prescriptionServices.getPrescriptionFile(prescriptionId, showPH, showPLH, showFH, showDA, isLabPrint));
+		response.setData(
+				prescriptionServices.getPrescriptionFile(prescriptionId, showPH, showPLH, showFH, showDA, isLabPrint));
 		return response;
 	}
 
@@ -956,8 +966,8 @@ public class PrescriptionApi {
 	}
 
 	/*
-	 * Don't not use it. To add existing custom drugs in my fav..fr updating
-	 * mongodb data
+	 * Don't not use it. To add existing custom drugs in my fav..fr updating mongodb
+	 * data
 	 */
 	// @Path(value = PathProxy.PrescriptionUrls.ADD_CUSTOM_DRUG_TO_FAV)
 	// @GET
@@ -986,9 +996,11 @@ public class PrescriptionApi {
 
 	@Path(value = PathProxy.PrescriptionUrls.DRUGS_INTERACTION)
 	@POST
-	public Response<DrugInteractionResposne> drugInteraction(List<Drug> request, @QueryParam("patientId") String patientId) { 
+	public Response<DrugInteractionResposne> drugInteraction(List<Drug> request,
+			@QueryParam("patientId") String patientId) {
 
-		List<DrugInteractionResposne> drugInteractionResposnes = prescriptionServices.drugInteraction(request, patientId);
+		List<DrugInteractionResposne> drugInteractionResposnes = prescriptionServices.drugInteraction(request,
+				patientId);
 		Response<DrugInteractionResposne> response = new Response<DrugInteractionResposne>();
 		response.setDataList(drugInteractionResposnes);
 		return response;
@@ -999,11 +1011,11 @@ public class PrescriptionApi {
 	public Response<Boolean> addGenericsWithReaction() {
 
 		Response<Boolean> response = new Response<Boolean>();
-		//response.setData(prescriptionServices.addGenericsWithReaction());
+		// response.setData(prescriptionServices.addGenericsWithReaction());
 		response.setData(prescriptionServices.transferGenericDrugs());
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrescriptionUrls.ADD_FAVOURITES_TO_DRUGS)
 	@GET
 	public Response<Boolean> addFavouritesToDrug() {
@@ -1028,16 +1040,16 @@ public class PrescriptionApi {
 //		response.setData(dataResponse);
 //		return response;
 //	}
-	
+
 	@Path(value = PathProxy.PrescriptionUrls.ADD_EYE_PRESCRPTION)
 	@POST
-	public Response<EyePrescription> addEyePrescription( EyePrescription request) {
+	public Response<EyePrescription> addEyePrescription(EyePrescription request) {
 
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getPatientId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		} 
+		}
 		EyePrescription eyePrescription = prescriptionServices.addEditEyePrescription(request, true);
 
 		// patient track
@@ -1052,43 +1064,43 @@ public class PrescriptionApi {
 		response.setData(eyePrescription);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrescriptionUrls.EDIT_EYE_PRESCRPTION)
 	@POST
-	public Response<EyePrescription> editEyePrescription( EyePrescription request) {
+	public Response<EyePrescription> editEyePrescription(EyePrescription request) {
 
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
-				request.getHospitalId(), request.getPatientId() , request.getId())) {
+				request.getHospitalId(), request.getPatientId(), request.getId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		} 
+		}
 		EyePrescription eyePrescription = prescriptionServices.editEyePrescription(request);
 		// patient track
-		/*if (eyePrescription != null) {
-			String visitId = patientTrackService.addRecord(eyePrescription, VisitedFor.EYE_PRESCRIPTION,
-					eyePrescription.getVisitId());
-			eyePrescription.setVisitId(visitId);
-		}*/
+		/*
+		 * if (eyePrescription != null) { String visitId =
+		 * patientTrackService.addRecord(eyePrescription, VisitedFor.EYE_PRESCRIPTION,
+		 * eyePrescription.getVisitId()); eyePrescription.setVisitId(visitId); }
+		 */
 
 		Response<EyePrescription> response = new Response<EyePrescription>();
 		response.setData(eyePrescription);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrescriptionUrls.GET_EYE_PRESCRPTION_BY_ID)
 	@GET
-	public Response<EyePrescription> getEyePrescription( @PathParam("id") String id) {
+	public Response<EyePrescription> getEyePrescription(@PathParam("id") String id) {
 
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		} 
+		}
 		EyePrescription eyePrescription = prescriptionServices.getEyePrescription(id);
 		Response<EyePrescription> response = new Response<EyePrescription>();
 		response.setData(eyePrescription);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrescriptionUrls.GET_EYE_PRESCRPTIONS)
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_EYE_PRESCRPTIONS, notes = PathProxy.PrescriptionUrls.GET_EYE_PRESCRPTIONS)
@@ -1103,7 +1115,8 @@ public class PrescriptionApi {
 			logger.warn("Invalid Input.");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.");
 		}
-		eyePrescriptions = prescriptionServices.getEyePrescriptions(page, size, doctorId, locationId, hospitalId, patientId, updatedTime, discarded, isOTPVerified);
+		eyePrescriptions = prescriptionServices.getEyePrescriptions(page, size, doctorId, locationId, hospitalId,
+				patientId, updatedTime, discarded, isOTPVerified);
 		Response<EyePrescription> response = new Response<>();
 		response.setDataList(eyePrescriptions);
 		return response;
@@ -1142,7 +1155,7 @@ public class PrescriptionApi {
 		response.setData(true);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrescriptionUrls.EMAIL_EYE_PRESCRIPTION_WEB)
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.EMAIL_EYE_PRESCRIPTION_WEB, notes = PathProxy.PrescriptionUrls.EMAIL_EYE_PRESCRIPTION_WEB)
@@ -1163,7 +1176,7 @@ public class PrescriptionApi {
 		response.setData(true);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION)
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION)
@@ -1180,10 +1193,11 @@ public class PrescriptionApi {
 		}
 
 		Response<Boolean> response = new Response<Boolean>();
-		response.setData(prescriptionServices.smsEyePrescription(prescriptionId, doctorId, locationId, hospitalId, mobileNumber, "EYE_PRESCRIPTION"));
+		response.setData(prescriptionServices.smsEyePrescription(prescriptionId, doctorId, locationId, hospitalId,
+				mobileNumber, "EYE_PRESCRIPTION"));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION_WEB)
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION_WEB, notes = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION_WEB)
@@ -1200,10 +1214,11 @@ public class PrescriptionApi {
 		}
 
 		Response<Boolean> response = new Response<Boolean>();
-		response.setData(prescriptionServices.smsEyePrescriptionForWeb(prescriptionId, doctorId, locationId, hospitalId, mobileNumber, "EYE_PRESCRIPTION"));
+		response.setData(prescriptionServices.smsEyePrescriptionForWeb(prescriptionId, doctorId, locationId, hospitalId,
+				mobileNumber, "EYE_PRESCRIPTION"));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrescriptionUrls.DELETE_EYE_PRESCRIPTION)
 	@DELETE
 	@ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_EYE_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.DELETE_EYE_PRESCRIPTION)
@@ -1216,12 +1231,12 @@ public class PrescriptionApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		EyePrescription prescriptionDeleteResponse = prescriptionServices.deleteEyePrescription(prescriptionId, doctorId, hospitalId, locationId, patientId, discarded);
+		EyePrescription prescriptionDeleteResponse = prescriptionServices.deleteEyePrescription(prescriptionId,
+				doctorId, hospitalId, locationId, patientId, discarded);
 		Response<EyePrescription> response = new Response<EyePrescription>();
 		response.setData(prescriptionDeleteResponse);
 		return response;
 	}
-	
 
 	@Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUGS)
 	@GET
@@ -1231,15 +1246,15 @@ public class PrescriptionApi {
 		response.setDataList(drugs);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrescriptionUrls.ADD_EDIT_INSTRUCTIONS)
 	@POST
-	public Response<Instructions> addEditInstruction( Instructions request) {
+	public Response<Instructions> addEditInstruction(Instructions request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		} 
+		}
 		Instructions instructions = prescriptionServices.addEditInstructions(request);
 
 		Response<Instructions> response = new Response<Instructions>();
@@ -1255,14 +1270,15 @@ public class PrescriptionApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
-		if ( DPDoctorUtils.anyStringEmpty(doctorId,locationId,hospitalId)) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		} 
-		Response<Instructions> response = prescriptionServices.getInstructions(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+		}
+		Response<Instructions> response = prescriptionServices.getInstructions(page, size, doctorId, locationId,
+				hospitalId, updatedTime, discarded);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrescriptionUrls.DELETE_INSTRUCTIONS)
 	@DELETE
 	@ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_INSTRUCTIONS, notes = PathProxy.PrescriptionUrls.DELETE_INSTRUCTIONS)
@@ -1275,7 +1291,8 @@ public class PrescriptionApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		Instructions instruction = prescriptionServices.deleteInstructions(id, doctorId, locationId, hospitalId, discarded);
+		Instructions instruction = prescriptionServices.deleteInstructions(id, doctorId, locationId, hospitalId,
+				discarded);
 		Response<Instructions> response = new Response<Instructions>();
 		response.setData(instruction);
 		return response;
@@ -1285,7 +1302,7 @@ public class PrescriptionApi {
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.UPDATE_GENERIC_CODES, notes = PathProxy.PrescriptionUrls.UPDATE_GENERIC_CODES)
 	public Response<Boolean> updateGenericCodes() {
-		
+
 		Boolean removeDuplicateDrugs = prescriptionServices.updateGenericCodes();
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(removeDuplicateDrugs);
@@ -1305,22 +1322,22 @@ public class PrescriptionApi {
 		response.setDataList(drugs);
 		return response;
 	}
-		
+
 	@Path(value = PathProxy.PrescriptionUrls.ADD_NUTRITION_REFERRAL)
 	@POST
-	public Response<NutritionReferral> addNutritionReferral( NutritionReferralRequest request) {
+	public Response<NutritionReferral> addNutritionReferral(NutritionReferralRequest request) {
 
-		if (request == null || DPDoctorUtils.anyStringEmpty(request.getPatientId() , request.getDoctorId(), request.getLocationId(),
-				request.getHospitalId())) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getPatientId(), request.getDoctorId(),
+				request.getLocationId(), request.getHospitalId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		} 
+		}
 		NutritionReferral nutritionReferral = prescriptionServices.addNutritionReferral(request);
 		Response<NutritionReferral> response = new Response<NutritionReferral>();
 		response.setData(nutritionReferral);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrescriptionUrls.DELETE_PRESCRIPTION_WEB)
 	@DELETE
 	@ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_PRESCRIPTION_WEB, notes = PathProxy.PrescriptionUrls.DELETE_PRESCRIPTION_WEB)
@@ -1333,50 +1350,51 @@ public class PrescriptionApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		Prescription prescriptionDeleteResponse = prescriptionServices.deletePrescriptionForWeb(prescriptionId, doctorId, hospitalId, locationId, patientId, discarded);
+		Prescription prescriptionDeleteResponse = prescriptionServices.deletePrescriptionForWeb(prescriptionId,
+				doctorId, hospitalId, locationId, patientId, discarded);
 		Response<Prescription> response = new Response<Prescription>();
 		response.setData(prescriptionDeleteResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrescriptionUrls.UPDATE_DRUG_RANKING_ON_BASIS_OF_RANKING)
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.UPDATE_DRUG_RANKING_ON_BASIS_OF_RANKING, notes = PathProxy.PrescriptionUrls.UPDATE_DRUG_RANKING_ON_BASIS_OF_RANKING)
 	public Response<Boolean> updateDrugRankingOnBasisOfRanking() {
-		
+
 		Boolean removeDuplicateDrugs = prescriptionServices.updateDrugRankingOnBasisOfRanking();
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(removeDuplicateDrugs);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrescriptionUrls.UPLOAD_DRUGS)
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.UPLOAD_DRUGS, notes = PathProxy.PrescriptionUrls.UPLOAD_DRUGS)
 	public Response<Boolean> uploadDrugs() {
-		
+
 		Boolean removeDuplicateDrugs = prescriptionServices.uploadDrugs();
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(removeDuplicateDrugs);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrescriptionUrls.UPDATE_DRUG_INTERACTION)
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.UPDATE_DRUG_INTERACTION, notes = PathProxy.PrescriptionUrls.UPDATE_DRUG_INTERACTION)
 	public Response<Boolean> updateDrugInteraction() {
-		
+
 		Boolean removeDuplicateDrugs = prescriptionServices.updateDrugInteraction();
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(removeDuplicateDrugs);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrescriptionUrls.UPDATE_PRESCRIPTION_DRUG)
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.UPDATE_PRESCRIPTION_DRUG, notes = PathProxy.PrescriptionUrls.UPDATE_PRESCRIPTION_DRUG)
 	public Response<Boolean> updatePrescriptionDrugType() {
-		
+
 		Boolean removeDuplicateDrugs = prescriptionServices.updatePrescriptionDrugType();
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(removeDuplicateDrugs);

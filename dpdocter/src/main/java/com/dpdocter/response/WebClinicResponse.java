@@ -16,15 +16,15 @@ public class WebClinicResponse {
 	private String city;
 
 	private String postalCode;
-	
+
 	private String locality;
 
 	private String locationName;
-	
+
 	private String streetAddress;
 
 	private ConsultationFee consultationFee;
-	
+
 	private DoctorFacility facility;
 
 	public String getLocationId() {

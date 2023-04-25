@@ -9,7 +9,6 @@ public class MasterBabyImmunizationChartResponse {
 	private String name;
 	private String periodTime;
 	private Vaccine vaccine;
-	
 
 	public Age getAge() {
 		return age;

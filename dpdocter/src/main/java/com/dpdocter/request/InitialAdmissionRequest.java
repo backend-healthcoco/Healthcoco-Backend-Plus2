@@ -1,6 +1,5 @@
 package com.dpdocter.request;
 
-import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.Medication;
@@ -8,39 +7,37 @@ import com.dpdocter.beans.RiskScore;
 import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.collections.GenericCollection;
 
-public class InitialAdmissionRequest extends GenericCollection{
+public class InitialAdmissionRequest extends GenericCollection {
 
-private String id;
-	
+	private String id;
+
 	private String doctorId;
-	
+
 	private String nurseName;
 
 	private String locationId;
 
 	private String hospitalId;
-	
+
 	private String patientId;
-	
+
 	private VitalSigns vitalSigns;
-	
+
 	private List<Medication> oldMedication;
-	
+
 	private String nursingCare;
-	
+
 	private String advice;
-	
+
 	private List<RiskScore> riskFactor;
-	
+
 	private int totalRiskScore;
 
-	private String coMorbidities;//more than one illness or disease
-	
+	private String coMorbidities;// more than one illness or disease
+
 	private boolean discarded = false;
-	
+
 	private String ipdNumber;
-
-
 
 	public String getId() {
 		return id;
@@ -89,7 +86,6 @@ private String id;
 	public void setPatientId(String patientId) {
 		this.patientId = patientId;
 	}
-
 
 	public VitalSigns getVitalSigns() {
 		return vitalSigns;
@@ -162,9 +158,5 @@ private String id;
 	public void setIpdNumber(String ipdNumber) {
 		this.ipdNumber = ipdNumber;
 	}
-
-	
-	
-
 
 }

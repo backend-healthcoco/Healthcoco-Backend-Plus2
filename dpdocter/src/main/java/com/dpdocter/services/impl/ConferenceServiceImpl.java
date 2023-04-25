@@ -95,7 +95,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.ASC, "topic")), Aggregation.skip((long)page * size),
+						Aggregation.sort(new Sort(Direction.ASC, "topic")), Aggregation.skip((long) page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -116,7 +116,8 @@ public class ConferenceServiceImpl implements ConferenceService {
 	public SessionTopic getTopic(String id) {
 		SessionTopic response = null;
 		try {
-			SessionTopicCollection sessionTopicCollection = sessionTopicRepository.findById(new ObjectId(id)).orElse(null);
+			SessionTopicCollection sessionTopicCollection = sessionTopicRepository.findById(new ObjectId(id))
+					.orElse(null);
 			response = new SessionTopic();
 			if (sessionTopicCollection != null) {
 				BeanUtil.map(sessionTopicCollection, response);
@@ -145,7 +146,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.ASC, "firstName")), Aggregation.skip((long)page * size),
+						Aggregation.sort(new Sort(Direction.ASC, "firstName")), Aggregation.skip((long) page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -171,7 +172,8 @@ public class ConferenceServiceImpl implements ConferenceService {
 	public SpeakerProfile getSpeakerProfile(String id) {
 		SpeakerProfile response = null;
 		try {
-			SpeakerProfileCollection speakerProfileCollection = speakerProfileRepository.findById(new ObjectId(id)).orElse(null);
+			SpeakerProfileCollection speakerProfileCollection = speakerProfileRepository.findById(new ObjectId(id))
+					.orElse(null);
 			response = new SpeakerProfile();
 
 			BeanUtil.map(speakerProfileCollection, response);
@@ -259,7 +261,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 												true))),
 								groupFirst, Aggregation.match(criteria),
 								Aggregation.sort(new Sort(Direction.ASC, "schedule.fromTime")),
-								Aggregation.skip((long)page * size), Aggregation.limit(size));
+								Aggregation.skip((long) page * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation
 						.newAggregation(
@@ -388,8 +390,8 @@ public class ConferenceServiceImpl implements ConferenceService {
 			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-									.append("onDate", new BasicDBObject("$first", "$onDate"))
-									.append("conferenceId", new BasicDBObject("$first", "$conferenceId"))));
+							.append("onDate", new BasicDBObject("$first", "$onDate"))
+							.append("conferenceId", new BasicDBObject("$first", "$conferenceId"))));
 
 			ProjectionOperation projectList = new ProjectionOperation(
 					Fields.from(Fields.field("onDate", "$onDate"), Fields.field("conferenceId", "$conferenceId")));
@@ -549,33 +551,6 @@ public class ConferenceServiceImpl implements ConferenceService {
 							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 
-			ProjectionOperation projectListThird = new ProjectionOperation(
-					Fields.from(Fields.field("id", "$id"), Fields.field("title", "$title"),
-							Fields.field("titleImage", "$titleImage"), Fields.field("description", "$description"),
-							Fields.field("fromDate", "$fromDate"), Fields.field("toDate", "$toDate"),
-							Fields.field("address", "$address"), Fields.field("discarded", "$discarded"),
-							Fields.field("specialities", "$specialities"), Fields.field("speakers", "$speakers"),
-							Fields.field("member.speakerId", "$commiteeMember.speakerId"),
-							Fields.field("commiteeMember.firstName", "$member.firstName"),
-							Fields.field("commiteeMember.profileImage", "$member.profileImage"),
-							Fields.field("commiteeMember.role", "$commiteeMember.role"),
-							Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
-							Fields.field("createdBy", "$createdBy")));
-
-			CustomAggregationOperation groupthird = new CustomAggregationOperation(new Document("$group",
-					new BasicDBObject("id", "$_id").append("title", new BasicDBObject("$first", "$title"))
-							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
-							.append("description", new BasicDBObject("$first", "$description"))
-							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
-							.append("toDate", new BasicDBObject("$first", "$toDate"))
-							.append("commiteeMember", new BasicDBObject("$push", "$commiteeMember"))
-							.append("speakers", new BasicDBObject("$first", "$speakers"))
-							.append("specialities", new BasicDBObject("$first", "$specialities"))
-							.append("address", new BasicDBObject("$first", "$address"))
-							.append("discarded", new BasicDBObject("$first", "$discarded"))
-							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 			Aggregation aggregation = Aggregation.newAggregation(
 					Aggregation.match(new Criteria("_id").is(new ObjectId(id))),
 					new CustomAggregationOperation(new Document("$unwind",
@@ -658,7 +633,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Direction.ASC, "schedule.fromTime", "onDate")),
-						Aggregation.skip((long)page * size), Aggregation.limit(size));
+						Aggregation.skip((long) page * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Direction.ASC, "schedule.fromTime")),
@@ -829,7 +804,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 
-						Aggregation.sort(sort), Aggregation.skip((long)page * size), Aggregation.limit(size));
+						Aggregation.sort(sort), Aggregation.skip((long) page * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(sort));
 			}
@@ -865,7 +840,8 @@ public class ConferenceServiceImpl implements ConferenceService {
 			QuestionLikeCollection likeCollection = null;
 			QuestionCollection questionCollection = questionRepository.findById(new ObjectId(id)).orElse(null);
 			if (!DPDoctorUtils.anyStringEmpty(userId)) {
-				likeCollection = questionLikeRepository.findByQuestionIdAndUserId(new ObjectId(id), new ObjectId(userId));
+				likeCollection = questionLikeRepository.findByQuestionIdAndUserId(new ObjectId(id),
+						new ObjectId(userId));
 			}
 			response = new SessionQuestion();
 			if (questionCollection != null) {

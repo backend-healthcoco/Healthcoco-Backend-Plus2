@@ -3,15 +3,25 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.Fields;
 
 public class ClinicalNotesSequenceCollection extends GenericCollection {
-
+	@Id
 	private ObjectId id;
+
+	@Field
 	private ObjectId doctorId;
+
+	@Field
 	private ObjectId locationId;
+
+	@Field
 	private ObjectId hospitalId;
+
+	@Field
 	private List<Fields> fields;
 
 	public ObjectId getId() {

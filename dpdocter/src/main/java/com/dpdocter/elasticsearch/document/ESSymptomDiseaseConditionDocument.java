@@ -11,26 +11,26 @@ import org.springframework.data.elasticsearch.annotations.MultiField;
 
 @Document(indexName = "symptom_disease_condition_in", type = "symptom_disease_condition")
 public class ESSymptomDiseaseConditionDocument {
-    @Id
-    private String id;
+	@Id
+	private String id;
 
-    @Field(type = FieldType.Text)
-    private String name;
-    
-    @Field(type = FieldType.Text)
-    private String type;
-    
-    @Field(type = FieldType.Date)
-    private Date updatedTime = new Date();
+	@Field(type = FieldType.Text)
+	private String name;
+
+	@Field(type = FieldType.Text)
+	private String type;
+
+	@Field(type = FieldType.Date)
+	private Date updatedTime = new Date();
 
 	@MultiField(mainField = @Field(type = FieldType.Text))
-    private List<String> specialities;
-    
+	private List<String> specialities;
+
 	@MultiField(mainField = @Field(type = FieldType.Text))
-    private List<String> formattedSpecialities;
-    
+	private List<String> formattedSpecialities;
+
 	@MultiField(mainField = @Field(type = FieldType.Text))
-    private List<String> specialityIds;
+	private List<String> specialityIds;
 
 	public String getId() {
 		return id;

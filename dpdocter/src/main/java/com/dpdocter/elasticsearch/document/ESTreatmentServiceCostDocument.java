@@ -10,34 +10,34 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Document(indexName = "treatment_services_costs_in", type = "treatment_services_costs")
 public class ESTreatmentServiceCostDocument {
 	@Id
-    private String id;
+	private String id;
 
 	@Field(type = FieldType.Text)
-    private String locationId;
+	private String locationId;
 
 	@Field(type = FieldType.Text)
-    private String hospitalId;
+	private String hospitalId;
 
 	@Field(type = FieldType.Text)
-    private String doctorId;
+	private String doctorId;
 
-    @Field(type = FieldType.Boolean)
-    private Boolean discarded = false;
+	@Field(type = FieldType.Boolean)
+	private Boolean discarded = false;
 
-    @Field(type = FieldType.Date)
-    private Date updatedTime = new Date();
+	@Field(type = FieldType.Date)
+	private Date updatedTime = new Date();
 
-    @Field(type = FieldType.Text)
-    private String treatmentServiceId;
+	@Field(type = FieldType.Text)
+	private String treatmentServiceId;
 
-    @Field(type = FieldType.Double)
-    private double cost = 0.0;
+	@Field(type = FieldType.Double)
+	private double cost = 0.0;
 
-    @Field(type = FieldType.Integer)
-    private int ranking = 0;
+	@Field(type = FieldType.Integer)
+	private int ranking = 0;
 
-    @Field(type = FieldType.Boolean)
-    private Boolean isFav = false;
+	@Field(type = FieldType.Boolean)
+	private Boolean isFav = false;
 
 	public String getId() {
 		return id;

@@ -1,23 +1,21 @@
 package com.dpdocter.response;
 
-import com.dpdocter.collections.GenericCollection;
-
 public class SettlementEntity {
 
 	private String id;
-	
+
 	private String entity;
-	
+
 	private Integer amount;
-	
+
 	private String status;
-	
+
 	private Integer fees;
-	
+
 	private Integer tax;
-	
+
 	private String utr;
-	
+
 	private Long created_at;
 
 	public String getId() {
@@ -83,8 +81,5 @@ public class SettlementEntity {
 	public void setCreated_at(Long created_at) {
 		this.created_at = created_at;
 	}
-	
-	
-	
-	
+
 }

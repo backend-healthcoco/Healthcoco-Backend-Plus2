@@ -58,10 +58,11 @@ public class ESRecipeResponse {
 
 	private boolean verified = false;
 	private String principle;
-	
+
 	public String getPrinciple() {
 		return principle;
 	}
+
 	public void setPrinciple(String principle) {
 		this.principle = principle;
 	}

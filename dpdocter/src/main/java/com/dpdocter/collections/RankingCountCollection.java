@@ -10,32 +10,32 @@ import com.dpdocter.beans.RankingCountParametersWithValueInPercentage;
 import com.dpdocter.enums.Resource;
 
 @Document(collection = "ranking_count_cl")
-public class RankingCountCollection extends GenericCollection{
+public class RankingCountCollection extends GenericCollection {
 
 	@Field
 	private ObjectId id;
 
 	@Field
 	private ObjectId resourceId;
-	
+
 	@Field
 	private String resourceName;
-	
+
 	@Field
 	private Resource resourceType;
-	
-	@Field 
+
+	@Field
 	private List<RankingCountParametersWithValueInPercentage> parameters;
-	
+
 	@Field
 	private double totalCountInPercentage = 0.0;
-	
+
 	@Field
 	private int rankingCount = 0;
 
 	@Field
 	private ObjectId locationId;
-	
+
 	public ObjectId getId() {
 		return id;
 	}

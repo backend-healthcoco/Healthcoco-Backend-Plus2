@@ -9,17 +9,17 @@ import com.dpdocter.collections.UserCollection;
 public class FavouriteLookupResponse {
 
 	private String resourceId;
-	
+
 	private LocaleCollection pharmacy;
-	
+
 	private LocationCollection lab;
 
 	private UserCollection user;
-	
+
 	private DoctorCollection doctor;
-	 
+
 	private DoctorClinicProfileCollection clinicProfileCollection;
-	
+
 	public String getResourceId() {
 		return resourceId;
 	}

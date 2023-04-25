@@ -2,18 +2,18 @@ package com.dpdocter.response;
 
 public class SearchLandmarkLocalityResponse {
 
-    private String city;
+	private String city;
 
-    private String name;
+	private String name;
 
-    private String slugUrl;
+	private String slugUrl;
 
-    private double latitude;
+	private double latitude;
 
-    private double longitude;
+	private double longitude;
 
-    private String responseType;
-    
+	private String responseType;
+
 	public String getCity() {
 		return city;
 	}

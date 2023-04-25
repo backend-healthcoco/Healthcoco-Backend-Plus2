@@ -116,12 +116,6 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			if (doctor == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid DoctorId");
 			}
-			/*
-			 * PatientCollection patientCollection =
-			 * patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId( new
-			 * ObjectId(request.getPatientId()), new ObjectId(request.getDoctorId()), new
-			 * ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
-			 */
 
 			PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 					new ObjectId(request.getPatientId()), new ObjectId(request.getLocationId()),
@@ -287,14 +281,6 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 						admitCardCollection.setUpdatedTime(new Date());
 						admitCardRepository.save(admitCardCollection);
 						response = true;
-//						BeanUtil.map(admitCardCollection, response);
-//						PatientCollection patientCollection = patientRepository
-//								.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(admitCardCollection.getPatientId(),
-//										admitCardCollection.getDoctorId(), admitCardCollection.getLocationId(),
-//										admitCardCollection.getHospitalId());
-//						Patient patient = new Patient();
-//						BeanUtil.map(patientCollection, patient);
-//						response.setPatient(patient);
 
 					} else {
 						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -381,12 +367,13 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 						admitCardCollection.getDoctorId(), admitCardCollection.getLocationId(),
 						admitCardCollection.getHospitalId(), ComponentType.ALL.getType(), printSettingType);
-		if (printSettings == null){
+		if (printSettings == null) {
 			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
 					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 							admitCardCollection.getDoctorId(), admitCardCollection.getLocationId(),
-							admitCardCollection.getHospitalId(), ComponentType.ALL.getType(), PrintSettingType.DEFAULT.getType(),new Sort(Sort.Direction.DESC, "updatedTime"));
-			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+							admitCardCollection.getHospitalId(), ComponentType.ALL.getType(),
+							PrintSettingType.DEFAULT.getType(), new Sort(Sort.Direction.DESC, "updatedTime"));
+			if (!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
 				printSettings = printSettingsCollections.get(0);
 		}
 		if (printSettings == null) {
@@ -526,7 +513,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		}
 		parameters.put("showAddress", show);
 		show = false;
-		
+
 		// new fields
 		show = false;
 		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getPreOprationalOrders())) {
@@ -534,28 +521,26 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			parameters.put("preOprationalOrders", admitCardCollection.getPreOprationalOrders());
 		}
 		parameters.put("showOrd", show);
-		
+
 		show = false;
 		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getNursingCare())) {
 			show = true;
 			parameters.put("nursingCare", admitCardCollection.getNursingCare());
 		}
 		parameters.put("showNCare", show);
-		
+
 		show = false;
 		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getIpdNumber())) {
 			show = true;
 			parameters.put("ipdNumber", admitCardCollection.getIpdNumber());
 		}
 		parameters.put("showIpdNumber", show);
-		
+
 		if (admitCardCollection.getVitalSigns() != null) {
 			String vitalSigns = null;
 
 			String pulse = admitCardCollection.getVitalSigns().getPulse();
-			pulse = (pulse != null && !pulse.isEmpty()
-					? "Pulse: " + pulse + " " + VitalSignsUnit.PULSE.getUnit()
-					: "");
+			pulse = (pulse != null && !pulse.isEmpty() ? "Pulse: " + pulse + " " + VitalSignsUnit.PULSE.getUnit() : "");
 			if (!DPDoctorUtils.allStringsEmpty(pulse))
 				vitalSigns = pulse;
 
@@ -582,8 +567,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			}
 
 			String weight = admitCardCollection.getVitalSigns().getWeight();
-			weight = (weight != null && !weight.isEmpty()
-					? "Weight: " + weight + " " + VitalSignsUnit.WEIGHT.getUnit()
+			weight = (weight != null && !weight.isEmpty() ? "Weight: " + weight + " " + VitalSignsUnit.WEIGHT.getUnit()
 					: "");
 			if (!DPDoctorUtils.allStringsEmpty(weight)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
@@ -594,17 +578,14 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 
 			String bloodPressure = "";
 			if (admitCardCollection.getVitalSigns().getBloodPressure() != null) {
-				String systolic = admitCardCollection.getVitalSigns().getBloodPressure()
-						.getSystolic();
+				String systolic = admitCardCollection.getVitalSigns().getBloodPressure().getSystolic();
 				systolic = systolic != null && !systolic.isEmpty() ? systolic : "";
 
-				String diastolic = admitCardCollection.getVitalSigns().getBloodPressure()
-						.getDiastolic();
+				String diastolic = admitCardCollection.getVitalSigns().getBloodPressure().getDiastolic();
 				diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic : "";
 
 				if (!DPDoctorUtils.anyStringEmpty(systolic, diastolic))
-					bloodPressure = "B.P: " + systolic + "/" + diastolic + " "
-							+ VitalSignsUnit.BLOODPRESSURE.getUnit();
+					bloodPressure = "B.P: " + systolic + "/" + diastolic + " " + VitalSignsUnit.BLOODPRESSURE.getUnit();
 				if (!DPDoctorUtils.allStringsEmpty(bloodPressure)) {
 					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 						vitalSigns = vitalSigns + ",  " + bloodPressure;
@@ -614,9 +595,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			}
 
 			String spo2 = admitCardCollection.getVitalSigns().getSpo2();
-			spo2 = (spo2 != null && !spo2.isEmpty()
-					? "SPO2: " + spo2 + " " + VitalSignsUnit.SPO2.getUnit()
-					: "");
+			spo2 = (spo2 != null && !spo2.isEmpty() ? "SPO2: " + spo2 + " " + VitalSignsUnit.SPO2.getUnit() : "");
 			if (!DPDoctorUtils.allStringsEmpty(spo2)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 					vitalSigns = vitalSigns + ",  " + spo2;
@@ -624,8 +603,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 					vitalSigns = spo2;
 			}
 			String height = admitCardCollection.getVitalSigns().getHeight();
-			height = (height != null && !height.isEmpty()
-					? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit()
+			height = (height != null && !height.isEmpty() ? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit()
 					: "");
 			if (!DPDoctorUtils.allStringsEmpty(height)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
@@ -671,10 +649,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			parameters.put("vitalSigns", vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
 		} else {
 			parameters.put("vitalSigns", null);
-		}	
-		
-		
-		
+		}
 
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
@@ -764,7 +739,8 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 							emailTrackCollection.setPatientId(user.getId());
 						}
 
-						JasperReportResponse jasperReportResponse = createJasper(admitCardCollection, patient, user,PrintSettingType.EMAIL.getType());
+						JasperReportResponse jasperReportResponse = createJasper(admitCardCollection, patient, user,
+								PrintSettingType.EMAIL.getType());
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
@@ -864,7 +840,8 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 					emailTrackCollection.setPatientId(user.getId());
 				}
 
-				JasperReportResponse jasperReportResponse = createJasper(admitCardCollection, patient, user,PrintSettingType.EMAIL.getType());
+				JasperReportResponse jasperReportResponse = createJasper(admitCardCollection, patient, user,
+						PrintSettingType.EMAIL.getType());
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());

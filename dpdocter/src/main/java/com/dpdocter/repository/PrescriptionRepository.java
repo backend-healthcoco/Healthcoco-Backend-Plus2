@@ -11,19 +11,22 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.dpdocter.collections.PrescriptionCollection;
 
-public interface PrescriptionRepository extends MongoRepository<PrescriptionCollection, ObjectId>, PagingAndSortingRepository<PrescriptionCollection, ObjectId> {
+public interface PrescriptionRepository extends MongoRepository<PrescriptionCollection, ObjectId>,
+		PagingAndSortingRepository<PrescriptionCollection, ObjectId> {
 
 	@Query(value = "{'doctorId' : {'$ne' : ?0}, 'patientId': ?1, 'hospitalId' : {'$ne' : ?2}, 'locationId' : {'$ne' : ?3}}", count = true)
-    Integer getPrescriptionCountForOtherDoctors(ObjectId doctorId, ObjectId patientId, ObjectId hospitalId, ObjectId locationId);
+	Integer getPrescriptionCountForOtherDoctors(ObjectId doctorId, ObjectId patientId, ObjectId hospitalId,
+			ObjectId locationId);
 
-    @Query(value = "{'patientId': ?0, 'hospitalId' : {'$ne' : ?1}, 'locationId' : {'$ne' : ?2}}", count = true)
-    Integer getPrescriptionCountForOtherLocations(ObjectId patientId, ObjectId hospitalId, ObjectId locationId);
+	@Query(value = "{'patientId': ?0, 'hospitalId' : {'$ne' : ?1}, 'locationId' : {'$ne' : ?2}}", count = true)
+	Integer getPrescriptionCountForOtherLocations(ObjectId patientId, ObjectId hospitalId, ObjectId locationId);
 
-    PrescriptionCollection findByUniqueEmrIdAndPatientId(String uniqueEmrId, ObjectId patientId);
+	PrescriptionCollection findByUniqueEmrIdAndPatientId(String uniqueEmrId, ObjectId patientId);
 
-    List<PrescriptionCollection> findByIsActiveAndItemsExists(boolean isActive, boolean exist);
+	List<PrescriptionCollection> findByIsActiveAndItemsExists(boolean isActive, boolean exist);
 
-    PrescriptionCollection findByDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndCreatedTime(ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, ObjectId patientId, Date createdTime);
+	PrescriptionCollection findByDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndCreatedTime(ObjectId doctorObjectId,
+			ObjectId locationObjectId, ObjectId hospitalObjectId, ObjectId patientId, Date createdTime);
 
 	List<PrescriptionCollection> findByCreatedTimeBetween(DateTime start, DateTime end);
 

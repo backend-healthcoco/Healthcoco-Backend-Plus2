@@ -3,9 +3,8 @@ package com.dpdocter.response;
 public class MessageData {
 
 	private String message_id;
-	
+
 	private String recipient;
-	
 
 	public String getMessage_id() {
 		return message_id;
@@ -23,8 +22,4 @@ public class MessageData {
 		this.recipient = recipient;
 	}
 
-	
-	
-	
-	
 }

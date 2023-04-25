@@ -29,7 +29,7 @@ public class SettlementCollection extends GenericCollection {
 	private Long created_at;
 	@Field
 	private Date date;
-	
+
 	@Field
 	private ObjectId doctorId;
 
@@ -104,7 +104,5 @@ public class SettlementCollection extends GenericCollection {
 	public void setDate(Date date) {
 		this.date = date;
 	}
-	
-	
 
 }

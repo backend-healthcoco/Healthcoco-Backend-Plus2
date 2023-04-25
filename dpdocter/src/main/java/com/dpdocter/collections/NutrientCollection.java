@@ -24,7 +24,7 @@ public class NutrientCollection extends GenericCollection {
 
 	@Field
 	private NutrientType type = NutrientType.MICRO_NUTRIENT;
-	
+
 	@Field
 	private NutrientCategaoryEnum category = NutrientCategaoryEnum.CARBOHYDRATE;
 

@@ -20,7 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
@@ -62,10 +61,8 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DiagnosticTestRepository;
-import com.dpdocter.repository.DoctorPatientInvoiceRepository;
 import com.dpdocter.repository.DoctorPatientReceiptRepository;
 import com.dpdocter.repository.DownloadDataRequestRepository;
-import com.dpdocter.repository.RecordsRepository;
 import com.dpdocter.request.ExportRequest;
 import com.dpdocter.response.RecordsLookupResponse;
 import com.dpdocter.services.DownloadDataService;
@@ -85,9 +82,6 @@ public class DownloadDataServiceImpl implements DownloadDataService {
 
 	private static final String NEW_LINE_SEPARATOR = "\n";
 
-//	@Value(value = "${patients.data.file}")
-//	private String PATIENTS_DATA_FILE;
-
 	@Autowired
 	private DiagnosticTestRepository diagnosticTestRepository;
 
@@ -98,13 +92,7 @@ public class DownloadDataServiceImpl implements DownloadDataService {
 	private MailService mailService;
 
 	@Autowired
-	private DoctorPatientInvoiceRepository doctorPatientInvoiceRepository;
-
-	@Autowired
 	private DoctorPatientReceiptRepository doctorPatientReceiptRepository;
-	
-	@Autowired
-	private RecordsRepository recordsRepository;
 
 	@Value(value = "${bucket.name}")
 	private String bucketName;
@@ -270,7 +258,6 @@ public class DownloadDataServiceImpl implements DownloadDataService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + "Error downloading patient data");
-//			throw new BusinessException(ServiceError.Unknown, "Error downloading patient data");
 		} finally {
 			try {
 				if (csvWriter != null) {
@@ -284,47 +271,6 @@ public class DownloadDataServiceImpl implements DownloadDataService {
 
 		return mailAttachment;
 
-	}
-
-	private void writeHeader(Class classOfObject, FileWriter fileWriter) throws IOException {
-		int index = 1;
-		String headerString = "";
-		for (Field field : classOfObject.getDeclaredFields()) {
-			field.setAccessible(true);
-
-			if (!field.getName().equalsIgnoreCase("dob")) {
-				if (!DPDoctorUtils.anyStringEmpty(headerString))
-					headerString = headerString + field.getName();
-				else
-					headerString = headerString + "," + field.getName();
-			}
-
-//	    		Cell cell = fileWriter.createCell(++index);
-//		    cell.setCellValue(field.getName());
-		}
-		fileWriter.append(headerString);
-		fileWriter.append(NEW_LINE_SEPARATOR);
-	}
-
-	private void writeData(Object obj, FileWriter fileWriter)
-			throws IllegalArgumentException, IllegalAccessException, IOException {
-		String dataString = "";
-		int index = 1;
-		for (Field field : obj.getClass().getDeclaredFields()) {
-			field.setAccessible(true);
-			if (!field.getName().equalsIgnoreCase("dob")) {
-				if (DPDoctorUtils.anyStringEmpty(dataString))
-					dataString = dataString + field.get(obj);
-				else
-					dataString = dataString + "," + field.get(obj);
-			}
-//	    		Cell cell = fileWriter.createCell(index);
-//		    cell.setCellValue(field.get(obj)+"");
-		}
-		dataString.replaceAll("\\[", "\"");
-		dataString.replaceAll("\\]", "\"");
-		fileWriter.append(dataString);
-		fileWriter.append(NEW_LINE_SEPARATOR);
 	}
 
 	@SuppressWarnings("resource")
@@ -495,7 +441,7 @@ public class DownloadDataServiceImpl implements DownloadDataService {
 						new CustomAggregationOperation(new Document("$redact", new BasicDBObject("$cond",
 								new BasicDBObject("if",
 										new BasicDBObject("$eq", Arrays.asList("$patient.locationId", locationId)))
-												.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+										.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 
 						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
@@ -593,17 +539,16 @@ public class DownloadDataServiceImpl implements DownloadDataService {
 					new CustomAggregationOperation(new Document("$redact", new BasicDBObject("$cond",
 							new BasicDBObject("if",
 									new BasicDBObject("$eq", Arrays.asList("$patient.locationId", "$locationId")))
-											.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+									.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 
-					new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
-							.append("doctorName", "$user.firstName").append("patientName", "$patient.localPatientName")
-							.append("patientId", "$patient.PID")
-							.append("date", "$fromDate")
-							.append("startTime", "$time.fromTime").append("endTime", "$time.toTime")
-							.append("status", "$state").append("explanation", "$explanation")))
+					new CustomAggregationOperation(new Document("$project",
+							new BasicDBObject("_id", "$_id").append("doctorName", "$user.firstName")
+									.append("patientName", "$patient.localPatientName")
+									.append("patientId", "$patient.PID").append("date", "$fromDate")
+									.append("startTime", "$time.fromTime").append("endTime", "$time.toTime")
+									.append("status", "$state").append("explanation", "$explanation")))
 
-//					new CustomAggregationOperation(new Document("$sort", new BasicDBObject("date", 1)))
-							);
+			);
 
 			List<AppointmentDownloadData> appointmentDownloadDatas = mongoTemplate
 					.aggregate(aggregation.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
@@ -655,7 +600,7 @@ public class DownloadDataServiceImpl implements DownloadDataService {
 					new CustomAggregationOperation(new Document("$redact", new BasicDBObject("$cond",
 							new BasicDBObject("if",
 									new BasicDBObject("$eq", Arrays.asList("$patient.locationId", "$locationId")))
-											.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+									.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 
 					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$treatments").append("preserveNullAndEmptyArrays", true)
@@ -741,7 +686,7 @@ public class DownloadDataServiceImpl implements DownloadDataService {
 					new CustomAggregationOperation(new Document("$redact", new BasicDBObject("$cond",
 							new BasicDBObject("if",
 									new BasicDBObject("$eq", Arrays.asList("$patient.locationId", "$locationId")))
-											.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+									.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 					new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 							.append("doctorName", "$user.firstName").append("patientName", "$patient.localPatientName")
 							.append("patientId", "$patient.PID")
@@ -966,7 +911,7 @@ public class DownloadDataServiceImpl implements DownloadDataService {
 					new CustomAggregationOperation(new Document("$redact", new BasicDBObject("$cond",
 							new BasicDBObject("if",
 									new BasicDBObject("$eq", Arrays.asList("$patient.locationId", "$locationId")))
-											.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+									.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 
 					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$invoiceItems").append("preserveNullAndEmptyArrays", true)
@@ -1039,7 +984,7 @@ public class DownloadDataServiceImpl implements DownloadDataService {
 							new BasicDBObject("$cond",
 									new BasicDBObject("if",
 											new BasicDBObject("$eq", Arrays.asList("$patient.locationId", locationId)))
-													.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+											.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 
 					new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 							.append("doctorName", "$user.firstName").append("patientName", "$patient.localPatientName")
@@ -1110,7 +1055,6 @@ public class DownloadDataServiceImpl implements DownloadDataService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + "Error updating data");
-//			throw new BusinessException(ServiceError.Unknown, "Error downloading receipt data");
 		}
 		return response;
 	}
@@ -1123,8 +1067,6 @@ public class DownloadDataServiceImpl implements DownloadDataService {
 		BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 		AmazonS3 s3client = new AmazonS3Client(credentials);
 		String bkt = bucketName;
-//		String src = "records/patientId/filename.jpg";
-//		String dst = "drname/patientId/filename.jpg";
 		String path = "NikitaQA" + File.separator + "/";
 
 		try {
@@ -1163,7 +1105,6 @@ public class DownloadDataServiceImpl implements DownloadDataService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + "Error downloading files data");
-//			throw new BusinessException(ServiceError.Unknown, "Error downloading patient data");
 		} finally {
 			try {
 				if (csvWriter != null) {
@@ -1174,9 +1115,7 @@ public class DownloadDataServiceImpl implements DownloadDataService {
 				e.printStackTrace();
 			}
 		}
-
 		return response;
-
 	}
 
 }

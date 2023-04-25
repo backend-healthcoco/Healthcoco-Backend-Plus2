@@ -14,7 +14,6 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -25,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.AddEditSEORequest;
-import com.dpdocter.beans.BankDetails;
 import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.DoctorExperience;
@@ -46,8 +44,6 @@ import com.dpdocter.beans.Speciality;
 import com.dpdocter.beans.Subscription;
 import com.dpdocter.beans.TreatmentServiceCost;
 import com.dpdocter.beans.UIPermissions;
-import com.dpdocter.beans.UserSymptom;
-import com.dpdocter.collections.BankDetailsCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DoctorProfileViewCollection;
@@ -67,7 +63,6 @@ import com.dpdocter.collections.SubscriptionCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
-import com.dpdocter.collections.UserSymptomCollection;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
 import com.dpdocter.enums.CardioPermissionEnum;
@@ -676,10 +671,6 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 				// set clinic profile details
 				doctorProfile.setClinicProfile(clinicProfile);
-				// doctorProfile.setConsultationType(clinicProfile.get(0).getConsultationType());
-				// doctorProfile.setOnlineWorkingSchedules(clinicProfile.get(0).getOnlineWorkingSchedules());
-				// doctorProfile.setOnlineConsultationType(clinicProfile.get(0).getOnlineConsultationType());
-
 				// set subscription Detail
 				SubscriptionCollection subscriptionCollection = subscriptionRepository
 						.findByDoctorId(new ObjectId(doctorId));
@@ -1960,14 +1951,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 				}
 			response = new DoctorOnlineConsultationFees();
-			// BeanUtil.map(doctorClinicProfileCollections,
 			// oldDoctorClinicProfileCollection);
 			if (doctorClinicProfileCollections != null)
 				oldDoctorClinicProfileCollection = doctorClinicProfileCollections.get(0);
 
 			BeanUtil.map(oldDoctorClinicProfileCollection, response);
-
-			// response.setDoctorId(doctorClinicProfileCollection.getDoctorId().toString());
 
 		} catch (Exception e) {
 			e.printStackTrace();

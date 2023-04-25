@@ -242,8 +242,8 @@ public class RecipeApi {
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("planId") String planId) {
 
 		Response<Recipe> response = new Response<Recipe>();
-		response.setDataList(
-				recipeService.getRecipeList(size, page, discarded, searchTerm, doctorId, locationId, hospitalId, planId));
+		response.setDataList(recipeService.getRecipeList(size, page, discarded, searchTerm, doctorId, locationId,
+				hospitalId, planId));
 		return response;
 	}
 
@@ -371,7 +371,7 @@ public class RecipeApi {
 		response.setDataList(recipeService.getFrequentRecipe(size, page, discarded, userId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.RecipeUrls.GET_RECIPES_BY_PLAN_ID)
 	@GET
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPES_BY_PLAN_ID, notes = PathProxy.RecipeUrls.GET_RECIPES_BY_PLAN_ID)
@@ -386,12 +386,13 @@ public class RecipeApi {
 		response.setDataList(recipeService.getRecipeByPlanId(size, page, planId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.RecipeUrls.DELETE_RECIPE_TEMPLATE)
 	@DELETE
 	@ApiOperation(value = PathProxy.RecipeUrls.DELETE_RECIPE_TEMPLATE, notes = PathProxy.RecipeUrls.DELETE_RECIPE_TEMPLATE)
-	public Response<RecipeTemplate> deleteRecipeTemplate(@PathParam("recipeId") String recipeId, @PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+	public Response<RecipeTemplate> deleteRecipeTemplate(@PathParam("recipeId") String recipeId,
+			@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId,
 			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
 
 		if (DPDoctorUtils.anyStringEmpty(recipeId)) {
@@ -412,7 +413,8 @@ public class RecipeApi {
 			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded,
 			@QueryParam("searchTerm") String searchTerm) {
 
-		Response<RecipeTemplate> response = recipeService.getRecipeTemplates(size, page, discarded, searchTerm, doctorId, locationId, hospitalId);
+		Response<RecipeTemplate> response = recipeService.getRecipeTemplates(size, page, discarded, searchTerm,
+				doctorId, locationId, hospitalId);
 		return response;
 	}
 
@@ -454,14 +456,13 @@ public class RecipeApi {
 
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.RecipeUrls.GET_FOOD_COMMUNITIES)
 	@GET
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_FOOD_COMMUNITIES, notes = PathProxy.RecipeUrls.GET_FOOD_COMMUNITIES)
-	public Response<FoodCommunity> getFoodCommunities(@QueryParam(value ="size") int size, 
-			@QueryParam(value ="page") int page,
-			@QueryParam(value ="discarded") Boolean discarded, 
-			@QueryParam(value ="searchTerm") String searchTerm) {
+	public Response<FoodCommunity> getFoodCommunities(@QueryParam(value = "size") int size,
+			@QueryParam(value = "page") int page, @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
 		Integer count = recipeService.countFoodCommunities(discarded, searchTerm);
 		Response<FoodCommunity> response = new Response<FoodCommunity>();
 		if (count > 0)
@@ -469,14 +470,12 @@ public class RecipeApi {
 		response.setCount(count);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.RecipeUrls.GET_FOOD_GROUPS)
 	@GET
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_FOOD_GROUPS, notes = PathProxy.RecipeUrls.GET_FOOD_GROUPS)
-	public Response<FoodGroup> getFoodGroups(@QueryParam(value ="size") int size, 
-			@QueryParam(value ="page") int page,
-			@QueryParam(value ="discarded") Boolean discarded, 
-			@QueryParam(value ="searchTerm") String searchTerm) {
+	public Response<FoodGroup> getFoodGroups(@QueryParam(value = "size") int size, @QueryParam(value = "page") int page,
+			@QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
 		Integer count = recipeService.countFoodGroups(discarded, searchTerm);
 		Response<FoodGroup> response = new Response<FoodGroup>();
 		if (count > 0)
@@ -484,14 +483,13 @@ public class RecipeApi {
 		response.setCount(count);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.RecipeUrls.GET_NUTRIENT_GOALS)
 	@GET
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_NUTRIENT_GOALS, notes = PathProxy.RecipeUrls.GET_NUTRIENT_GOALS)
-	public Response<NutrientGoal> getNutrientGoals(@QueryParam(value ="size") int size, 
-			@QueryParam(value ="page") int page,
-			@QueryParam(value ="discarded") Boolean discarded, 
-			@QueryParam(value ="searchTerm") String searchTerm) {
+	public Response<NutrientGoal> getNutrientGoals(@QueryParam(value = "size") int size,
+			@QueryParam(value = "page") int page, @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
 		Integer count = recipeService.countNutrientGoals(discarded, searchTerm);
 		Response<NutrientGoal> response = new Response<NutrientGoal>();
 		if (count > 0)
@@ -503,10 +501,9 @@ public class RecipeApi {
 	@Path(value = PathProxy.RecipeUrls.GET_RECIPE_NUTRIENT_TYPES)
 	@GET
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPE_NUTRIENT_TYPES, notes = PathProxy.RecipeUrls.GET_RECIPE_NUTRIENT_TYPES)
-	public Response<RecipeNutrientType> getRecipeNutrientTypes(@QueryParam(value ="size") int size, 
-			@QueryParam(value ="page") int page,
-			@QueryParam(value ="discarded") Boolean discarded, 
-			@QueryParam(value ="searchTerm") String searchTerm) {
+	public Response<RecipeNutrientType> getRecipeNutrientTypes(@QueryParam(value = "size") int size,
+			@QueryParam(value = "page") int page, @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
 		Integer count = recipeService.countRecipeNutrientTypes(discarded, searchTerm);
 		Response<RecipeNutrientType> response = new Response<RecipeNutrientType>();
 		if (count > 0)
@@ -514,14 +511,13 @@ public class RecipeApi {
 		response.setCount(count);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.RecipeUrls.GET_NUTRITION_DISEASES)
 	@GET
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_NUTRITION_DISEASES, notes = PathProxy.RecipeUrls.GET_NUTRITION_DISEASES)
-	public Response<NutritionDisease> getNutritionDisease(@QueryParam(value ="size") int size, 
-			@QueryParam(value ="page") int page,
-			@QueryParam(value ="discarded") Boolean discarded, 
-			@QueryParam(value ="searchTerm") String searchTerm) {
+	public Response<NutritionDisease> getNutritionDisease(@QueryParam(value = "size") int size,
+			@QueryParam(value = "page") int page, @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
 		Integer count = recipeService.countDisease(discarded, searchTerm);
 		Response<NutritionDisease> response = new Response<NutritionDisease>();
 		if (count > 0)

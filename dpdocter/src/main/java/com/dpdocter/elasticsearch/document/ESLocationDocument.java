@@ -131,8 +131,8 @@ public class ESLocationDocument {
 	// private String receiptInitial = "RC";
 
 	@Field(type = FieldType.Text)
-    private String googleMapShortUrl;
-	
+	private String googleMapShortUrl;
+
 	@Field(type = FieldType.Text)
 	private String locationSlugUrl;
 

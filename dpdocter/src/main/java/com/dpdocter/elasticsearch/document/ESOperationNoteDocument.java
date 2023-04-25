@@ -96,7 +96,5 @@ public class ESOperationNoteDocument {
 	public void setSpeciality(String speciality) {
 		this.speciality = speciality;
 	}
-	
-	
 
 }

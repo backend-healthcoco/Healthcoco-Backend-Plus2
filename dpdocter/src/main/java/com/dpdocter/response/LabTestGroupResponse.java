@@ -8,8 +8,6 @@ public class LabTestGroupResponse {
 
 	private List<DiagnosticTestResponse> diagnosticTests;
 
-	
-
 	public String getSpecimen() {
 		return specimen;
 	}

@@ -5,8 +5,8 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.dpdocter.collections.UserCartCollection;
 
-public interface UserCartRepository extends MongoRepository<UserCartCollection, ObjectId>{
+public interface UserCartRepository extends MongoRepository<UserCartCollection, ObjectId> {
 
 	UserCartCollection findByUserId(ObjectId userId);
-	
+
 }

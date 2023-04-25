@@ -8,11 +8,11 @@ public class CalenderResponseForJasper {
 
 	private List<CalenderResponse> calenderResponse;
 
-	public  String getDoctorId() {
+	public String getDoctorId() {
 		return doctorId;
 	}
 
-	public void setDoctorId( String doctorId) {
+	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
 	}
 

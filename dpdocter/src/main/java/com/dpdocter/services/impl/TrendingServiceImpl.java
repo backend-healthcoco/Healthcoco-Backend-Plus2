@@ -63,7 +63,8 @@ public class TrendingServiceImpl implements TrendingService {
 				if (!DPDoctorUtils.anyStringEmpty(trendingCollection.getBlogId())) {
 					response.setBlog(blogService.getBlog(response.getBlogId(), null, null));
 				} else if (!DPDoctorUtils.anyStringEmpty(trendingCollection.getOfferId())) {
-					OfferCollection offerCollection = offerRepository.findById(trendingCollection.getOfferId()).orElse(null);
+					OfferCollection offerCollection = offerRepository.findById(trendingCollection.getOfferId())
+							.orElse(null);
 					Offer offer = new Offer();
 					BeanUtil.map(offerCollection, offer);
 					response.setOffer(offer);

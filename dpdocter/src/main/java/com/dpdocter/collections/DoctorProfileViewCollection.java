@@ -6,11 +6,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "doctor_profile_view_cl")
-public class DoctorProfileViewCollection extends GenericCollection{
+public class DoctorProfileViewCollection extends GenericCollection {
 
 	@Id
 	public ObjectId id;
-	
+
 	@Field
 	public ObjectId doctorId;
 
@@ -34,7 +34,5 @@ public class DoctorProfileViewCollection extends GenericCollection{
 	public String toString() {
 		return "DoctorProfileViewCollection [id=" + id + ", doctorId=" + doctorId + "]";
 	}
-	
-	
-	
+
 }

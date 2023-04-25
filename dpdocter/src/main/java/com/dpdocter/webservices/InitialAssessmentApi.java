@@ -28,8 +28,10 @@ import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 /**
- * This api used for Initial assessment done by Doctor after admission  of patient(NABH)
+ * This api used for Initial assessment done by Doctor after admission of
+ * patient(NABH)
  * 
  * @author Nikita
  *
@@ -42,7 +44,7 @@ import io.swagger.annotations.ApiOperation;
 public class InitialAssessmentApi {
 
 	private static Logger logger = Logger.getLogger(InitialAssessmentApi.class.getName());
-	
+
 	@Autowired
 	private InitialAssessmentService initialAssessmentService;
 
@@ -53,34 +55,38 @@ public class InitialAssessmentApi {
 		if (request == null || DPDoctorUtils.allStringsEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getPatientId())) {
 			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		InitialAssessmentResponse initialAssessmentResponse = initialAssessmentService.addEditInitialAssessmentForm(request);
+		InitialAssessmentResponse initialAssessmentResponse = initialAssessmentService
+				.addEditInitialAssessmentForm(request);
 		Response<InitialAssessmentResponse> response = new Response<InitialAssessmentResponse>();
 		response.setData(initialAssessmentResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.InitialAssessmentsUrls.GET_ASSESSMENT_FORM)
 	@GET
-	@ApiOperation(value = PathProxy.InitialAssessmentsUrls.GET_ASSESSMENT_FORM,notes = PathProxy.InitialAssessmentsUrls.GET_ASSESSMENT_FORM)
-	public Response<InitialAssessmentResponse> getInitialAssessmentForms(@PathParam(value = "patientId") String patientId,
-			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-			@QueryParam(value = "doctorId") String doctorId,@DefaultValue("0") @QueryParam(value = "page") int page,
+	@ApiOperation(value = PathProxy.InitialAssessmentsUrls.GET_ASSESSMENT_FORM, notes = PathProxy.InitialAssessmentsUrls.GET_ASSESSMENT_FORM)
+	public Response<InitialAssessmentResponse> getInitialAssessmentForms(
+			@PathParam(value = "patientId") String patientId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "doctorId") String doctorId,
+			@DefaultValue("0") @QueryParam(value = "page") int page,
 			@DefaultValue("0") @QueryParam(value = "size") int size,
-			@DefaultValue("false") @QueryParam("discarded") Boolean discarded){
-		if (DPDoctorUtils.anyStringEmpty(patientId, hospitalId, locationId,doctorId)) {
+			@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(patientId, hospitalId, locationId, doctorId)) {
 			logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		List<InitialAssessmentResponse> initialAssessmentResponse = initialAssessmentService.getInitialAssessmentForm(doctorId,locationId,hospitalId,patientId,page,size,discarded);
+		List<InitialAssessmentResponse> initialAssessmentResponse = initialAssessmentService
+				.getInitialAssessmentForm(doctorId, locationId, hospitalId, patientId, page, size, discarded);
 		Response<InitialAssessmentResponse> response = new Response<InitialAssessmentResponse>();
 		response.setDataList(initialAssessmentResponse);
 		return response;
-		
+
 	}
-	
+
 	@Path(value = PathProxy.InitialAssessmentsUrls.GET_ASSESSMENT_FORM_BY_ID)
 	@GET
 	@ApiOperation(value = PathProxy.InitialAssessmentsUrls.GET_ASSESSMENT_FORM_BY_ID, notes = PathProxy.InitialAssessmentsUrls.GET_ASSESSMENT_FORM_BY_ID)
@@ -95,10 +101,12 @@ public class InitialAssessmentApi {
 		return response;
 
 	}
+
 	@Path(value = PathProxy.InitialAssessmentsUrls.DELETE_ASSESSMENT_FORM)
 	@DELETE
 	@ApiOperation(value = PathProxy.InitialAssessmentsUrls.DELETE_ASSESSMENT_FORM, notes = PathProxy.InitialAssessmentsUrls.DELETE_ASSESSMENT_FORM)
-	public Response<Boolean> deleteInitialAssessment(@PathParam(value = "initialAssessmentId") String initialAssessmentId,
+	public Response<Boolean> deleteInitialAssessment(
+			@PathParam(value = "initialAssessmentId") String initialAssessmentId,
 			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 			@PathParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
@@ -108,17 +116,18 @@ public class InitialAssessmentApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"initialAssessmentId, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		Boolean formResponse = initialAssessmentService.deleteInitialAssessment(initialAssessmentId, doctorId, hospitalId,
-				locationId, discarded);
+		Boolean formResponse = initialAssessmentService.deleteInitialAssessment(initialAssessmentId, doctorId,
+				hospitalId, locationId, discarded);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(formResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.InitialAssessmentsUrls.DOWNLOAD_ASSESSMENT_FORM_BY_ID)
 	@GET
 	@ApiOperation(value = PathProxy.InitialAssessmentsUrls.DOWNLOAD_ASSESSMENT_FORM_BY_ID, notes = PathProxy.InitialAssessmentsUrls.DOWNLOAD_ASSESSMENT_FORM_BY_ID)
-	public Response<String> downloadInitialAssessmentFormById(@PathParam("initialAssessmentId") String initialAssessmentId) {
+	public Response<String> downloadInitialAssessmentFormById(
+			@PathParam("initialAssessmentId") String initialAssessmentId) {
 		if (initialAssessmentId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

@@ -14,19 +14,19 @@ import com.dpdocter.collections.UserCollection;
  */
 @Repository
 public interface UserRepository extends MongoRepository<UserCollection, ObjectId> {
-    
+
 	public UserCollection findByUserName(String userName);
 
-    @Query("{'emailAddress' : {$regex : '^?0$', $options : 'i'}}")
-    public List<UserCollection> findByEmailAddressIgnoreCase(String emailAddress);
+	@Query("{'emailAddress' : {$regex : '^?0$', $options : 'i'}}")
+	public List<UserCollection> findByEmailAddressIgnoreCase(String emailAddress);
 
-    public UserCollection findByFirstNameAndEmailAddressAndMobileNumberAndUserState(String firstName, String emailAddress, String mobileNumber, String userState);
+	public UserCollection findByFirstNameAndEmailAddressAndMobileNumberAndUserState(String firstName,
+			String emailAddress, String mobileNumber, String userState);
 
-    public List<UserCollection> findByMobileNumberAndUserState(String mobileNumber, String userState);
+	public List<UserCollection> findByMobileNumberAndUserState(String mobileNumber, String userState);
 
-    public UserCollection findByUserNameAndEmailAddress(String userName, String emailAddress);
-    
-    public UserCollection findByIdAndSignedUpNot(ObjectId userId, Boolean signedUp);
-    
+	public UserCollection findByUserNameAndEmailAddress(String userName, String emailAddress);
+
+	public UserCollection findByIdAndSignedUpNot(ObjectId userId, Boolean signedUp);
 
 }

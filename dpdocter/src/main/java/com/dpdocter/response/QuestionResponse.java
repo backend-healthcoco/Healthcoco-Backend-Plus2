@@ -58,6 +58,7 @@ public class QuestionResponse {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
+
 	public Boolean getIsLiked() {
 		return isLiked;
 	}
@@ -81,6 +82,5 @@ public class QuestionResponse {
 	public void setQuestion(String question) {
 		this.question = question;
 	}
-	
 
 }

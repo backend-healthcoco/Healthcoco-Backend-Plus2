@@ -1,16 +1,16 @@
 package com.dpdocter.enums;
 
 public enum StrengthUnitEnum {
-    MG("MG"), GM("GM");
+	MG("MG"), GM("GM");
 
-    private String strengthUnit;
+	private String strengthUnit;
 
-    StrengthUnitEnum(String strengthUnit) {
-	this.strengthUnit = strengthUnit;
-    }
+	StrengthUnitEnum(String strengthUnit) {
+		this.strengthUnit = strengthUnit;
+	}
 
-    public String getStrengthUnit() {
-	return strengthUnit;
-    }
+	public String getStrengthUnit() {
+		return strengthUnit;
+	}
 
 }

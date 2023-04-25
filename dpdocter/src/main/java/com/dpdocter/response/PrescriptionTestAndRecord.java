@@ -5,22 +5,22 @@ import java.util.List;
 public class PrescriptionTestAndRecord {
 
 	private Boolean isPatientRegistered;
-	
-	private String patientId;
-	
-	private String firstName;
-	
-	private String mobileNumber;
-	
-    private String uniqueEmrId;
 
-    private List<TestAndRecordDataResponse> tests;
+	private String patientId;
+
+	private String firstName;
+
+	private String mobileNumber;
+
+	private String uniqueEmrId;
+
+	private List<TestAndRecordDataResponse> tests;
 
 	private String doctorName;
-	
+
 	private String locationName;
 
-    public Boolean getIsPatientRegistered() {
+	public Boolean getIsPatientRegistered() {
 		return isPatientRegistered;
 	}
 
@@ -45,12 +45,12 @@ public class PrescriptionTestAndRecord {
 	}
 
 	public List<TestAndRecordDataResponse> getTests() {
-	return tests;
-    }
+		return tests;
+	}
 
-    public void setTests(List<TestAndRecordDataResponse> tests) {
-	this.tests = tests;
-    }
+	public void setTests(List<TestAndRecordDataResponse> tests) {
+		this.tests = tests;
+	}
 
 	public String getMobileNumber() {
 		return mobileNumber;
@@ -87,8 +87,7 @@ public class PrescriptionTestAndRecord {
 	@Override
 	public String toString() {
 		return "PrescriptionTestAndRecord [isPatientRegistered=" + isPatientRegistered + ", patientId=" + patientId
-			    + ", firstName=" + firstName + ", mobileNumber="
-				+ mobileNumber + ", uniqueEmrId=" + uniqueEmrId + ", tests=" + tests + ", doctorName=" + doctorName
-				+ ", locationName=" + locationName + "]";
+				+ ", firstName=" + firstName + ", mobileNumber=" + mobileNumber + ", uniqueEmrId=" + uniqueEmrId
+				+ ", tests=" + tests + ", doctorName=" + doctorName + ", locationName=" + locationName + "]";
 	}
 }

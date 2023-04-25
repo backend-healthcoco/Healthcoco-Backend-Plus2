@@ -2,7 +2,7 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class SugarMedicineReminder extends GenericCollection{
+public class SugarMedicineReminder extends GenericCollection {
 
 	private String id;
 	private String patientId;

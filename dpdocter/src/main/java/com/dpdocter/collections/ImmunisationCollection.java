@@ -14,10 +14,10 @@ public class ImmunisationCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
-	
+
 	@Field
 	private ObjectId patientId;
-	
+
 	@Field
 	private List<Vaccination> vaccinations;
 

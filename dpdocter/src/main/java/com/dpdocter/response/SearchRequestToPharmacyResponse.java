@@ -31,7 +31,6 @@ public class SearchRequestToPharmacyResponse extends GenericCollection {
 	private Double distance;
 
 	private Boolean isAlreadyRequested = false;
-	
 
 	public double getDiscountedPrice() {
 		return discountedPrice;

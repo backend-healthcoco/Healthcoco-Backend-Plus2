@@ -6,7 +6,8 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.dpdocter.collections.UserAddressCollection;
 
-public interface UserAddressRepository extends MongoRepository<UserAddressCollection, ObjectId>, PagingAndSortingRepository<UserAddressCollection, ObjectId> {
+public interface UserAddressRepository extends MongoRepository<UserAddressCollection, ObjectId>,
+		PagingAndSortingRepository<UserAddressCollection, ObjectId> {
 
 	UserAddressCollection findByIdAndUserIds(ObjectId addressId, ObjectId userIds);
 

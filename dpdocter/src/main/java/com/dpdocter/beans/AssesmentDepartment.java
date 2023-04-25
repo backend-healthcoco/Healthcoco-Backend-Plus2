@@ -5,7 +5,7 @@ import java.util.List;
 public class AssesmentDepartment {
 
 	private String assesmentType;
-	
+
 	private List<String> departments;
 
 	public String getAssesmentType() {

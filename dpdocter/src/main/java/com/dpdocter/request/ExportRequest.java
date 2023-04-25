@@ -5,49 +5,49 @@ import java.util.List;
 import com.dpdocter.enums.ComponentType;
 
 public class ExportRequest {
-    private String doctorId;
+	private String doctorId;
 
-    private String locationId;
-    
-    private String hospitalId;
-    
-    private String emailAddress;
+	private String locationId;
 
-    private List<ComponentType> dataType;
+	private String hospitalId;
 
-    private String specialComments;
+	private String emailAddress;
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	private List<ComponentType> dataType;
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	private String specialComments;
 
-    public String getEmailAddress() {
-	return emailAddress;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public void setEmailAddress(String emailAddress) {
-	this.emailAddress = emailAddress;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public List<ComponentType> getDataType() {
-	return dataType;
-    }
+	public String getEmailAddress() {
+		return emailAddress;
+	}
 
-    public void setDataType(List<ComponentType> dataType) {
-	this.dataType = dataType;
-    }
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
 
-    public String getSpecialComments() {
-	return specialComments;
-    }
+	public List<ComponentType> getDataType() {
+		return dataType;
+	}
 
-    public void setSpecialComments(String specialComments) {
-	this.specialComments = specialComments;
-    }
+	public void setDataType(List<ComponentType> dataType) {
+		this.dataType = dataType;
+	}
+
+	public String getSpecialComments() {
+		return specialComments;
+	}
+
+	public void setSpecialComments(String specialComments) {
+		this.specialComments = specialComments;
+	}
 
 	public String getLocationId() {
 		return locationId;

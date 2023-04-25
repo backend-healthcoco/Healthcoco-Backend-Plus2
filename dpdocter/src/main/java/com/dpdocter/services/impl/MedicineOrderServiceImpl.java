@@ -29,15 +29,11 @@ import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.TrackingOrder;
 import com.dpdocter.beans.UserCart;
-import com.dpdocter.beans.v2.Drug;
-import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.DrugInfoCollection;
 import com.dpdocter.collections.MedicineOrderCollection;
-import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TrackingOrderCollection;
 import com.dpdocter.collections.UserCartCollection;
-import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.OrderStatus;
 import com.dpdocter.enums.SMSStatus;
@@ -68,28 +64,28 @@ import com.sun.jersey.multipart.FormDataBodyPart;
 import common.util.web.DPDoctorUtils;
 
 @Service
-public class MedicineOrderServiceImpl implements MedicineOrderService{
+public class MedicineOrderServiceImpl implements MedicineOrderService {
 
 	private static Logger logger = Logger.getLogger(RecordsServiceImpl.class.getName());
-	
+
 	@Autowired
 	FileManager fileManager;
-	
+
 	@Autowired
 	private MedicineOrderRepository medicineOrderRepository;
-	
+
 	@Autowired
 	private MongoTemplate mongoTemplate;
-	
+
 	@Autowired
 	private TrackingOrderRepository trackingOrderRepository;
-	
+
 	@Autowired
 	private UserCartRepository userCartRepository;
-	
+
 	@Value(value = "${image.path}")
 	private String imagePath;
-	
+
 	@Value(value = "${medicine.order.placed.message}")
 	private String ORDER_PLACED_MESSAGE;
 	@Value(value = "${medicine.order.confirmed.message}")
@@ -104,18 +100,16 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 	private String ORDER_DELIVERED_MESSAGE;
 	@Value(value = "${medicine.order.packed.message}")
 	private String ORDER_PACKED_MESSAGE;
-	
-	
+
 	@Autowired
 	private SMSServices smsServices;
-	
+
 	@Autowired
 	private PushNotificationServices pushNotificationServices;
-	
+
 	@Autowired
 	private DrugInfoRepository drugInfoRepository;
 
-	
 	@Override
 	@Transactional
 	public ImageURLResponse saveRXMedicineOrderImage(FormDataBodyPart file, String patientIdString) {
@@ -125,8 +119,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 			Date createdTime = new Date();
 			if (file != null) {
-				if(DPDoctorUtils.anyStringEmpty(patientIdString))
-				{
+				if (DPDoctorUtils.anyStringEmpty(patientIdString)) {
 					patientIdString = patientIdString.replace("\"", "");
 				}
 				String path = "medorderRX" + File.separator + patientIdString;
@@ -136,12 +129,12 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 				recordPath = path + File.separator + fileName + createdTime.getTime() + fileExtension;
 				imageURLResponse = fileManager.saveImage(file, recordPath, true);
-				
-				/*if(imageURLResponse != null)
-				{
-					imageURLResponse.setImageUrl(imagePath + imageURLResponse.getImageUrl());
-					imageURLResponse.setThumbnailUrl(imagePath + imageURLResponse.getThumbnailUrl()); 
-				}*/
+
+				/*
+				 * if(imageURLResponse != null) { imageURLResponse.setImageUrl(imagePath +
+				 * imageURLResponse.getImageUrl()); imageURLResponse.setThumbnailUrl(imagePath +
+				 * imageURLResponse.getThumbnailUrl()); }
+				 */
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -150,7 +143,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		}
 		return imageURLResponse;
 	}
-	
+
 	@Override
 	@Transactional
 	public MedicineOrder addeditRx(MedicineOrderRXAddEditRequest request) {
@@ -159,14 +152,14 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 		try {
 
-			if(request.getId() != null)
-			{
+			if (request.getId() != null) {
 				medicineOrderCollection = medicineOrderRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 
 			if (medicineOrderCollection == null) {
 				medicineOrderCollection = new MedicineOrderCollection();
-				medicineOrderCollection.setUniqueOrderId(UniqueIdInitial.MEDICINE_ORDER.getInitial() + DPDoctorUtils.generateRandomId());
+				medicineOrderCollection.setUniqueOrderId(
+						UniqueIdInitial.MEDICINE_ORDER.getInitial() + DPDoctorUtils.generateRandomId());
 				medicineOrderCollection.setCreatedTime(new Date());
 			}
 
@@ -184,7 +177,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			medicineOrderCollection.setIsPrescriptionRequired(request.getIsPrescriptionRequired());
 
 			medicineOrderCollection = medicineOrderRepository.save(medicineOrderCollection);
-			
+
 			if (medicineOrderCollection != null) {
 				medicineOrder = new MedicineOrder();
 				BeanUtil.map(medicineOrderCollection, medicineOrder);
@@ -197,7 +190,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		}
 		return medicineOrder;
 	}
-	
+
 	@Override
 	@Transactional
 	public MedicineOrder addeditRxImage(MedicineOrderRxImageRequest request) {
@@ -206,20 +199,20 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 		try {
 
-			if(request.getId() != null)
-			{
+			if (request.getId() != null) {
 				medicineOrderCollection = medicineOrderRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 
 			if (medicineOrderCollection == null) {
 				medicineOrderCollection = new MedicineOrderCollection();
-				medicineOrderCollection.setUniqueOrderId(UniqueIdInitial.MEDICINE_ORDER.getInitial() + DPDoctorUtils.generateRandomId());
+				medicineOrderCollection.setUniqueOrderId(
+						UniqueIdInitial.MEDICINE_ORDER.getInitial() + DPDoctorUtils.generateRandomId());
 			}
 
 			medicineOrderCollection.setRxImage(request.getRxImage());
 
 			medicineOrderCollection = medicineOrderRepository.save(medicineOrderCollection);
-			
+
 			if (medicineOrderCollection != null) {
 				medicineOrder = new MedicineOrder();
 				BeanUtil.map(medicineOrderCollection, medicineOrder);
@@ -232,7 +225,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		}
 		return medicineOrder;
 	}
-	
+
 	@Override
 	@Transactional
 	public MedicineOrder addeditAddress(MedicineOrderAddEditAddressRequest request) {
@@ -241,13 +234,13 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 		try {
 
-			if(request.getId() != null)
-			{
+			if (request.getId() != null) {
 				medicineOrderCollection = medicineOrderRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 			if (medicineOrderCollection == null) {
 				medicineOrderCollection = new MedicineOrderCollection();
-				medicineOrderCollection.setUniqueOrderId(UniqueIdInitial.MEDICINE_ORDER.getInitial() + DPDoctorUtils.generateRandomId());
+				medicineOrderCollection.setUniqueOrderId(
+						UniqueIdInitial.MEDICINE_ORDER.getInitial() + DPDoctorUtils.generateRandomId());
 			}
 
 			medicineOrderCollection.setShippingAddress(request.getShippingAddress());
@@ -271,7 +264,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		}
 		return medicineOrder;
 	}
-	
+
 	@Override
 	@Transactional
 	public MedicineOrder addeditPayment(MedicineOrderPaymentAddEditRequest request) {
@@ -280,13 +273,13 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 		try {
 
-			if(request.getId() != null)
-			{
+			if (request.getId() != null) {
 				medicineOrderCollection = medicineOrderRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 			if (medicineOrderCollection == null) {
 				medicineOrderCollection = new MedicineOrderCollection();
-				medicineOrderCollection.setUniqueOrderId(UniqueIdInitial.MEDICINE_ORDER.getInitial() + DPDoctorUtils.generateRandomId());
+				medicineOrderCollection.setUniqueOrderId(
+						UniqueIdInitial.MEDICINE_ORDER.getInitial() + DPDoctorUtils.generateRandomId());
 			}
 
 			medicineOrderCollection.setTotalAmount(request.getTotalAmount());
@@ -299,7 +292,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			medicineOrderCollection.setCallingPreference(request.getCallingPreference());
 			medicineOrderCollection.setOrderStatus(request.getOrderStatus());
 			medicineOrderCollection.setIsPrescriptionRequired(request.getIsPrescriptionRequired());
-			
+
 			medicineOrderCollection = medicineOrderRepository.save(medicineOrderCollection);
 			if (medicineOrderCollection != null) {
 				medicineOrder = new MedicineOrder();
@@ -313,7 +306,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		}
 		return medicineOrder;
 	}
-	
+
 	@Override
 	@Transactional
 	public MedicineOrder addeditPreferences(MedicineOrderPreferenceAddEditRequest request) {
@@ -322,13 +315,13 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 		try {
 
-			if(request.getId() != null)
-			{
+			if (request.getId() != null) {
 				medicineOrderCollection = medicineOrderRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 			if (medicineOrderCollection == null) {
 				medicineOrderCollection = new MedicineOrderCollection();
-				medicineOrderCollection.setUniqueOrderId(UniqueIdInitial.MEDICINE_ORDER.getInitial() + DPDoctorUtils.generateRandomId());
+				medicineOrderCollection.setUniqueOrderId(
+						UniqueIdInitial.MEDICINE_ORDER.getInitial() + DPDoctorUtils.generateRandomId());
 			}
 
 			medicineOrderCollection.setDeliveryPreference(request.getDeliveryPreference());
@@ -347,10 +340,10 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		}
 		return medicineOrder;
 	}
-	
+
 	@Override
 	@Transactional
-	public MedicineOrder updateStatus(String id, OrderStatus status ) {
+	public MedicineOrder updateStatus(String id, OrderStatus status) {
 		MedicineOrder medicineOrder = null;
 		MedicineOrderCollection medicineOrderCollection = null;
 		String message = "";
@@ -378,11 +371,13 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 				trackingOrder.setTimestamp(System.currentTimeMillis());
 				addeditTrackingDetails(trackingOrder);
 				break;
-				
+
 			case CONFIRMED:
 				message = ORDER_CONFIRMED_MESSAGE;
-				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message, ComponentType.ORDER_CONFIRMED.getType(), id, null);
-				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()), medicineOrderCollection.getPatientName(), medicineOrderCollection.getMobileNumber(), message);
+				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message,
+						ComponentType.ORDER_CONFIRMED.getType(), id, null);
+				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()),
+						medicineOrderCollection.getPatientName(), medicineOrderCollection.getMobileNumber(), message);
 				trackingOrder = new TrackingOrder();
 				trackingOrder.setOrderId(id);
 				trackingOrder.setNote(message);
@@ -391,11 +386,12 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 				addeditTrackingDetails(trackingOrder);
 				break;
 
-				
 			case PACKED:
 				message = ORDER_PACKED_MESSAGE;
-				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message, ComponentType.ORDER_PACKED.getType(), id, null);
-				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()), medicineOrderCollection.getPatientName(), medicineOrderCollection.getMobileNumber(), message);
+				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message,
+						ComponentType.ORDER_PACKED.getType(), id, null);
+				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()),
+						medicineOrderCollection.getPatientName(), medicineOrderCollection.getMobileNumber(), message);
 				trackingOrder = new TrackingOrder();
 				trackingOrder.setOrderId(id);
 				trackingOrder.setNote(message);
@@ -404,11 +400,12 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 				addeditTrackingDetails(trackingOrder);
 				break;
 
-				
 			case DISPATCHED:
 				message = ORDER_DISPATCHED_MESSAGE;
-				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message, ComponentType.ORDER_DISPATCHED.getType(), id, null);
-				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()), medicineOrderCollection.getPatientName(), medicineOrderCollection.getMobileNumber(), message);
+				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message,
+						ComponentType.ORDER_DISPATCHED.getType(), id, null);
+				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()),
+						medicineOrderCollection.getPatientName(), medicineOrderCollection.getMobileNumber(), message);
 				trackingOrder = new TrackingOrder();
 				trackingOrder.setOrderId(id);
 				trackingOrder.setNote(message);
@@ -417,30 +414,17 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 				addeditTrackingDetails(trackingOrder);
 				break;
 
-				
 			case OUT_FOR_DELIVERY:
 				message = ORDER_OUT_OF_DELIVERY_MESSAGE;
-				if(medicineOrderCollection.getCollectionBoy() != null)
-				{
+				if (medicineOrderCollection.getCollectionBoy() != null) {
 					message = message.replace("{deliveryBoy}", medicineOrderCollection.getCollectionBoy().getName());
-				}
-				else{
+				} else {
 					message = message.replace("{deliveryBoy}", "our representative");
 				}
-				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message, ComponentType.ORDER_OUT_FOR_DELIVERY.getType(), id, null);
-				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()), medicineOrderCollection.getPatientName(), medicineOrderCollection.getMobileNumber(), message);
-				trackingOrder = new TrackingOrder();
-				trackingOrder.setOrderId(id);
-				trackingOrder.setNote(message);
-				trackingOrder.setStatus(status);
-				trackingOrder.setTimestamp(System.currentTimeMillis());
-				addeditTrackingDetails(trackingOrder);
-				break;
-				
-			case DELIVERED:
-				message = ORDER_DELIVERED_MESSAGE;
-				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message, ComponentType.ORDER_OUT_FOR_DELIVERY.getType(), id, null);
-				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()), medicineOrderCollection.getPatientName(), medicineOrderCollection.getMobileNumber(), message);
+				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message,
+						ComponentType.ORDER_OUT_FOR_DELIVERY.getType(), id, null);
+				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()),
+						medicineOrderCollection.getPatientName(), medicineOrderCollection.getMobileNumber(), message);
 				trackingOrder = new TrackingOrder();
 				trackingOrder.setOrderId(id);
 				trackingOrder.setNote(message);
@@ -449,6 +433,19 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 				addeditTrackingDetails(trackingOrder);
 				break;
 
+			case DELIVERED:
+				message = ORDER_DELIVERED_MESSAGE;
+				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message,
+						ComponentType.ORDER_OUT_FOR_DELIVERY.getType(), id, null);
+				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()),
+						medicineOrderCollection.getPatientName(), medicineOrderCollection.getMobileNumber(), message);
+				trackingOrder = new TrackingOrder();
+				trackingOrder.setOrderId(id);
+				trackingOrder.setNote(message);
+				trackingOrder.setStatus(status);
+				trackingOrder.setTimestamp(System.currentTimeMillis());
+				addeditTrackingDetails(trackingOrder);
+				break;
 
 			default:
 				break;
@@ -467,10 +464,10 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		}
 		return medicineOrder;
 	}
-	
+
 	@Override
 	@Transactional
-	public MedicineOrder updateStatus(UpdateOrderStatusRequest request ) {
+	public MedicineOrder updateStatus(UpdateOrderStatusRequest request) {
 		MedicineOrder medicineOrder = null;
 		MedicineOrderCollection medicineOrderCollection = null;
 
@@ -485,12 +482,12 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			medicineOrderCollection.setOrderStatus(request.getStatus());
 
 			medicineOrderCollection = medicineOrderRepository.save(medicineOrderCollection);
-			
+
 			if (medicineOrderCollection != null) {
 				medicineOrder = new MedicineOrder();
 				BeanUtil.map(medicineOrderCollection, medicineOrder);
 			}
-			
+
 			addeditTrackingDetails(request.getTrackingOrder());
 
 		} catch (Exception e) {
@@ -500,10 +497,10 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		}
 		return medicineOrder;
 	}
-	
+
 	@Override
 	@Transactional
-	public MedicineOrder getOrderById(String id ) {
+	public MedicineOrder getOrderById(String id) {
 		MedicineOrder medicineOrder = null;
 		MedicineOrderCollection medicineOrderCollection = null;
 
@@ -528,11 +525,10 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		}
 		return medicineOrder;
 	}
-	
-	
+
 	@Override
 	@Transactional
-	public Boolean discardOrder(String id, Boolean discarded ) {
+	public Boolean discardOrder(String id, Boolean discarded) {
 		Boolean status = false;
 		MedicineOrderCollection medicineOrderCollection = null;
 
@@ -554,56 +550,48 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		}
 		return status;
 	}
-	
-	
-	
+
 	@Override
 	@Transactional
-	public List<MedicineOrder> getOrderList(String patientId , String updatedTime , String searchTerm, int page , int size , List<String> status) {
+	public List<MedicineOrder> getOrderList(String patientId, String updatedTime, String searchTerm, int page, int size,
+			List<String> status) {
 		List<MedicineOrder> orders = null;
-		Aggregation aggregation =null;
+		Aggregation aggregation = null;
 		try {
-			//Criteria criteria = new Criteria();
-			
+			// Criteria criteria = new Criteria();
+
 			long createdTimestamp = Long.parseLong(updatedTime);
-			
+
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 				criteria.and("patientId").is(new ObjectId(patientId));
 			}
-			
-			if(status != null && !status.isEmpty())
-			{
+
+			if (status != null && !status.isEmpty()) {
 				criteria.and("orderStatus").in(status);
 			}
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
 						new Criteria("longName").regex("^" + searchTerm, "i"));
 			}
-			
+
 			if (size > 0) {
-				aggregation =Aggregation.newAggregation(
-							Aggregation.lookup("vendor_cl", "vendorId", "_id", "vendor"),
-							new CustomAggregationOperation(new Document("$unwind",
-									new BasicDBObject("path", "$vendor").append("preserveNullAndEmptyArrays",
-											true))),
-							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
-						 Aggregation.skip((page) * size),
-						Aggregation.limit(size));
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("vendor_cl", "vendorId", "_id", "vendor"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$vendor").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
+						Aggregation.skip((page) * size), Aggregation.limit(size));
 			} else {
-				aggregation = Aggregation.newAggregation(
-							Aggregation.lookup("vendor_cl", "vendorId", "_id", "vendor"),
-							new CustomAggregationOperation(new Document("$unwind",
-									new BasicDBObject("path", "$vendor").append("preserveNullAndEmptyArrays",
-											true))),
-							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("vendor_cl", "vendorId", "_id", "vendor"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$vendor").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}
-			
-			orders = mongoTemplate.aggregate(
-					aggregation,
-					MedicineOrderCollection.class, MedicineOrder.class).getMappedResults();
+
+			orders = mongoTemplate.aggregate(aggregation, MedicineOrderCollection.class, MedicineOrder.class)
+					.getMappedResults();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -612,8 +600,6 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		}
 		return orders;
 	}
-	
-	
 
 	@Override
 	@Transactional
@@ -623,27 +609,19 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 		try {
 
-			if(request.getId() != null)
-			{
+			if (request.getId() != null) {
 				userCartCollection = userCartRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 
 			if (userCartCollection == null) {
 				userCartCollection = new UserCartCollection();
 				userCartCollection.setCreatedTime(new Date());
-				//medicineOrderCollection.setUniqueOrderId(UniqueIdInitial.MEDICINE_ORDER.getInitial() + DPDoctorUtils.generateRandomId());
 			}
 
 			BeanUtil.map(request, userCartCollection);
-			/*List<MedicineOrderItems> orderItems = new ArrayList<>();
-			for(MedicineOrderAddEditItems items : request.getItems()) {
-				MedicineOrderItems medicineOrderItems  =  new MedicineOrderItems();
-				BeanUtil.map(items, medicineOrderItems);
-				orderItems.add(medicineOrderItems);
-			}*/
 			userCartCollection.setItems(request.getItems());
 			userCartCollection = userCartRepository.save(userCartCollection);
-			
+
 			if (userCartCollection != null) {
 				userCart = new UserCart();
 				BeanUtil.map(userCartCollection, userCart);
@@ -656,10 +634,10 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		}
 		return userCart;
 	}
-	
+
 	@Override
 	@Transactional
-	public UserCart getUserCartById(String id ) {
+	public UserCart getUserCartById(String id) {
 		UserCart userCart = null;
 		UserCartCollection userCartCollection = null;
 
@@ -684,11 +662,10 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		}
 		return userCart;
 	}
-	
-	
+
 	@Override
 	@Transactional
-	public UserCart getUserCartByuserId(String id ) {
+	public UserCart getUserCartByuserId(String id) {
 		UserCart userCart = null;
 		UserCartCollection userCartCollection = null;
 
@@ -713,11 +690,10 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		}
 		return userCart;
 	}
-	
-	
+
 	@Override
 	@Transactional
-	public UserCart clearCart(String id ) {
+	public UserCart clearCart(String id) {
 		UserCart userCart = null;
 		UserCartCollection userCartCollection = null;
 
@@ -736,7 +712,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			userCartCollection.setItems(null);
 			userCartCollection.setQuantity(null);
 			userCartCollection.setRxImage(null);
-			
+
 			userCartCollection = userCartRepository.save(userCartCollection);
 			if (userCartCollection != null) {
 				userCart = new UserCart();
@@ -750,7 +726,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		}
 		return userCart;
 	}
-	
+
 	@Override
 	@Transactional
 	public TrackingOrder addeditTrackingDetails(TrackingOrder request) {
@@ -759,21 +735,21 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 		try {
 
-			if(request.getId() != null)
-			{
+			if (request.getId() != null) {
 				trackingOrderCollection = trackingOrderRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 
 			if (trackingOrderCollection == null) {
 				trackingOrderCollection = new TrackingOrderCollection();
 				trackingOrderCollection.setCreatedTime(new Date());
-				//medicineOrderCollection.setUniqueOrderId(UniqueIdInitial.MEDICINE_ORDER.getInitial() + DPDoctorUtils.generateRandomId());
+				// medicineOrderCollection.setUniqueOrderId(UniqueIdInitial.MEDICINE_ORDER.getInitial()
+				// + DPDoctorUtils.generateRandomId());
 			}
 
 			BeanUtil.map(request, trackingOrderCollection);
 
 			trackingOrderCollection = trackingOrderRepository.save(trackingOrderCollection);
-			
+
 			if (trackingOrderCollection != null) {
 				trackingOrder = new TrackingOrder();
 				BeanUtil.map(trackingOrderCollection, trackingOrder);
@@ -786,44 +762,43 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		}
 		return trackingOrder;
 	}
-	
+
 	@Override
 	@Transactional
-	public List<TrackingOrder> getTrackingList(String orderId , String updatedTime , String searchTerm, int page , int size) {
+	public List<TrackingOrder> getTrackingList(String orderId, String updatedTime, String searchTerm, int page,
+			int size) {
 		List<TrackingOrder> orders = null;
-		Aggregation aggregation =null;
+		Aggregation aggregation = null;
 		try {
-			//Criteria criteria = new Criteria();
-			
+			// Criteria criteria = new Criteria();
+
 			long createdTimestamp = Long.parseLong(updatedTime);
-			
+
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(orderId)) {
 				criteria.and("orderId").is(new ObjectId(orderId));
 			}
-			
-			/*if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
-						new Criteria("longName").regex("^" + searchTerm, "i"));
-			}*/
-			
+
+			/*
+			 * if (!DPDoctorUtils.anyStringEmpty(searchTerm)) { criteria.orOperator(new
+			 * Criteria("name").regex("^" + searchTerm, "i"), new
+			 * Criteria("longName").regex("^" + searchTerm, "i")); }
+			 */
+
 			if (size > 0) {
-				aggregation =Aggregation.newAggregation(
-							
-							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
-						 Aggregation.skip((page) * size),
-						Aggregation.limit(size));
+				aggregation = Aggregation.newAggregation(
+
+						Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
+						Aggregation.skip((page) * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(
-							
-							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+
+						Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}
-			
-			
-			orders = mongoTemplate.aggregate(
-					aggregation,
-					TrackingOrderCollection.class, TrackingOrder.class).getMappedResults();
+
+			orders = mongoTemplate.aggregate(aggregation, TrackingOrderCollection.class, TrackingOrder.class)
+					.getMappedResults();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -832,14 +807,12 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		}
 		return orders;
 	}
-	
+
 	@Override
 	@Transactional
-	public List<DrugInfo> getDrugInfo(int page, int size, String updatedTime,
-			String searchTerm, Boolean discarded) {
+	public List<DrugInfo> getDrugInfo(int page, int size, String updatedTime, String searchTerm, Boolean discarded) {
 		List<DrugInfo> response = null;
 		try {
-			long createdTimeStamp = Long.parseLong(updatedTime);
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 			if (discarded != null)
@@ -849,18 +822,17 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 				criteria.orOperator(new Criteria("brandName").regex("^" + searchTerm, "i"),
 						new Criteria("drugType").regex("^" + searchTerm, "i"));
 			}
-			
+
 			if (size > 0) {
-				aggregation =Aggregation.newAggregation(
-				Aggregation.match(criteria),Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
-				Aggregation.skip((page) * size),Aggregation.limit(size));
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
 			} else {
-				aggregation = Aggregation.newAggregation(
-				Aggregation.match(criteria),Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}
-			response = mongoTemplate.aggregate(
-					aggregation,
-					DrugInfoCollection.class, DrugInfo.class).getMappedResults();
+			response = mongoTemplate.aggregate(aggregation, DrugInfoCollection.class, DrugInfo.class)
+					.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -868,20 +840,13 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		}
 		return response;
 	}
-	
-	private String getFinalImageURL(String imageURL) {
-		if (imageURL != null) {
-			return imagePath + imageURL;
-		} else
-			return null;
-	}
-	
-	private void sendStatusChangeMessage(String patientId , String patientName, String mobileNumber , String message) {
+
+	private void sendStatusChangeMessage(String patientId, String patientName, String mobileNumber, String message) {
 		try {
-			
+
 			if (mobileNumber != null) {
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-				
+
 				smsTrackDetail.setType("APP_LINK_THROUGH_PRESCRIPTION");
 				SMSDetail smsDetail = new SMSDetail();
 				smsDetail.setUserId(new ObjectId(patientId));
@@ -904,7 +869,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		}
 
 	}
-	
+
 	@Override
 	@Transactional
 	public DrugInfo getDrugByDrugCode(String drugCode) {
@@ -925,8 +890,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		}
 		return drugAddEditResponse;
 	}
-	
-	
+
 	@Override
 	@Transactional
 	public List<DrugInfo> getDrugByDrugCodes(DrugCodeListRequest request) {
@@ -947,5 +911,5 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		}
 		return drugInfos;
 	}
-	
+
 }

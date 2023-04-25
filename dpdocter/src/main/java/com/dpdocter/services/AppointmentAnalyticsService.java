@@ -17,8 +17,6 @@ import com.dpdocter.response.BookedAndCancelAppointmentCount;
 import com.dpdocter.response.DoctorAnalyticPieChartResponse;
 import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
 import com.dpdocter.response.ScheduleAndCheckoutCount;
-import com.dpdocter.response.Settlement;
-import com.dpdocter.response.SettlementResponse;
 
 public interface AppointmentAnalyticsService {
 	public AppointmentAnalyticResponse getAppointmentAnalyticsData(String doctorId, String locationId,

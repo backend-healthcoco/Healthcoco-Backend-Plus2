@@ -3,9 +3,9 @@ package com.dpdocter.response;
 public class AmountDuePatientData {
 
 	private String patientName;
-	
+
 	private String pid;
-	
+
 	private Double amountDue;
 
 	public String getPatientName() {

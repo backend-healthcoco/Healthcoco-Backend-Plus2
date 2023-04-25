@@ -165,13 +165,13 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-									.append("day", new BasicDBObject("$first", "$day"))
-									.append("month", new BasicDBObject("$first", "$month"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("week", new BasicDBObject("$first", "$week"))
-									.append("date", new BasicDBObject("$first", "$date"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-									.append("count", new BasicDBObject("$sum", 1))));
+							.append("day", new BasicDBObject("$first", "$day"))
+							.append("month", new BasicDBObject("$first", "$month"))
+							.append("year", new BasicDBObject("$first", "$year"))
+							.append("week", new BasicDBObject("$first", "$week"))
+							.append("date", new BasicDBObject("$first", "$date"))
+							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+							.append("count", new BasicDBObject("$sum", 1))));
 
 			break;
 		}
@@ -181,12 +181,12 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year"))
-									.append("month", new BasicDBObject("$first", "$month"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("week", new BasicDBObject("$first", "$week"))
-									.append("date", new BasicDBObject("$first", "$date"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-									.append("count", new BasicDBObject("$sum", 1))));
+							.append("month", new BasicDBObject("$first", "$month"))
+							.append("year", new BasicDBObject("$first", "$year"))
+							.append("week", new BasicDBObject("$first", "$week"))
+							.append("date", new BasicDBObject("$first", "$date"))
+							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+							.append("count", new BasicDBObject("$sum", 1))));
 
 			break;
 		}
@@ -268,14 +268,15 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year")
-									.append("city", "$city")).append("day", new BasicDBObject("$first", "$day"))
-											.append("city", new BasicDBObject("$first", "$city"))
-											.append("week", new BasicDBObject("$first", "$week"))
-											.append("month", new BasicDBObject("$first", "$month"))
-											.append("year", new BasicDBObject("$first", "$year"))
-											.append("date", new BasicDBObject("$first", "$date"))
-											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-											.append("count", new BasicDBObject("$sum", 1))));
+									.append("city", "$city"))
+							.append("day", new BasicDBObject("$first", "$day"))
+							.append("city", new BasicDBObject("$first", "$city"))
+							.append("week", new BasicDBObject("$first", "$week"))
+							.append("month", new BasicDBObject("$first", "$month"))
+							.append("year", new BasicDBObject("$first", "$year"))
+							.append("date", new BasicDBObject("$first", "$date"))
+							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+							.append("count", new BasicDBObject("$sum", 1))));
 
 			break;
 		}
@@ -284,13 +285,14 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year")
-									.append("city", "$city")).append("month", new BasicDBObject("$first", "$month"))
-											.append("year", new BasicDBObject("$first", "$year"))
-											.append("week", new BasicDBObject("$first", "$week"))
-											.append("city", new BasicDBObject("$first", "$city"))
-											.append("date", new BasicDBObject("$first", "$date"))
-											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-											.append("count", new BasicDBObject("$sum", 1))));
+									.append("city", "$city"))
+							.append("month", new BasicDBObject("$first", "$month"))
+							.append("year", new BasicDBObject("$first", "$year"))
+							.append("week", new BasicDBObject("$first", "$week"))
+							.append("city", new BasicDBObject("$first", "$city"))
+							.append("date", new BasicDBObject("$first", "$date"))
+							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+							.append("count", new BasicDBObject("$sum", 1))));
 
 			break;
 		}
@@ -300,11 +302,11 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("month", "$month").append("year", "$year").append("city", "$city"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("city", new BasicDBObject("$first", "$city"))
-									.append("date", new BasicDBObject("$first", "$date"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-									.append("count", new BasicDBObject("$sum", 1))));
+							.append("year", new BasicDBObject("$first", "$year"))
+							.append("city", new BasicDBObject("$first", "$city"))
+							.append("date", new BasicDBObject("$first", "$date"))
+							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+							.append("count", new BasicDBObject("$sum", 1))));
 
 			break;
 		}
@@ -388,15 +390,16 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year")
-									.append("city", "$city")).append("day", new BasicDBObject("$first", "$day"))
-											.append("city", new BasicDBObject("$first", "$city"))
-											.append("week", new BasicDBObject("$first", "$week"))
-											.append("month", new BasicDBObject("$first", "$month"))
-											.append("year", new BasicDBObject("$first", "$year"))
-											.append("groupName", new BasicDBObject("$first", "$groupName"))
-											.append("date", new BasicDBObject("$first", "$date"))
-											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-											.append("count", new BasicDBObject("$sum", 1))));
+									.append("city", "$city"))
+							.append("day", new BasicDBObject("$first", "$day"))
+							.append("city", new BasicDBObject("$first", "$city"))
+							.append("week", new BasicDBObject("$first", "$week"))
+							.append("month", new BasicDBObject("$first", "$month"))
+							.append("year", new BasicDBObject("$first", "$year"))
+							.append("groupName", new BasicDBObject("$first", "$groupName"))
+							.append("date", new BasicDBObject("$first", "$date"))
+							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+							.append("count", new BasicDBObject("$sum", 1))));
 
 			break;
 		}
@@ -405,14 +408,15 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year")
-									.append("city", "$city")).append("month", new BasicDBObject("$first", "$month"))
-											.append("year", new BasicDBObject("$first", "$year"))
-											.append("week", new BasicDBObject("$first", "$week"))
-											.append("city", new BasicDBObject("$first", "$city"))
-											.append("date", new BasicDBObject("$first", "$date"))
-											.append("groupName", new BasicDBObject("$first", "$groupName"))
-											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-											.append("count", new BasicDBObject("$sum", 1))));
+									.append("city", "$city"))
+							.append("month", new BasicDBObject("$first", "$month"))
+							.append("year", new BasicDBObject("$first", "$year"))
+							.append("week", new BasicDBObject("$first", "$week"))
+							.append("city", new BasicDBObject("$first", "$city"))
+							.append("date", new BasicDBObject("$first", "$date"))
+							.append("groupName", new BasicDBObject("$first", "$groupName"))
+							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+							.append("count", new BasicDBObject("$sum", 1))));
 
 			break;
 		}
@@ -422,12 +426,12 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("month", "$month").append("year", "$year").append("city", "$city"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("city", new BasicDBObject("$first", "$city"))
-									.append("date", new BasicDBObject("$first", "$date"))
-									.append("groupName", new BasicDBObject("$first", "$groupName"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-									.append("count", new BasicDBObject("$sum", 1))));
+							.append("year", new BasicDBObject("$first", "$year"))
+							.append("city", new BasicDBObject("$first", "$city"))
+							.append("date", new BasicDBObject("$first", "$date"))
+							.append("groupName", new BasicDBObject("$first", "$groupName"))
+							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+							.append("count", new BasicDBObject("$sum", 1))));
 
 			break;
 		}
@@ -505,13 +509,13 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			firstAggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-									.append("day", new BasicDBObject("$first", "$day"))
-									.append("month", new BasicDBObject("$first", "$month"))
-									.append("week", new BasicDBObject("$first", "$week"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("date", new BasicDBObject("$first", "$date"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-									.append("count", new BasicDBObject("$sum", 1))));
+							.append("day", new BasicDBObject("$first", "$day"))
+							.append("month", new BasicDBObject("$first", "$month"))
+							.append("week", new BasicDBObject("$first", "$week"))
+							.append("year", new BasicDBObject("$first", "$year"))
+							.append("date", new BasicDBObject("$first", "$date"))
+							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+							.append("count", new BasicDBObject("$sum", 1))));
 
 			break;
 		}
@@ -521,12 +525,12 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			firstAggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year"))
-									.append("month", new BasicDBObject("$first", "$month"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("week", new BasicDBObject("$first", "$week"))
-									.append("date", new BasicDBObject("$first", "$date"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-									.append("count", new BasicDBObject("$sum", 1))));
+							.append("month", new BasicDBObject("$first", "$month"))
+							.append("year", new BasicDBObject("$first", "$year"))
+							.append("week", new BasicDBObject("$first", "$week"))
+							.append("date", new BasicDBObject("$first", "$date"))
+							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+							.append("count", new BasicDBObject("$sum", 1))));
 
 			break;
 		}
@@ -692,7 +696,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 					.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "userId", "_id", "user"),
 							Aggregation.unwind("user"), projectList,
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-							Aggregation.skip((long)(page) * size), Aggregation.limit(size))
+							Aggregation.skip((long) (page) * size), Aggregation.limit(size))
 					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 		else
 			aggregation = Aggregation
@@ -758,7 +762,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 							Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroup"),
 							Aggregation.unwind("patientGroup"), Aggregation.match(criteria2), projectList,
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-							Aggregation.skip((long)(page) * size), Aggregation.limit(size))
+							Aggregation.skip((long) (page) * size), Aggregation.limit(size))
 					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 		else
 			aggregation = Aggregation
@@ -832,7 +836,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
 					Aggregation.unwind("user"), Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 					Aggregation.unwind("patient"), Aggregation.match(criteria), projectList, aggregationOperation,
-					Aggregation.sort(new Sort(Sort.Direction.ASC, "count")), Aggregation.skip((long)(page) * size),
+					Aggregation.sort(new Sort(Sort.Direction.ASC, "count")), Aggregation.skip((long) (page) * size),
 					Aggregation.limit(size))
 					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 		else
@@ -1044,8 +1048,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		}
 		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$patient.userId")));
 
-		aggregationOperation = new CustomAggregationOperation(
-				new Document("$group", new BasicDBObject("_id", "$id")));
+		aggregationOperation = new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$id")));
 
 		Aggregation aggregation = Aggregation
 				.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
@@ -1189,8 +1192,8 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			if (size > 0)
 				aggregation = Aggregation
 						.newAggregation(Aggregation.match(criteria), projectList, aggregationOperation,
-								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")), Aggregation.skip((long)(page) * size),
-								Aggregation.limit(size))
+								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")),
+								Aggregation.skip((long) (page) * size), Aggregation.limit(size))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 			else
 				aggregation = Aggregation
@@ -1212,7 +1215,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 												.append("name", new BasicDBObject("$first", "$name"))
 												.append("count", new BasicDBObject("$first", "$count")))),
 								aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")),
-								Aggregation.skip((long)(page) * size), Aggregation.limit(size))
+								Aggregation.skip((long) (page) * size), Aggregation.limit(size))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 			else
 				aggregation = Aggregation
@@ -1326,7 +1329,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						new CustomAggregationOperation(new Document("$group",
 								new BasicDBObject("_id", "$id").append("name", new BasicDBObject("$first", "$name"))
 										.append("count", new BasicDBObject("$sum", 1)))),
-						Aggregation.sort(new Sort(Sort.Direction.ASC, "name")), Aggregation.skip((long)(page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.ASC, "name")), Aggregation.skip((long) (page) * size),
 						Aggregation.limit(size))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 			else
@@ -1467,8 +1470,8 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 										new BasicDBObject("_id", "$groupId")
 												.append("name", new BasicDBObject("$first", "$name"))
 												.append("count", new BasicDBObject("$sum", 1)))),
-								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")), Aggregation.skip((long)(page) * size),
-								Aggregation.limit(size))
+								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")),
+								Aggregation.skip((long) (page) * size), Aggregation.limit(size))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 			else
 				aggregation = Aggregation

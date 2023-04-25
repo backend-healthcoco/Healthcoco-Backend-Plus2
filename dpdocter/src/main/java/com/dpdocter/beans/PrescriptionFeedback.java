@@ -12,7 +12,7 @@ public class PrescriptionFeedback extends GenericCollection {
 	private String hospitalId;
 	private Boolean medicationOnTime;
 	private MedicationEffectType medicationEffectType; // how patient feeling
-											// after taking medicine
+	// after taking medicine
 	private String description;
 	private String doctorReply;
 

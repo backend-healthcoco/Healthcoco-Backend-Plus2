@@ -9,13 +9,6 @@ import com.dpdocter.collections.VaccineCollection;
 
 public interface VaccineRepository extends MongoRepository<VaccineCollection, ObjectId> {
 
-//	 @Query("{'patientId': ?0 , 'doctorId':?1 , 'locationId':?2 , 'hospitalId':?3}")
-//	 public List<VaccineCollection> findBypatientdoctorlocationhospital(ObjectId patientId , ObjectId doctorId, ObjectId locationId, ObjectId hospitalId);
-//	 
-//	 @Query("{'dueDate': {'$gte': ?0}, 'dueDate': {'$lte': ?1}}")
-//	 public List<VaccineCollection> findVaccinations(DateTime start, DateTime end);
-	 
-//	 @Query("{'patientId': ?0}")
-	 public List<VaccineCollection> findByPatientId(ObjectId patientId);
-	
+	public List<VaccineCollection> findByPatientId(ObjectId patientId);
+
 }

@@ -225,20 +225,20 @@ public class ESAppointmentApi {
 		response.setData(labs);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.SolrAppointmentUrls.GET_LANDMARKS_AND_LOCALITIES)
 	@GET
 	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_LANDMARKS_AND_LOCALITIES, notes = PathProxy.SolrAppointmentUrls.GET_LANDMARKS_AND_LOCALITIES)
-	public Response<SearchLandmarkLocalityResponse> getLandmarksAndLocalitiesByCity(@QueryParam("city") String city, @QueryParam("page") int page, @QueryParam("size") int size,
-			@QueryParam("searchTerm") String searchTerm) {
-		
-		List<SearchLandmarkLocalityResponse> searchLandmarkLocalityResponses = solrAppointmentService.getLandmarksAndLocalitiesByCity(city, page, size, searchTerm);
+	public Response<SearchLandmarkLocalityResponse> getLandmarksAndLocalitiesByCity(@QueryParam("city") String city,
+			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+
+		List<SearchLandmarkLocalityResponse> searchLandmarkLocalityResponses = solrAppointmentService
+				.getLandmarksAndLocalitiesByCity(city, page, size, searchTerm);
 
 		Response<SearchLandmarkLocalityResponse> response = new Response<SearchLandmarkLocalityResponse>();
 		response.setDataList(searchLandmarkLocalityResponses);
 		return response;
 	}
-	
 
 	@Path(value = PathProxy.SolrAppointmentUrls.GET_DOCTORS_CARD)
 	@GET
@@ -248,7 +248,8 @@ public class ESAppointmentApi {
 			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
 			@QueryParam("speciality") String speciality, @QueryParam("searchTerm") String searchTerm) {
 
-		List<ESDoctorCardResponse> doctors = solrAppointmentService.getDoctorsShortCard(page, size, city, location, latitude, longitude, speciality, searchTerm);
+		List<ESDoctorCardResponse> doctors = solrAppointmentService.getDoctorsShortCard(page, size, city, location,
+				latitude, longitude, speciality, searchTerm);
 
 		Response<ESDoctorCardResponse> response = new Response<ESDoctorCardResponse>();
 		response.setDataList(doctors);

@@ -2,8 +2,6 @@ package com.dpdocter.response;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
-
 import com.dpdocter.beans.Addiction;
 import com.dpdocter.beans.DrugsAndAllergies;
 import com.dpdocter.beans.GeneralData;
@@ -37,7 +35,7 @@ public class AssessmentFormHistoryResponse {
 	private long count;
 
 	private Boolean isPatientDiscarded = false;
-	
+
 	private Boolean isStress = false;
 
 	private List<Addiction> addiction;
@@ -49,9 +47,9 @@ public class AssessmentFormHistoryResponse {
 	private String reason;
 
 	private String stressReason;
-	
+
 	private String specialNotes;
-	
+
 	private Integer noOfTime = 0;
 
 	private FoodAndAllergiesRequest foodAndAllergies;
@@ -179,7 +177,7 @@ public class AssessmentFormHistoryResponse {
 	public void setAssessmentId(String assessmentId) {
 		this.assessmentId = assessmentId;
 	}
-	
+
 	public List<NutritionDisease> getDiesease() {
 		return diesease;
 	}

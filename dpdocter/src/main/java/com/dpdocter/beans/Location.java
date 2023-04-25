@@ -2,7 +2,6 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.enums.LocationType;
@@ -117,14 +116,14 @@ public class Location {
 
 	private String smsCode;
 
-    private String googleMapShortUrl;
-    
-    private Boolean isDefaultClinic=false;
-    
-    private String defaultLocationId;
+	private String googleMapShortUrl;
 
-    private Boolean isDentalChain = false;
-	
+	private Boolean isDefaultClinic = false;
+
+	private String defaultLocationId;
+
+	private Boolean isDentalChain = false;
+
 	private String ratelistId;
 
 	public Boolean getIsDentalChain() {
@@ -134,6 +133,7 @@ public class Location {
 	public void setIsDentalChain(Boolean isDentalChain) {
 		this.isDentalChain = isDentalChain;
 	}
+
 	public Boolean getIsMobileNumberOptional() {
 		return isMobileNumberOptional;
 	}
@@ -557,8 +557,6 @@ public class Location {
 	public void setGoogleMapShortUrl(String googleMapShortUrl) {
 		this.googleMapShortUrl = googleMapShortUrl;
 	}
-	
-	
 
 	public Boolean getIsDefaultClinic() {
 		return isDefaultClinic;

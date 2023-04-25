@@ -4,57 +4,57 @@ import com.dpdocter.collections.GenericCollection;
 
 public class DrugStrengthAddEditResponse extends GenericCollection {
 
-    private String id;
+	private String id;
 
-    private String unit;
+	private String unit;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private Boolean discarded = false;
-    
-    public String getId() {
-	return id;
-    }
+	private Boolean discarded = false;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getUnit() {
-	return unit;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setUnit(String unit) {
-	this.unit = unit;
-    }
+	public String getUnit() {
+		return unit;
+	}
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	public void setUnit(String unit) {
+		this.unit = unit;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
 	public Boolean getDiscarded() {
 		return discarded;

@@ -7,21 +7,21 @@ import com.dpdocter.beans.DiagnosticTest;
 public class LabSearchResponse {
 
 	private String id;
-	
+
 	private String hospitalId;
-	
+
 	private String locationName;
-	
+
 	private Boolean isNABLAccredited = false;
 
 	List<DiagnosticTest> diagnosticTests;
-	
+
 	private Double totalCost = 0.0;
 
-    private Double totalCostForPatient = 0.0;
+	private Double totalCostForPatient = 0.0;
 
-    private Double totalSavingInPercentage = 0.0;
-    
+	private Double totalSavingInPercentage = 0.0;
+
 	public String getId() {
 		return id;
 	}

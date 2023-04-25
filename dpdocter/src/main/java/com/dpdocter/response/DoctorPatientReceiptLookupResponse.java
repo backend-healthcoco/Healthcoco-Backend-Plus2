@@ -10,46 +10,46 @@ import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ModeOfPayment;
 import com.dpdocter.enums.ReceiptType;
 
-public class DoctorPatientReceiptLookupResponse extends GenericCollection{
+public class DoctorPatientReceiptLookupResponse extends GenericCollection {
 
 	private String id;
-	
+
 	private String uniqueReceiptId;
-	
-	private ReceiptType receiptType; 
-	
+
+	private ReceiptType receiptType;
+
 	private String doctorId;
-	
+
 	private String locationId;
-	
+
 	private String hospitalId;
-	
+
 	private String patientId;
-	
+
 	private ModeOfPayment modeOfPayment;
-	
-	private List<AdvanceReceiptIdWithAmountResponse> advanceReceiptIdWithAmounts;   
-	
-	private String invoiceId; 
-	
+
+	private List<AdvanceReceiptIdWithAmountResponse> advanceReceiptIdWithAmounts;
+
+	private String invoiceId;
+
 	private String uniqueInvoiceId;
-	
+
 	private Double amountPaid = 0.0;
-	
+
 	private Double remainingAdvanceAmount = 0.0;
-	
+
 	private Double balanceAmount = 0.0;
-	
+
 	private Date receivedDate;
 
 	private Boolean discarded = false;
 
 	private Double usedAdvanceAmount = 0.0;
-	
+
 	private DoctorPatientInvoiceCollection invoiceCollection;
-	
+
 	private PatientCollection patient;
-	
+
 	private UserCollection patientUser;
 
 	public String getId() {

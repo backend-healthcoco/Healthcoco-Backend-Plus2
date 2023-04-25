@@ -9,11 +9,11 @@ public class ReceiptDownloadData {
 	private String patientId;
 
 	private String date;
-	
+
 	private String receiptId;
 
 	private String invoiceId;
-	
+
 	private String modeOfPayment;
 
 	private Double amountPaid = 0.0;

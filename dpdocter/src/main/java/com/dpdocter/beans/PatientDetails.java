@@ -5,35 +5,35 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PatientDetails {
 
-    private Boolean showName = true;
+	private Boolean showName = true;
 
-    private Boolean showPID = true;
+	private Boolean showPID = true;
 
-    private Boolean showMobileNumber = true;
+	private Boolean showMobileNumber = true;
 
-    private Boolean showDOB = true;
+	private Boolean showDOB = true;
 
-    private Boolean showGender = true;
+	private Boolean showGender = true;
 
-    private Boolean showReferedBy = true;
+	private Boolean showReferedBy = true;
 
-    private Boolean showDate = true;
+	private Boolean showDate = true;
 
-    private Boolean showBloodGroup = true;
+	private Boolean showBloodGroup = true;
 
-    private Boolean showResourceId = true;
-    
-    private Boolean showHospitalId = false;
-    
-    private Boolean showCity = false;
+	private Boolean showResourceId = true;
 
-    private PrintSettingsText style;
+	private Boolean showHospitalId = false;
 
-    private Boolean showPatientDetailsInCertificate = true;
-    
-    private String PIDKey = "PID";
-    
-   public Boolean getShowCity() {
+	private Boolean showCity = false;
+
+	private PrintSettingsText style;
+
+	private Boolean showPatientDetailsInCertificate = true;
+
+	private String PIDKey = "PID";
+
+	public Boolean getShowCity() {
 		return showCity;
 	}
 
@@ -42,84 +42,84 @@ public class PatientDetails {
 	}
 
 	public Boolean getShowName() {
-	return showName;
-    }
+		return showName;
+	}
 
-    public void setShowName(Boolean showName) {
-	this.showName = showName;
-    }
+	public void setShowName(Boolean showName) {
+		this.showName = showName;
+	}
 
-    public Boolean getShowMobileNumber() {
-	return showMobileNumber;
-    }
+	public Boolean getShowMobileNumber() {
+		return showMobileNumber;
+	}
 
-    public void setShowMobileNumber(Boolean showMobileNumber) {
-	this.showMobileNumber = showMobileNumber;
-    }
+	public void setShowMobileNumber(Boolean showMobileNumber) {
+		this.showMobileNumber = showMobileNumber;
+	}
 
-    public Boolean getShowDOB() {
-	return showDOB;
-    }
+	public Boolean getShowDOB() {
+		return showDOB;
+	}
 
-    public void setShowDOB(Boolean showDOB) {
-	this.showDOB = showDOB;
-    }
+	public void setShowDOB(Boolean showDOB) {
+		this.showDOB = showDOB;
+	}
 
-    public Boolean getShowGender() {
-	return showGender;
-    }
+	public Boolean getShowGender() {
+		return showGender;
+	}
 
-    public void setShowGender(Boolean showGender) {
-	this.showGender = showGender;
-    }
+	public void setShowGender(Boolean showGender) {
+		this.showGender = showGender;
+	}
 
-    public Boolean getShowReferedBy() {
-	return showReferedBy;
-    }
+	public Boolean getShowReferedBy() {
+		return showReferedBy;
+	}
 
-    public void setShowReferedBy(Boolean showReferedBy) {
-	this.showReferedBy = showReferedBy;
-    }
+	public void setShowReferedBy(Boolean showReferedBy) {
+		this.showReferedBy = showReferedBy;
+	}
 
-    public Boolean getShowDate() {
-	return showDate;
-    }
+	public Boolean getShowDate() {
+		return showDate;
+	}
 
-    public void setShowDate(Boolean showDate) {
-	this.showDate = showDate;
-    }
+	public void setShowDate(Boolean showDate) {
+		this.showDate = showDate;
+	}
 
-    public Boolean getShowBloodGroup() {
-	return showBloodGroup;
-    }
+	public Boolean getShowBloodGroup() {
+		return showBloodGroup;
+	}
 
-    public void setShowBloodGroup(Boolean showBloodGroup) {
-	this.showBloodGroup = showBloodGroup;
-    }
+	public void setShowBloodGroup(Boolean showBloodGroup) {
+		this.showBloodGroup = showBloodGroup;
+	}
 
-    public Boolean getShowResourceId() {
-	return showResourceId;
-    }
+	public Boolean getShowResourceId() {
+		return showResourceId;
+	}
 
-    public void setShowResourceId(Boolean showResourceId) {
-	this.showResourceId = showResourceId;
-    }
+	public void setShowResourceId(Boolean showResourceId) {
+		this.showResourceId = showResourceId;
+	}
 
-    public Boolean getShowPID() {
-	return showPID;
-    }
+	public Boolean getShowPID() {
+		return showPID;
+	}
 
-    public void setShowPID(Boolean showPID) {
-	this.showPID = showPID;
-    }
+	public void setShowPID(Boolean showPID) {
+		this.showPID = showPID;
+	}
 
-    public PrintSettingsText getStyle() {
-	return style;
-    }
+	public PrintSettingsText getStyle() {
+		return style;
+	}
 
-    public void setStyle(PrintSettingsText style) {
-	this.style = style;
-    }
+	public void setStyle(PrintSettingsText style) {
+		this.style = style;
+	}
 
 	public Boolean getShowHospitalId() {
 		return showHospitalId;

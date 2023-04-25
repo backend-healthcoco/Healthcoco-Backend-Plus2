@@ -1,8 +1,8 @@
 package com.dpdocter.enums;
 
 public enum AccountType {
-SAVING("SAVING"),CURRENT("CURRENT");
-	
+	SAVING("SAVING"), CURRENT("CURRENT");
+
 	private String type;
 
 	private AccountType(String type) {
@@ -12,6 +12,5 @@ SAVING("SAVING"),CURRENT("CURRENT");
 	public String getType() {
 		return type;
 	}
-	
-	
+
 }

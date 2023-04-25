@@ -7,7 +7,7 @@ public class AVGTimeDetail {
 	private Double avgTreatmentTime = 0.0;
 
 	private Double avgWaitingTime = 0.0;
-	
+
 	private Double avgEngageTime = 0.0;
 
 	public Integer getCountAppointment() {
@@ -41,7 +41,5 @@ public class AVGTimeDetail {
 	public void setAvgEngageTime(Double avgEngageTime) {
 		this.avgEngageTime = avgEngageTime;
 	}
-	
-	
 
 }

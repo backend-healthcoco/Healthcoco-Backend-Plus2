@@ -131,7 +131,5 @@ public class InventoryItemResposne extends GenericCollection {
 	public void setDrugTypePlacement(String drugTypePlacement) {
 		this.drugTypePlacement = drugTypePlacement;
 	}
-	
-	
 
 }

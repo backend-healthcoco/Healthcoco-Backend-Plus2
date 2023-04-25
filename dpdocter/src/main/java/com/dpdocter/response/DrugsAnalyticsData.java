@@ -10,7 +10,7 @@ public class DrugsAnalyticsData {
 	private List<Drug> drugs;
 
 	private Date date;
-	
+
 	public List<Drug> getDrugs() {
 		return drugs;
 	}

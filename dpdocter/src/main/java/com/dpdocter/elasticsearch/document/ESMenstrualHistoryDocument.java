@@ -7,7 +7,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-@Document(indexName = "menstrual_history_in" , type = "menstrual_history")
+@Document(indexName = "menstrual_history_in", type = "menstrual_history")
 public class ESMenstrualHistoryDocument {
 
 	@Id
@@ -104,7 +104,5 @@ public class ESMenstrualHistoryDocument {
 				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
 				+ ", updatedTime=" + updatedTime + ", speciality=" + speciality + "]";
 	}
-	
-	
-	
+
 }

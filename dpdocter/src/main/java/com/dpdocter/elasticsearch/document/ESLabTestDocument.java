@@ -10,101 +10,101 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Document(indexName = "labtests_in", type = "labtests")
 public class ESLabTestDocument {
 
-    @Id
-    private String id;
+	@Id
+	private String id;
 
-    @Field(type = FieldType.Text)
-    private String testId;
+	@Field(type = FieldType.Text)
+	private String testId;
 
-    @Field(type = FieldType.Text)
-    private String locationId;
+	@Field(type = FieldType.Text)
+	private String locationId;
 
-    @Field(type = FieldType.Text)
-    private String hospitalId;
+	@Field(type = FieldType.Text)
+	private String hospitalId;
 
-    @Field(type = FieldType.Integer)
-    private int cost = 0;
+	@Field(type = FieldType.Integer)
+	private int cost = 0;
 
-    @Field(type = FieldType.Boolean)
-    private Boolean discarded = false;
+	@Field(type = FieldType.Boolean)
+	private Boolean discarded = false;
 
-    @Field(type = FieldType.Date)
-    private Date updatedTime = new Date();
+	@Field(type = FieldType.Date)
+	private Date updatedTime = new Date();
 
-    public String getId() {
-	return id;
-    }
-
-    public void setId(String id) {
-	this.id = id;
-    }
-
-    public String getLocationId() {
-	if (locationId == null) {
-	    return "";
+	public String getId() {
+		return id;
 	}
-	return locationId;
-    }
 
-    public void setLocationId(String locationId) {
-	if (locationId == null) {
-	    this.locationId = "";
-	} else {
-	    this.locationId = locationId;
+	public void setId(String id) {
+		this.id = id;
 	}
-    }
 
-    public String getHospitalId() {
-	if (hospitalId == null) {
-	    return "";
+	public String getLocationId() {
+		if (locationId == null) {
+			return "";
+		}
+		return locationId;
 	}
-	return hospitalId;
-    }
 
-    public void setHospitalId(String hospitalId) {
-	if (hospitalId == null) {
-	    this.hospitalId = "";
-	} else {
-	    this.hospitalId = hospitalId;
+	public void setLocationId(String locationId) {
+		if (locationId == null) {
+			this.locationId = "";
+		} else {
+			this.locationId = locationId;
+		}
 	}
-    }
 
-    public String getTestId() {
-	return testId;
-    }
+	public String getHospitalId() {
+		if (hospitalId == null) {
+			return "";
+		}
+		return hospitalId;
+	}
 
-    public void setTestId(String testId) {
-	this.testId = testId;
-    }
+	public void setHospitalId(String hospitalId) {
+		if (hospitalId == null) {
+			this.hospitalId = "";
+		} else {
+			this.hospitalId = hospitalId;
+		}
+	}
 
-    public int getCost() {
-	return cost;
-    }
+	public String getTestId() {
+		return testId;
+	}
 
-    public void setCost(int cost) {
-	this.cost = cost;
-    }
+	public void setTestId(String testId) {
+		this.testId = testId;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public int getCost() {
+		return cost;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setCost(int cost) {
+		this.cost = cost;
+	}
 
-    public Date getUpdatedTime() {
-	return updatedTime;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setUpdatedTime(Date updatedTime) {
-	this.updatedTime = updatedTime;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
-    @Override
-    public String toString() {
-	return "ESLabTestDocument [id=" + id + ", testId=" + testId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", cost=" + cost
-		+ ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
-    }
+	public Date getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+
+	@Override
+	public String toString() {
+		return "ESLabTestDocument [id=" + id + ", testId=" + testId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", cost=" + cost + ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
+	}
 
 }

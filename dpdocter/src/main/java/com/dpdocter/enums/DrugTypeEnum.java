@@ -1,16 +1,16 @@
 package com.dpdocter.enums;
 
 public enum DrugTypeEnum {
-    TABLET("TABLET"), SYRUP("SYRUP"), INJECTION("INJECTION"), LOTION("LOTION");
+	TABLET("TABLET"), SYRUP("SYRUP"), INJECTION("INJECTION"), LOTION("LOTION");
 
-    private String type;
+	private String type;
 
-    DrugTypeEnum(String type) {
-	this.type = type;
-    }
+	DrugTypeEnum(String type) {
+		this.type = type;
+	}
 
-    public String getType() {
-	return type;
-    }
+	public String getType() {
+		return type;
+	}
 
 }

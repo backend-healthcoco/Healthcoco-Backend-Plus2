@@ -4,15 +4,15 @@ import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class UserAllowanceDetails extends  GenericCollection{
+public class UserAllowanceDetails extends GenericCollection {
 
 	private String id;
-	
-	private List<String> userIds;
-	
-    private Double allowedRecordsSizeInMB;
 
-    private Double availableRecordsSizeInMB;
+	private List<String> userIds;
+
+	private Double allowedRecordsSizeInMB;
+
+	private Double availableRecordsSizeInMB;
 
 	public String getId() {
 		return id;

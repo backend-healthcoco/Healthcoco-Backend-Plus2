@@ -92,17 +92,16 @@ public class ESPSDocument {
 	public String getSpeciality() {
 		return speciality;
 	}
-	
+
 	public void setSpeciality(String speciality) {
 		this.speciality = speciality;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "ESPSDocument [id=" + id + ", ps=" + ps + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", updatedTime=" + updatedTime
 				+ ", speciality=" + speciality + "]";
 	}
-
 
 }
