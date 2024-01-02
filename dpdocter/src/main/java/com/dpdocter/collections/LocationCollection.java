@@ -172,6 +172,10 @@ public class LocationCollection extends GenericCollection {
 	
 	@Field
 	private ObjectId ratelistId;
+	
+	@Field
+	private Boolean smsAccountActive = false;
+
 
 	public Boolean getIsDentalChain() {
 		return isDentalChain;
@@ -596,6 +600,14 @@ public class LocationCollection extends GenericCollection {
 
 	public void setDefaultLocationId(ObjectId defaultLocationId) {
 		this.defaultLocationId = defaultLocationId;
+	}
+
+	public Boolean getSmsAccountActive() {
+		return smsAccountActive;
+	}
+
+	public void setSmsAccountActive(Boolean smsAccountActive) {
+		this.smsAccountActive = smsAccountActive;
 	}
 
 	@Override

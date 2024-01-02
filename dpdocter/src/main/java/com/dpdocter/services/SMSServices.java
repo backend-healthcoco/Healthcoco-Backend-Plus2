@@ -1,7 +1,9 @@
+
 package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.MessageStatus;
 import com.dpdocter.beans.SMSDeliveryReports;
 import com.dpdocter.beans.SMSFormat;
 import com.dpdocter.beans.SMSTrack;
@@ -43,5 +45,11 @@ public interface SMSServices {
 	String getBulkSMSResponse(List<String> mobileNumbers, String message, String doctorId, String locationId, long subCredits);
 
 	Boolean sendDentalChainSMS(SMSTrackDetail smsTrackDetail, boolean b);
+	MessageStatus getSmsStatus(String messageId);
+
+	void updateSmsStatus();
+
+	void sendSmsCreditsAlerts();
+
 
 }

@@ -99,14 +99,17 @@ public class BulkSmsApi {
 	@GET
 	public Response<MessageResponse> getBulkSmsReport(@DefaultValue("0") @QueryParam(value = "size") int size,
 			@DefaultValue("0") @QueryParam(value = "page") int page, @QueryParam(value = "doctorId") String doctorId,
-			@QueryParam(value = "locationIdId") String locationId) {
+			@QueryParam(value = "locationIdId") String locationId, @QueryParam(value = "type") String type,
+			@QueryParam(value = "messageType") String messageType, @QueryParam(value = "status") String status,
+			@QueryParam(value = "fromDate") String fromDate, @QueryParam(value = "toDate") String toDate) {
 
 		Response<MessageResponse> response = new Response<MessageResponse>();
-		if (doctorId == null && locationId == null) {
-			logger.warn("doctorId or locationid  is NULL");
-			throw new BusinessException(ServiceError.InvalidInput, "doctorId send  is NULL");
+		if (locationId == null) {
+			logger.warn("locationid  is NULL");
+			throw new BusinessException(ServiceError.InvalidInput, "locationid send  is NULL");
 		}
-		response.setDataList(bulkSmsServices.getSmsReport(page, size, doctorId, locationId));
+		response.setDataList(bulkSmsServices.getSmsReport(page, size, doctorId, locationId, messageType,type,
+				status,fromDate,toDate));
 
 		return response;
 	}

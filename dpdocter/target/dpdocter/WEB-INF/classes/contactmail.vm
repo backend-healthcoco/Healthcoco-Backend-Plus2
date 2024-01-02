@@ -1,0 +1,98 @@
+<!-- <html>
+<body>
+	Hello Healthcoco Team,
+	<br>
+	<br> ${type} has contact you. Following are the details :
+	<br> Name : ${fName}
+	<br> City : ${city}
+	<br> Mobile number : ${mobileNumber}
+	<br> Email Address : ${emailAddress}
+	<br> Pharmacy Name : ${localeName}
+	<br> Address : ${address}
+	<br> License No. : ${licenseNo}
+		<br> Device Type : ${deviceType}
+		https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/new template image 21598687674929.png
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        Forgot Password
+    </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700,400italic' rel='stylesheet' type='text/css'>
+</head>
+
+<body style="font-family: 'Roboto Condensed', sans-serif; background-color: #f2f2f2">
+    <div class="container" style="background-color:white;line-height:25px;margin-bottom:30px;font-family:'Open Sans',sans-serif;margin:0px auto;min-width:200px;max-width:600px; padding: 10px;">
+
+        <div style="background-color: #1e2d75 !important; padding:25px 20px;">
+	        <a href="https://www.healthcoco.com" target="_blank"><img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/logo%20blue1598350629379.png" alt="healthcoco_logo" width="280px" style="display:block;" /></a>
+	    </div>
+
+        <!-- <div style="padding: 0px 20px;">
+            <h3>
+                Forgot password of Healthcoco+ account?
+            </h3>
+        </div> -->
+
+        <div style="padding: 22px; background-color: #e6e6e3;">
+            <div align="center">
+                <img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/new template image 21598687674929.png" style="width:350px;">
+            </div>
+        </div>
+
+        <div style="padding: 22px">
+            <p>Hello Healthcoco Team,</p>
+
+            <p style="margin: 0;">${type} has contact you. Following are the details:</p>
+            <p style="margin: 10px 0 0 0;">Name: ${fName}</p>
+            <p style="margin: 0;">City: ${city}</p>
+            <p style="margin: 0;">Mobile number: ${mobileNumber}</p>
+            <p style="margin: 0;">Email Address: ${emailAddress}</p>
+            <p style="margin: 0;">Pharmacy Name: ${localeName}</p>
+            <p style="margin: 0;">Address: ${address}</p>
+            <p style="margin: 0;">License No.: ${licenseNo}</p>
+            <p style="margin: 0;">Device Type: ${deviceType}</p>
+        </div>
+        
+        <div style="background-color: #f5f5fa !important;padding: 25px 20px;overflow: hidden;">
+            <div style="float: left;width: 350px;">
+                <small>Powered By</small>
+                <strong>HEALTHCOCO</strong>
+
+                <p style="margin-bottom: 0;"><small style="font-size: 11px;"><b>Call: +91 8459802223 &nbsp;&nbsp;Email: support@healthcoco.com</b></small></p>
+            </div>
+            <div style="float: left;">
+                <h4 style="color: #5c5b5b;margin:0;">
+                    Follow us at
+                </h4>
+                <div style="margin-top: 10px;">
+                    <a href="https://www.facebook.com/healthcoco/" target="_blank"><img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/facebook-21598343509134.png" alt="insert logo here" width="25">
+                    </a>&nbsp;&nbsp;
+                    <a href="https://www.linkedin.com/company/healthcoco/" target="_blank"><img
+                        src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/in1598343918208.png" alt="insert logo here" width="25">
+                    </a>&nbsp;&nbsp;
+                    <a href="https://www.instagram.com/healthcoco/" target="_blank"><img
+                        src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/instagram-sketched1598343944136.png" alt="insert logo here" width="25">
+                    </a>&nbsp;&nbsp;
+                    <a href="https://twitter.com/healthcococom" target="_blank"><img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/twitter1598343981972.png" alt="insert logo here" width="25"></a>&nbsp;&nbsp;
+                    <a href="https://www.youtube.com/channel/UCAvIuW5nt0qBXvAfVeynQOg" target="_blank"><img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/youtube1598343999812.png" alt="insert logo here" width="25"></a>
+                </div>
+            </div>
+        </div>
+        <small>
+            <a href="https://www.healthcoco.com/company/privacy-policy" target="_blank" style="color: #2d2c2c;">Privacy Policy</a>
+        </small>
+        <small style="float: right;">
+            &copy; 2015-2020, All Rights Reserved.
+        </small>
+
+    </div>
+</body>
+
+</html>

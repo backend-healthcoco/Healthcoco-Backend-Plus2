@@ -26,6 +26,7 @@ import com.dpdocter.beans.TreatmentAnalyticDetail;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.response.AllAnalyticResponse;
 import com.dpdocter.response.AmountDueAnalyticsDataResponse;
 import com.dpdocter.response.AnalyticCountResponse;
 import com.dpdocter.response.AnalyticResponse;
@@ -79,6 +80,20 @@ public class AnalyticsAPI {
 
 	@Autowired
 	private PrescriptionAnalyticsService prescriptionAnalyticService;
+
+	@Path(value = PathProxy.AnalyticsUrls.GET_ALL_ANALYTIC)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_ALL_ANALYTIC, notes = PathProxy.AnalyticsUrls.GET_ALL_ANALYTIC)
+	public Response<AllAnalyticResponse> getAllAnalyticData(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate) {
+		AllAnalyticResponse patientAnalyticResponse = analyticsService.getAllAnalyticData(doctorId, locationId,
+				hospitalId, fromDate, toDate);
+
+		Response<AllAnalyticResponse> response = new Response<AllAnalyticResponse>();
+		response.setData(patientAnalyticResponse);
+		return response;
+	}
 
 	@Path(value = PathProxy.AnalyticsUrls.GET_PATIENT_ANALYTICS_DATA)
 	@GET

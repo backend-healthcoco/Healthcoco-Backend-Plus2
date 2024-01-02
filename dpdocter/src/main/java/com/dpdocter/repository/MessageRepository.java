@@ -7,4 +7,6 @@ import com.dpdocter.collections.MessageCollection;
 
 public interface MessageRepository extends MongoRepository<MessageCollection, ObjectId> {
 
+	MessageCollection findByMessageId(String messageId);
+
 }

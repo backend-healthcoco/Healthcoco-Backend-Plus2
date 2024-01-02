@@ -4,19 +4,19 @@ package com.dpdocter.webservices;
  * @author veeraj
  */
 public interface PathProxy {
-	
+
 	public static final String BULK_SMS_BASE_URL = "/bulk";
 
 	public interface BulkSMSUrls {
 		public static final String UPDATE_DELIVERY_REPORTS = "/sms/updateDeliveryReports";
 	}
-	
+
 	public static final String RAZORPAY_BASE_URL = "/razorpay";
 
 	public interface RazorPayUrls {
 		public static final String GET_SETTLEMENT = "/payment/settlements";
 	}
-	
+
 	public static final String HOME_URL = "/";
 
 	public static final String BASE_URL = "/v1";
@@ -267,7 +267,7 @@ public interface PathProxy {
 		public static final String GET_CLINICS = "/get/{locationId}/{hospitalId}/clinic";
 
 		public static final String UPDATE_AGE = "/patientAge";
-		
+
 		public static final String UPDATE_CALENDAR_VIEW = "/setting/calenderView/update";
 
 		public static final String GET_DOCTOR_CALENDAR_VIEW = "/setting/calenderView/get";
@@ -937,7 +937,7 @@ public interface PathProxy {
 		public static final String DELETE_PRINT_SETTINGS = "/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String GET_PRINT_SETTINGS = "/{printFilter}/{doctorId}/{locationId}/{hospitalId}";
-		
+
 		public static final String GET_PRINT_SETTING_BY_TYPE = "/{printFilter}/{doctorId}/{locationId}/{hospitalId}/{printSettingType}";
 
 		public static final String GET_LAB_PRINT_SETTING = "/{printFilter}/{locationId}/{hospitalId}";
@@ -945,13 +945,12 @@ public interface PathProxy {
 		public static final String GET_GENERAL_NOTES = "/getGeneralNotes/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String UPLOAD_FILE = "/upload/file/";
-		
-		public static final String GET_PRINT_SETTING_TYPE = "/updateCollection";
-		
-		public static final String UPLOAD_SIGNATURE = "/upload/signature/";
-		
-		public static final String BLANK_PRINT = "/blank/print/{patientId}";
 
+		public static final String GET_PRINT_SETTING_TYPE = "/updateCollection";
+
+		public static final String UPLOAD_SIGNATURE = "/upload/signature/";
+
+		public static final String BLANK_PRINT = "/blank/print/{patientId}";
 
 	}
 
@@ -1391,11 +1390,10 @@ public interface PathProxy {
 		public static final String GET_OPD_REPORT = "OPDReport/{id}/view";
 		public static final String GET_OT_REPORT = "OTReport/{id}/view";
 		public static final String GET_DELIVERY_REPORT = "deliveryReport/{id}/view";
-		
+
 		public static final String DELETE_IPD_REPORT = "IPDReport/{id}/delete";
 		public static final String DELETE_DELIVERY_REPORT = "deliveryReport/{id}/delete";
 		public static final String DELETE_OT_REPORT = "OTReport/{id}/delete";
-
 
 	}
 
@@ -1604,7 +1602,7 @@ public interface PathProxy {
 		public static final String ADD_DIAGRAM = "/addDiagram";
 		public static final String UPLOAD_DIAGRAM = "/diagram/upload";
 		public static final String UPLOAD_MULTIPART_DIAGRAM = "/diagram/multipart/upload";
-		
+
 		public static final String DELETE_FLOWSHEET_BY_ID = "/deleteFlowsheetById/{id}";
 
 	}
@@ -1749,11 +1747,13 @@ public interface PathProxy {
 		public static final String GET_BOOKED_AND_CANCELLED_APPOINTMENT_ANALYTIC = "appointment/booked/cancel/{locationId}/{hospitalId}";
 		public static final String GET_BOOKED_BY_APPOINTMENT_ANALYTIC = "appointment/bookedby/{locationId}/{hospitalId}";
 
-		public static final String GET_ONLINE_CONSULTATION_ANALYTICS="onlineConsultation/analytics";
-		public static final String GET_PAYMENT_SUMMARY="onlineConsultation/paymentSummary";
-		public static final String FETCH_SETTLEMENT="onlineConsultation/settlements";
-		public static final String GET_PAYMENT_SETTLEMENT="payment/settlements";
-		public static final String GET_PATIENT_PAYMENT_SETTLEMENTS="patients/payment/settlements";
+		public static final String GET_ONLINE_CONSULTATION_ANALYTICS = "onlineConsultation/analytics";
+		public static final String GET_PAYMENT_SUMMARY = "onlineConsultation/paymentSummary";
+		public static final String FETCH_SETTLEMENT = "onlineConsultation/settlements";
+		public static final String GET_PAYMENT_SETTLEMENT = "payment/settlements";
+		public static final String GET_PATIENT_PAYMENT_SETTLEMENTS = "patients/payment/settlements";
+		public static final String GET_ALL_ANALYTIC = "getAll";
+
 	}
 
 	public static final String ADMIT_CARD_URL = BASE_URL + "/admitCard";
@@ -1885,9 +1885,8 @@ public interface PathProxy {
 		public static final String DATA = "/data";
 
 		public static final String CLINICAL_ITEMS = "/clinicalItems/{doctorId}/{locationId}/{hospitalId}";
-		
-		public static final String GET_FILES = "/files/{doctorId}/{locationId}/{hospitalId}/";
 
+		public static final String GET_FILES = "/files/{doctorId}/{locationId}/{hospitalId}/";
 
 	}
 
@@ -2417,7 +2416,7 @@ public interface PathProxy {
 	public interface ChatUrls {
 
 		public static final String CREATE_CHAT_ACCESS_TOKEN = "/chat/accessToken/create/{userId}";
-		
+
 		public static final String CREATE_USER = "/create/user/{identity}";
 
 		public static final String CREATE_CHAT_ACCESS_TOKEN_ANDROID = "/chat/accessTokenAndroid/create/{userId}";
@@ -2441,7 +2440,7 @@ public interface PathProxy {
 		public static final String GENERATE_ID = "/payment/generateId";
 		public static final String CREATE_PAYMENT = "/payment/create";
 		public static final String VERIFY_SIGNATURE = "/payment/verify/signature";
-		
+
 		public static final String GET_SMS_STATUS = "/status/get";
 
 	}
@@ -2467,7 +2466,7 @@ public interface PathProxy {
 		public static final String GET_PACKAGES = "/package/getList";
 
 	}
-	
+
 	public static final String TRANSACTION_SMS_BASE_URL = BASE_URL + "/transaction";
 
 	public interface TransactionSmsUrls {
@@ -2475,66 +2474,67 @@ public interface PathProxy {
 		public static final String GET_TRANSACTION_SMS_REPORT = "/transaction/report/get";
 
 	}
-	
+
 	public static final String NMC_HCM_BASE_URL = BASE_URL + "/nmcHcm";
-	public interface NmcHcmUrls{
-		
+
+	public interface NmcHcmUrls {
+
 		public static final String GET_NMC_HCM_DETAILS = "/get";
-		
+
 	}
 
-	//IPD Module NEW API
+	// IPD Module NEW API
 	public static final String INITIAL_ASSESSMENT_BASE_URL = BASE_URL + "/initialAssessment";
 
 	public interface InitialAssessmentsUrls {
-		public static final String ADD_EDIT_ASSESSMENT_FORM ="/addEdit";
-		public static final String GET_ASSESSMENT_FORM ="/get/{patientId}";
-		public static final String GET_ASSESSMENT_FORM_BY_ID ="/getById/{initialAssessmentId}";
+		public static final String ADD_EDIT_ASSESSMENT_FORM = "/addEdit";
+		public static final String GET_ASSESSMENT_FORM = "/get/{patientId}";
+		public static final String GET_ASSESSMENT_FORM_BY_ID = "/getById/{initialAssessmentId}";
 		public static final String DELETE_ASSESSMENT_FORM = "/{initialAssessmentId}/{doctorId}/{locationId}/{hospitalId}/delete";
-		public static final String DOWNLOAD_ASSESSMENT_FORM_BY_ID ="/download/{initialAssessmentId}";
+		public static final String DOWNLOAD_ASSESSMENT_FORM_BY_ID = "/download/{initialAssessmentId}";
 
 	}
+
 	public static final String ADMISSION_ASSESSMENT_BASE_URL = BASE_URL + "/admissionAssessment";
 
 	public interface AdmissionAssessmentsUrls {
-		public static final String ADD_EDIT_ADMISSION_FORM ="/addEdit";
-		public static final String GET_ADMISSION_FORM ="/get/{patientId}";
-		public static final String GET_ADMISSION_FORM_BY_ID ="/getById/{nurseAdmissionFormId}";
-		public static final String ADD_NURSING_CARE ="/add/nursingCare";
+		public static final String ADD_EDIT_ADMISSION_FORM = "/addEdit";
+		public static final String GET_ADMISSION_FORM = "/get/{patientId}";
+		public static final String GET_ADMISSION_FORM_BY_ID = "/getById/{nurseAdmissionFormId}";
+		public static final String ADD_NURSING_CARE = "/add/nursingCare";
 		public static final String DELETE_NURSING_CARE = "/nursingCare/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 		public static final String DELETE_ADMISSION_FORM = "/{nurseAdmissionFormId}/{doctorId}/{locationId}/{hospitalId}/delete";
-		public static final String DOWNLOAD_ADMISSION_FORM_BY_ID ="/download/{nurseAdmissionFormId}";
+		public static final String DOWNLOAD_ADMISSION_FORM_BY_ID = "/download/{nurseAdmissionFormId}";
 	}
-	
+
 	public static final String PREOPERATION_ASSESSMENT_BASE_URL = BASE_URL + "/preOperationAssessment";
 
 	public interface PreOprationAssessmentsUrls {
-		public static final String ADD_EDIT_PREOPERATION_FORM ="/addEdit";
-		public static final String GET_PREOPERATION_FORM ="/get/{patientId}";
-		public static final String GET_PREOPERATION_FORM_BY_ID ="/getById/{preOperationFormId}";
+		public static final String ADD_EDIT_PREOPERATION_FORM = "/addEdit";
+		public static final String GET_PREOPERATION_FORM = "/get/{patientId}";
+		public static final String GET_PREOPERATION_FORM_BY_ID = "/getById/{preOperationFormId}";
 		public static final String DELETE_PREOPERATION_FORM = "/{preOperationFormId}/{doctorId}/{locationId}/{hospitalId}/delete";
-		public static final String DOWNLOAD_PREOPERATION_FORM_BY_ID ="/download/{preOperationFormId}";
+		public static final String DOWNLOAD_PREOPERATION_FORM_BY_ID = "/download/{preOperationFormId}";
 	}
-	
+
 	public static final String MEDICINE_SHEET_BASE_URL = BASE_URL + "/medicineTreatmentSheet";
 
 	public interface MedicineTreatmentUrls {
-		public static final String ADD_EDIT_MEDICINE_SHEET ="/addEdit";
-		public static final String GET_MEDICINE_SHEET ="/get/{patientId}";
-		public static final String GET_MEDICINE_SHEET_BY_ID ="/getById/{medicineSheetId}";
+		public static final String ADD_EDIT_MEDICINE_SHEET = "/addEdit";
+		public static final String GET_MEDICINE_SHEET = "/get/{patientId}";
+		public static final String GET_MEDICINE_SHEET_BY_ID = "/getById/{medicineSheetId}";
 		public static final String DELETE_MEDICINE_SHEET = "/{medicineSheetId}/{doctorId}/{locationId}/{hospitalId}/delete";
 	}
-	
+
 	public static final String VISIT_FIELDWISE_BASE_URL = BASE_URL + "/getFields";
 
 	public interface VisitFieldWiseUrls {
-		public static final String GET_DATA ="/get/{patientId}";
-		public static final String GET_ASSESSMENT_FORM ="/get";
-		public static final String GET_ADMITCARD_DATA ="/admitcard/{patientId}";
-		public static final String GET_COUNT_ADMITCARD_DATA ="/admitcard/count/{patientId}";
-		public static final String GET_OTNOTES_DATA ="/operationnotes/{patientId}";
-		public static final String GET_COUNT_OTNOTES_DATA ="/operationnotes/count/{patientId}";
-
+		public static final String GET_DATA = "/get/{patientId}";
+		public static final String GET_ASSESSMENT_FORM = "/get";
+		public static final String GET_ADMITCARD_DATA = "/admitcard/{patientId}";
+		public static final String GET_COUNT_ADMITCARD_DATA = "/admitcard/count/{patientId}";
+		public static final String GET_OTNOTES_DATA = "/operationnotes/{patientId}";
+		public static final String GET_COUNT_OTNOTES_DATA = "/operationnotes/count/{patientId}";
 
 	}
 }

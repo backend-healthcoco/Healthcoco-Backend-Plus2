@@ -130,7 +130,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			response = searchDoctors(response, city, location, latitude, longitude, searchTerm);
 			response = searchLocations(response, city, location, latitude, longitude, searchTerm);
 			response = searchPharmacy(response, city, location, latitude, longitude, searchTerm);
-
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

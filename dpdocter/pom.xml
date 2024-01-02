@@ -1091,7 +1091,7 @@
 		<repository>
 			<id>spring-milestone</id>
 			<name>Spring Milestone Maven Repository</name>
-			<url>https://repo.spring.io/milestone</url>
+			<url>https://repo.springsource.org/libs-milestone</url>
 		</repository>
 		<repository>
 			<id>bippo-nexus-public</id>

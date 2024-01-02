@@ -160,6 +160,9 @@ public class DoctorClinicProfile {
 	private Boolean isShowDoctorInCalender = true;
 
 	private String ratelistId;
+	
+	private Boolean smsAccountActive = false;
+
 
 	public Boolean getIsShowDoctorInCalender() {
 		return isShowDoctorInCalender;
@@ -759,6 +762,14 @@ public class DoctorClinicProfile {
 
 	public void setRatelistId(String ratelistId) {
 		this.ratelistId = ratelistId;
+	}
+
+	public Boolean getSmsAccountActive() {
+		return smsAccountActive;
+	}
+
+	public void setSmsAccountActive(Boolean smsAccountActive) {
+		this.smsAccountActive = smsAccountActive;
 	}
 
 	@Override
