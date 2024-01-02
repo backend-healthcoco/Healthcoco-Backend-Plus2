@@ -4,44 +4,46 @@ import java.util.List;
 import java.util.Map;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.MessageStatusType;
 
-public class MessageResponse extends GenericCollection{
+public class MessageResponse extends GenericCollection {
 
 	private String body;
-	
+
 	private String sender;
-	
+
 	private String type;
-	
+
 	private String source;
-	
+
 	private String id;
-	
+
 	private String createdDateTime;
-	
-	private Integer  totalCount;
-	
+
+	private Integer totalCount;
+
 	private Integer unicode;
-	
+
 	private List<MessageData> data;
-	
+
 	private String dlrurl;
-	
-	private Map<String,String>error;
-	
+
+	private Map<String, String> error;
+
 	private String messageId;
-	
+
 	private String doctorId;
-	
+
 	private String locationId;
-	
+
 	private String messageType;
 
 	private String hospitalId;
-	
-	private Long totalCreditsSpent=0L;
-	
+
+	private Long totalCreditsSpent = 0L;
+
 	private String template_id;
+	private String status;
 
 	public String getBody() {
 		return body;
@@ -83,11 +85,13 @@ public class MessageResponse extends GenericCollection{
 		this.id = id;
 	}
 
-	
-	
+	public String getStatus() {
+		return status;
+	}
 
-	
-	
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
 	public Long getTotalCreditsSpent() {
 		return totalCreditsSpent;
@@ -112,8 +116,6 @@ public class MessageResponse extends GenericCollection{
 	public void setTotalCount(Integer totalCount) {
 		this.totalCount = totalCount;
 	}
-
-	
 
 	public List<MessageData> getData() {
 		return data;
@@ -195,9 +197,4 @@ public class MessageResponse extends GenericCollection{
 		this.template_id = template_id;
 	}
 
-	
-	
-
-	
-	
 }

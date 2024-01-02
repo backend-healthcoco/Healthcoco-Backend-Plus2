@@ -1,5 +1,7 @@
 package com.dpdocter.response;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 public class AmountDueAnalyticsDataResponse {
 
 	private Double invoiced = 0.0;
@@ -13,6 +15,10 @@ public class AmountDueAnalyticsDataResponse {
 	private String doctorName;
 
 	private Double amountDue = 0.0;
+	
+	private Double totalDueAmount = 0.0;
+	
+	private Double totalDiscount = 0.0;
 
 	public Double getAmountDue() {
 		return amountDue;
@@ -60,6 +66,22 @@ public class AmountDueAnalyticsDataResponse {
 
 	public void setDoctorName(String doctorName) {
 		this.doctorName = doctorName;
+	}
+
+	public Double getTotalDueAmount() {
+		return totalDueAmount;
+	}
+
+	public void setTotalDueAmount(Double totalDueAmount) {
+		this.totalDueAmount = totalDueAmount;
+	}
+
+	public Double getTotalDiscount() {
+		return totalDiscount;
+	}
+
+	public void setTotalDiscount(Double totalDiscount) {
+		this.totalDiscount = totalDiscount;
 	}
 
 	@Override

@@ -8,10 +8,12 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.enums.MessageStatusType;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.response.MessageData;
 
 @Document(collection = "message_cl")
-public class MessageCollection extends GenericCollection{
+public class MessageCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
@@ -19,6 +21,8 @@ public class MessageCollection extends GenericCollection{
 	private String body;
 	@Field
 	private String sender;
+	@Field
+	private String status;
 	@Field
 	private String type;
 	@Field
@@ -28,36 +32,38 @@ public class MessageCollection extends GenericCollection{
 	@Field
 	private String createdDateTime;
 	@Field
-	private Integer  totalCount;
-	
+	private Integer totalCount;
+
 	@Field
 	private Integer unicode;
-	
+
 	@Field
 	private List<MessageData> data;
 	@Field
 	private String dlrurl;
 	@Field
-	private Map<String,String>error;
-	
+	private Map<String, String> error;
+
 	@Field
 	private ObjectId doctorId;
-	
+
 	@Field
 	private ObjectId hospitalId;
-	
+
 	@Field
 	private ObjectId locationId;
-	
+
 	@Field
 	private String messageType;
-	
+
 	@Field
-	private Long totalCreditsSpent=0L;
-	
+	private Long totalCreditsSpent = 0L;
+
 	@Field
 	private String template_id;
 
+	@Field
+	private Boolean isSync = false;
 
 	public String getBody() {
 		return body;
@@ -91,8 +97,13 @@ public class MessageCollection extends GenericCollection{
 		this.source = source;
 	}
 
-	
-	
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
 	public String getCreatedDateTime() {
 		return createdDateTime;
@@ -206,7 +217,12 @@ public class MessageCollection extends GenericCollection{
 		this.template_id = template_id;
 	}
 
-	
-	
+	public Boolean getIsSync() {
+		return isSync;
+	}
+
+	public void setIsSync(Boolean isSync) {
+		this.isSync = isSync;
+	}
 
 }

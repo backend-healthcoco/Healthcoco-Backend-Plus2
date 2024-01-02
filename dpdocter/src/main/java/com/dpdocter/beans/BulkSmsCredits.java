@@ -7,6 +7,8 @@ import com.dpdocter.enums.PaymentMode;
 
 public class BulkSmsCredits extends GenericCollection {
 
+	private String id;
+
 	private Long creditBalance = 0L;
 
 	private Long creditSpent = 0L;
@@ -20,6 +22,14 @@ public class BulkSmsCredits extends GenericCollection {
 	private String doctorId;
 
 	private String locationId;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public void setCreditSpent(Long creditSpent) {
 		this.creditSpent = creditSpent;

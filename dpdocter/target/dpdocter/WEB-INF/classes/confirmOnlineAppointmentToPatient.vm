@@ -1,0 +1,45 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link href='https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700,400italic' rel='stylesheet' type='text/css'>
+  </head>
+
+  <body cz-shortcut-listen="true" style="font-family: 'Roboto Condensed', sans-serif">
+    <div style="background-color:#ffffff;line-height:25px;margin-bottom:30px;font-family:'Open Sans',sans-serif;margin:0px auto;min-width:200px;max-width:600px">
+
+      <div align="center">
+        <img src="${imageURL}/logo1.png" style="width:280px; display:block; margin-left:auto; margin-right:auto;">
+      </div>
+
+      <div style="background-color: #faf8f8; padding:20px;">
+
+        <div align="center" style="margin-top: 10px">
+          <img src="${imageURL}/ap_cn2.png" style="margin-top: 5px">
+        </div>
+
+        <div> 
+         <p style="color:#2c3335;font-size:15px;">Hello ${patientName},<br><br>This is to inform you that your online ${consultationType} consultation with ${doctorName} on ${dateTime} at ${clinicName} ${branch} has been confirmed.
+      #*   Please find the address as well as map below.<br><br>{Address}<br>{map}<br> *#
+         <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"></a><br><br>For any feedback regarding our services or the Healthcoco+ app, please feel free to contact us at <a style="color: #0077b5;text-decoration:none;"href="" target="_blank" >${contactUsEmail}</a>
+        <br><br>Stay Healthy and Happy,<br>Team Healthcoco.
+         </p>
+        </div>
+      </div>
+
+        <div style="padding:20px;">
+          <p style="font-size:14px; display:inline;">
+             <span>This message was sent to you by Healthcoco.</span>
+          </p>
+          <p style="display:inline;float: right; margin-top: -5px;">
+             #*         <a style="color: #0077b5;text-decoration:none;"href="${fbLink}" target="_blank"><img src="${imageURL}/f_icn.png" style=""></a> *#
+              <a style="color: #0077b5;text-decoration:none;"href="${twitterLink}" target="_blank"><img src="${imageURL}/t_icn.png" style=""></a>
+              <a style="color: #0077b5;text-decoration:none;"href="${linkedInLink}" target="_blank"><img src="${imageURL}/l_icn.png" style=""></a>
+              <a style="color: #0077b5;text-decoration:none;"href="${googlePlusLink}" target="_blank"><img src="${imageURL}/g_icn.png" style=""></a>
+   
+          </p>
+        </div> 
+
+    </div>  
+          
+   </body>
+</html>

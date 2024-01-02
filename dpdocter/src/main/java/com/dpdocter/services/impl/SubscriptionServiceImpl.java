@@ -45,6 +45,7 @@ import com.dpdocter.beans.SubscriptionDetail;
 import com.dpdocter.collections.CountryCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorSubscriptionPaymentCollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PackageDetailObjectCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSTrackDetail;
@@ -62,6 +63,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorSubscriptionPaymentRepository;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PackageDetailObjectRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.SubscriptionDetailRepository;
@@ -131,6 +133,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
 	@Value(value = "${rayzorpay.api.key}")
 	private String keyId;
+
+	@Autowired
+	private LocationRepository locationRepository;
 
 	@Override
 	public List<SubscriptionDetail> addsubscriptionData() {
@@ -244,8 +249,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			int newAmount) {
 		Subscription response = null;
 		try {
-			SubscriptionCollection subscriptionCollection = subscriptionRepository
+			List<SubscriptionCollection> subscriptionCollections = subscriptionRepository
 					.findByDoctorId(new ObjectId(doctorId));
+			SubscriptionCollection subscriptionCollection = null;
+			if (!DPDoctorUtils.isNullOrEmptyList(subscriptionCollections))
+				subscriptionCollection = subscriptionCollections.get(0);
 			if (subscriptionCollection == null) {
 				throw new BusinessException(ServiceError.NotFound, "Error no such id");
 			}
@@ -673,8 +681,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				} else {
 					SubscriptionCollection subscriptionCollection = new SubscriptionCollection();
 
-					SubscriptionCollection subscriptionCkD = subscriptionRepository
+					List<SubscriptionCollection> subscriptionCollections = subscriptionRepository
 							.findByDoctorId(new ObjectId(request.getDoctorId()));
+					SubscriptionCollection subscriptionCkD = null;
+					if (!DPDoctorUtils.isNullOrEmptyList(subscriptionCollections))
+						subscriptionCkD = subscriptionCollections.get(0);
 					if (subscriptionCkD != null) {
 						subscriptionCollection.setId(subscriptionCkD.getId());
 					}
@@ -713,6 +724,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 									.setPackageType(subscriptionCollection.getPackageName().toString());
 
 							doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+							//active incative sms flag for STANDARD account
+							LocationCollection locationCollection = locationRepository
+									.findById(doctorClinicProfileCollection.getLocationId()).orElse(null);
+
+							if (locationCollection != null) {
+								locationCollection.setSmsAccountActive(true);
+								locationRepository.save(locationCollection);
+							}
 						}
 					}
 				}

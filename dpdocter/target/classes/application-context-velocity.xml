@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+       
+       <bean id="velocityEngine"
+			class="org.apache.velocity.app.VelocityEngine">
+<!-- 			<property name="velocityProperties"> -->
+<!-- 				<value> resource.loader=class, file -->
+<!-- 					class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader -->
+<!-- 					file.resource.loader.class=org.apache.velocity.runtime.resource.loader.FileResourceLoader -->
+<!-- 				</value> -->
+<!-- 			</property> -->
+		</bean>
+		<!-- <bean id="emailNotificationServiceSuggestPodcast" class="org.podcastpedia.web.suggestpodcast.EmailNotificationServiceImpl"> -->
+		<!-- <property name="mailSender" ref="mailSender"/> -->
+		<!-- <property name="velocityEngine" ref="velocityEngine"/> -->
+		<!-- </bean> -->
+	</beans>
+<!-- 	<beans> -->
+<!-- 		<bean id="velocityEngine" class="org.apache.velocity.app.VelocityEngine" init-method="init"> -->
+<!-- 		<constructor-arg ref="properties"></constructor-arg> -->
+<!-- 		</bean> -->
+<!-- 		<bean id ="properties" class="java.util.Properties"> -->
+		
+<!-- 		</bean> -->
+<!-- 			<property name="velocityProperties"> -->
+<!-- 				<value> resource.loader=class, file -->
+<!-- 					class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader -->
+<!-- 					file.resource.loader.class=org.apache.velocity.runtime.resource.loader.FileResourceLoader -->
+<!-- 				</value> -->
+<!-- 			</property> -->
+		
+		<!-- <bean id="emailNotificationServiceSuggestPodcast" class="org.podcastpedia.web.suggestpodcast.EmailNotificationServiceImpl"> -->
+		<!-- <property name="mailSender" ref="mailSender"/> -->
+		<!-- <property name="velocityEngine" ref="velocityEngine"/> -->
+		<!-- </bean> -->
+<!-- 	</beans> -->
+<!-- </beans> -->
+
+
+<!-- public VelocityEngine velocityEngine() throws Exception { -->
+<!--     Properties properties = new Properties(); -->
+<!--     properties.setProperty("input.encoding", "UTF-8"); -->
+<!--     properties.setProperty("output.encoding", "UTF-8"); -->
+<!--     properties.setProperty("resource.loader", "class"); -->
+<!--     properties.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader"); -->
+<!--     VelocityEngine velocityEngine = new VelocityEngine(properties); -->
+<!--     return velocityEngine; -->
+<!-- } -->

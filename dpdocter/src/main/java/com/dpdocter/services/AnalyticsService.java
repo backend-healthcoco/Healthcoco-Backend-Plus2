@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.response.AllAnalyticResponse;
 import com.dpdocter.response.AmountDueAnalyticsDataResponse;
 import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.DoctorVisitAnalyticResponse;
@@ -53,6 +54,9 @@ public interface AnalyticsService {
 
 	public Integer countAmountDueAnalyticsData(String doctorId, String locationId, String hospitalId, String fromDate,
 			String toDate, String queryType, String searchType);
+
+	public AllAnalyticResponse getAllAnalyticData(String doctorId, String locationId, String hospitalId,
+			String fromDate, String toDate);
 	
 
 }

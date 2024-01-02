@@ -81,4 +81,8 @@ public interface MailBodyGenerator {
 			String templatePath, String branch, String consultationType);
 
 	public String generateSmilebirdAppointmentEmailBody(String emailBody, String string);
+
+	public String messageStatusUpdateEmailBody(String emailBody, String string);
+
+	public String smsCreditBalanceEmailBody(String emailBody1, String doctorName, int smsCreditCount, String string);
 }

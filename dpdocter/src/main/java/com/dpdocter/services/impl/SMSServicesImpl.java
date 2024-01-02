@@ -13,10 +13,19 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executors;
+
+import javax.mail.MessagingException;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -27,6 +36,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,10 +48,14 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriUtils;
 
+import com.dpdocter.beans.BulkSmsCredits;
+import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.MessageStatus;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDeliveryReports;
@@ -49,30 +63,48 @@ import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.SMSFormat;
 import com.dpdocter.beans.SMSReport;
 import com.dpdocter.beans.SMSTrack;
+import com.dpdocter.beans.SmsParts;
 import com.dpdocter.beans.UserMobileNumbers;
+import com.dpdocter.collections.BulkSmsHistoryCollection;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.MessageCollection;
 import com.dpdocter.collections.SMSDeliveryReportsCollection;
 import com.dpdocter.collections.SMSFormatCollection;
 import com.dpdocter.collections.SMSTrackDetail;
+import com.dpdocter.collections.SubscriptionCollection;
 import com.dpdocter.collections.SubscriptionDetailCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.BulkSmsHistoryRepository;
+import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorRepository;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.MessageRepository;
 import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.SMSTrackRepository;
 import com.dpdocter.repository.SmsDeliveryReportsRepository;
 import com.dpdocter.repository.SubscriptionDetailRepository;
+import com.dpdocter.repository.SubscriptionRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.response.DoctorCollectionLookupResponse;
 import com.dpdocter.response.DoctorSMSResponse;
+import com.dpdocter.response.MessageIdLookupResponse;
 import com.dpdocter.response.MessageResponse;
 import com.dpdocter.response.SMSResponse;
+import com.dpdocter.services.MailBodyGenerator;
+import com.dpdocter.services.MailService;
+import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
+import com.dpdocter.services.SmsSpitterServices;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -155,13 +187,39 @@ public class SMSServicesImpl implements SMSServices {
 	@Autowired
 	private DoctorRepository doctorRepository;
 
+	@Autowired
+	private DoctorClinicProfileRepository doctorClinicProfileRepository;
+
 	@Value(value = "${SMILEBIRD_SENDER_ID}")
 	private String SMILEBIRD_SENDER_ID;
+
+	@Autowired
+	private SmsSpitterServices smsSpitterServices;
+
+	@Autowired
+	private BulkSmsHistoryRepository bulkSmsHistoryRepository;
+
+	@Autowired
+	private MailService mailService;
+
+	@Autowired
+	private MailBodyGenerator mailBodyGenerator;
+
+	@Autowired
+	private SubscriptionRepository subscriptionRepository;
+
+	@Value(value = "${interakt.secret.key}")
+	private String secretKey;
+
+	@Autowired
+	PushNotificationServices pushNotificationServices;
+
+	@Autowired
+	private LocationRepository locationRepository;
 
 	@Async
 	@Override
 	@Transactional
-
 	public Boolean sendAndSaveOTPSMS(String message, String mobileNumber, String otp) {
 		Boolean response = false;
 		try {
@@ -705,8 +763,46 @@ public class SMSServicesImpl implements SMSServices {
 	@Transactional
 	public Boolean sendSMS(SMSTrackDetail smsTrackDetail, Boolean save) {
 		Boolean response = false;
-		String responseId = null;
+		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
+		List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+				.findByLocationId(smsTrackDetail.getLocationId());
+		if (!DPDoctorUtils.isNullOrEmptyList(doctorClinicProfileCollections))
+			doctorClinicProfileCollection = doctorClinicProfileCollections.get(0);
 
+		if (doctorClinicProfileCollection != null) {
+			List<SubscriptionCollection> subscriptionCollections = subscriptionRepository
+					.findByDoctorId(doctorClinicProfileCollection.getDoctorId());
+			SubscriptionCollection subscriptionCollection = null;
+			if (!DPDoctorUtils.isNullOrEmptyList(subscriptionCollections)) {
+				subscriptionCollection = subscriptionCollections.get(0);
+				if (subscriptionCollection != null) {
+					switch (subscriptionCollection.getPackageName()) {
+					case ADVANCE:
+					case PRO:
+						response = sendSMSToUser(smsTrackDetail, save);
+						break;
+					case BASIC:
+					case STANDARD:
+					case FREE:
+
+						DoctorCollection doctorCollection = doctorRepository
+								.findByUserId(doctorClinicProfileCollection.getDoctorId());
+						if (doctorCollection != null) {
+							BulkSmsCredits bulk = doctorCollection.getBulkSmsCredit();
+							if (bulk != null && bulk.getCreditBalance() > 0) {
+								response = sendSMSToUser(smsTrackDetail, save);
+							}
+						}
+						break;
+					}
+				}
+			}
+		}
+		return response;
+	}
+
+	private Boolean sendSMSToUser(SMSTrackDetail smsTrackDetail, Boolean save) {
+		Boolean response = false;
 		try {
 			String type = "TXN";
 			if (smsTrackDetail.getType() != null)
@@ -763,11 +859,21 @@ public class SMSServicesImpl implements SMSServices {
 						.addParameter("template_id", smsTrackDetail.getTemplateId()).setUri(strUrl)
 						.setHeader("api-key", KEY).build();
 				// System.out.println("response"+client.execute(httprequest));
-				System.out.println("senderId" + senderId);
 				org.apache.http.HttpResponse responses = client.execute(httprequest);
 				responses.getEntity().writeTo(out);
 				list = mapper.readValue(out.toString(), MessageResponse.class);
 			}
+			SmsParts sms = smsSpitterServices.splitSms(message);
+			Integer totalLength = sms.getEncoding().getMaxLengthSinglePart();
+			Integer messageLength = message.length();
+
+			long credits = (messageLength / totalLength);
+
+			long temp = messageLength % totalLength;
+			if (credits == 0 || temp != 0)
+				credits = credits + 1;
+
+			long subCredits = credits * 1;
 
 			if (save) {
 
@@ -787,11 +893,19 @@ public class SMSServicesImpl implements SMSServices {
 				collection.setCreatedTime(new Date());
 				collection.setUpdatedTime(new Date());
 				collection.setMessageType(smsTrackDetail.getType());
+				collection.setTotalCreditsSpent(subCredits);
 				messageRepository.save(collection);
+				Executors.newSingleThreadExecutor().execute(new Runnable() {
+					@Override
+					public void run() {
+						getSmsStatus(collection.getMessageId());
+					}
+				});
 			}
-			// response=list.getMessageId();
-			if (!DPDoctorUtils.anyStringEmpty(responseId))
-				response = true;
+
+			if (!smsTrackDetail.getType().equals(ComponentType.SMS_CREDIT_BALANCE.getType()))
+				updateSmsCredits(list.getBody(), smsTrackDetail.getDoctorId(), smsTrackDetail.getLocationId());
+			response = true;
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -799,6 +913,309 @@ public class SMSServicesImpl implements SMSServices {
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 		}
 		return response;
+	}
+
+	@Async
+	public void updateSmsCredits(String message, ObjectId doctorId, ObjectId locationId) {
+
+		SmsParts sms = smsSpitterServices.splitSms(message);
+		Integer totalLength = sms.getEncoding().getMaxLengthSinglePart();
+		Integer messageLength = message.length();
+
+		long credits = (messageLength / totalLength);
+
+		long temp = messageLength % totalLength;
+		if (credits == 0 || temp != 0)
+			credits = credits + 1;
+
+		long subCredits = credits * 1;
+
+		DoctorCollection doctorCollection = null;
+		BulkSmsHistoryCollection history = null;
+		List<BulkSmsHistoryCollection> bulkSmsHistoryCollections = bulkSmsHistoryRepository.findByDoctorId(doctorId);
+		if (!DPDoctorUtils.isNullOrEmptyList(bulkSmsHistoryCollections)) {
+			history = bulkSmsHistoryCollections.get(0);
+			doctorCollection = doctorRepository.findByUserId(doctorId);
+
+			List<SubscriptionCollection> subscriptionCollections = subscriptionRepository
+					.findByDoctorIdAndPackageName(doctorCollection.getUserId(), PackageType.STANDARD);
+			SubscriptionCollection subscriptionCollection = null;
+			if (!DPDoctorUtils.isNullOrEmptyList(subscriptionCollections))
+				subscriptionCollection = subscriptionCollections.get(0);
+
+			if (subscriptionCollection != null) {
+
+				BulkSmsCredits bulk = doctorCollection.getBulkSmsCredit();
+				if (doctorCollection != null && bulk != null) {
+
+					if (bulk.getCreditBalance() > subCredits || bulk.getCreditBalance() == subCredits) {
+
+						bulk.setCreditBalance(bulk.getCreditBalance() - subCredits);
+						bulk.setCreditSpent(bulk.getCreditSpent() + subCredits);
+						doctorCollection.setBulkSmsCredit(bulk);
+						doctorRepository.save(doctorCollection);
+						if (history != null) {
+							history.setCreditBalance(subCredits);
+							history.setCreditSpent(history.getCreditSpent() + subCredits);
+							history.setUpdatedTime(new Date());
+							bulkSmsHistoryRepository.save(history);
+						}
+					}
+				}
+			}
+		} else {
+			DoctorClinicProfileCollection doctorClinicProfileCollection = null;
+			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+					.findByLocationId(locationId);
+			if (!DPDoctorUtils.isNullOrEmptyList(doctorClinicProfileCollections))
+				doctorClinicProfileCollection = doctorClinicProfileCollections.get(0);
+
+			if (doctorClinicProfileCollection != null) {
+				DoctorCollection doctorCollection1 = null;
+				BulkSmsHistoryCollection history1 = null;
+				List<BulkSmsHistoryCollection> bulkSmsHistoryCollections1 = bulkSmsHistoryRepository
+						.findByDoctorId(doctorClinicProfileCollection.getDoctorId());
+				if (!DPDoctorUtils.isNullOrEmptyList(bulkSmsHistoryCollections1)) {
+					history1 = bulkSmsHistoryCollections1.get(0);
+					doctorCollection1 = doctorRepository.findByUserId(doctorClinicProfileCollection.getDoctorId());
+
+					List<SubscriptionCollection> subscriptionCollections = subscriptionRepository
+							.findByDoctorIdAndPackageName(doctorCollection1.getUserId(), PackageType.STANDARD);
+					SubscriptionCollection subscriptionCollection = null;
+					if (!DPDoctorUtils.isNullOrEmptyList(subscriptionCollections))
+						subscriptionCollection = subscriptionCollections.get(0);
+
+					if (subscriptionCollection != null) {
+
+						BulkSmsCredits bulk = doctorCollection1.getBulkSmsCredit();
+						if (doctorCollection1 != null && bulk != null) {
+
+							if (bulk.getCreditBalance() > subCredits || bulk.getCreditBalance() == subCredits) {
+
+								bulk.setCreditBalance(bulk.getCreditBalance() - subCredits);
+								bulk.setCreditSpent(bulk.getCreditSpent() + subCredits);
+								doctorCollection1.setBulkSmsCredit(bulk);
+								doctorRepository.save(doctorCollection1);
+								if (history1 != null) {
+									history1.setCreditBalance(subCredits);
+									history1.setCreditSpent(history1.getCreditSpent() + subCredits);
+									history1.setUpdatedTime(new Date());
+									bulkSmsHistoryRepository.save(history1);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@Scheduled(cron = "0 0 6 * * ?", zone = "IST")
+	@Override
+	public void sendSmsCreditsAlerts() {
+		try {
+			Criteria criteria = new Criteria();
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+			AggregationResults<DoctorCollectionLookupResponse> results = mongoTemplate.aggregate(aggregation,
+					DoctorCollection.class, DoctorCollectionLookupResponse.class);
+
+			List<DoctorCollectionLookupResponse> doctorCollections = results.getMappedResults();
+			if (doctorCollections.size() > 0)
+				for (DoctorCollectionLookupResponse doctorCollection : doctorCollections) {
+					List<SubscriptionCollection> subscriptionCollections = subscriptionRepository
+							.findByDoctorIdAndPackageName(new ObjectId(doctorCollection.getUserId()),
+									PackageType.STANDARD);
+					SubscriptionCollection subscriptionCollection = null;
+					if (!DPDoctorUtils.isNullOrEmptyList(subscriptionCollections))
+						subscriptionCollection = subscriptionCollections.get(0);
+					if (subscriptionCollection != null) {
+						UserCollection userCollection = userRepository
+								.findById(new ObjectId(doctorCollection.getUserId())).orElse(null);
+						final String doctorName = userCollection.getTitle() + " " + userCollection.getFirstName();
+
+						if (subscriptionCollection.getPackageName() == PackageType.STANDARD) {
+							BulkSmsCredits bulk = doctorCollection.getBulkSmsCredit();
+							String doctorId = doctorCollection.getId().toString();
+							String emailAddress = userCollection.getEmailAddress();
+							String mobileNumber = userCollection.getMobileNumber();
+							if (doctorCollections != null && bulk != null) {
+								switch (bulk.getCreditBalance().intValue()) {
+								case 0:
+									List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+											.findByDoctorId(new ObjectId(doctorCollection.getUserId()));
+									DoctorClinicProfileCollection doctorClinicProfileCollection = null;
+									doctorClinicProfileCollection = doctorClinicProfileCollections.get(0);
+									if (doctorClinicProfileCollections != null
+											&& !doctorClinicProfileCollections.isEmpty()) {
+										LocationCollection locationCollection = locationRepository
+												.findById(doctorClinicProfileCollection.getLocationId()).orElse(null);
+
+										if (locationCollection != null) {
+											locationCollection.setSmsAccountActive(false);
+											locationRepository.save(locationCollection);
+										}
+									}
+									sendtEmailSmsNotification(0, doctorId, doctorName, emailAddress, mobileNumber);
+									break;
+								case 50:
+									sendtEmailSmsNotification(50, doctorId, doctorName, emailAddress, mobileNumber);
+									break;
+								case 100:
+									sendtEmailSmsNotification(100, doctorId, doctorName, emailAddress, mobileNumber);
+									break;
+								}
+							}
+						}
+					}
+				}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While sendSmsCreditsAlerts");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While sendSmsCreditsAlerts");
+		}
+	}
+
+	private void sendtEmailSmsNotification(int smsCreditCount, String doctorId, String doctorName, String emailAddress,
+			String mobileNumber) throws MessagingException {
+		SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+		smsTrackDetail.setDoctorId(new ObjectId(doctorId));
+		smsTrackDetail.setType(ComponentType.SMS_CREDIT_BALANCE.getType());
+		SMSDetail smsDetail = new SMSDetail();
+		smsDetail.setUserId(new ObjectId(doctorId));
+		SMS sms = new SMS();
+		sms.setSmsText("Alert!You have " + smsCreditCount
+				+ " SMS credits remaining in your account. Recharge your account.-Healthcoco");
+		SMSAddress smsAddress = new SMSAddress();
+		smsAddress.setRecipient(mobileNumber);
+		sms.setSmsAddress(smsAddress);
+		smsDetail.setSms(sms);
+		smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+		List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+		smsDetails.add(smsDetail);
+		smsTrackDetail.setSmsDetails(smsDetails);
+		smsTrackDetail.setTemplateId("1307170133250574920");
+		sendSMS(smsTrackDetail, true);
+		System.out.println("sms: " + sms.getSmsAddress().getRecipient() + sms.getSmsText());
+		String emailBody1 = "";
+
+		String body = mailBodyGenerator.smsCreditBalanceEmailBody(emailBody1, doctorName, smsCreditCount,
+				"smsCreditBalanceToDoctor.vm");
+
+		mailService.sendEmail("shreshtha.solanki@healthcoco.com", "Healthcoco SMS Credit Balance", body, null);
+
+		pushNotificationServices.notifyUser(doctorId,
+				"Alert!You have " + smsCreditCount + " SMS credits remaining in your account. Recharge your account.",
+				ComponentType.SMS_CREDIT_BALANCE.getType(), null, null);
+	}
+
+	@Scheduled(cron = "0 0 2 * * ?", zone = "IST")
+	@Override
+	public void updateSmsStatus() {
+		try {
+
+			Date todayDate = new Date(); // today's time
+			ZoneId defaultZoneId = ZoneId.systemDefault();
+			// Converting the date to Instant
+			Instant instant = todayDate.toInstant();
+			Instant yesterday = instant.minus(1, ChronoUnit.DAYS);
+			// Converting the Date to LocalDate
+			LocalDate localDate = yesterday.atZone(defaultZoneId).toLocalDate();
+			LocalDateTime startOfDay = LocalDateTime.of(localDate, LocalTime.MIDNIGHT);// set time 00:00
+			LocalDateTime endOfDay = LocalDateTime.of(localDate, LocalTime.MAX);// set time 23:59
+
+			System.out.println("---Scheduler Started---");
+			String emailBody = "";
+			String body = mailBodyGenerator.messageStatusUpdateEmailBody(emailBody, "confirmappointment.vm");
+			mailService.sendEmail("shreshtha.solanki@healthcoco.com", "Message Status Update Scheduler Started", body,
+					null);
+			LocalDateTime startOfDay1 = startOfDay.plusHours(1);
+			LocalDateTime gte = startOfDay;
+			while (startOfDay1.isBefore(endOfDay)) {
+
+				LocalDateTime lte = startOfDay1;
+				Criteria criteria = new Criteria("isSync").is(false);
+				criteria.and("status").is("SENT - No DLR");
+				criteria.and("createdTime").gte(gte).lte(lte);
+				CustomAggregationOperation project = new CustomAggregationOperation(
+						new Document("$project", new BasicDBObject("messageId", "$messageId")));
+
+				Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria), project,
+						Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+				AggregationResults<MessageIdLookupResponse> results = mongoTemplate.aggregate(aggregation,
+						MessageCollection.class, MessageIdLookupResponse.class);
+				List<MessageIdLookupResponse> messageCollections = results.getMappedResults();
+				if (messageCollections.size() > 0)
+					for (MessageIdLookupResponse messageIdLookupResponse : messageCollections) {
+						MessageStatus response = null;
+						String url = null;
+
+						url = "https://api.ap.kaleyra.io/v1/" + SID + "/messages/status?message_ids="
+								+ messageIdLookupResponse.getMessageId();
+						ByteArrayOutputStream out = new ByteArrayOutputStream();
+						String numberString = StringUtils.join(messageIdLookupResponse.getMessageId(), ',');
+						HttpClient client = HttpClients.custom().build();
+						HttpUriRequest httprequest = RequestBuilder.get().addParameter("message_ids", numberString)
+
+								.setUri(url).setHeader("api-key", KEY).build();
+						org.apache.http.HttpResponse responses = client.execute(httprequest);
+						responses.getEntity().writeTo(out);
+						ObjectMapper mapper = new ObjectMapper();
+						response = mapper.readValue(out.toString(), MessageStatus.class);
+						MessageCollection messageCollection = messageRepository
+								.findByMessageId(messageIdLookupResponse.getMessageId());
+						messageCollection.setIsSync(true);
+						messageCollection.setStatus(response.getData().get(0).getStatus());
+						messageRepository.save(messageCollection);
+					}
+				gte = startOfDay1;
+				startOfDay1 = startOfDay1.plusHours(1);
+			}
+			System.out.println("---Scheduler Ended---");
+			String emailBody1 = "";
+			String body1 = mailBodyGenerator.messageStatusUpdateEmailBody(emailBody1, "confirmappointment.vm");
+			mailService.sendEmail("shreshtha.solanki@healthcoco.com", "Message Status Update Scheduler Ended", body1,
+					null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While updateSmsStatus");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While updateSmsStatus");
+		}
+	}
+
+	@Async
+	@Override
+	public MessageStatus getSmsStatus(String messageId) {
+
+		MessageStatus response = null;
+		try {
+			List<String> messageStatus = new ArrayList<String>();
+
+			messageStatus.add(messageId);
+			String url = null;
+
+			url = "https://api.ap.kaleyra.io/v1/" + SID + "/messages/status?message_ids=" + messageStatus;
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			String numberString = StringUtils.join(messageStatus, ',');
+			HttpClient client = HttpClients.custom().build();
+			HttpUriRequest httprequest = RequestBuilder.get().addParameter("message_ids", numberString)
+
+					.setUri(url).setHeader("api-key", KEY).build();
+			org.apache.http.HttpResponse responses = client.execute(httprequest);
+			responses.getEntity().writeTo(out);
+			ObjectMapper mapper = new ObjectMapper();
+			response = mapper.readValue(out.toString(), MessageStatus.class);
+
+			MessageCollection collection = messageRepository.findByMessageId(messageId);
+			collection.setStatus(response.getData().get(0).getStatus());
+			messageRepository.save(collection);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Sms status");
+		}
+		return response;
+
 	}
 
 	@Override

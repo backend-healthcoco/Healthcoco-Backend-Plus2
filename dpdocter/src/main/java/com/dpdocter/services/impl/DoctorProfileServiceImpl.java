@@ -672,12 +672,16 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				// set clinic profile details
 				doctorProfile.setClinicProfile(clinicProfile);
 				// set subscription Detail
-				SubscriptionCollection subscriptionCollection = subscriptionRepository
+				List<SubscriptionCollection> subscriptionCollections = subscriptionRepository
 						.findByDoctorId(new ObjectId(doctorId));
-				if (subscriptionCollection != null) {
-					BeanUtil.map(subscriptionCollection, subscription);
-					doctorProfile.setSubscriptionDetail(subscription);
-					doctorProfile.setPackageType(subscriptionCollection.getPackageName().toString());
+				SubscriptionCollection subscriptionCollection = null;
+				if (!DPDoctorUtils.isNullOrEmptyList(subscriptionCollections)) {
+					subscriptionCollection = subscriptionCollections.get(0);
+					if (subscriptionCollection != null) {
+						BeanUtil.map(subscriptionCollection, subscription);
+						doctorProfile.setSubscriptionDetail(subscription);
+						doctorProfile.setPackageType(subscriptionCollection.getPackageName().toString());
+					}
 				}
 			}
 		} catch (BusinessException be) {

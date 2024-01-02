@@ -589,4 +589,21 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		return text;
 	}
 
+	@Override
+	public String messageStatusUpdateEmailBody(String emailBody, String templatePath) {
+		VelocityContext context = new VelocityContext();
+		context.put("emailBody", emailBody);
+		String text = mergeTemplate(context, templatePath);
+		return text;
+	}
+
+	@Override
+	public String smsCreditBalanceEmailBody(String emailBody, String doctorName, int smsCredit, String templatePath) {
+		VelocityContext context = new VelocityContext();
+		context.put("emailBody", emailBody);
+		context.put("doctorName", doctorName);
+		context.put("smsCreditCount", smsCredit);
+		String text = mergeTemplate(context, templatePath);
+		return text;
+	}
 }

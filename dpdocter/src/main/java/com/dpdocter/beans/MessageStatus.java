@@ -6,7 +6,9 @@ import java.util.Map;
 import com.dpdocter.collections.GenericCollection;
 
 public class MessageStatus extends GenericCollection{
+	private String code;
 
+	private String message;
 	private List<MessageStatusData> data;
 	
 	private Map<String, String> error;
@@ -25,6 +27,22 @@ public class MessageStatus extends GenericCollection{
 
 	public void setError(Map<String, String> error) {
 		this.error = error;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 	
 	

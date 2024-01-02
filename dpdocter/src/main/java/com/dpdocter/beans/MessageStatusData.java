@@ -16,10 +16,18 @@ public class MessageStatusData {
 
 	private String status_time;
 
+	private String body;
+	private String amount_charged;
+	private String provider;
+	private String location;
+	private String ref;
+	private String ref1;
+	private String ref2;
 	@JsonIgnore
 	private String price;
 
 	private String error_code;
+	private String totalCount;
 
 	public String getMessage_id() {
 		return message_id;
@@ -83,6 +91,70 @@ public class MessageStatusData {
 
 	public void setError_code(String error_code) {
 		this.error_code = error_code;
+	}
+
+	public String getBody() {
+		return body;
+	}
+
+	public void setBody(String body) {
+		this.body = body;
+	}
+
+	public String getAmount_charged() {
+		return amount_charged;
+	}
+
+	public void setAmount_charged(String amount_charged) {
+		this.amount_charged = amount_charged;
+	}
+
+	public String getProvider() {
+		return provider;
+	}
+
+	public void setProvider(String provider) {
+		this.provider = provider;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	public String getRef() {
+		return ref;
+	}
+
+	public void setRef(String ref) {
+		this.ref = ref;
+	}
+
+	public String getRef1() {
+		return ref1;
+	}
+
+	public void setRef1(String ref1) {
+		this.ref1 = ref1;
+	}
+
+	public String getRef2() {
+		return ref2;
+	}
+
+	public void setRef2(String ref2) {
+		this.ref2 = ref2;
+	}
+
+	public String getTotalCount() {
+		return totalCount;
+	}
+
+	public void setTotalCount(String totalCount) {
+		this.totalCount = totalCount;
 	}
 
 }

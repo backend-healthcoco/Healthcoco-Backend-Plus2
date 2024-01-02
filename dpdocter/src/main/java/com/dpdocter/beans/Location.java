@@ -125,6 +125,9 @@ public class Location {
 	private Boolean isDentalChain = false;
 
 	private String ratelistId;
+	
+	private Boolean smsAccountActive = false;
+
 
 	public Boolean getIsDentalChain() {
 		return isDentalChain;
@@ -580,6 +583,14 @@ public class Location {
 
 	public void setRatelistId(String ratelistId) {
 		this.ratelistId = ratelistId;
+	}
+
+	public Boolean getSmsAccountActive() {
+		return smsAccountActive;
+	}
+
+	public void setSmsAccountActive(Boolean smsAccountActive) {
+		this.smsAccountActive = smsAccountActive;
 	}
 
 	@Override

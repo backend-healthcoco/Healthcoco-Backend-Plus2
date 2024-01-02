@@ -254,6 +254,11 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 				criteria.and("doctorId").is(doctorObjectId);
 			}
 
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				ObjectId locationObjectId = new ObjectId(locationId);
+				criteria.and("locationId").is(locationObjectId);
+			}
+
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 				criteria = criteria.orOperator(new Criteria("smsPackage.packageName").regex("^" + searchTerm, "i"),
 						new Criteria("smsPackage.packageName").regex("^" + searchTerm));
@@ -282,7 +287,8 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 	}
 
 	@Override
-	public List<MessageResponse> getSmsReport(int page, int size, String doctorId, String locationId) {
+	public List<MessageResponse> getSmsReport(int page, int size, String doctorId, String locationId,
+			String messageType, String type, String status, String fromDate, String toDate) {
 		List<MessageResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -296,14 +302,35 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 				ObjectId locationObjectId = new ObjectId(locationId);
 				criteria.and("locationId").is(locationObjectId);
 			}
+			if (!DPDoctorUtils.anyStringEmpty(messageType))
+				criteria.and("messageType").is(messageType);
 
-			criteria.and("messageType").is("BULK_SMS");
+			if (!DPDoctorUtils.anyStringEmpty(type))
+				criteria.and("type").is(type);
 
+			if (!DPDoctorUtils.anyStringEmpty(status))
+				criteria.and("status").is(status);
+
+			Date from = null;
+			Date to = null;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(0);
+				to = new Date(Long.parseLong(toDate));
+			}
+
+			if (from != null && to != null) {
+				criteria.and("createdTime").gte(from).lte(to);
+			}
 			Aggregation aggregation = null;
 			if (size > 0) {
-				aggregation = Aggregation.newAggregation(
-
-						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
 						Aggregation.skip((long) (page) * size), Aggregation.limit(size));
 
 			} else {
