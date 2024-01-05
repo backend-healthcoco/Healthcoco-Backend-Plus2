@@ -45,7 +45,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources/spring-properties/qa">
+	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources/spring-properties/production">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>

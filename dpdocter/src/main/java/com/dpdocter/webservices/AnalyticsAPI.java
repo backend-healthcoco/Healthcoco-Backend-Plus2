@@ -495,8 +495,8 @@ public class AnalyticsAPI {
 	public Response<DoctorPrescriptionAnalyticResponse> getPrescriptionAnalytic(@QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate) {
-		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
-			throw new BusinessException(ServiceError.InvalidInput, "locationId, hospitalId should not be empty");
+		if (DPDoctorUtils.allStringsEmpty(hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "hospitalId should not be empty");
 		}
 
 		DoctorPrescriptionAnalyticResponse data = prescriptionAnalyticService.getPrescriptionAnalytic(doctorId,

@@ -20,8 +20,8 @@
 <security:authentication-manager>
      <security:authentication-provider>
          <security:user-service>
-              <security:user name="healthcoco@36" password="4SDT9DFSEKLF3DGB" authorities="ROLE_USER" />
-              <security:user name="healthcoco@18" password="JSZA9U7RWTE19W7Y" authorities="FOR_SEARCH" />
+              <security:user name="hlthco@48#$" password="03USULTRS0MR7362P9F5" authorities="ROLE_USER" />
+              <security:user name="healthcoco@18#$" password="NEE7FDSLNEE7FDSL" authorities="FOR_SEARCH" />
          </security:user-service>
      </security:authentication-provider>
 </security:authentication-manager>

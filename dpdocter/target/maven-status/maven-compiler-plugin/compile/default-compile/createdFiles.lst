@@ -576,6 +576,7 @@ com/dpdocter/beans/QuestionAnswers.class
 com/dpdocter/scheduler/AsyncService.class
 com/dpdocter/webservices/PathProxy$DentalImagingUrl.class
 com/dpdocter/webservices/PathProxy$CampVisitUrls.class
+com/dpdocter/webservices/v2/PathProxy$AnalyticsUrls.class
 com/dpdocter/elasticsearch/document/ESServicesDocument.class
 com/dpdocter/elasticsearch/response/v2/GroupedVaccineResponse.class
 com/dpdocter/beans/FOV.class
@@ -1219,6 +1220,7 @@ com/dpdocter/services/TreatmentAnalyticsService.class
 com/dpdocter/response/DrugsAnalyticsData.class
 com/dpdocter/beans/Patient.class
 com/dpdocter/services/impl/TransactionalManagementServiceImpl.class
+com/dpdocter/webservices/v2/AnalyticsV2API.class
 com/dpdocter/repository/DoctorOtpSignUpRepository.class
 com/dpdocter/repository/DrugDosageRepository.class
 com/dpdocter/webservices/PrescriptionApi.class
@@ -1329,6 +1331,7 @@ com/dpdocter/enums/PricingEnum.class
 com/dpdocter/services/impl/ConsultationProblemServiceImpl.class
 com/dpdocter/request/InvoiceItemChangeStatusRequest.class
 com/dpdocter/beans/DentalStagejasperBean.class
+com/dpdocter/services/v2/impl/PrescriptionAnalyticsV2ServiceImpl$1.class
 com/dpdocter/response/WebAppointmentSlotDataResponse.class
 com/dpdocter/elasticsearch/services/ESRegistrationService.class
 com/dpdocter/collections/EchoCollection.class
@@ -1682,6 +1685,7 @@ com/dpdocter/services/SMSServices.class
 com/dpdocter/collections/DrugInfoCollection.class
 com/dpdocter/repository/SugarMedicineReminderRepository.class
 com/dpdocter/enums/ContactsSearchType.class
+com/dpdocter/services/v2/impl/PrescriptionAnalyticsV2ServiceImpl.class
 com/dpdocter/beans/DailyImprovementFeedback.class
 com/dpdocter/beans/Role.class
 com/dpdocter/request/SearchRequest.class
@@ -2391,6 +2395,7 @@ com/dpdocter/beans/LabTestSample.class
 com/dpdocter/response/DoctorVisitAnalyticResponse.class
 com/dpdocter/response/CBDoctorAssociationLookupResponse.class
 com/dpdocter/response/PatientDentalImagignVisitAnalyticsResponse.class
+com/dpdocter/services/v2/PrescriptionAnalyticsV2Service.class
 com/dpdocter/webservices/RankingApi.class
 com/dpdocter/elasticsearch/document/ESProfessionDocument.class
 com/dpdocter/response/DoctorLabReportResponse.class
