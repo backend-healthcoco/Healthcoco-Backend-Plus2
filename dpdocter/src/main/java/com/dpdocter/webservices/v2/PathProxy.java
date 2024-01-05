@@ -225,4 +225,10 @@ public interface PathProxy {
 
 	}
 
+	public static final String ANALYTICS_BASE_URL = BASE_URL + "/analytics";
+
+	public interface AnalyticsUrls {
+		public static final String GET_MOST_PRESCRIBED_PRESCRIPTION_ITEMS = "/mostPrescribed/{type}";
+	}
+
 }

@@ -298,29 +298,29 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 			toTime = new DateTime(to);
 			// it take lot of time
 
-			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.lookup("prescription_cl", "doctorId", "doctorId", "totalPrescription"),
-					Aggregation.unwind("totalPrescription"),
-					Aggregation.match(new Criteria("totalPrescription.locationId").is(new ObjectId(locationId))
-							.and("totalPrescription.hospitalId").is(new ObjectId(hospitalId))),
-					Aggregation.lookup("prescription_cl", "doctorId", "doctorId", "totalPrescriptionCreated"),
-
-					new CustomAggregationOperation(new Document("$group",
-							new BasicDBObject("_id", "$_id")
-									.append("totalPrescriptionCreated",
-											new BasicDBObject("$first", "$totalPrescriptionCreated"))
-									.append("totalPrescription", new BasicDBObject("$sum", 1)))),
-
-					Aggregation.unwind("totalPrescriptionCreated"),
-
-					Aggregation.match(new Criteria("totalPrescriptionCreated.locationId").is(new ObjectId(locationId))
-							.and("totalPrescriptionCreated.hospitalId").is(new ObjectId(hospitalId))
-							.and("totalPrescriptionCreated.adminCreatedTime").gte(fromTime).lte(toTime)),
-
-					new CustomAggregationOperation(new Document("$group",
-							new BasicDBObject("_id", "$_id")
-									.append("totalPrescription", new BasicDBObject("$first", "$totalPrescription"))
-									.append("totalPrescriptionCreated", new BasicDBObject("$sum", 1)))));
+//			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+//					Aggregation.lookup("prescription_cl", "doctorId", "doctorId", "totalPrescription"),
+//					Aggregation.unwind("totalPrescription"),
+//					Aggregation.match(new Criteria("totalPrescription.locationId").is(new ObjectId(locationId))
+//							.and("totalPrescription.hospitalId").is(new ObjectId(hospitalId))),
+//					Aggregation.lookup("prescription_cl", "doctorId", "doctorId", "totalPrescriptionCreated"),
+//
+//					new CustomAggregationOperation(new Document("$group",
+//							new BasicDBObject("_id", "$_id")
+//									.append("totalPrescriptionCreated",
+//											new BasicDBObject("$first", "$totalPrescriptionCreated"))
+//									.append("totalPrescription", new BasicDBObject("$sum", 1)))),
+//
+//					Aggregation.unwind("totalPrescriptionCreated"),
+//
+//					Aggregation.match(new Criteria("totalPrescriptionCreated.locationId").is(new ObjectId(locationId))
+//							.and("totalPrescriptionCreated.hospitalId").is(new ObjectId(hospitalId))
+//							.and("totalPrescriptionCreated.adminCreatedTime").gte(fromTime).lte(toTime)),
+//
+//					new CustomAggregationOperation(new Document("$group",
+//							new BasicDBObject("_id", "$_id")
+//									.append("totalPrescription", new BasicDBObject("$first", "$totalPrescription"))
+//									.append("totalPrescriptionCreated", new BasicDBObject("$sum", 1)))));
 			// trying with query
 
 			data = new DoctorPrescriptionAnalyticResponse();

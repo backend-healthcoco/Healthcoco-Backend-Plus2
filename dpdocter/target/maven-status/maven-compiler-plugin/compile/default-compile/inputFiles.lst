@@ -748,6 +748,7 @@
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/beans/ClinicalNotesProvisionalDiagnosis.java
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/repository/CollectionBoyDoctorAssociationRepository.java
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/exceptions/ServiceExceptionMapper.java
+/home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/services/v2/impl/PrescriptionAnalyticsV2ServiceImpl.java
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/beans/Testimonial.java
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/webservices/BulkSmsApi.java
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/beans/TreatmentServiceCost.java
@@ -913,6 +914,7 @@
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/webservices/TestExceptionAPI.java
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/request/DoctorPatientInvoiceTreatmentStatusChangeRequest.java
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/beans/MedicineOrderItems.java
+/home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/services/v2/PrescriptionAnalyticsV2Service.java
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/elasticsearch/repository/ESAdvicesRepository.java
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/repository/ImplantRepository.java
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/elasticsearch/document/ESPSDocument.java
@@ -937,6 +939,7 @@
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/request/DoctorProfessionalStatementAddEditRequest.java
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/request/PharmacyFeedbackRequest.java
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/request/LabPrintContentRequest.java
+/home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/webservices/v2/AnalyticsV2Service.java
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/repository/MedicineOrderRepository.java
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/beans/NursingCareExam.java
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/request/DrugDosageAddEditRequest.java
@@ -1052,6 +1055,7 @@
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/services/impl/NmcHcmServiceImpl.java
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/beans/DentalImagingRequest.java
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/collections/MenstrualHistoryCollection.java
+/home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/webservices/v2/AnalyticsV2API.java
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/beans/GenericCode.java
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/enums/PricingEnum.java
 /home/shreshtha/HealthcocoProjects/healthcoco-backend-app/dpdocter/src/main/java/com/dpdocter/elasticsearch/services/impl/ESTreatmentServiceImpl.java
