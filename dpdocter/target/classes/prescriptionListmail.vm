@@ -1,9 +1,0 @@
-<html>
-<body>
-	Hello Team,
-	<br>
-	<br> Following are the details :
-	<br> patient visit collection data: ${collectionBody}
-	<br> Request data : ${requestBody}
-</body>
-</html>

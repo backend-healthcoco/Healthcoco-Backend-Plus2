@@ -2537,4 +2537,20 @@ public interface PathProxy {
 		public static final String GET_COUNT_OTNOTES_DATA = "/operationnotes/count/{patientId}";
 
 	}
+
+	public static final String ORTHO_BASE_URL = BASE_URL + "/ortho";
+
+	public interface OrthoUrls {
+
+		public static final String ADD_EDIT_PLANNING_DETAILS = "/planningDetails/addEdit";
+
+		public static final String GET_PLANNING_DETAILS = "/planningDetails/get";
+
+		public static final String GET_PROGRESS_DETAILS = "/progressDetails/get/{planId}";
+
+		public static final String DELETE_PLANNING_DETAILS = "/planningDetails/delete/{id}";
+
+		public static final String EDIT_PROGRESS_DETAILS_CHANGE_DATES = "/progressDetails/changeDates";
+
+	}
 }
