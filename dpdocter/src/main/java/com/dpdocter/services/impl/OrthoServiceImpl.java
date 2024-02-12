@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.AlignerDates;
@@ -45,6 +46,12 @@ public class OrthoServiceImpl implements OrthoService {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
+
+	private Integer wearingAligner;
+
+	private Date nextStartDate;
+	private Date currentStartDate;
+	private Date currentEndDate;
 
 	@Override
 	public OrthoResponse editOrthoPlanningDetails(OrthoEditRequest request) {
@@ -199,6 +206,7 @@ public class OrthoServiceImpl implements OrthoService {
 			String hospitalId, String patientId, String updatedTime, Boolean discarded, boolean b) {
 		List<OrthoResponse> responses = null;
 		try {
+			long updatedTimeStamp = Long.parseLong(updatedTime);
 
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
@@ -209,7 +217,7 @@ public class OrthoServiceImpl implements OrthoService {
 				criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
 			if (discarded != null)
 				criteria.and("discarded").is(discarded);
-
+			criteria.and("updatedTime").gte(new Date(updatedTimeStamp));
 			if (size > 0) {
 
 				Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -266,14 +274,15 @@ public class OrthoServiceImpl implements OrthoService {
 				switch (request.getTypeOfAligner()) {
 				case Upper:
 					changeUpperAligerDate(request, orthoProgressCollection);
+					response = true;
 					break;
 				case Lower:
 					changeLowerAligerDate(request, orthoProgressCollection);
+					response = true;
 					break;
 				default:
 					break;
 				}
-				response = true;
 			}
 			response = false;
 		} catch (BusinessException be) {
@@ -310,8 +319,33 @@ public class OrthoServiceImpl implements OrthoService {
 			alignerDate.setEndDate(c4.getTime());
 			endDate = c4.getTime();
 			alignerDatesLower.put(i, alignerDate);
+			if (c3.getTime().after(alignerDate.getStartDate()) && c3.getTime().before(alignerDate.getEndDate())) {
+				wearingAligner = request.getAlignerNo() + 1;
+				nextStartDate = alignerDate.getEndDate();
+			}
 		}
+
+		Calendar currentDate = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+		Date startDate = DPDoctorUtils.getStartDate(currentDate.getTime());
+
+		for (Integer key : alignerDatesLower.keySet()) {
+			AlignerDates alignerDate = alignerDatesLower.get(key);
+			if (startDate.after(alignerDate.getStartDate()) && startDate.before(alignerDate.getEndDate())) {
+				wearingAligner = key;
+				currentStartDate = alignerDate.getStartDate();
+				currentEndDate = alignerDate.getEndDate();
+				Calendar c3 = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+				c3.setTime(alignerDate.getEndDate());
+				c3.add(Calendar.DATE, 1);
+				nextStartDate = c3.getTime();
+			}
+		}
+
 		lowerAligner.setAlignerDates(alignerDatesLower);
+		lowerAligner.setNextStartDate(nextStartDate);
+		lowerAligner.setWearingAligner(wearingAligner);
+		lowerAligner.setStartDate(currentStartDate);
+		lowerAligner.setEndDate(currentEndDate);
 		orthoProgressCollection.setLowerAligner(lowerAligner);
 
 		orthoProgressRepository.save(orthoProgressCollection);
@@ -342,15 +376,35 @@ public class OrthoServiceImpl implements OrthoService {
 			endDate = c4.getTime();
 			alignerDatesLower.put(i, alignerDate);
 		}
+		Calendar currentDate = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+		Date startDate = DPDoctorUtils.getStartDate(currentDate.getTime());
+
+		for (Integer key : alignerDatesLower.keySet()) {
+			AlignerDates alignerDate = alignerDatesLower.get(key);
+			if (startDate.after(alignerDate.getStartDate()) && startDate.before(alignerDate.getEndDate())) {
+				wearingAligner = key;
+				currentStartDate = alignerDate.getStartDate();
+				currentEndDate = alignerDate.getEndDate();
+				Calendar c3 = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+				c3.setTime(alignerDate.getEndDate());
+				c3.add(Calendar.DATE, 1);
+				nextStartDate = c3.getTime();
+			}
+		}
 
 		upperAligner.setAlignerDates(alignerDatesLower);
+		upperAligner.setNextStartDate(nextStartDate);
+		upperAligner.setWearingAligner(wearingAligner);
+		upperAligner.setStartDate(currentStartDate);
+		upperAligner.setEndDate(currentEndDate);
 		orthoProgressCollection.setUpperAligner(upperAligner);
 		orthoProgressRepository.save(orthoProgressCollection);
 
 	}
 
-//	@Scheduled(cron = "0 0 5 * * ?", zone = "IST")
-	private void updateAligerDataScehduler() {
+	@Scheduled(cron = "0 30 4 * * ?", zone = "IST")
+	@Override
+	public void updateAligerDataScehduler() {
 		try {
 			List<OrthoProgressCollection> responses = null;
 			Criteria criteria = new Criteria();
@@ -363,14 +417,52 @@ public class OrthoServiceImpl implements OrthoService {
 
 			for (OrthoProgressCollection orthoProgressCollection : responses) {
 				AlignerProgressDetail upperAligner = orthoProgressCollection.getUpperAligner();
-				LinkedHashMap<Integer, AlignerDates> alignerDatesLower = upperAligner.getAlignerDates();
-				for (OrthoProgressCollection orthoProgressCollection2 : responses) {
+				LinkedHashMap<Integer, AlignerDates> alignerDatesUpper = upperAligner.getAlignerDates();
+				Calendar currentDate = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+				Date startDate = DPDoctorUtils.getStartDate(currentDate.getTime());
 
+				for (Integer key : alignerDatesUpper.keySet()) {
+					AlignerDates alignerDate = alignerDatesUpper.get(key);
+					if (startDate.after(alignerDate.getStartDate()) && startDate.before(alignerDate.getEndDate())) {
+						wearingAligner = key;
+						currentStartDate = alignerDate.getStartDate();
+						currentEndDate = alignerDate.getEndDate();
+						Calendar c3 = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+						c3.setTime(alignerDate.getEndDate());
+						c3.add(Calendar.DATE, 1);
+						nextStartDate = c3.getTime();
+					}
 				}
 
-				AlignerProgressDetail lowerAligner = orthoProgressCollection.getLowerAligner();
-				LinkedHashMap<Integer, AlignerDates> alignerDatesUpper = lowerAligner.getAlignerDates();
+				upperAligner.setAlignerDates(alignerDatesUpper);
+				upperAligner.setNextStartDate(nextStartDate);
+				upperAligner.setWearingAligner(wearingAligner);
+				upperAligner.setStartDate(currentStartDate);
+				upperAligner.setEndDate(currentEndDate);
+				orthoProgressCollection.setUpperAligner(upperAligner);
+				orthoProgressRepository.save(orthoProgressCollection);
 
+				AlignerProgressDetail lowerAligner = orthoProgressCollection.getLowerAligner();
+				LinkedHashMap<Integer, AlignerDates> alignerDatesLower = lowerAligner.getAlignerDates();
+				for (Integer key : alignerDatesLower.keySet()) {
+					AlignerDates alignerDate = alignerDatesLower.get(key);
+					if (startDate.after(alignerDate.getStartDate()) && startDate.before(alignerDate.getEndDate())) {
+						wearingAligner = key;
+						currentStartDate = alignerDate.getStartDate();
+						currentEndDate = alignerDate.getEndDate();
+						Calendar c3 = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+						c3.setTime(alignerDate.getEndDate());
+						c3.add(Calendar.DATE, 1);
+						nextStartDate = c3.getTime();
+					}
+				}
+				lowerAligner.setAlignerDates(alignerDatesLower);
+				lowerAligner.setNextStartDate(nextStartDate);
+				lowerAligner.setWearingAligner(wearingAligner);
+				lowerAligner.setStartDate(currentStartDate);
+				lowerAligner.setEndDate(currentEndDate);
+				orthoProgressCollection.setLowerAligner(lowerAligner);
+				orthoProgressRepository.save(orthoProgressCollection);
 			}
 
 		} catch (Exception e) {
