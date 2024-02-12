@@ -20,4 +20,6 @@ public interface OrthoService {
 
 	Boolean editOrthoProgressDetailsDates(OrthoEditProgressDatesRequest request);
 
+	void updateAligerDataScehduler();
+
 }
