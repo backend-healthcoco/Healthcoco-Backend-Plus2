@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.dpdocter.beans.AlignerProgressDetail;
 
 @Document(collection = "ortho_progress_data_new_cl")
-public class OrthoProgressCollection {
+public class OrthoProgressCollection extends GenericCollection{
 	@Id
 	private ObjectId id;
 
