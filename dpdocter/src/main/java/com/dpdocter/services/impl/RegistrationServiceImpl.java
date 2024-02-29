@@ -536,6 +536,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 				throw new BusinessException(ServiceError.InvalidInput, DOB);
 			} else if (request.getDob() == null && request.getAge() != null) {
 				Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+				if (((localCalendar.get(Calendar.YEAR) % 4 == 0) && (localCalendar.get(Calendar.YEAR) % 100 != 0))
+						|| (localCalendar.get(Calendar.YEAR) % 400 == 0)) {
+					localCalendar.add(Calendar.DATE, -1);
+				}
 				int currentDay = localCalendar.get(Calendar.DATE);
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 				int currentYear = localCalendar.get(Calendar.YEAR) - request.getAge();
@@ -830,6 +834,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 				throw new BusinessException(ServiceError.InvalidInput, DOB);
 			} else if (request.getDob() == null && request.getAge() != null) {
 				Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+				if (((localCalendar.get(Calendar.YEAR) % 4 == 0) && (localCalendar.get(Calendar.YEAR) % 100 != 0))
+						|| (localCalendar.get(Calendar.YEAR) % 400 == 0)) {
+					localCalendar.add(Calendar.DATE, -1);
+				}
 				int currentDay = localCalendar.get(Calendar.DATE);
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 				int currentYear = localCalendar.get(Calendar.YEAR) - request.getAge();
