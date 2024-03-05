@@ -270,6 +270,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	private static Logger logger = Logger.getLogger(RegistrationServiceImpl.class.getName());
 
+	private static Integer MONTH_FEBRUARY = 2;
+
+	private static Integer DATE_FEBRUARY = 29;
+
 	@Autowired
 	private UserRepository userRepository;
 
@@ -536,14 +540,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 				throw new BusinessException(ServiceError.InvalidInput, DOB);
 			} else if (request.getDob() == null && request.getAge() != null) {
 				Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-				if (((localCalendar.get(Calendar.YEAR) % 4 == 0) && (localCalendar.get(Calendar.YEAR) % 100 != 0))
-						|| (localCalendar.get(Calendar.YEAR) % 400 == 0)) {
-					localCalendar.add(Calendar.DATE, -1);
-				}
 				int currentDay = localCalendar.get(Calendar.DATE);
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR) - request.getAge();
-				request.setDob(new DOB(currentDay, currentMonth, currentYear));
+				int calculatedYear = localCalendar.get(Calendar.YEAR) - request.getAge();
+				if (((localCalendar.get(Calendar.YEAR) % 4 == 0) && (localCalendar.get(Calendar.YEAR) % 100 != 0))
+						|| (localCalendar.get(Calendar.YEAR) % 400 == 0) && currentMonth == MONTH_FEBRUARY
+								&& currentDay == DATE_FEBRUARY) {
+					currentDay = currentDay - 1;
+				}
+				request.setDob(new DOB(currentDay, currentMonth, calculatedYear));
 			}
 			User user = new User();
 			BeanUtil.map(request, user);
@@ -834,14 +839,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 				throw new BusinessException(ServiceError.InvalidInput, DOB);
 			} else if (request.getDob() == null && request.getAge() != null) {
 				Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-				if (((localCalendar.get(Calendar.YEAR) % 4 == 0) && (localCalendar.get(Calendar.YEAR) % 100 != 0))
-						|| (localCalendar.get(Calendar.YEAR) % 400 == 0)) {
-					localCalendar.add(Calendar.DATE, -1);
-				}
 				int currentDay = localCalendar.get(Calendar.DATE);
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR) - request.getAge();
-				request.setDob(new DOB(currentDay, currentMonth, currentYear));
+				int calculatedYear = localCalendar.get(Calendar.YEAR) - request.getAge();
+				if (((localCalendar.get(Calendar.YEAR) % 4 == 0) && (localCalendar.get(Calendar.YEAR) % 100 != 0))
+						|| (localCalendar.get(Calendar.YEAR) % 400 == 0) && currentMonth == MONTH_FEBRUARY
+								&& currentDay == DATE_FEBRUARY) {
+					currentDay = currentDay - 1;
+				}
+				request.setDob(new DOB(currentDay, currentMonth, calculatedYear));
 			}
 			ObjectId userObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getUserId()))
