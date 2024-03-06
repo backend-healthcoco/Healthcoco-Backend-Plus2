@@ -110,6 +110,15 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 				request.setLocalPatientNameFormatted(localPatientNameFormatted.toLowerCase());
 			}
 
+			if (request.getLinkToken() != null) {
+				System.out.println("linkToken" + request.getLinkToken());
+
+			}
+
+			if (request.getHealthId() != null) {
+				System.out.println("healthId" + request.getHealthId());
+			}
+
 			esPatientRepository.save(request);
 			response = true;
 			transnationalService.addResource(new ObjectId(request.getUserId()), Resource.PATIENT, true);

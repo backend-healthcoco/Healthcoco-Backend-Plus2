@@ -1,5 +1,7 @@
 package com.dpdocter.elasticsearch.response.v2;
 
+import java.util.List;
+
 import com.dpdocter.beans.DOB;
 
 /*Expected Structure: 
@@ -40,6 +42,13 @@ public class ESPatientResponse {
 	private String motherName;
 
 	private String doctorId;
+	
+	private List<String> healthId;
+		
+	private String ndhmToken;
+	
+	private String linkToken;
+
 
 	public String getId() {
 		return id;
@@ -167,6 +176,32 @@ public class ESPatientResponse {
 
 	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
+	}
+	
+	
+
+	public List<String> getHealthId() {
+		return healthId;
+	}
+
+	public void setHealthId(List<String> healthId) {
+		this.healthId = healthId;
+	}
+
+	public String getNdhmToken() {
+		return ndhmToken;
+	}
+
+	public void setNdhmToken(String ndhmToken) {
+		this.ndhmToken = ndhmToken;
+	}
+
+	public String getLinkToken() {
+		return linkToken;
+	}
+
+	public void setLinkToken(String linkToken) {
+		this.linkToken = linkToken;
 	}
 
 	@Override

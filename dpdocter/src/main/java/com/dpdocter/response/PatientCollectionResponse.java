@@ -87,6 +87,12 @@ public class PatientCollectionResponse {
 	
 	private String language;
 
+	private List<String> healthId;
+	
+	private String ndhmToken;
+	
+	private String linkToken;
+	
 	
 	public String getId() {
 		return id;
@@ -376,7 +382,6 @@ public class PatientCollectionResponse {
 		this.landlineNumber = landlineNumber;
 	}
 	
-	
 
 	public String getLanguage() {
 		return language;
@@ -384,6 +389,32 @@ public class PatientCollectionResponse {
 
 	public void setLanguage(String language) {
 		this.language = language;
+	
+	}
+	public String getNdhmToken() {
+		return ndhmToken;
+	}
+
+	public void setNdhmToken(String ndhmToken) {
+		this.ndhmToken = ndhmToken;
+	}
+
+	public List<String> getHealthId() {
+		return healthId;
+	}
+
+	public void setHealthId(List<String> healthId) {
+		this.healthId = healthId;
+	}
+	
+	
+
+	public String getLinkToken() {
+		return linkToken;
+	}
+
+	public void setLinkToken(String linkToken) {
+		this.linkToken = linkToken;
 	}
 
 	@Override

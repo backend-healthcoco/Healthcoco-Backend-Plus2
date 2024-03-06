@@ -1,6 +1,9 @@
 package com.dpdocter.webservices;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
+import java.util.UUID;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -36,22 +39,31 @@ import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.beans.DoctorCalendarView;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FormContent;
+import com.dpdocter.beans.FetchResponse;
+import com.dpdocter.beans.FoodCommunity;
+import com.dpdocter.beans.FormContent;
+import com.dpdocter.beans.HipConsent;
+import com.dpdocter.beans.Language;
 import com.dpdocter.beans.Location;
+import com.dpdocter.beans.NotifyPatientrequest;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
+import com.dpdocter.beans.SmsPatientNotify;
 import com.dpdocter.beans.Suggestion;
 import com.dpdocter.beans.UserAddress;
 import com.dpdocter.beans.UserReminders;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.request.ClinicImageAddRequest;
 import com.dpdocter.request.ClinicLogoAddRequest;
 import com.dpdocter.request.ClinicProfileHandheld;
@@ -63,6 +75,7 @@ import com.dpdocter.response.PatientStatusResponse;
 import com.dpdocter.response.RegisterDoctorResponse;
 import com.dpdocter.response.UserAddressResponse;
 import com.dpdocter.services.HistoryServices;
+import com.dpdocter.services.NDHMservices;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.SuggestionService;
 import com.dpdocter.services.TransactionalManagementService;
@@ -115,6 +128,12 @@ public class RegistrationApi {
 
 	@Value(value = "${invalid.input}")
 	private String invalidInput;
+	
+	@Autowired
+	private NDHMservices ndhmServices;
+	
+	@Autowired
+	private LocationRepository locationRepository;
 
 	@Path(value = PathProxy.RegistrationUrls.PATIENT_REGISTER)
 	@POST
@@ -141,13 +160,37 @@ public class RegistrationApi {
 					false);
 			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
 
+			
+			
+			
 		} else {
 			registeredPatientDetails = registrationService.registerExistingPatient(request, infoType);
 			transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT,
 					false);
 			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
 		}
-
+		
+		
+		if(request.getHealthId().isEmpty()) {
+			NotifyPatientrequest request1=new NotifyPatientrequest();
+			UUID uuid=UUID.randomUUID();
+			LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
+			request1.setRequestId(uuid.toString());
+			request1.setTimestamp(time.toString());
+			SmsPatientNotify sms=new SmsPatientNotify();
+			//sms.setDeeplinkUrl("https://sandbox.ndhm.gov.in/docs/phr_app");
+			HipConsent hip=new HipConsent();
+			hip.setId(registeredPatientDetails.getLocationId());
+			LocationCollection collection=locationRepository.findById(new ObjectId(hip.getId())).orElse(null);
+			hip.setName(collection.getLocationName());
+			sms.setHip(hip);
+			sms.setPhoneNo(registeredPatientDetails.getMobileNumber());
+			sms.setReceiverName(registeredPatientDetails.getFirstName());
+			sms.setCareContextInfo("new Patient linking");
+			request1.setNotification(sms);
+			Boolean Registerstatus=ndhmServices.notifyPatientSms(request1);
+		System.out.println("RegisterStatus"+Registerstatus);
+		}
 		if (request.getFamilyMedicalHistoryHandler() != null) {
 			request.getFamilyMedicalHistoryHandler().setPatientId(registeredPatientDetails.getPatient().getPatientId());
 			historyServices.handleFamilyHistory(request.getFamilyMedicalHistoryHandler());
@@ -198,6 +241,35 @@ public class RegistrationApi {
 		transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT, false);
 		esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
 
+		
+		
+		
+		if(request.getHealthId().isEmpty()) {
+			NotifyPatientrequest request1=new NotifyPatientrequest();
+			UUID uuid=UUID.randomUUID();
+			LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
+			request1.setRequestId(uuid.toString());
+			request1.setTimestamp(time.toString());
+			SmsPatientNotify sms=new SmsPatientNotify();
+			//sms.setDeeplinkUrl("https://sandbox.ndhm.gov.in/docs/phr_app");
+			HipConsent hip=new HipConsent();
+			hip.setId(registeredPatientDetails.getLocationId());
+			LocationCollection collection=locationRepository.findById(new ObjectId(hip.getId())).orElse(null);
+			hip.setName(collection.getLocationName());
+			sms.setHip(hip);
+			sms.setPhoneNo(registeredPatientDetails.getMobileNumber());
+			sms.setReceiverName(registeredPatientDetails.getFirstName());
+			sms.setCareContextInfo("new Patient linking");
+			request1.setNotification(sms);
+			Boolean Registerstatus=ndhmServices.notifyPatientSms(request1);
+		System.out.println("RegisterStatus"+Registerstatus);
+		}
+		
+		
+		
+		
+		
+		
 		registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
 		registeredPatientDetails.setThumbnailUrl(getFinalImageURL(registeredPatientDetails.getThumbnailUrl()));
 		response.setData(registeredPatientDetails);

@@ -54,6 +54,8 @@ public class Prescription extends GenericCollection {
 	private Quantity quantity;
 
 	private String locationName;
+	
+	private Boolean isActive = true;
 
 	public String getLocationName() {
 		return locationName;
@@ -213,6 +215,24 @@ public class Prescription extends GenericCollection {
 
 	public void setQuantity(Quantity quantity) {
 		this.quantity = quantity;
+	}
+	
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	@Override
+	public String toString() {
+		return "Prescription [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", name=" + name + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", tests=" + tests
+				+ ", inHistory=" + inHistory + ", discarded=" + discarded + ", diagnosticTests=" + diagnosticTests
+				+ ", advice=" + advice + ", visitId=" + visitId + ", patientId=" + patientId + ", isFeedbackAvailable="
+				+ isFeedbackAvailable + ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate
+				+ "]";
 	}
 
 	public AppointmentDetails getAppointmentRequest() {

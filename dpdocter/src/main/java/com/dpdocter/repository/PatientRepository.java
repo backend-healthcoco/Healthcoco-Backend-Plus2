@@ -61,4 +61,10 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
 	@Query(value = "{'locationId': ?0, 'hospitalId': ?1, 'pNUM': {'$ne' : ?2}}", count = true)
 	Integer findCountByLocationIDHospitalIDAndNotPNUM(ObjectId locationId, ObjectId hospitalId, String pnum);
 
+	List<PatientCollection> findByHealthIdAndLocalPatientNameAndGender(String patientId, String patientName, String gender);
+
+	List<PatientCollection> findByHealthId(String id);
+
+	List<PatientCollection> findByHealthIdAndLocationId(String healthId, ObjectId objectId);
+
 }

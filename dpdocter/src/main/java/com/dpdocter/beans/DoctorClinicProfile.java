@@ -68,6 +68,9 @@ public class DoctorClinicProfile {
 	private Boolean isNABLAccredited = false;
 
 	private Boolean isHomeServiceAvailable = false;
+	
+	
+	private boolean isTransactionalSms = true;
 
 	private String locality;
 
@@ -187,6 +190,8 @@ public class DoctorClinicProfile {
 	public void setIsDentalChain(Boolean isDentalChain) {
 		this.isDentalChain = isDentalChain;
 	}
+	
+	private Boolean isRegisteredNDHMFacility = false;
 
 	public Boolean getIsSuperAdmin() {
 		return isSuperAdmin;
@@ -736,6 +741,14 @@ public class DoctorClinicProfile {
 		return onlineConsultationSlot;
 	}
 
+	public boolean isTransactionalSms() {
+		return isTransactionalSms;
+	}
+
+	public void setTransactionalSms(boolean isTransactionalSms) {
+		this.isTransactionalSms = isTransactionalSms;
+	}
+
 	public void setOnlineConsultationSlot(AppointmentSlot onlineConsultationSlot) {
 		this.onlineConsultationSlot = onlineConsultationSlot;
 	}
@@ -754,6 +767,16 @@ public class DoctorClinicProfile {
 
 	public void setIsOnlineConsultationAvailable(Boolean isOnlineConsultationAvailable) {
 		this.isOnlineConsultationAvailable = isOnlineConsultationAvailable;
+	}
+	
+	
+
+	public Boolean getIsRegisteredNDHMFacility() {
+		return isRegisteredNDHMFacility;
+	}
+
+	public void setIsRegisteredNDHMFacility(Boolean isRegisteredNDHMFacility) {
+		this.isRegisteredNDHMFacility = isRegisteredNDHMFacility;
 	}
 
 	public String getRatelistId() {

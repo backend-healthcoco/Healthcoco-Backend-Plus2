@@ -1753,7 +1753,6 @@ public interface PathProxy {
 		public static final String GET_PAYMENT_SETTLEMENT = "payment/settlements";
 		public static final String GET_PATIENT_PAYMENT_SETTLEMENTS = "patients/payment/settlements";
 		public static final String GET_ALL_ANALYTIC = "getAll";
-
 	}
 
 	public static final String ADMIT_CARD_URL = BASE_URL + "/admitCard";
@@ -2551,6 +2550,173 @@ public interface PathProxy {
 		public static final String DELETE_PLANNING_DETAILS = "/planningDetails/delete/{id}";
 
 		public static final String EDIT_PROGRESS_DETAILS_CHANGE_DATES = "/progressDetails/changeDates";
+
+	}public static final String NDHM_BASE_URL = BASE_URL + "/ndhm";
+	public interface NdhmUrls{
+		
+		
+		public static final String GET_SESSION="/session";
+		
+		public static final String GET_GENERATE_MOBILE_OTP="/generateMobileOtp";
+		
+		public static final String GET_VERIFY_MOBILE_OTP="/verifyMobileOtp";
+		
+		public static final String GET_RESEND_MOBILE_OTP="/resendMobileOtp";
+		
+		public static final String CREATE_HEALTH_ID="/createHealthId";
+		
+		public static final String FETCH_MODES="/fetchModes";
+		
+		public static final String GET_FETCH_MODES="/fetchModes/get";
+		
+		public static final String GET_LIST_STATES="/states/get";
+		
+		public static final String GET_LIST_DISTRICTS="/districts/get";
+		
+		public static final String GET_SEARCH_BY_HEALTH_ID="/searchByHealthId/get";
+		
+		public static final String GET_EXISTS_BY_HEALTH_ID="/existsByHealthId/get";
+		
+		public static final String GET_SEARCH_BY_MOBILE_NUMBER="/searchBymobileNumber/get";
+		
+		public static final String AUTH_INIT="/authInit";
+		
+		public static final String GET_AUTH_INIT_HIP="/authInit/get";
+		
+		public static final String AUTH_CONFIRM="/authConfirm";
+		
+		public static final String GET_AUTH_CONFIRM_HIP="/authConfirm/get";
+		
+		// Authentication
+		public static final String GET_AUTH_INIT = "/auth/init";
+		public static final String GET_AUTH_WITH_MOBILE = "/auth/getAuthMobile";
+		public static final String GET_AUTH_WITH_MOBILE_TOKEN = "/auth/getAuthMobileToken";
+		public static final String CONFIRM_AUTH_WITH_MOBILE_OTP = "/auth/confirmWithMobileOtp";
+		public static final String CONFIRM_AUTH_WITH_AADHAAR_OTP = "/auth/confirmWithAadhaarOtp";
+
+		// aadhar api
+		public static final String GET_AADHAR_GENERATE_OTP = "/reg/aadhar/generateOtp";
+		public static final String GET_AADHAR_GENERATE_MOBILE_OTP = "/reg/aadhar/generateMobileOtp";
+		public static final String GET_AADHAR_VERIFY_OTP = "/reg/aadhaar/verifyOtp";
+		public static final String GET_AADHAR_VERIFY_MOBILE_OTP = "/reg/aadhaar/verifyMobileOtp";
+		public static final String CREATE_HEALTHID_AADHAAR_OTP = "/reg/aadhaar/createHealthIdWithAadhaarOtp";
+		public static final String RESENT_AADHAAR_OTP = "/reg/aadhaar/resendAadhaarOtp";
+
+		// profile api
+		public static final String GET_PROFILE_CARD = "/profile/account/getCard";
+		public static final String GET_PROFILE_PNGCARD = "/profile/account/getPngCard";
+		public static final String GET_PROFILE = "/profile/account/getProfile";
+		public static final String CREATE_PROFILE = "/profile/account/createProfile";
+		public static final String DELETE_PROFILE = "/profile/account/deleteProfile";
+		public static final String GET_PROFILE_TOKEN = "/profile/account/token";
+		public static final String RESET_PROFILE_PASSWORD = "/profile/account/resetPassowrd";
+		
+		public static final String ADD_CARE_CONTEXT="/addCareContext";
+		
+		public static final String ON_DISCOVER="/onDiscover";
+		
+		public static final String ON_LINK_INIT="/onLinkInit";
+		
+		public static final String ON_LINK_CONFIRM = "/onLinkConfirm";
+		
+		public static final String GET_DISCOVER="/discover/get";
+		
+
+		public static final String GET_CARE_CONTEXT="/careContext/get";
+		
+		public static final String GET_LINK_INIT="/linkInit/get";
+		
+		public static final String GET_LINK_CONFIRM="/linkConfirm/get";
+		
+		public static final String GET_NOTIFY="/notify/get";
+		
+		public static final String ON_NOTIFY="/onNotify";
+		
+		public static final String GET_DATAFLOW="/health/dataflow/get";
+
+		public static final String HEALTH_INFORMATION_ON_REQUEST="/health-information/hip/on-request";
+		// data transfer
+	
+		//consent flow
+		
+		// gateway flow
+		public static final String GATEWAY_CONSENT_REQUEST_INIT="/gateway/consent-requests/init";
+		public static final String GATWAY_CONSENT_REQUEST_STATUS = "/consent-requests/status";
+		
+		public static final String GET_CONSENT_INIT="/consentInit/get";
+		
+		public static final String HEALTH_INFORMATION_NOTIFY="/healthInfo/notify";
+		
+		public static final String GET_CONSENT_STATUS="/consentStatus/get";
+		
+		public static final String GET_NDHM_PATIENT="/ndhmPatient/get";
+		
+		public static final String NDHM_PATIENT="/ndhmPatient";
+		
+		public static final String HIU_ON_NOTIFY="/hiu/OnNotify";
+		
+		public static final String GET_HIU_NOTIFY="/hiuNotify/get";
+		
+		public static final String HIU_CONSENT_FETCH="/consentFetch";
+		
+		public static final String GET_CONSENT_FETCH="/consentFetch/get";
+		
+		public static final String HIU_DATA_REQUEST="/hiu/DataTransfer";
+		
+		public static final String GET_HIU_DATA_REQUEST="/hiuDataRequest/get";
+		
+		public static final String GET_HIU_DATA="/hiuData/get";
+		
+		public static final String SHARE_PATIENT="/sharePatient";
+		
+		public static final String GET_SHARE_PATIENT="/sharePatient/get";
+		
+		public static final String PATIENT_NOTIFY_SMS="/patient/notifySms";
+		
+		public static final String GET_PATIENT_NOTIFY_SMS="/patient/notifySms/get";
+
+	}
+	
+	public static final String NDHM_PUSH_BACK_BASE_URL =  "/ndhmPushBack";
+	public interface NdhmPushUrls{
+		
+		public static final String ON_FETCH_MODES="/v0.5/users/auth/on-fetch-modes";
+		
+		public static final String ON_AUTH_INIT="/v0.5/users/auth/on-init";
+		
+		public static final String ON_AUTH_CONFIRM="/v0.5/users/auth/on-confirm";
+		
+		public static final String ON_CARE_CONTEXT="/v0.5/links/link/on-add-contexts";
+		
+		public static final String DISCOVER = "/v0.5/care-contexts/discover";
+		
+		public static final String NOTIFY="/v0.5/consents/hip/notify";
+
+		public static final String LINK_INIT = "/v0.5/links/link/init";
+		
+		public static final String LINK_CONFIRM = "/v0.5/links/link/confirm";
+
+		public static final String HEALTH_INFORMATION_REQUEST="/v0.5/health-information/hip/request";
+		
+		public static final String CONSENT_REQUEST_ON_INIT="/v0.5/consent-requests/on-init";
+		
+		public static final String CONSENT_REQUEST_ON_STATUS="/v0.5/consent-requests/on-status";
+		
+		public static final String HEALTH_INFORMATION_TRANSFER="/v0.5/health-information/transfer";
+		
+		public static final String NDHM_ON_PATIENT="/v0.5/patients/on-find";
+		
+		public static final String HIU_NOTIFY="/v0.5/consents/hiu/notify";
+		
+		public static final String ON_CONSENT_FETCH="/v0.5/consents/on-fetch";
+		
+		public static final String ON_HIU_DATA_REQUEST = "/v0.5/health-information/hiu/on-request";
+		
+		public static final String ON_NOTIFY_SMS="/v0.5/patients/sms/on-notify";
+		
+		public static final String ON_PROFILE_SHARE="/v0.5/patients/profile/share";
+		
+		public static final String HIU_DATA_TRANSFER = "/hiu-data/transfer";
 
 	}
 }

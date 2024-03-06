@@ -21,4 +21,6 @@ public interface LocationRepository extends MongoRepository<LocationCollection, 
 
 	LocationCollection findByIdAndHospitalId(ObjectId objectId, ObjectId objectId2);
 
+	LocationCollection findByLocationName(String hipCode);
+
 }

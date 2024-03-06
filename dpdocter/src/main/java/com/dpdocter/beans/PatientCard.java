@@ -98,6 +98,10 @@ public class PatientCard extends GenericCollection {
 	private String motherName;
 		
 	private String backendPatientId;
+	
+	private String ndhmToken;
+	
+	private String linkToken;
 
 	public PatientCollection getPatient() {
 		return patient;
@@ -508,6 +512,16 @@ public class PatientCard extends GenericCollection {
 	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
+	
+	
+
+	public String getNdhmToken() {
+		return ndhmToken;
+	}
+
+	public void setNdhmToken(String ndhmToken) {
+		this.ndhmToken = ndhmToken;
+	}
 
 	public Boolean getIsChild() {
 		return isChild;
@@ -539,6 +553,16 @@ public class PatientCard extends GenericCollection {
 
 	public void setBackendPatientId(String backendPatientId) {
 		this.backendPatientId = backendPatientId;
+	}
+	
+	
+
+	public String getLinkToken() {
+		return linkToken;
+	}
+
+	public void setLinkToken(String linkToken) {
+		this.linkToken = linkToken;
 	}
 
 	@Override

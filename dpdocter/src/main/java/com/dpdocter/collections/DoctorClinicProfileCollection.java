@@ -128,6 +128,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Field
 	private Boolean isAdminNutritionist = false;
+	
+	@Field
+	private boolean isTransactionalSms = true;
 
 	@Field
 	private String mrCode;
@@ -177,6 +180,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Field
 	private Boolean isShowDoctorInCalender = true;
 
+	
+	@Field
+	private Boolean isRegisteredNDHMFacility = false;
 	public ObjectId getId() {
 		return id;
 	}
@@ -560,6 +566,24 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setClinicOwnershipImageUrl(String clinicOwnershipImageUrl) {
 		this.clinicOwnershipImageUrl = clinicOwnershipImageUrl;
+	}
+	
+	
+
+	public boolean isTransactionalSms() {
+		return isTransactionalSms;
+	}
+
+	public void setTransactionalSms(boolean isTransactionalSms) {
+		this.isTransactionalSms = isTransactionalSms;
+	}
+
+	public Boolean getIsRegisteredNDHMFacility() {
+		return isRegisteredNDHMFacility;
+	}
+
+	public void setIsRegisteredNDHMFacility(Boolean isRegisteredNDHMFacility) {
+		this.isRegisteredNDHMFacility = isRegisteredNDHMFacility;
 	}
 
 	public Boolean getIsPatientWelcomeMessageOn() {

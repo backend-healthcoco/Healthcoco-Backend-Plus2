@@ -4,6 +4,8 @@ package com.dpdocter.services.impl;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -15,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
@@ -66,8 +69,10 @@ import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Group;
+import com.dpdocter.beans.HipConsent;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.NotifyPatientrequest;
 import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
@@ -80,6 +85,7 @@ import com.dpdocter.beans.Role;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.beans.SmsPatientNotify;
 import com.dpdocter.beans.SubscriptionNutritionPlan;
 import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.beans.User;
@@ -252,6 +258,7 @@ import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
+import com.dpdocter.services.NDHMservices;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PushNotificationServices;
@@ -478,6 +485,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Value(value = "${healthcoco.support.number}")
 	private String healthcocoSupportNumber;
 
+	
+	
 	@Override
 	@Transactional
 	public User checkIfPatientExist(PatientRegistrationRequest request) {
@@ -586,11 +595,24 @@ public class RegistrationServiceImpl implements RegistrationService {
 			}
 			// save Patient Info
 			PatientCollection patientCollection = new PatientCollection();
+			patientCollection.setHealthId(null);
 			BeanUtil.map(request, patientCollection);
 			patientCollection.setLanguage(request.getLanguage());
 			patientCollection.setFirstName(request.getLocalPatientName());
 			patientCollection.setUserId(userCollection.getId());
 			patientCollection.setIsChild(request.getIsChild());
+
+			if (request.getNdhmToken() != null)
+				patientCollection.setNdhmToken(request.getNdhmToken());
+
+//			if (request.getHealthId() != null) {
+//				
+//				patientCollection.setHealthId(request.getHealthId());
+//			}
+			if (request.getLinkToken() != null)
+				patientCollection.setLinkToken(request.getLinkToken());
+
+			
 			if (request.getRegistrationDate() != null)
 				patientCollection.setRegistrationDate(request.getRegistrationDate());
 			else
@@ -740,6 +762,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 								referencesCollection.getMobileNumber());
 					}
 				}
+				
+				
 
 				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
 						.findByDoctorIdAndLocationId(new ObjectId(request.getDoctorId()),
@@ -894,6 +918,18 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 					if (request.getAddress() != null)
 						patientCollection.setAddress(request.getAddress());
+					
+					if (request.getNdhmToken() != null)
+						patientCollection.setNdhmToken(request.getNdhmToken());
+
+					if (request.getHealthId() != null) {
+						patientCollection.setHealthId(null);
+						patientCollection.setHealthId(request.getHealthId());
+					}
+					if (request.getLinkToken() != null)
+						patientCollection.setLinkToken(request.getLinkToken());
+
+
 
 					if (infoType != null && !infoType.isEmpty()) {
 						if (infoType.contains("PERSONALINFO"))
@@ -923,6 +959,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 					}
 
 					patientCollection.setIsChild(request.getIsChild());
+					
+					if(request.getAdhaarId() !=null)
+						patientCollection.setAdhaarId(request.getAdhaarId());
+					
+					if(request.getHealthId() !=null)
+						patientCollection.setHealthId(null);
+						patientCollection.setHealthId(request.getHealthId());
+					
 					// patientCollection.setRegistrationDate(request.getRegistrationDate());
 				} else {
 					logger.error("Incorrect User Id, DoctorId, LocationId, HospitalId");
@@ -979,6 +1023,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 						PNUM = patientCollection.getPNUM();
 
 					// request.setRegistrationDate(patientCollection.getRegistrationDate());
+					patientCollection.setHealthId(null);
 					BeanUtil.map(request, patientCollection);
 					patientCollection.setId(patientId);
 					patientCollection.setUpdatedTime(new Date());
@@ -3666,7 +3711,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (patient.getPatient() != null) {
 				BeanUtil.map(patient.getPatient(), esPatientDocument);
 			}
+			
+						
 			BeanUtil.map(patient, esPatientDocument);
+			
+			if(patient.getPatient().getHealthId() !=null)
+				esPatientDocument.setHealthId(patient.getPatient().getHealthId());
+
+			
 			if (patient.getBackendPatientId() != null)
 				esPatientDocument.setId(patient.getBackendPatientId());
 			if (patient.getReferredBy() != null)

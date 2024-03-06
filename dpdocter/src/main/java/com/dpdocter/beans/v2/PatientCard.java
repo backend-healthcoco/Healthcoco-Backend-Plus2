@@ -56,7 +56,13 @@ public class PatientCard extends GenericCollection {
 	
 	private String imageUrl;
 
+	private String adhaarId;	
 	
+	private List<String> healthId;
+	
+	private String ndhmToken;
+	
+	private String linkToken;
 
 
 	public User getUser() {
@@ -227,6 +233,46 @@ public class PatientCard extends GenericCollection {
 
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
+	}
+	
+	
+
+	public String getAdhaarId() {
+		return adhaarId;
+	}
+
+	public void setAdhaarId(String adhaarId) {
+		this.adhaarId = adhaarId;
+	}
+	
+	
+
+	public String getNdhmToken() {
+		return ndhmToken;
+	}
+
+	public void setNdhmToken(String ndhmToken) {
+		this.ndhmToken = ndhmToken;
+	}
+
+	public List<String> getHealthId() {
+		return healthId;
+	}
+
+	public void setHealthId(List<String> healthId) {
+		this.healthId = healthId;
+	}
+	
+	
+
+	
+
+	public String getLinkToken() {
+		return linkToken;
+	}
+
+	public void setLinkToken(String linkToken) {
+		this.linkToken = linkToken;
 	}
 
 	@Override

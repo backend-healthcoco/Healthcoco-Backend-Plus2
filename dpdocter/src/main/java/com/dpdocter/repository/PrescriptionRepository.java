@@ -30,4 +30,6 @@ public interface PrescriptionRepository extends MongoRepository<PrescriptionColl
 
 	List<PrescriptionCollection> findByCreatedTimeBetween(DateTime start, DateTime end);
 
+	PrescriptionCollection findByPatientId(ObjectId id);
+
 }

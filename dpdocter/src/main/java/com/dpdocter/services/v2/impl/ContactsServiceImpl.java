@@ -214,7 +214,7 @@ public class ContactsServiceImpl implements ContactsService {
 
 			CustomAggregationOperation projectOperations = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("_id", "$_id").append("userId", "$userId").append("firstName", "$firstName")
-							.append("localPatientName", "$localPatientName")
+							.append("localPatientName", "$localPatientName").append("adhaarId", "$adhaarId")
 							.append("insensitiveLocalPatientName", new BasicDBObject("$toLower", "$localPatientName"))
 							.append("userName", "$userName").append("emailAddress", "$emailAddress")
 							.append("imageUrl", "$imageUrl").append("thumbnailUrl", "$thumbnailUrl")
@@ -226,6 +226,7 @@ public class ContactsServiceImpl implements ContactsService {
 							.append("colorCode", "$user.colorCode").append("user", "$user")
 							.append("address", "$address").append("patientId", "$userId")
 							.append("profession", "$profession").append("relations", "$relations")
+							.append("healthId", "$healthId").append("ndhmToken", "$ndhmToken").append("linkToken", "$linkToken")
 							.append("consultantDoctorIds", "$consultantDoctorIds").append("doctorId", "$doctorId")
 							.append("registrationDate", "$registrationDate").append("createdTime", "$createdTime")
 							.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")));
@@ -233,6 +234,7 @@ public class ContactsServiceImpl implements ContactsService {
 			CustomAggregationOperation groupOperations = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("id", "$_id").append("userId", new BasicDBObject("$first", "$userId"))
 							.append("firstName", new BasicDBObject("$first", "$firstName"))
+							.append("adhaarId", new BasicDBObject("$first", "$adhaarId"))
 							.append("localPatientName", new BasicDBObject("$first", "$localPatientName"))
 							.append("userName", new BasicDBObject("$first", "$userName"))
 							.append("emailAddress", new BasicDBObject("$first", "$emailAddress"))
@@ -262,6 +264,9 @@ public class ContactsServiceImpl implements ContactsService {
 									new BasicDBObject("$first", "$insensitiveLocalPatientName"))
 							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+							.append("healthId", new BasicDBObject("$first", "$healthId"))
+							.append("ndhmToken", new BasicDBObject("$first", "$ndhmToken"))
+							.append("linkToken", new BasicDBObject("$first", "$linkToken"))
 							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 
 			if (size > 0)

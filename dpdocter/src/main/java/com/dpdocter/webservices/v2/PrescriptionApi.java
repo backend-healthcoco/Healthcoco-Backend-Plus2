@@ -1,5 +1,6 @@
 package com.dpdocter.webservices.v2;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -12,13 +13,26 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.DataEncryptionResponse;
+import com.dpdocter.beans.NDHMPrecriptionRecordData;
+import com.dpdocter.beans.NDHMRecordDataCode;
+import com.dpdocter.beans.NDHMRecordDataDosageInstruction;
+import com.dpdocter.beans.NDHMRecordDataRequester;
+import com.dpdocter.beans.NDHMRecordDataResource;
+import com.dpdocter.beans.NDHMRecordDataSubject;
 import com.dpdocter.beans.v2.Drug;
 import com.dpdocter.beans.v2.Prescription;
+import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.enums.NDHMRecordDataResourceType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.v2.PrescriptionServices;
 
@@ -42,13 +56,16 @@ public class PrescriptionApi {
 	@Autowired
 	private OTPService otpService;
 
+	@Autowired
+	private PatientRepository patientRepository;
+
 	@GET
 	@ApiOperation(value = "GET_PRESCRIPTIONS", notes = "GET_PRESCRIPTIONS")
 	public Response<Prescription> getPrescription(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) throws Exception {
 		if (DPDoctorUtils.anyStringEmpty(locationId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 		}

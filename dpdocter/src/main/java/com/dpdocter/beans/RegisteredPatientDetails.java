@@ -79,6 +79,12 @@ public class RegisteredPatientDetails extends GenericCollection {
 	
 	private Boolean isSuperStar = false;
 	
+	private String adhaarId;
+	
+	private List<String> healthId;
+	
+	private String ndhmToken;
+	
 	public List<UserNutritionSubscriptionResponse> getUserNutritionSubscriptions() {
 		return userNutritionSubscriptions;
 	}
@@ -351,6 +357,32 @@ public class RegisteredPatientDetails extends GenericCollection {
 
 	public void setLanguage(String language) {
 		this.language = language;
+	
+	}
+	public String getAdhaarId() {
+		return adhaarId;
+	}
+
+	public void setAdhaarId(String adhaarId) {
+		this.adhaarId = adhaarId;
+	}
+
+	public List<String> getHealthId() {
+		return healthId;
+	}
+
+	public void setHealthId(List<String> healthId) {
+		this.healthId = healthId;
+	}
+	
+	
+
+	public String getNdhmToken() {
+		return ndhmToken;
+	}
+
+	public void setNdhmToken(String ndhmToken) {
+		this.ndhmToken = ndhmToken;
 	}
 
 	@Override

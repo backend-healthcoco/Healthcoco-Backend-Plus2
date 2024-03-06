@@ -108,6 +108,12 @@ public class PatientRegistrationRequest {
 	private String imageUrl;
 	
 	private String language;
+		
+	private List<String> healthId;
+	
+	private String ndhmToken;
+	
+	private String linkToken;
 
 
 	public String getRecordId() {
@@ -479,6 +485,13 @@ public class PatientRegistrationRequest {
 	}
 	
 	
+	public List<String> getHealthId() {
+		return healthId;
+	}
+
+	public void setHealthId(List<String> healthId) {
+		this.healthId = healthId;
+	}
 
 	public String getImageUrl() {
 		return imageUrl;
@@ -486,6 +499,26 @@ public class PatientRegistrationRequest {
 
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
+	}
+	
+	
+
+	
+
+	public String getLinkToken() {
+		return linkToken;
+	}
+
+	public void setLinkToken(String linkToken) {
+		this.linkToken = linkToken;
+	}
+
+	public String getNdhmToken() {
+		return ndhmToken;
+	}
+
+	public void setNdhmToken(String ndhmToken) {
+		this.ndhmToken = ndhmToken;
 	}
 
 	
