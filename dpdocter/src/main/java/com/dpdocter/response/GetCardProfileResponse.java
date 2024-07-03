@@ -38,6 +38,8 @@ public class GetCardProfileResponse {
 	private String wardName;
 	private String yearOfBirth;
 	private String token;
+	private String refreshToken;
+
 
 	public String getAddress() {
 		return address;
@@ -302,8 +304,13 @@ public class GetCardProfileResponse {
 	public void setToken(String token) {
 		this.token = token;
 	}
-	
-	
-	
+
+	public String getRefreshToken() {
+		return refreshToken;
+	}
+
+	public void setRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
+	}
 	
 }

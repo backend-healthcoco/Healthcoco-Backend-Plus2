@@ -1,8 +1,5 @@
 package com.dpdocter.request;
 
-import org.hl7.fhir.r4.model.Bundle;
-import org.json.JSONObject;
-
 import com.dpdocter.beans.ResponseBundle;
 
 public class EntriesDataTransferRequest {

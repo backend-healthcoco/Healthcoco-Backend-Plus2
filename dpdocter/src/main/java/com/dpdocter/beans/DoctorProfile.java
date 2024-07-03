@@ -1,13 +1,10 @@
 package com.dpdocter.beans;
 
 import java.util.List;
-import java.util.Map;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.enums.ConsultationType;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.UserState;
 

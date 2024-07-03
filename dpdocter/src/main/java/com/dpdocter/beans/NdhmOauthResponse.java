@@ -1,7 +1,5 @@
 package com.dpdocter.beans;
 
-import org.json.JSONObject;
-
 public class NdhmOauthResponse {
 
 	private String accessToken;

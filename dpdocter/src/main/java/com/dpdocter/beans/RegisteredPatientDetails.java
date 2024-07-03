@@ -85,6 +85,9 @@ public class RegisteredPatientDetails extends GenericCollection {
 	
 	private String ndhmToken;
 	
+    private String abhaNumber;
+
+	
 	public List<UserNutritionSubscriptionResponse> getUserNutritionSubscriptions() {
 		return userNutritionSubscriptions;
 	}
@@ -375,7 +378,14 @@ public class RegisteredPatientDetails extends GenericCollection {
 		this.healthId = healthId;
 	}
 	
-	
+
+	public String getAbhaNumber() {
+		return abhaNumber;
+	}
+
+	public void setAbhaNumber(String abhaNumber) {
+		this.abhaNumber = abhaNumber;
+	}
 
 	public String getNdhmToken() {
 		return ndhmToken;

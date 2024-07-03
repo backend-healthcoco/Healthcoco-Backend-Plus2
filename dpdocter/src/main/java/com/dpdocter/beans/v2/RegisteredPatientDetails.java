@@ -46,7 +46,12 @@ public class RegisteredPatientDetails extends GenericCollection {
 	private String imageUrl;
 
 	private String thumbnailUrl;
-
+	private List<String> healthId;
+	
+	private String ndhmToken;
+	
+	private String linkToken;
+    private String abhaNumber;
 
 	public String getFirstName() {
 		return firstName;
@@ -198,6 +203,38 @@ public class RegisteredPatientDetails extends GenericCollection {
 
 	public void setThumbnailUrl(String thumbnailUrl) {
 		this.thumbnailUrl = thumbnailUrl;
+	}
+
+	public List<String> getHealthId() {
+		return healthId;
+	}
+
+	public void setHealthId(List<String> healthId) {
+		this.healthId = healthId;
+	}
+
+	public String getNdhmToken() {
+		return ndhmToken;
+	}
+
+	public void setNdhmToken(String ndhmToken) {
+		this.ndhmToken = ndhmToken;
+	}
+
+	public String getLinkToken() {
+		return linkToken;
+	}
+
+	public void setLinkToken(String linkToken) {
+		this.linkToken = linkToken;
+	}
+
+	public String getAbhaNumber() {
+		return abhaNumber;
+	}
+
+	public void setAbhaNumber(String abhaNumber) {
+		this.abhaNumber = abhaNumber;
 	}
 
 	

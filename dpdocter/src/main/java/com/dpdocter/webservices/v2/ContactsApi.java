@@ -1,5 +1,8 @@
 package com.dpdocter.webservices.v2;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -31,10 +34,6 @@ import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
-import java.time.Period;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @Component(value = "ContactsApiV2")
 @Path(PathProxy.CONTACTS_BASE_URL)

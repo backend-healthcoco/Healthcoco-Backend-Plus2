@@ -3,8 +3,6 @@ package com.dpdocter.response;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 import com.dpdocter.beans.Medication;
 import com.dpdocter.beans.RiskScore;
 import com.dpdocter.beans.VitalSigns;

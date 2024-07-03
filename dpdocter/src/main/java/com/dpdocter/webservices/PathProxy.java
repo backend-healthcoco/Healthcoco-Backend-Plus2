@@ -2587,6 +2587,14 @@ public interface PathProxy {
 		
 		public static final String GET_AUTH_CONFIRM_HIP="/authConfirm/get";
 		
+		//v3 apis
+		public static final String REQUEST_OTP_FOR_ENROL="/v3/enrollment/request/otp";
+		public static final String ENROL_BY_AADHAAR_VERIFICATION="/v3/enrollment/enrol/byAadhaar";
+		public static final String SUGGEST_ABHA_ADDRESS="/v3/enrollment/enrol/suggestion";
+		public static final String CREATE_ABHA_ADDRESS="/v3/enrollment/enrol/abha-address";
+
+		public static final String GET_GENERATE_TOKEN="/v3/token/generateToken";
+
 		// Authentication
 		public static final String GET_AUTH_INIT = "/auth/init";
 		public static final String GET_AUTH_WITH_MOBILE = "/auth/getAuthMobile";
@@ -2604,12 +2612,35 @@ public interface PathProxy {
 
 		// profile api
 		public static final String GET_PROFILE_CARD = "/profile/account/getCard";
+		public static final String GET_PROFILE_QR_CODE = "/profile/account/getQrCode";
+		public static final String GET_PROFILE_QR_CODE_V3 = "/profile/account/getQrCodeV3";
 		public static final String GET_PROFILE_PNGCARD = "/profile/account/getPngCard";
 		public static final String GET_PROFILE = "/profile/account/getProfile";
 		public static final String CREATE_PROFILE = "/profile/account/createProfile";
 		public static final String DELETE_PROFILE = "/profile/account/deleteProfile";
 		public static final String GET_PROFILE_TOKEN = "/profile/account/token";
 		public static final String RESET_PROFILE_PASSWORD = "/profile/account/resetPassowrd";
+		
+		//Update Password
+		public static final String UPDATE_PROFILE_GENERATE_OTP = "/profile/update/generateOtp";
+
+		public static final String UPDATE_PASSWORD_VIA_AADHAAR_OTP = "/profile/update/password/aadhaarOtp";
+		public static final String UPDATE_PASSWORD_VIA_PASSWORD = "/profile/account/password/viaPassword";
+		public static final String UPDATE_PASSWORD_VIA_MOBILE_OTP = "/profile/update/password/mobileOtp";
+
+		
+		//Update Mobile Number
+		public static final String UPDATE_MOBILE_VIA_MOBILE_OTP = "/profile/update/mobile/viaMobileOtp";
+
+		//Update Email Address
+		public static final String UPDATE_EMAIL_VIA_EMAIL_OTP = "/profile/update/email/viaEmailOtp";
+		public static final String UPDATE_EMAIL_VIA_EMAIL_LINK = "/profile/update/email/viaEmailLink";
+
+		
+		//Delete ABHA
+		public static final String DELETE_ABHA_NUMBER_VIA_AADHAAR_OTP = "/profile/delete/viaAadhaarOtp";
+		public static final String DELETE_ABHA_NUMBER_VIA_MOBILE_OTP = "/profile/delete/viaMobileOtp";
+
 		
 		public static final String ADD_CARE_CONTEXT="/addCareContext";
 		
@@ -2679,7 +2710,10 @@ public interface PathProxy {
 	
 	public static final String NDHM_PUSH_BACK_BASE_URL =  "/ndhmPushBack";
 	public interface NdhmPushUrls{
+		public static final String GET_CALLBACK_ON_GENERATE_TOKEN="/v3/token/onGenerateToken";
 		
+		public static final String GET_CALLBACK_GENERATE_TOKEN="/onGenerateToken";
+
 		public static final String ON_FETCH_MODES="/v0.5/users/auth/on-fetch-modes";
 		
 		public static final String ON_AUTH_INIT="/v0.5/users/auth/on-init";

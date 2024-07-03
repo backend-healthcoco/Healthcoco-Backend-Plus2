@@ -1,12 +1,7 @@
 package com.dpdocter.integrationTest;
 
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
-import org.testng.AssertJUnit;
 import java.io.UnsupportedEncodingException;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -15,10 +10,8 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.testng.AssertJUnit;
-import org.testng.annotations.Test;
 
 import com.dpdocter.beans.LoginResponse;
-import com.dpdocter.collections.UserCollection;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.LoginService;

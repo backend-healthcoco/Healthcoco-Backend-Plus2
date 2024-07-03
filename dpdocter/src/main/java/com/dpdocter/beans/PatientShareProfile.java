@@ -1,7 +1,5 @@
 package com.dpdocter.beans;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 public class PatientShareProfile {
 
 	private String requestId;

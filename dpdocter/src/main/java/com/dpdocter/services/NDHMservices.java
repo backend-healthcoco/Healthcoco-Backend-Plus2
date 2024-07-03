@@ -1,10 +1,7 @@
 package com.dpdocter.services;
 
-import java.io.InputStream;
 import java.util.List;
 
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 
 import com.dpdocter.beans.AuthConfirmRequest;
@@ -15,8 +12,16 @@ import com.dpdocter.beans.Districts;
 import com.dpdocter.beans.FetchModesRequest;
 import com.dpdocter.beans.HealthIdRequest;
 import com.dpdocter.beans.HealthIdResponse;
+import com.dpdocter.beans.HealthIdSearch;
+import com.dpdocter.beans.HealthIdSearchRequest;
+import com.dpdocter.beans.HealthInfoNotify;
+import com.dpdocter.beans.HiuDataRequest;
+import com.dpdocter.beans.HiuDataResponse;
+import com.dpdocter.beans.HiuOnNotify;
+import com.dpdocter.beans.LinkConfirm;
+import com.dpdocter.beans.LinkRequest;
+import com.dpdocter.beans.MobileTokenRequest;
 import com.dpdocter.beans.NDHMStates;
-import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.beans.NdhmOnPatientFindRequest;
 import com.dpdocter.beans.NdhmOtp;
 import com.dpdocter.beans.NdhmOtpStatus;
@@ -36,32 +41,33 @@ import com.dpdocter.beans.OnLinkConfirm;
 import com.dpdocter.beans.OnLinkRequest;
 import com.dpdocter.beans.OnNotifyRequest;
 import com.dpdocter.beans.OnNotifySmsRequest;
-import com.dpdocter.beans.OnPatientShare;
 import com.dpdocter.beans.OnSharePatientrequest;
 import com.dpdocter.beans.PatientShareProfile;
-import com.dpdocter.beans.HealthIdSearch;
-import com.dpdocter.beans.HealthIdSearchRequest;
-import com.dpdocter.beans.HealthInfoNotify;
-import com.dpdocter.beans.HiuDataRequest;
-import com.dpdocter.beans.HiuDataResponse;
-import com.dpdocter.beans.HiuOnNotify;
-import com.dpdocter.beans.LinkConfirm;
-import com.dpdocter.beans.LinkRequest;
-import com.dpdocter.beans.MobileTokenRequest;
-import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.request.ConsentOnInitRequest;
 import com.dpdocter.request.CreateAadhaarRequest;
+import com.dpdocter.request.CreateAbhaAddressV3Request;
 import com.dpdocter.request.CreateProfileRequest;
 import com.dpdocter.request.DataFlowRequest;
 import com.dpdocter.request.DataTransferRequest;
+import com.dpdocter.request.DeleteABHANumberRequest;
+import com.dpdocter.request.EnrollmentV3Request;
+import com.dpdocter.request.EnrollmentVerifyAndUpdateV3Request;
 import com.dpdocter.request.GatewayConsentInitRequest;
 import com.dpdocter.request.GatewayConsentStatusRequest;
+import com.dpdocter.request.GenerateLinkTokenCallbackV3Request;
+import com.dpdocter.request.GenerateLinkTokenV3Request;
+import com.dpdocter.response.CreateAbhaAddresseResponse;
+import com.dpdocter.response.EnrollByAadhaarResponse;
+import com.dpdocter.response.RequestOtp;
+import com.dpdocter.response.SuggestedAbhaAddressesResponse;
+import com.dpdocter.response.VerifyAndUpdateDataResponse;
 import com.dpdocter.webservices.GateWayOnRequest;
 
 import common.util.web.Response;
+
 public interface NDHMservices {
 
-	//NdhmOauthResponse session();
+	// NdhmOauthResponse session();
 
 	NdhmOtp generateOtp(String mobileNumber);
 
@@ -81,7 +87,7 @@ public interface NDHMservices {
 
 	HealthIdSearch searchBymobileNumber(HealthIdSearchRequest request);
 
-	//auth
+	// auth
 	NdhmOtp sendAuthPassword(String healthId, String password);
 
 	NdhmOtp sendAuthWithMobile(String healthid);
@@ -89,12 +95,12 @@ public interface NDHMservices {
 	NdhmOtp sendAuthWithMobileToken(MobileTokenRequest request);
 
 	NdhmOtp sendAuthInit(String healthId, String authMethod);
-	
+
 	NdhmOtp confirmWithMobileOTP(String otp, String txnId);
 
 	NdhmOtp confirmWithAadhaarOtp(String otp, String txnId);
-	
-	//aadhar
+
+	// aadhar
 	NdhmOtp aadharGenerateOtp(String aadhaar);
 
 	Response<Object> aadharGenerateMobileOtp(String mobile, String txnId);
@@ -107,7 +113,7 @@ public interface NDHMservices {
 
 	Response<Object> resendAadhaarOtp(String txnId);
 
-	//profile
+	// profile
 	ResponseEntity<byte[]> profileGetCard(String authToken);
 
 	Response<Object> profileGetPngCard(String authToken);
@@ -117,7 +123,7 @@ public interface NDHMservices {
 	Response<Object> createProfile(CreateProfileRequest request, String authToken);
 
 	Response<Object> DeleteProfileDetail(String authToken);
-	
+
 	Boolean fetchModes(FetchModesRequest request);
 
 	Boolean onFetchModes(OnFetchModesRequest request);
@@ -135,89 +141,85 @@ public interface NDHMservices {
 	Boolean onAuthConfirm(OnAuthConfirmRequest request);
 
 	OnAuthConfirmRequest getOnAuthConfirm(String requestId);
-	
+
 	Boolean addCareContext(CareContextRequest request);
-	
-	Boolean onCareContext(OnCareContext request); 
-	
-	OnCareContext getCareContext(String requestId); 
-	
-	Boolean discover(CareContextDiscoverRequest  request);
-	
+
+	Boolean onCareContext(OnCareContext request);
+
+	OnCareContext getCareContext(String requestId);
+
+	Boolean discover(CareContextDiscoverRequest request);
+
 	CareContextDiscoverRequest getCareContextDiscover(String requestId);
-	
+
 	Boolean onDiscover(OnDiscoverRequest request);
-	
+
 	Boolean linkInit(LinkRequest request);
-	
+
 	Boolean onLinkInit(OnLinkRequest request);
-	
+
 	LinkRequest getLinkInit(String requestId);
-	
+
 	Boolean linkConfirm(LinkConfirm request);
-	
+
 	Boolean onLinkConfirm(OnLinkConfirm request);
 
 	LinkConfirm getLinkConfim(String requestId);
-	
+
 	Boolean onDataFlowRequest(DataFlowRequest request);
 
 	Boolean onGateWayOnRequest(GateWayOnRequest request);
-	
-	DataFlowRequest getDataFlow(String transactionId);
 
-	
+	DataFlowRequest getDataFlow(String transactionId);
 
 	Boolean onConsentRequestOnInitApi(ConsentOnInitRequest request);
 
 	Boolean onGatewayConsentRequestInitApi(GatewayConsentInitRequest request);
 
 	Boolean onGatewayConsentRequestStatusApi(GatewayConsentStatusRequest request);
-	
+
 	ConsentOnInitRequest getConsentInitRequest(String requestId);
-	
+
 	Boolean ndhmNotify(NotifyRequest request);
-	
+
 	Boolean onNotify(OnNotifyRequest request);
-	
+
 	NotifyRequest getNotify(String requestId);
-	
+
 	Boolean healthInformationNotify(HealthInfoNotify request);
-	
+
 	Boolean onConsentRequestStatus(OnConsentRequestStatus request);
-	
+
 	OnConsentRequestStatus getConsentStatus(String requestId);
 
 	Boolean onDataTransfer(DataTransferRequest request);
-	
+
 	Boolean findPatient(NdhmPatientRequest request);
-	
+
 	Boolean onFindPatient(NdhmOnPatientFindRequest request);
 
 	NdhmOnPatientFindRequest getNdhmPatient(String requestId);
-	
+
 	Boolean notifyHiu(NotifyHiuRequest request);
-	
-	
-	
+
 	NotifyHiuRequest getHiuNotify(String requestId);
 
 	Boolean onNotifyHiu(HiuOnNotify request);
-	
+
 	Boolean consentFetch(ConsentFetchRequest request);
-	
+
 	Boolean onConsentFetch(OnConsentFetchRequest request);
 
 	OnConsentFetchRequest getConsentFetch(String requestId);
-	
+
 	Boolean hiuDataRequest(HiuDataRequest request);
 
 	Boolean onHiuDatarequest(GateWayOnRequest request);
 
-	GateWayOnRequest getHiuDataRequest(String requestId,String doctorId,String healthId);
+	GateWayOnRequest getHiuDataRequest(String requestId, String doctorId, String healthId);
 
 	Boolean onHiuDataTransferApi(DataTransferRequest request);
-	
+
 	HiuDataResponse getHiuData(String transactionId);
 
 	Boolean shareProfile(PatientShareProfile request);
@@ -228,14 +230,30 @@ public interface NDHMservices {
 
 	Boolean notifyPatientSms(NotifyPatientrequest request);
 
-	
 	OnNotifySmsRequest getNotifySms(String requestId);
 
 	Boolean onNotifySms(OnNotifySmsRequest request);
 
 	Boolean healthInformationHIUNotify(HealthInfoNotify request);
 
+	Response<Object> profileGetQRCode(String authToken);
 
-	
+	RequestOtp generateRequestOtp(EnrollmentV3Request request);
+
+	VerifyAndUpdateDataResponse verifyAndUpdateData(EnrollmentVerifyAndUpdateV3Request request);
+
+	VerifyAndUpdateDataResponse deleteABHANumber(DeleteABHANumberRequest request);
+
+	Response<Object> profileGetQRCodeV3(String authToken);
+
+	EnrollByAadhaarResponse verifyAndEnrollByAadhaar(EnrollmentVerifyAndUpdateV3Request request);
+
+	SuggestedAbhaAddressesResponse getSuggestedAbhaAddresses(String txnId);
+
+	CreateAbhaAddresseResponse createAbhaAddresse(CreateAbhaAddressV3Request request);
+
+	Boolean generateLinkToken(GenerateLinkTokenV3Request request);
+
+	Boolean generateLinkTokenCallback(GenerateLinkTokenCallbackV3Request request);
 
 }

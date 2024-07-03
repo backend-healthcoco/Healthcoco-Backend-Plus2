@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.enums.MessageStatusType;
 
 public class MessageResponse extends GenericCollection {
 

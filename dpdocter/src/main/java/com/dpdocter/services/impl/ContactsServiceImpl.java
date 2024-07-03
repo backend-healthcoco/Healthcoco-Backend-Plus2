@@ -792,6 +792,9 @@ public class ContactsServiceImpl implements ContactsService {
 					registeredPatientDetail.setPID(patientCard.getPID());
 					registeredPatientDetail.setMobileNumber(patientCard.getUser().getMobileNumber());
 					registeredPatientDetail.setBackendPatientId(patientCard.getId());
+					registeredPatientDetail.setHealthId(patientCard.getHealthId());
+					registeredPatientDetail.setAbhaNumber(patientCard.getAbhaNumber());
+
 					if (patientCard.getDob() != null) {
 						registeredPatientDetail.setDob(patientCard.getDob());
 					}

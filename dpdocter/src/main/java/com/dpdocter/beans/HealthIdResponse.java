@@ -44,7 +44,9 @@ public class HealthIdResponse {
 	private String subdistrictCode;
 	
 	private String token;
-	
+
+	private String refreshToken;
+
 	private Boolean isNew;
 	
 	private NdhmTags tags;
@@ -52,6 +54,7 @@ public class HealthIdResponse {
 	private String yearOfBirth;
 	
 	private List<NdhmAuthMethods> authMethods;
+	private Integer pincode;
 
 	public String getDayOfBirth() {
 		return dayOfBirth;
@@ -205,7 +208,13 @@ public class HealthIdResponse {
 		this.token = token;
 	}
 
-	
+	public String getRefreshToken() {
+		return refreshToken;
+	}
+
+	public void setRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
+	}
 
 	public NdhmTags getTags() {
 		return tags;
@@ -237,6 +246,14 @@ public class HealthIdResponse {
 
 	public void setIsNew(Boolean isNew) {
 		this.isNew = isNew;
+	}
+
+	public Integer getPincode() {
+		return pincode;
+	}
+
+	public void setPincode(Integer pincode) {
+		this.pincode = pincode;
 	}
 
 	@Override

@@ -12,7 +12,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.EyeSpecialityObservation;
-import com.dpdocter.beans.Observation;
 import com.dpdocter.beans.PhysioExamination;
 import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.beans.WorkingHours;

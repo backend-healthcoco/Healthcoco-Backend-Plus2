@@ -1,7 +1,6 @@
 package com.dpdocter.request;
 
 import com.dpdocter.enums.OrderStatus;
-import com.dpdocter.enums.PaymentMode;
 
 public class MedicineOrderPaymentAddEditRequest {
 

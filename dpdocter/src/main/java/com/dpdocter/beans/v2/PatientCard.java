@@ -63,6 +63,7 @@ public class PatientCard extends GenericCollection {
 	private String ndhmToken;
 	
 	private String linkToken;
+    private String abhaNumber;
 
 
 	public User getUser() {
@@ -245,7 +246,14 @@ public class PatientCard extends GenericCollection {
 		this.adhaarId = adhaarId;
 	}
 	
-	
+
+	public String getAbhaNumber() {
+		return abhaNumber;
+	}
+
+	public void setAbhaNumber(String abhaNumber) {
+		this.abhaNumber = abhaNumber;
+	}
 
 	public String getNdhmToken() {
 		return ndhmToken;

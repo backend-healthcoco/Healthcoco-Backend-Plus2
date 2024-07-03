@@ -1,6 +1,5 @@
 package com.dpdocter.webservices.v2;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -13,25 +12,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.beans.DataEncryptionResponse;
-import com.dpdocter.beans.NDHMPrecriptionRecordData;
-import com.dpdocter.beans.NDHMRecordDataCode;
-import com.dpdocter.beans.NDHMRecordDataDosageInstruction;
-import com.dpdocter.beans.NDHMRecordDataRequester;
-import com.dpdocter.beans.NDHMRecordDataResource;
-import com.dpdocter.beans.NDHMRecordDataSubject;
 import com.dpdocter.beans.v2.Drug;
 import com.dpdocter.beans.v2.Prescription;
-import com.dpdocter.collections.PatientCollection;
-import com.dpdocter.collections.PrescriptionCollection;
-import com.dpdocter.enums.NDHMRecordDataResourceType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.v2.PrescriptionServices;

@@ -98,10 +98,13 @@ public class PatientCard extends GenericCollection {
 	private String motherName;
 		
 	private String backendPatientId;
-	
+	private List<String> healthId;
+
 	private String ndhmToken;
 	
 	private String linkToken;
+    private String abhaNumber;
+
 
 	public PatientCollection getPatient() {
 		return patient;
@@ -513,7 +516,14 @@ public class PatientCard extends GenericCollection {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
 	
-	
+
+	public List<String> getHealthId() {
+		return healthId;
+	}
+
+	public void setHealthId(List<String> healthId) {
+		this.healthId = healthId;
+	}
 
 	public String getNdhmToken() {
 		return ndhmToken;
@@ -563,6 +573,14 @@ public class PatientCard extends GenericCollection {
 
 	public void setLinkToken(String linkToken) {
 		this.linkToken = linkToken;
+	}
+
+	public String getAbhaNumber() {
+		return abhaNumber;
+	}
+
+	public void setAbhaNumber(String abhaNumber) {
+		this.abhaNumber = abhaNumber;
 	}
 
 	@Override

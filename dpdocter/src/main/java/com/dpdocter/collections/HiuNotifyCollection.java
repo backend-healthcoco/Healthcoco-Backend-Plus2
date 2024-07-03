@@ -1,14 +1,11 @@
 package com.dpdocter.collections;
 
-import java.util.List;
-
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.HiuNotify;
-import com.dpdocter.beans.NdhmNotifyPatient;
 
 @Document(collection = "hiu_notify_cl")
 public class HiuNotifyCollection extends GenericCollection{

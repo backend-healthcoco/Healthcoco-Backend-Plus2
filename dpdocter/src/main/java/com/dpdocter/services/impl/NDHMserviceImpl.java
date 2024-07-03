@@ -6,34 +6,40 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.TimeZone;
 import java.util.UUID;
-import java.util.function.Function;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
-import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.MedicationRequest;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -78,11 +84,7 @@ import com.dpdocter.beans.LinkRequest;
 import com.dpdocter.beans.LinkResponse;
 import com.dpdocter.beans.MobileTokenRequest;
 import com.dpdocter.beans.NDHMPrecriptionRecordData;
-import com.dpdocter.beans.NDHMRecordDataCode;
-import com.dpdocter.beans.NDHMRecordDataDosageInstruction;
-import com.dpdocter.beans.NDHMRecordDataRequester;
 import com.dpdocter.beans.NDHMRecordDataResource;
-import com.dpdocter.beans.NDHMRecordDataSubject;
 import com.dpdocter.beans.NDHMStates;
 import com.dpdocter.beans.NdhmDoctorDetails;
 import com.dpdocter.beans.NdhmOauthResponse;
@@ -108,12 +110,8 @@ import com.dpdocter.beans.OnLinkConfirm;
 import com.dpdocter.beans.OnLinkRequest;
 import com.dpdocter.beans.OnNotifyRequest;
 import com.dpdocter.beans.OnNotifySmsRequest;
-import com.dpdocter.beans.OnPatientShare;
 import com.dpdocter.beans.OnSharePatientrequest;
 import com.dpdocter.beans.PatientShareProfile;
-import com.dpdocter.beans.PatientVisitLookupBean;
-import com.dpdocter.beans.RegisteredPatientDetails;
-import com.dpdocter.beans.ResponseBundle;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
@@ -122,9 +120,7 @@ import com.dpdocter.beans.StatusResponse;
 import com.dpdocter.collections.CareContextDiscoverCollection;
 import com.dpdocter.collections.ConsentFetchRequestCollection;
 import com.dpdocter.collections.ConsentInitCollection;
-import com.dpdocter.collections.ConsentOnInitRequestCollection;
 import com.dpdocter.collections.DataEncryptionCollection;
-import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.HipDataFlowCollection;
@@ -136,24 +132,19 @@ import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.NdhmNotifyCollection;
 import com.dpdocter.collections.NdhmPatientFindCollection;
 import com.dpdocter.collections.OTPCollection;
-import com.dpdocter.collections.OTReportsCollection;
 import com.dpdocter.collections.OnAuthInitCollection;
 import com.dpdocter.collections.OnCareContextCollection;
 import com.dpdocter.collections.OnConsentRequestStatusCollection;
 import com.dpdocter.collections.OnFetchModeCollection;
 import com.dpdocter.collections.OnNotifySmsCollection;
-import com.dpdocter.collections.OperationNoteCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientShareProfileCollection;
-import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.ComponentType;
-import com.dpdocter.enums.NDHMRecordDataResourceType;
 import com.dpdocter.enums.OTPState;
-import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -188,22 +179,29 @@ import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.ConsentOnInitRequest;
 import com.dpdocter.request.CreateAadhaarRequest;
+import com.dpdocter.request.CreateAbhaAddressV3Request;
 import com.dpdocter.request.CreateProfileRequest;
 import com.dpdocter.request.DataFlowRequest;
 import com.dpdocter.request.DataTransferRequest;
+import com.dpdocter.request.DeleteABHANumberRequest;
 import com.dpdocter.request.DhPublicKeyDataFlowRequest;
+import com.dpdocter.request.EnrollmentV3Request;
+import com.dpdocter.request.EnrollmentVerifyAndUpdateV3Request;
 import com.dpdocter.request.EntriesDataTransferRequest;
 import com.dpdocter.request.GatewayConsentInitRequest;
 import com.dpdocter.request.GatewayConsentStatusRequest;
+import com.dpdocter.request.GenerateLinkTokenCallbackV3Request;
+import com.dpdocter.request.GenerateLinkTokenV3Request;
 import com.dpdocter.request.KeyMaterialRequestDataFlow;
 import com.dpdocter.request.PatientRegistrationRequest;
+import com.dpdocter.response.CreateAbhaAddresseResponse;
 import com.dpdocter.response.GetCardProfileResponse;
+import com.dpdocter.response.RequestOtp;
+import com.dpdocter.response.SuggestedAbhaAddressesResponse;
+import com.dpdocter.response.VerifyAndUpdateDataResponse;
 import com.dpdocter.security.DHKeyExchangeCrypto;
 import com.dpdocter.security.DhKeyExchangeCryptoHiu;
-import com.dpdocter.security.DischargeSummarySample;
-import com.dpdocter.security.OPConsultNoteSample;
 import com.dpdocter.security.PrescriptionSample;
-import com.dpdocter.security.ResourcePopulator;
 import com.dpdocter.services.HITypeResourceProcessor;
 import com.dpdocter.services.NDHMservices;
 import com.dpdocter.services.OTPService;
@@ -211,9 +209,13 @@ import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
+import com.dpdocter.response.EnrollByAadhaarResponse;
 import com.dpdocter.webservices.GateWayHiOnRequest;
 import com.dpdocter.webservices.GateWayOnRequest;
+import com.dpdocter.webservices.PathProxy;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -226,7 +228,7 @@ import common.util.web.Response;
 public class NDHMserviceImpl implements NDHMservices {
 
 	private static Logger logger = LogManager.getLogger(NDHMserviceImpl.class.getName());
-	
+
 	private final List<HITypeResourceProcessor> resourceProcessors = new ArrayList<>();
 
 	@Value(value = "${ndhm.clientId}")
@@ -240,7 +242,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Value(value = "${ndhm.hiu.clientSecret}")
 	private String NDHM_HIU_CLIENT_SECRET;
-	
+
 	@Autowired
 	private OnFetchModeRepository onFetchModeRepository;
 
@@ -264,99 +266,92 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Autowired
 	private HipDataFlowRepository hipDataFlowRepository;
-	
+
 	@Autowired
 	private NdhmNotifyRepository ndhmNotifyRepository;
-	
+
 	@Autowired
 	private HealthDataFlowRepository healthDataFlowRepository;
-	
+
 	@Autowired
 	private ConsentInitRepository consentInitRepository;
-	
+
 	@Autowired
 	private ConsentStatusRequestRepository consentStatusRequestRepository;
 
 	@Autowired
 	private PatientRepository patientRepository;
-	
+
 	@Autowired
 	private DoctorRepository doctorRepository;
-	
-	
+
 	@Autowired
 	private PrescriptionRepository prescriptionRepository;
-	
-	
+
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private MongoTemplate mongoTemplate;
-	
+
 	@Autowired
 	private SMSServices smsServices;
-	
+
 	@Autowired
 	private OTPRepository otpRepository;
-	
+
 	@Autowired
 	private OTPService otpService;
-	
+
 	@Autowired
 	private NdhmPatientFindRepository ndhmPatientFindRepository;
-	
+
 	@Autowired
 	private HiuNotifyRepository hiuNotifyRepository;
-	
+
 	@Autowired
 	private ConsentFetchRepository consentFetchRepository;
-	
-	
+
 	@Autowired
 	private HiuDataRequestRepository hiuDataRequestRepository;
-	
+
 	@Autowired
 	private HiuDataTransferRepository hiuDataTransferRepository;
-	
+
 	@Autowired
 	private HiuConsentRequestInitRepository hiuConsentRequestInitRepository;
-	
+
 	@Autowired
 	private PatientShareRepository patientShareRepository;
-	
+
 	@Autowired
 	private NotifySmsRepository notifySmsRepository;
-	
+
 	@Autowired
 	private PushNotificationServices pushNotificationServices;
-	
-	
+
 	@Autowired
 	private RegistrationService registrationService;
 
-	
 	@Autowired
 	private DoctorClinicProfileRepository doctorClinicProfileRepository;
-	
-	
+
 	@Autowired
 	private LocationRepository locationRepository;
-	
+
 	@Autowired
 	private ESRegistrationService esRegistrationService;
 
 	@Autowired
 	private TransactionalManagementService transnationalService;
-	
+
 	@Autowired
 	private EncryptionKeyRepository encryptionKeyRepository;
-	
 
 	public NdhmOauthResponse session() {
 		NdhmOauthResponse response = null;
 		try {
-			String url = "https://dev.ndhm.gov.in/gateway/v0.5/sessions";
+			String url = "https://dev.abdm.gov.in/gateway/v0.5/sessions";
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("clientId", NDHM_CLIENTID);
 			orderRequest.put("clientSecret", NDHM_CLIENT_SECRET);
@@ -413,7 +408,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			NdhmOauthResponse oauth = session();
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/registration/mobile/generateOtp";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/registration/mobile/generateOtp";
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("mobile", mobileNumber);
 
@@ -471,7 +466,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			NdhmOauthResponse oauth = session();
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/registration/mobile/verifyOtp";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/registration/mobile/verifyOtp";
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("otp", otp);
 			orderRequest.put("txnId", txnId);
@@ -530,7 +525,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			NdhmOauthResponse oauth = session();
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/registration/mobile/resendOtp";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/registration/mobile/resendOtp";
 			JSONObject orderRequest = new JSONObject();
 
 			orderRequest.put("txnId", txnId);
@@ -594,7 +589,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			NdhmOauthResponse oauth = session();
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/registration/mobile/createHealthId";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/registration/mobile/createHealthId";
 			JSONObject orderRequest = new JSONObject();
 
 			orderRequest.put("address", request.getAddress());
@@ -681,7 +676,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			NdhmOauthResponse oauth = session();
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/ha/lgd/states";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/ha/lgd/states";
 //			JSONObject orderRequest = new JSONObject();
 //			orderRequest.put("otp",otp);
 //			orderRequest.put("txnId",  txnId);
@@ -735,7 +730,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			NdhmOauthResponse oauth = session();
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/ha/lgd/districts?stateCode=" + statecode;
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/ha/lgd/districts?stateCode=" + statecode;
 //			JSONObject orderRequest = new JSONObject();
 //			orderRequest.put("otp",otp);
 //			orderRequest.put("txnId",  txnId);
@@ -788,7 +783,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			NdhmOauthResponse oauth = session();
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/search/existsByHealthId";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/search/existsByHealthId";
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("healthId", healthId);
 
@@ -849,7 +844,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			NdhmOauthResponse oauth = session();
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/search/searchByHealthId";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/search/searchByHealthId";
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("healthId", healthId);
 
@@ -906,7 +901,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			NdhmOauthResponse oauth = session();
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/search/searchByMobile";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/search/searchByMobile";
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("gender", request.getGender());
 			orderRequest.put("mobile", request.getMobile());
@@ -973,7 +968,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			requestBody.put("password", password);
 
 			System.out.println(requestBody);
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/auth/authPassword";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/auth/authPassword";
 
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -1028,7 +1023,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			requestBody.put("healthid", healthid);
 
 			System.out.println(requestBody);
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/auth/authWithMobile";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/auth/authWithMobile";
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -1079,7 +1074,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 
 			ObjectMapper mapper = new ObjectMapper();
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/auth/authWithMobileToken";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/auth/authWithMobileToken";
 //				String authStr = keyId + ":" + secret;
 //				String authStringEnc = Base64.getEncoder().encodeToString(authStr.getBytes());
 			URL obj = new URL(url);
@@ -1139,7 +1134,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			requestBody.put("healthid", healthId);
 			requestBody.put("authMethod", authMethod);
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/auth/init";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/auth/init";
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 			con.setDoOutput(true);
@@ -1190,7 +1185,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/auth/confirmWithMobileOTP";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/auth/confirmWithMobileOTP";
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("otp", otp);
 			orderRequest.put("txnId", txnId);
@@ -1201,7 +1196,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			con.setDoOutput(true);
 
-			System.out.println(con.getErrorStream());
+			System.out.println("Error /s:" + con.getErrorStream());
 			con.setDoInput(true);
 
 			// optional default is POST
@@ -1218,8 +1213,8 @@ public class NDHMserviceImpl implements NDHMservices {
 			InputStream in = con.getInputStream();
 
 			String inputLine;
-			System.out.println(con.getErrorStream());
-			System.out.println("in" + in.toString());
+			System.out.println("Error: " + con.getErrorStream());
+			System.out.println("in: " + in.toString());
 			/* response = new StringBuffer(); */
 			StringBuffer output = new StringBuffer();
 			int c = 0;
@@ -1230,7 +1225,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			}
 			ObjectMapper mapper = new ObjectMapper();
 
-			System.out.println("response:" + output.toString());
+			System.out.println("response:  " + output.toString());
 			response = mapper.readValue(output.toString(), NdhmOtp.class);
 
 		} catch (Exception e) {
@@ -1250,7 +1245,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/auth/confirmWithAadhaarOtp";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/auth/confirmWithAadhaarOtp";
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("otp", otp);
 			orderRequest.put("txnId", txnId);
@@ -1315,7 +1310,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			requestBody.put("aadhaar", aadhaar);
 			System.out.println("request:" + requestBody);
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/registration/aadhaar/generateOtp";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/registration/aadhaar/generateOtp";
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 			con.setDoOutput(true);
@@ -1367,7 +1362,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/registration/aadhaar/generateMobileOTP";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/registration/aadhaar/generateMobileOTP";
 			// "https://healthidsbx.ndhm.gov.in/api/v1/registration/mobile/generateMobileOTP";
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("mobile", mobile);
@@ -1426,7 +1421,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/registration/aadhaar/verifyOTP";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/registration/aadhaar/verifyOTP";
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("otp", otp);
 			orderRequest.put("restrictions", restrictions);
@@ -1486,7 +1481,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/registration/aadhaar/verifyMobileOTP";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/registration/aadhaar/verifyMobileOTP";
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("otp", otp);
 			orderRequest.put("txnId", txnId);
@@ -1560,7 +1555,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/registration/aadhaar/createHealthIdWithAadhaarOtp";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/registration/aadhaar/createHealthIdWithAadhaarOtp";
 //			JSONObject orderRequest = new JSONObject();
 //			orderRequest.put("email", otp);
 //			orderRequest.put("txnId", txnId);
@@ -1625,7 +1620,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/registration/aadhaar/resendAadhaarOtp";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/registration/aadhaar/resendAadhaarOtp";
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("txnId", txnId);
 
@@ -1680,7 +1675,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/account/getCard";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/account/getCard";
 
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -1815,7 +1810,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/account/getPngCard";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/account/getPngCard";
 //			JSONObject orderRequest = new JSONObject();
 //			orderRquest.put("txnId", txnId);
 
@@ -1828,6 +1823,8 @@ public class NDHMserviceImpl implements NDHMservices {
 			con.setDoInput(true);
 			// optional default is POST
 			con.setRequestMethod("GET");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("accept", "*/*");
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
 			con.setRequestProperty("X-Token", "Bearer " + authToken);
@@ -1864,6 +1861,116 @@ public class NDHMserviceImpl implements NDHMservices {
 	}
 
 	@Override
+	public Response<Object> profileGetQRCode(String authToken) {
+		Response<Object> response = new Response<Object>();
+
+		try {
+
+			NdhmOauthResponse oauth = session();
+			System.out.println("token" + oauth.getAccessToken());
+
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/account/qrCode";
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			con.setDoOutput(true);
+
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("GET");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("accept", "*/*");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("X-Token", "Bearer " + authToken);
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			/* response = new StringBuffer(); */
+			StringBuffer respons = new StringBuffer();
+			while ((inputLine = in.readLine()) != null) {
+
+				respons.append(inputLine);
+
+			}
+			in.close();
+			ObjectMapper mapper = new ObjectMapper();
+			String output = respons.toString();
+
+			System.out.println("response" + respons.toString());
+
+			response.setData(mapper.readValue(output.toString(), GetCardProfileResponse.class));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Response<Object> profileGetQRCodeV3(String authToken) {
+		Response<Object> response = new Response<Object>();
+
+		try {
+
+			NdhmOauthResponse oauth = session();
+			System.out.println("token" + oauth.getAccessToken());
+
+			String url = "https://abhasbx.abdm.gov.in/abha/api/v3/profile/account/qrCode";
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			UUID uuid = UUID.randomUUID();
+			TimeZone tz = TimeZone.getTimeZone("UTC");
+			DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+																					// timezone offset
+			df.setTimeZone(tz);
+			String nowAsISO = df.format(new Date());
+			System.out.println("uuid" + uuid.toString());
+			System.out.println("time" + nowAsISO);
+			con.setDoOutput(true);
+
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("GET");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("accept", "*/*");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("X-Token", "Bearer " + authToken);
+			con.setRequestProperty("REQUEST-ID", uuid.toString());
+			con.setRequestProperty("TIMESTAMP", nowAsISO);
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			/* response = new StringBuffer(); */
+			StringBuffer respons = new StringBuffer();
+			while ((inputLine = in.readLine()) != null) {
+
+				respons.append(inputLine);
+
+			}
+			in.close();
+			ObjectMapper mapper = new ObjectMapper();
+			String output = respons.toString();
+
+			System.out.println("response" + respons.toString());
+
+			response.setData(mapper.readValue(output.toString(), GetCardProfileResponse.class));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
 	public Response<Object> getProfileDetail(String authToken) {
 		Response<Object> response = new Response<Object>();
 
@@ -1872,7 +1979,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/account/profile";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/account/profile";
 //			JSONObject orderRequest = new JSONObject();
 //			orderRquest.put("txnId", txnId);
 
@@ -1885,6 +1992,8 @@ public class NDHMserviceImpl implements NDHMservices {
 			con.setDoInput(true);
 			// optional default is POST
 			con.setRequestMethod("GET");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("accept", "*/*");
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
 			con.setRequestProperty("X-Token", "Bearer " + authToken);
@@ -1948,7 +2057,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/account/profile";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/account/profile";
 //			JSONObject orderRequest = new JSONObject();
 //			orderRquest.put("txnId", txnId);
 
@@ -2005,7 +2114,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/account/profile";
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/account/profile";
 //			JSONObject orderRequest = new JSONObject();
 //			orderRquest.put("txnId", txnId);
 
@@ -2077,7 +2186,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://dev.ndhm.gov.in/gateway/v0.5/users/auth/fetch-modes";
+			String url = "https://dev.abdm.gov.in/gateway/v0.5/users/auth/fetch-modes";
 //			JSONObject orderRequest = new JSONObject();
 //			orderRquest.put("txnId", txnId);
 
@@ -2193,7 +2302,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://dev.ndhm.gov.in/gateway/v0.5/users/auth/init";
+			String url = "https://dev.abdm.gov.in/gateway/v0.5/users/auth/init";
 //			JSONObject orderRequest = new JSONObject();
 //			orderRquest.put("txnId", txnId);
 
@@ -2317,7 +2426,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://dev.ndhm.gov.in/gateway/v0.5/users/auth/confirm";
+			String url = "https://dev.abdm.gov.in/gateway/v0.5/users/auth/confirm";
 //			JSONObject orderRequest = new JSONObject();
 //			orderRquest.put("txnId", txnId);
 
@@ -2425,7 +2534,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			orderRequest2.put("referenceNumber", request.getLink().getPatient().getReferenceNumber());
 			orderRequest2.put("display", request.getLink().getPatient().getDisplay());
 			orderRequest2.put("careContexts", request.getLink().getPatient().getCareContexts());
-			
+
 			orderRequest.put("requestId", request.getRequestId());
 			orderRequest.put("timestamp", request.getTimestamp());
 
@@ -2434,7 +2543,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://dev.ndhm.gov.in/gateway/v0.5/links/link/add-contexts";
+			String url = "https://dev.abdm.gov.in/gateway/v0.5/links/link/add-contexts";
 //			JSONObject orderRequest = new JSONObject();
 //			orderRquest.put("txnId", txnId);
 
@@ -2512,73 +2621,73 @@ public class NDHMserviceImpl implements NDHMservices {
 			collection.setCreatedTime(new Date());
 			careContextDiscoverRepository.save(collection);
 			response = true;
-			System.out.println("response"+response);
-			if(response==true)
-			{
-				OnDiscoverRequest discover=new OnDiscoverRequest();
-				UUID uuid=UUID.randomUUID();
+			System.out.println("response" + response);
+			if (response == true) {
+				OnDiscoverRequest discover = new OnDiscoverRequest();
+				UUID uuid = UUID.randomUUID();
 				discover.setRequestId(uuid.toString());
 //				TimeZone tz = TimeZone.getTimeZone("UTC");
 //				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SS"); // Quoted "Z" to indicate UTC, no timezone offset
 //				df.setTimeZone(tz);
 //				String nowAsISO = df.format(new Date());
-		//		discover.setTimestamp(nowAsISO);
-				LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
-				System.out.println("timeStamp"+time.toString());
-				discover.setTimestamp(time.toString());
+				// discover.setTimestamp(nowAsISO);
+				TimeZone tz = TimeZone.getTimeZone("UTC");
+				DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+																						// timezone offset
+				df.setTimeZone(tz);
+				String nowAsISO = df.format(new Date());
+				System.out.println("timeStamp" + nowAsISO);
+				discover.setTimestamp(nowAsISO);
 				discover.setTransactionId(collection.getTransactionId());
-				
-				String patientId=collection.getPatient().getId();
-				String patientName=collection.getPatient().getName();
-				String gender=request.getPatient().getGender();
-				if(gender.equals("M"))
-				{
-					gender="MALE";
+
+				String patientId = collection.getPatient().getId();
+				String patientName = collection.getPatient().getName();
+				String gender = request.getPatient().getGender();
+				if (gender.equals("M")) {
+					gender = "MALE";
+				} else if (gender.equals("F")) {
+					gender = "FEMALE";
+				} else {
+					gender = "OTHER";
 				}
-				else if (gender.equals("F")) {
-					gender="FEMALE";
-				} else{
-					gender="OTHER";
-				}
-				System.out.println("Gender"+gender);
-				System.out.println("HealthId"+patientId);
-				System.out.println("PatientName "+patientName);
-				
-				List<PatientCollection> patientCollections=patientRepository.findByHealthIdAndLocalPatientNameAndGender(patientId,patientName,gender);
-				PatientCollection patientCollection=patientCollections.get(0);
-				if(patientCollection !=null)
-				{
-					UserCollection user=userRepository.findById(patientCollection.getUserId()).orElse(null);
-				//	String mobileNumber=user.getMobileNumber().substring(0);
-					System.out.println("mobile"+user.getMobileNumber().replace("+91-",""));
-					otpGenerator(user.getMobileNumber(),null);
-					DiscoverPatientResponse patient=new DiscoverPatientResponse();
-					UUID uuid2=UUID.randomUUID();
-					//patient.setReferenceNumber(patientCollection.getId().toString());
+				System.out.println("Gender" + gender);
+				System.out.println("HealthId" + patientId);
+				System.out.println("PatientName " + patientName);
+
+				List<PatientCollection> patientCollections = patientRepository
+						.findByHealthIdAndLocalPatientNameAndGender(patientId, patientName, gender);
+				PatientCollection patientCollection = patientCollections.get(0);
+				if (patientCollection != null) {
+					UserCollection user = userRepository.findById(patientCollection.getUserId()).orElse(null);
+					// String mobileNumber=user.getMobileNumber().substring(0);
+					System.out.println("mobile" + user.getMobileNumber().replace("+91-", ""));
+					otpGenerator(user.getMobileNumber(), null);
+					DiscoverPatientResponse patient = new DiscoverPatientResponse();
+					UUID uuid2 = UUID.randomUUID();
+					// patient.setReferenceNumber(patientCollection.getId().toString());
 					patient.setReferenceNumber(uuid2.toString());
 					patient.setDisplay("Health-Information");
-					CareContext care=new CareContext();
+					CareContext care = new CareContext();
 					care.setDisplay("Health-Information");
-					UUID uuid1=UUID.randomUUID();
+					UUID uuid1 = UUID.randomUUID();
 					care.setReferenceNumber(uuid1.toString());
-					List<CareContext>careContexts=new ArrayList<CareContext>();
+					List<CareContext> careContexts = new ArrayList<CareContext>();
 					careContexts.add(care);
 					patient.setCareContexts(careContexts);
-					List<String>matchedBy=new ArrayList<String>();
+					List<String> matchedBy = new ArrayList<String>();
 					matchedBy.add("HEALTH_ID");
-				 patient.setMatchedBy(matchedBy);
+					patient.setMatchedBy(matchedBy);
 					discover.setPatient(patient);
-					FetchResponse resp=new FetchResponse();
+					FetchResponse resp = new FetchResponse();
 					resp.setRequestId(collection.getRequestId());
 					discover.setResp(resp);
-					Boolean status=false;
-					System.out.println("discover request"+discover);
-					status=onDiscover( discover);
-					System.out.println("status"+status); 
+					Boolean status = false;
+					System.out.println("discover request" + discover);
+					status = onDiscover(discover);
+					System.out.println("status" + status);
 				}
-				
+
 			}
-			
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2589,28 +2698,27 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	}
 
-	
-	
-	 public Boolean otpGenerator(String mobileNumber,String countryCode) {
-	    	Boolean response = false;
+	public Boolean otpGenerator(String mobileNumber, String countryCode) {
+		Boolean response = false;
 		String OTP = null;
 		try {
-		    OTP = LoginUtils.generateOTP();
-		    SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-			
+			OTP = LoginUtils.generateOTP();
+			SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+
 			smsTrackDetail.setType(ComponentType.NDHM_OTP.getType());
 			SMSDetail smsDetail = new SMSDetail();
-			
-		//	smsDetail.setUserName(doctorContactUs.getFirstName());
+
+			// smsDetail.setUserName(doctorContactUs.getFirstName());
 			SMS sms = new SMS();
-		
-		//	String link = welcomeLink + "/" + tokenCollection.getId()+"/";
-		//	String shortUrl = DPDoctorUtils.urlShortner(link);
-			sms.setSmsText(OTP+" is your Healthcoco OTP. Code is valid for 30 minutes only, one time use. Stay Healthy and Happy! OTPVerification");
+
+			// String link = welcomeLink + "/" + tokenCollection.getId()+"/";
+			// String shortUrl = DPDoctorUtils.urlShortner(link);
+			sms.setSmsText(OTP
+					+ " is your Healthcoco OTP. Code is valid for 30 minutes only, one time use. Stay Healthy and Happy! OTPVerification");
 
 			SMSAddress smsAddress = new SMSAddress();
-			mobileNumber=mobileNumber.replace("+91","");
-			System.out.println("mobile"+mobileNumber);
+			mobileNumber = mobileNumber.replace("+91", "");
+			System.out.println("mobile" + mobileNumber);
 			smsAddress.setRecipient(mobileNumber);
 			sms.setSmsAddress(smsAddress);
 			smsDetail.setSms(sms);
@@ -2620,35 +2728,23 @@ public class NDHMserviceImpl implements NDHMservices {
 			smsTrackDetail.setSmsDetails(smsDetails);
 			smsServices.sendOTPSMS(smsTrackDetail, true);
 
-		    OTPCollection otpCollection = new OTPCollection();
-		    otpCollection.setCreatedTime(new Date());
-		    otpCollection.setOtpNumber(OTP);
-		    otpCollection.setGeneratorId(mobileNumber);
-		    otpCollection.setMobileNumber(mobileNumber);
-		    otpCollection.setCountryCode(countryCode);
-		    otpCollection.setCreatedBy(mobileNumber);
-		    otpCollection = otpRepository.save(otpCollection);
+			OTPCollection otpCollection = new OTPCollection();
+			otpCollection.setCreatedTime(new Date());
+			otpCollection.setOtpNumber(OTP);
+			otpCollection.setGeneratorId(mobileNumber);
+			otpCollection.setMobileNumber(mobileNumber);
+			otpCollection.setCountryCode(countryCode);
+			otpCollection.setCreatedBy(mobileNumber);
+			otpCollection = otpRepository.save(otpCollection);
 
 		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e + " Error While Generating OTP");
-		    throw new BusinessException(ServiceError.Unknown, "Error While Generating OTP "+e.getMessage());
+			e.printStackTrace();
+			logger.error(e + " Error While Generating OTP");
+			throw new BusinessException(ServiceError.Unknown, "Error While Generating OTP " + e.getMessage());
 		}
 		return response;
-	    }
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	}
+
 	@Override
 	public CareContextDiscoverRequest getCareContextDiscover(String requestId) {
 		CareContextDiscoverRequest response = null;
@@ -2656,9 +2752,8 @@ public class NDHMserviceImpl implements NDHMservices {
 			CareContextDiscoverCollection collection = careContextDiscoverRepository.findByRequestId(requestId);
 			if (collection != null) {
 				response = new CareContextDiscoverRequest();
-				if(collection !=null)
-				{
-					BeanUtil.map(collection,response);
+				if (collection != null) {
+					BeanUtil.map(collection, response);
 				}
 
 			}
@@ -2679,43 +2774,38 @@ public class NDHMserviceImpl implements NDHMservices {
 			JSONObject orderRequest = new JSONObject();
 
 			JSONObject orderRequest1 = new JSONObject();
-			JSONObject orderRequest2 = new JSONObject();	
+			JSONObject orderRequest2 = new JSONObject();
 			JSONObject orderRequest3 = new JSONObject();
 			JSONObject orderRequest4 = new JSONObject();
-			JSONArray array=new JSONArray();
-			
+			JSONArray array = new JSONArray();
+
 			orderRequest1.put("referenceNumber", request.getPatient().getReferenceNumber());
 			orderRequest1.put("display", request.getPatient().getDisplay());
-			
-			
-		
-			orderRequest1.put("careContexts",request.getPatient().getCareContexts());
-			
-			
-			
+
+			orderRequest1.put("careContexts", request.getPatient().getCareContexts());
+
 			array.put(request.getPatient().getMatchedBy());
-			System.out.println("matchedBy"+request.getPatient().getMatchedBy());
-			orderRequest1.put("matchedBy", request.getPatient().getMatchedBy());	
-			//orderRequest2.put("error",orderRequest3);
-		//	orderRequest3.put("code", request.getError().getCode());
-		//	orderRequest3.put("message", request.getError().getMessage());
-			//orderRequest2.put("resp",orderRequest4);
-			//orderRequest4.put("requestId", request.getResp().getRequestId());
-			
+			System.out.println("matchedBy" + request.getPatient().getMatchedBy());
+			orderRequest1.put("matchedBy", request.getPatient().getMatchedBy());
+			// orderRequest2.put("error",orderRequest3);
+			// orderRequest3.put("code", request.getError().getCode());
+			// orderRequest3.put("message", request.getError().getMessage());
+			// orderRequest2.put("resp",orderRequest4);
+			// orderRequest4.put("requestId", request.getResp().getRequestId());
+
 			orderRequest.put("requestId", request.getRequestId());
 			orderRequest.put("timestamp", request.getTimestamp());
 			orderRequest.put("transactionId", request.getTransactionId());
-			
-			
-			orderRequest.put("patient",orderRequest1 );
-			orderRequest.put("error",request.getError());
-			orderRequest.put("resp",orderRequest2);
-			orderRequest2.put("requestId",request.getResp().getRequestId());
-			System.out.println("req"+orderRequest);
+
+			orderRequest.put("patient", orderRequest1);
+			orderRequest.put("error", request.getError());
+			orderRequest.put("resp", orderRequest2);
+			orderRequest2.put("requestId", request.getResp().getRequestId());
+			System.out.println("req" + orderRequest);
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://dev.ndhm.gov.in/gateway/v0.5/care-contexts/on-discover";
+			String url = "https://dev.abdm.gov.in/gateway/v0.5/care-contexts/on-discover";
 //			JSONObject orderRequest = new JSONObject();
 //			orderRquest.put("txnId", txnId);
 
@@ -2772,32 +2862,35 @@ public class NDHMserviceImpl implements NDHMservices {
 			collection.setCreatedTime(new Date());
 			linkInitRepository.save(collection);
 			response = true;
-			if(response==true)
-			{
-				OnLinkRequest discover=new OnLinkRequest();
-				UUID uuid=UUID.randomUUID();
+			if (response == true) {
+				OnLinkRequest discover = new OnLinkRequest();
+				UUID uuid = UUID.randomUUID();
 				discover.setRequestId(uuid.toString());
 //				TimeZone tz = TimeZone.getTimeZone("UTC");
 //				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SS"); // Quoted "Z" to indicate UTC, no timezone offset
 //				df.setTimeZone(tz);
-		//		String nowAsISO = df.format(new Date());
-			LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
-			System.out.println("timeStamp"+time.toString());
-				discover.setTimestamp(time.toString());
+				// String nowAsISO = df.format(new Date());
+				TimeZone tz = TimeZone.getTimeZone("UTC");
+				DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+																						// timezone offset
+				df.setTimeZone(tz);
+				String nowAsISO = df.format(new Date());
+				System.out.println("timeStamp" + nowAsISO);
+				discover.setTimestamp(nowAsISO);
 				discover.setTransactionId(collection.getTransactionId());
-				LinkResponse link=new LinkResponse();
+				LinkResponse link = new LinkResponse();
 				link.setAuthenticationType("DIRECT");
 				link.setReferenceNumber(collection.getPatient().getReferenceNumber());
-				
-				LinkMeta meta =new LinkMeta();
+
+				LinkMeta meta = new LinkMeta();
 				meta.setCommunicationMedium("MOBILE");
 				link.setMeta(meta);
 				discover.setLink(link);
-				FetchResponse resp=new FetchResponse();
+				FetchResponse resp = new FetchResponse();
 				resp.setRequestId(collection.getRequestId());
 				discover.setResp(resp);
-		Boolean	status=	onLinkInit(discover);
-		System.out.println("Status"+status);
+				Boolean status = onLinkInit(discover);
+				System.out.println("Status" + status);
 			}
 		}
 
@@ -2818,10 +2911,9 @@ public class NDHMserviceImpl implements NDHMservices {
 			JSONObject orderRequest = new JSONObject();
 
 			JSONObject orderRequest1 = new JSONObject();
-			JSONObject orderRequest2 = new JSONObject();	
-			JSONObject orderRequest3 = new JSONObject();	
-			
-			
+			JSONObject orderRequest2 = new JSONObject();
+			JSONObject orderRequest3 = new JSONObject();
+
 //			orderRequest1.put("accessToken", request.getLink().getAccessToken());
 //			
 //		
@@ -2832,26 +2924,25 @@ public class NDHMserviceImpl implements NDHMservices {
 //			orderRequest2.put("careContexts", orderRequest3);	
 //			orderRequest3.put("referenceNumber", request.getLink().getPatient().getCareContexts().getReferenceNumber());
 //			orderRequest3.put("display", request.getLink().getPatient().getCareContexts().getDisplay());
-			
-		
+
 			orderRequest.put("requestId", request.getRequestId());
 			orderRequest.put("timestamp", request.getTimestamp());
 			orderRequest.put("transactionId", request.getTransactionId());
-			
-			orderRequest1.put("referenceNumber",request.getLink().getReferenceNumber());
-			orderRequest1.put("authenticationType",request.getLink().getAuthenticationType());
-			orderRequest2.put("communicationMedium",request.getLink().getMeta().getCommunicationMedium());
-			orderRequest1.put("meta",orderRequest2);
-		    orderRequest.put("link",request.getLink());
-			orderRequest.put("error",request.getError());
-			orderRequest3.put("requestId",request.getResp().getRequestId());
-			orderRequest.put("resp",orderRequest3);
+
+			orderRequest1.put("referenceNumber", request.getLink().getReferenceNumber());
+			orderRequest1.put("authenticationType", request.getLink().getAuthenticationType());
+			orderRequest2.put("communicationMedium", request.getLink().getMeta().getCommunicationMedium());
+			orderRequest1.put("meta", orderRequest2);
+			orderRequest.put("link", request.getLink());
+			orderRequest.put("error", request.getError());
+			orderRequest3.put("requestId", request.getResp().getRequestId());
+			orderRequest.put("resp", orderRequest3);
 			orderRequest.put("link", orderRequest1);
-			
+
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
-			System.out.println("req"+orderRequest);
-			String url = "https://dev.ndhm.gov.in/gateway/v0.5/links/link/on-init";
+			System.out.println("req" + orderRequest);
+			String url = "https://dev.abdm.gov.in/gateway/v0.5/links/link/on-init";
 //			JSONObject orderRequest = new JSONObject();
 //			orderRquest.put("txnId", txnId);
 
@@ -2907,9 +2998,8 @@ public class NDHMserviceImpl implements NDHMservices {
 		try {
 			LinkInitCollection collection = linkInitRepository.findByRequestId(requestId);
 			response = new LinkRequest();
-			if(collection !=null)
-			{
-				BeanUtil.map(collection,response);
+			if (collection != null) {
+				BeanUtil.map(collection, response);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2928,53 +3018,48 @@ public class NDHMserviceImpl implements NDHMservices {
 			BeanUtil.map(request, collection);
 			collection.setCreatedTime(new Date());
 			linkConfirmRepository.save(collection);
-			
-			
-			OTPCollection otpCollection=null;
-			if(request.getConfirmation()!=null)
-			{
-				otpCollection =	otpRepository.findByOtpNumber(request.getConfirmation().getToken());
-			if(otpCollection !=null && otpCollection.getState().equals(OTPState.NOTVERIFIED))
-			{
-				if (otpService.isOTPValid(otpCollection.getCreatedTime())) {
-				otpCollection.setState(OTPState.VERIFIED);
-				otpRepository.save(otpCollection);
-				response = true;
-				}
+
+			OTPCollection otpCollection = null;
+			if (request.getConfirmation() != null) {
+				otpCollection = otpRepository.findByOtpNumber(request.getConfirmation().getToken());
+				if (otpCollection != null && otpCollection.getState().equals(OTPState.NOTVERIFIED)) {
+					if (otpService.isOTPValid(otpCollection.getCreatedTime())) {
+						otpCollection.setState(OTPState.VERIFIED);
+						otpRepository.save(otpCollection);
+						response = true;
+					}
+				} else
+					throw new BusinessException(ServiceError.InvalidInput, "invalid otp ");
 			}
-			else
-				throw new BusinessException(ServiceError.InvalidInput,"invalid otp ");
-			}
-			if(response==true)
-			{
-				OnLinkConfirm discover=new OnLinkConfirm();
-				UUID uuid=UUID.randomUUID();
+			if (response == true) {
+				OnLinkConfirm discover = new OnLinkConfirm();
+				UUID uuid = UUID.randomUUID();
 				discover.setRequestId(uuid.toString());
 //				TimeZone tz = TimeZone.getTimeZone("UTC");
 //				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SS"); // Quoted "Z" to indicate UTC, no timezone offset
 //				df.setTimeZone(tz);
 //				String nowAsISO = df.format(new Date());
 //				discover.setTimestamp(nowAsISO);
-				LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
-				System.out.println("timeStamp"+time.toString());
-					discover.setTimestamp(time.toString());
-				
-				LinkConfirmPatient link=new LinkConfirmPatient();
+				LocalDateTime time = LocalDateTime.now(ZoneOffset.UTC);
+				System.out.println("timeStamp" + time.toString());
+				discover.setTimestamp(time.toString());
+
+				LinkConfirmPatient link = new LinkConfirmPatient();
 				link.setDisplay("LinkConfirm");
 				link.setReferenceNumber(collection.getConfirmation().getLinkRefNumber());
-				List<CareContext>careContexts=new ArrayList<CareContext>();
-				UUID uuid1=UUID.randomUUID();
-				CareContext care=new CareContext();
+				List<CareContext> careContexts = new ArrayList<CareContext>();
+				UUID uuid1 = UUID.randomUUID();
+				CareContext care = new CareContext();
 				care.setDisplay("Health-Information");
 				care.setReferenceNumber(uuid1.toString());
 				careContexts.add(care);
 				link.setCareContexts(careContexts);
-				FetchResponse resp=new FetchResponse();
+				FetchResponse resp = new FetchResponse();
 				resp.setRequestId(collection.getRequestId());
 				discover.setResp(resp);
 				discover.setPatient(link);
-		Boolean	status=	onLinkConfirm(discover);
-		System.out.println("Status"+status);
+				Boolean status = onLinkConfirm(discover);
+				System.out.println("Status" + status);
 			}
 
 		} catch (Exception e) {
@@ -2989,14 +3074,13 @@ public class NDHMserviceImpl implements NDHMservices {
 	public Boolean onLinkConfirm(OnLinkConfirm request) {
 		Boolean response = false;
 		try {
-			
+
 			JSONObject orderRequest = new JSONObject();
 
 			JSONObject orderRequest1 = new JSONObject();
-			JSONObject orderRequest2 = new JSONObject();	
-			JSONObject orderRequest3 = new JSONObject();	
-			
-			
+			JSONObject orderRequest2 = new JSONObject();
+			JSONObject orderRequest3 = new JSONObject();
+
 //			orderRequest1.put("accessToken", request.getLink().getAccessToken());
 //			
 //		
@@ -3007,23 +3091,22 @@ public class NDHMserviceImpl implements NDHMservices {
 //			orderRequest2.put("careContexts", orderRequest3);	
 //			orderRequest3.put("referenceNumber", request.getLink().getPatient().getCareContexts().getReferenceNumber());
 //			orderRequest3.put("display", request.getLink().getPatient().getCareContexts().getDisplay());
-			
-			
+
 			orderRequest.put("requestId", request.getRequestId());
 			orderRequest.put("timestamp", request.getTimestamp());
 			orderRequest1.put("referenceNumber", request.getPatient().getReferenceNumber());
-			orderRequest1.put("display",request.getPatient().getDisplay());
-			orderRequest1.put("careContexts",request.getPatient().getCareContexts());
-			orderRequest.put("patient",orderRequest1);
-			
-			orderRequest.put("error",request.getError());
-			orderRequest3.put("requestId",request.getResp().getRequestId());
-			orderRequest.put("resp",orderRequest3);
-			System.out.println("req"+orderRequest);
+			orderRequest1.put("display", request.getPatient().getDisplay());
+			orderRequest1.put("careContexts", request.getPatient().getCareContexts());
+			orderRequest.put("patient", orderRequest1);
+
+			orderRequest.put("error", request.getError());
+			orderRequest3.put("requestId", request.getResp().getRequestId());
+			orderRequest.put("resp", orderRequest3);
+			System.out.println("req" + orderRequest);
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://dev.ndhm.gov.in/gateway/v0.5/links/link/on-confirm";
+			String url = "https://dev.abdm.gov.in/gateway/v0.5/links/link/on-confirm";
 //		JSONObject orderRequest = new JSONObject();
 //		orderRquest.put("txnId", txnId);
 
@@ -3126,43 +3209,42 @@ public class NDHMserviceImpl implements NDHMservices {
 			collection.setCreatedTime(new Date());
 			hipDataFlowRepository.save(collection);
 			response = true;
-			Boolean status=false;
-			if(response==true)
-			{
-				GateWayOnRequest gate=new GateWayOnRequest();
-				UUID uuid=UUID.randomUUID();
+			Boolean status = false;
+			if (response == true) {
+				GateWayOnRequest gate = new GateWayOnRequest();
+				UUID uuid = UUID.randomUUID();
 				gate.setRequestId(uuid.toString());
-				LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
-				System.out.println("timeStamp"+time.toString());
+				LocalDateTime time = LocalDateTime.now(ZoneOffset.UTC);
+				System.out.println("timeStamp" + time.toString());
 				gate.setTimestamp(time.toString());
-				GateWayHiOnRequest gateWay=new GateWayHiOnRequest();
+				GateWayHiOnRequest gateWay = new GateWayHiOnRequest();
 				gateWay.setTransactionId(collection.getTransactionId());
 				gateWay.setSessionStatus("ACKNOWLEDGED");
 				gate.setHiRequest(gateWay);
-				FetchResponse resp=new FetchResponse();
+				FetchResponse resp = new FetchResponse();
 				resp.setRequestId(collection.getRequestId());
 				gate.setResp(resp);
-			 status= onGateWayOnRequest(gate);
+				status = onGateWayOnRequest(gate);
 			}
-			
-			NdhmNotifyCollection notify=ndhmNotifyRepository.findByNotificationConsentId(request.getHiRequest().getConsent().getId());
-		
-			if(notify !=null)
-			{
-				List<String>hiTypes=notify.getNotification().getConsentDetail().getHiTypes();
-				System.out.println("HiTypes"+hiTypes);
-				if(hiTypes !=null)
-				{
-					//String hiType=hiTypes.get(0);
-					String healthId=notify.getNotification().getConsentDetail().getPatient().getId();
-					String locationId=notify.getNotification().getConsentDetail().getHip().getId();
-						List<PatientCollection> patientCollections=patientRepository.findByHealthIdAndLocationId(healthId,new ObjectId(locationId));
-						PatientCollection	patientCollection=patientCollections.get(0);
-						//						Criteria criteria1 = new Criteria();
+
+			NdhmNotifyCollection notify = ndhmNotifyRepository
+					.findByNotificationConsentId(request.getHiRequest().getConsent().getId());
+
+			if (notify != null) {
+				List<String> hiTypes = notify.getNotification().getConsentDetail().getHiTypes();
+				System.out.println("HiTypes" + hiTypes);
+				if (hiTypes != null) {
+					// String hiType=hiTypes.get(0);
+					String healthId = notify.getNotification().getConsentDetail().getPatient().getId();
+					String locationId = notify.getNotification().getConsentDetail().getHip().getId();
+					List<PatientCollection> patientCollections = patientRepository.findByHealthIdAndLocationId(healthId,
+							new ObjectId(locationId));
+					PatientCollection patientCollection = patientCollections.get(0);
+					// Criteria criteria1 = new Criteria();
 //						
 //						criteria1.and("healthId").is(healthId);
 //						criteria1.and("locationId").is(new ObjectId(locationId));
-						
+
 //						Aggregation aggregation1= Aggregation.newAggregation( Aggregation.match(criteria1),
 //								Aggregation.lookup("docter_cl", "doctorId","userId","doctorSpeciality"),
 //								Aggregation.unwind("doctorSpeciality"),
@@ -3175,72 +3257,76 @@ public class NDHMserviceImpl implements NDHMservices {
 //						
 //						List<PatientCollection> patientCollection1=	mongoTemplate.aggregate(aggregation1,PatientCollection.class,PatientCollection.class).getMappedResults();
 //						//ResourcePopulator.populatePatientResource(patientCollection);
-						List<EntriesDataTransferRequest> entries=new ArrayList<EntriesDataTransferRequest>();
-						KeyMaterialRequestDataFlow key=new KeyMaterialRequestDataFlow();
+					List<EntriesDataTransferRequest> entries = new ArrayList<EntriesDataTransferRequest>();
+					KeyMaterialRequestDataFlow key = new KeyMaterialRequestDataFlow();
 
-						if(hiTypes.contains("Prescription"))
-						{
-							
-						if(patientCollection !=null)
-						{
-						//	PatientCollection patientCollection =patientCollections.get(0);
-						//	for(PatientCollection patientCollection:patientCollections) {
-								UserCollection user=userRepository.findById(patientCollection.getUserId()).orElse(null);
-								patientCollection.setSecMobile(user.getMobileNumber());
-							Criteria criteria =new Criteria();
-							//criteria.and("createdTime").gte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getFrom())
-							//.lte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getTo());
+					if (hiTypes.contains("Prescription")) {
+
+						if (patientCollection != null) {
+							// PatientCollection patientCollection =patientCollections.get(0);
+							// for(PatientCollection patientCollection:patientCollections) {
+							UserCollection user = userRepository.findById(patientCollection.getUserId()).orElse(null);
+							patientCollection.setSecMobile(user.getMobileNumber());
+							Criteria criteria = new Criteria();
+							// criteria.and("createdTime").gte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getFrom())
+							// .lte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getTo());
 							criteria.and("doctorId").is(patientCollection.getDoctorId());
 							criteria.and("patientId").is(patientCollection.getUserId());
 							Aggregation aggregation = null;
-							aggregation=Aggregation
-									.newAggregation(
-											Aggregation.match(criteria),Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+							aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+									Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
-							List<PrescriptionCollection> prescriptionCollections =mongoTemplate.aggregate(aggregation,
-										PrescriptionCollection.class, PrescriptionCollection.class).getMappedResults();
-						System.out.println("aggregation"+aggregation);
-						//PrescriptionCollection prescriptionCollection=null;
-						if(prescriptionCollections!=null) {
-					//	for(PrescriptionCollection prescriptionCollection:prescriptionCollections)
-				//	{
-							//PrescriptionCollection prescriptionCollection=prescriptionCollections.get(0);
-						DoctorCollection doctorCollection=doctorRepository.findByUserId(patientCollection.getDoctorId());
-						System.out.println("Doctor "+doctorCollection);
-						UserCollection userCollection=userRepository.findById(doctorCollection.getUserId()).orElse(null);
-						System.out.println("User "+doctorCollection);
-						String bundle =	PrescriptionSample.prescriptionConvert(prescriptionCollections,patientCollection,userCollection);
-						System.out.println("Fhir:"+null);
-						//	mapPrescriptionRecordData(prescriptionCollections, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
-						DataEncryptionResponse data=null;
-						if( collection.getHiRequest().getKeyMaterial() !=null)
-						{
-						data=DHKeyExchangeCrypto.convert(bundle, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue(),false, null, null);
-						
-						DataEncryptionCollection encryption=encryptionKeyRepository.findByRandomReceiver(collection.getHiRequest().getKeyMaterial().getNonce());
-						if(encryption !=null) {
-						encryption.setSharedSenderNonce(data.getRandomSender());
-						encryptionKeyRepository.save(encryption);
-						}
-						System.out.println("encrypt"+data);
-						EntriesDataTransferRequest entry=new EntriesDataTransferRequest();
-						entry.setCareContextReference("Prescription");
-						entry.setContent(data.getEncryptedData());
-						
-						key.setNonce(data.getRandomSender());
-						DhPublicKeyDataFlowRequest dhPublic=new DhPublicKeyDataFlowRequest();
-						dhPublic.setKeyValue(data.getSenderPublicKey());
-						key.setDhPublicKey(dhPublic);
-						
-						
-						entries.add(entry);
-						}		
-						
-						
-					//	}
-							
-						 }
-						//}
+							List<PrescriptionCollection> prescriptionCollections = mongoTemplate
+									.aggregate(aggregation, PrescriptionCollection.class, PrescriptionCollection.class)
+									.getMappedResults();
+							System.out.println("aggregation" + aggregation);
+							// PrescriptionCollection prescriptionCollection=null;
+							if (prescriptionCollections != null) {
+								// for(PrescriptionCollection prescriptionCollection:prescriptionCollections)
+								// {
+								// PrescriptionCollection prescriptionCollection=prescriptionCollections.get(0);
+								DoctorCollection doctorCollection = doctorRepository
+										.findByUserId(patientCollection.getDoctorId());
+								System.out.println("Doctor " + doctorCollection);
+								UserCollection userCollection = userRepository.findById(doctorCollection.getUserId())
+										.orElse(null);
+								System.out.println("User " + doctorCollection);
+								String bundle = PrescriptionSample.prescriptionConvert(prescriptionCollections,
+										patientCollection, userCollection);
+								System.out.println("Fhir:" + null);
+								// mapPrescriptionRecordData(prescriptionCollections,
+								// collection.getHiRequest().getKeyMaterial().getNonce(),
+								// collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
+								DataEncryptionResponse data = null;
+								if (collection.getHiRequest().getKeyMaterial() != null) {
+									data = DHKeyExchangeCrypto.convert(bundle,
+											collection.getHiRequest().getKeyMaterial().getNonce(),
+											collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue(),
+											false, null, null);
+
+									DataEncryptionCollection encryption = encryptionKeyRepository.findByRandomReceiver(
+											collection.getHiRequest().getKeyMaterial().getNonce());
+									if (encryption != null) {
+										encryption.setSharedSenderNonce(data.getRandomSender());
+										encryptionKeyRepository.save(encryption);
+									}
+									System.out.println("encrypt" + data);
+									EntriesDataTransferRequest entry = new EntriesDataTransferRequest();
+									entry.setCareContextReference("Prescription");
+									entry.setContent(data.getEncryptedData());
+
+									key.setNonce(data.getRandomSender());
+									DhPublicKeyDataFlowRequest dhPublic = new DhPublicKeyDataFlowRequest();
+									dhPublic.setKeyValue(data.getSenderPublicKey());
+									key.setDhPublicKey(dhPublic);
+
+									entries.add(entry);
+								}
+
+								// }
+
+							}
+							// }
 						}
 					}
 //						else if(hiTypes.contains("OPConsultation")) {
@@ -3322,49 +3408,48 @@ public class NDHMserviceImpl implements NDHMservices {
 //
 //							}
 //						}
-						
-						DataTransferRequest transfer=new DataTransferRequest();
-						transfer.setKeyMaterial(key);
-						transfer.setPageCount(0); 
-						transfer.setPageNumber(0);
-						transfer.setEntries(entries);	
-						transfer.setTransactionId(collection.getTransactionId());
-						transfer.setDataPushUrl(request.getHiRequest().getDataPushUrl());
-					Boolean transferResponse=	onDataTransfer(transfer);
-					
-					Boolean info=false;
-					if(transferResponse ==true)
-					{
-						HealthInfoNotify dataFlow=new HealthInfoNotify();
-						UUID uuid=UUID.randomUUID();
-						
-						LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
+
+					DataTransferRequest transfer = new DataTransferRequest();
+					transfer.setKeyMaterial(key);
+					transfer.setPageCount(0);
+					transfer.setPageNumber(0);
+					transfer.setEntries(entries);
+					transfer.setTransactionId(collection.getTransactionId());
+					transfer.setDataPushUrl(request.getHiRequest().getDataPushUrl());
+					Boolean transferResponse = onDataTransfer(transfer);
+
+					Boolean info = false;
+					if (transferResponse == true) {
+						HealthInfoNotify dataFlow = new HealthInfoNotify();
+						UUID uuid = UUID.randomUUID();
+
+						LocalDateTime time = LocalDateTime.now(ZoneOffset.UTC);
 						dataFlow.setRequestId(uuid.toString());
 						dataFlow.setTimestamp(time.toString());
-						
-						HipInfoNotify hipNotify=new HipInfoNotify();
+
+						HipInfoNotify hipNotify = new HipInfoNotify();
 						hipNotify.setTransactionId(collection.getTransactionId());
 						hipNotify.setConsentId(request.getHiRequest().getConsent().getId());
 						hipNotify.setDoneAt(time.toString());
-						HipNotifier notifier=new HipNotifier();
+						HipNotifier notifier = new HipNotifier();
 						notifier.setId(NDHM_CLIENTID);
 						notifier.setType("HIP");
-						StatusNotify statusNotify=new StatusNotify();
+						StatusNotify statusNotify = new StatusNotify();
 						statusNotify.setSessionStatus("TRANSFERRED");
 						statusNotify.setHipId(NDHM_CLIENTID);
-						StatusResponse statusResponse=new StatusResponse();
+						StatusResponse statusResponse = new StatusResponse();
 						statusResponse.setHiStatus("DELIVERED");
 						statusResponse.setCareContextReference("Healthcoco");
 						statusNotify.setStatusResponses(statusResponse);
 						hipNotify.setStatusNotification(statusNotify);
 						dataFlow.setNotification(hipNotify);
-						info=healthInformationNotify(dataFlow);	
-						
+						info = healthInformationNotify(dataFlow);
+
 					}
-					
-					System.out.println("transferReponse"+transferResponse);
-					
-					System.out.println("HealthNotify"+info);
+
+					System.out.println("transferReponse" + transferResponse);
+
+					System.out.println("HealthNotify" + info);
 				}
 			}
 		}
@@ -3392,20 +3477,20 @@ public class NDHMserviceImpl implements NDHMservices {
 			System.out.println(hiRequestRequest);
 			orderRequest.put("hiRequest", hiRequestRequest);
 
-		//	JSONObject errorRequest = new JSONObject();
-		//	errorRequest.put("code", request.getError().getCode());
-		//	errorRequest.put("message", request.getError().getMessage());
-		//	System.out.println(errorRequest);
+			// JSONObject errorRequest = new JSONObject();
+			// errorRequest.put("code", request.getError().getCode());
+			// errorRequest.put("message", request.getError().getMessage());
+			// System.out.println(errorRequest);
 			orderRequest.put("error", request.getError());
-			
+
 			JSONObject requestId = new JSONObject();
 			requestId.put("requestId", request.getResp().getRequestId());
-			orderRequest.put("resp",requestId);
-			
+			orderRequest.put("resp", requestId);
+
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://dev.ndhm.gov.in/gateway/v0.5/health-information/hip/on-request";
+			String url = "https://dev.abdm.gov.in/gateway/v0.5/health-information/hip/on-request";
 
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -3452,15 +3537,14 @@ public class NDHMserviceImpl implements NDHMservices {
 		}
 		return response;
 	}
-	
+
 	@Override
 	public Boolean onDataTransfer(DataTransferRequest request) {
 		Boolean response = false;
 		try {
-			
-			
+
 			System.out.println("DataTransfer");
-			
+
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("pageNumber", request.getPageNumber());
 			orderRequest.put("pageCount", request.getPageCount());
@@ -3473,13 +3557,13 @@ public class NDHMserviceImpl implements NDHMservices {
 			keyMaterialRequest.put("nonce", request.getKeyMaterial().getNonce());
 
 			JSONObject dhPublicKeyRequest = new JSONObject();
-			if(request.getKeyMaterial() !=null && request.getKeyMaterial().getDhPublicKey() !=null) {
-			dhPublicKeyRequest.put("expiry", request.getKeyMaterial().getDhPublicKey().getExpiry());
-			dhPublicKeyRequest.put("parameters", request.getKeyMaterial().getDhPublicKey().getParameters());
-			
-			dhPublicKeyRequest.put("keyValue", request.getKeyMaterial().getDhPublicKey().getKeyValue());
+			if (request.getKeyMaterial() != null && request.getKeyMaterial().getDhPublicKey() != null) {
+				dhPublicKeyRequest.put("expiry", request.getKeyMaterial().getDhPublicKey().getExpiry());
+				dhPublicKeyRequest.put("parameters", request.getKeyMaterial().getDhPublicKey().getParameters());
 
-			keyMaterialRequest.put("dhPublicKey", dhPublicKeyRequest);
+				dhPublicKeyRequest.put("keyValue", request.getKeyMaterial().getDhPublicKey().getKeyValue());
+
+				keyMaterialRequest.put("dhPublicKey", dhPublicKeyRequest);
 			}
 			orderRequest.put("keyMaterial", keyMaterialRequest);
 
@@ -3487,8 +3571,8 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-		//	String url = "https://dev.ndhm.gov.in/patient-hiu/data/notification";
-			String url=request.getDataPushUrl();
+			// String url = "https://dev.abdm.gov.in/patient-hiu/data/notification";
+			String url = request.getDataPushUrl();
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -3534,8 +3618,6 @@ public class NDHMserviceImpl implements NDHMservices {
 		return response;
 	}
 
-
-	
 	@Override
 	public Boolean onConsentRequestOnInitApi(ConsentOnInitRequest request) {
 		Boolean response = false;
@@ -3566,7 +3648,7 @@ public class NDHMserviceImpl implements NDHMservices {
 //			NdhmOauthResponse oauth = session();
 //			System.out.println("token" + oauth.getAccessToken());
 //
-//			String url = "https://dev.ndhm.gov.in/hiu/v0.5/consent-requests/on-init";
+//			String url = "https://dev.abdm.gov.in/hiu/v0.5/consent-requests/on-init";
 //			URL obj = new URL(url);
 //			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 //
@@ -3601,13 +3683,13 @@ public class NDHMserviceImpl implements NDHMservices {
 //			System.out.println("response:" + output.toString());
 //			int responseCode = con.getResponseCode();
 //			if (responseCode == 202)
-			ConsentInitCollection collection=new ConsentInitCollection();
-			BeanUtil.map(request,collection);
+			ConsentInitCollection collection = new ConsentInitCollection();
+			BeanUtil.map(request, collection);
 			collection.setCreatedTime(new Date());
 			collection.setUpdatedTime(new Date());
-			
+
 			consentInitRepository.save(collection);
-				response = true;
+			response = true;
 
 		}
 
@@ -3646,9 +3728,9 @@ public class NDHMserviceImpl implements NDHMservices {
 			patientRequest.put("id", request.getConsent().getPatient().getId());
 			System.out.println(patientRequest);
 
-		//	JSONObject hipRequest = new JSONObject();
-		//	hipRequest.put("id", request.getConsent().getHip().getId());
-	//		System.out.println(hipRequest);
+			// JSONObject hipRequest = new JSONObject();
+			// hipRequest.put("id", request.getConsent().getHip().getId());
+			// System.out.println(hipRequest);
 
 			JSONObject hiuRequest = new JSONObject();
 			hiuRequest.put("id", request.getConsent().getHiu().getId());
@@ -3674,9 +3756,9 @@ public class NDHMserviceImpl implements NDHMservices {
 			consentRequest.put("purpose", purposeRequest);
 			consentRequest.put("requester", requesterRequest);
 			consentRequest.put("patient", patientRequest);
-	//		consentRequest.put("hip", hipRequest);
+			// consentRequest.put("hip", hipRequest);
 			consentRequest.put("hiu", hiuRequest);
-	//		consentRequest.put("careContexts", request.getConsent().getCareContexts());
+			// consentRequest.put("careContexts", request.getConsent().getCareContexts());
 			consentRequest.put("hiTypes", request.getConsent().getHiTypes());
 			consentRequest.put("permission", permissionRequest);
 
@@ -3685,12 +3767,11 @@ public class NDHMserviceImpl implements NDHMservices {
 			orderRequest.put("consent", consentRequest);
 			System.out.println("request " + orderRequest);
 
-			
-			System.out.println("consent-Init"+orderRequest);
+			System.out.println("consent-Init" + orderRequest);
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://dev.ndhm.gov.in/gateway/v0.5/consent-requests/init";
+			String url = "https://dev.abdm.gov.in/gateway/v0.5/consent-requests/init";
 
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -3747,13 +3828,13 @@ public class NDHMserviceImpl implements NDHMservices {
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("requestId", request.getRequestId());
 			orderRequest.put("timestamp", request.getTimestamp());
-			orderRequest.put("consentRequestId",request.getConsentRequestId() );
+			orderRequest.put("consentRequestId", request.getConsentRequestId());
 			System.out.println("request " + orderRequest);
 
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://dev.ndhm.gov.in/gateway/v0.5/consent-requests/status";
+			String url = "https://dev.abdm.gov.in/gateway/v0.5/consent-requests/status";
 
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -3802,49 +3883,46 @@ public class NDHMserviceImpl implements NDHMservices {
 		return response;
 	}
 
-
 	@Override
 	public Boolean ndhmNotify(NotifyRequest request) {
-	Boolean response=false;
+		Boolean response = false;
 		try {
-		NdhmNotifyCollection collection=new NdhmNotifyCollection();
-		if(collection !=null) {
-		BeanUtil.map(request, collection);
-		collection.setCreatedTime(new Date());
-		
-		ndhmNotifyRepository.save(collection);
-		
-		response=true;
-		}
-		System.out.println("response"+response);
-		if(response==true) {
-			OnNotifyRequest req=new OnNotifyRequest();
-			UUID uuid=UUID.randomUUID();
-			req.setRequestId(uuid.toString());
+			NdhmNotifyCollection collection = new NdhmNotifyCollection();
+			if (collection != null) {
+				BeanUtil.map(request, collection);
+				collection.setCreatedTime(new Date());
+
+				ndhmNotifyRepository.save(collection);
+
+				response = true;
+			}
+			System.out.println("response" + response);
+			if (response == true) {
+				OnNotifyRequest req = new OnNotifyRequest();
+				UUID uuid = UUID.randomUUID();
+				req.setRequestId(uuid.toString());
 //			TimeZone tz = TimeZone.getTimeZone("UTC");
 //			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SS"); // Quoted "Z" to indicate UTC, no timezone offset
 //			df.setTimeZone(tz);
 //			String nowAsISO = df.format(new Date());
 //			req.setTimestamp(nowAsISO);
-			LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
-			System.out.println("timeStamp"+time.toString());
-			req.setTimestamp(time.toString());
-			AcknowledgementRequest acknowledgementRequest=new AcknowledgementRequest();
-			acknowledgementRequest.setConsentId(collection.getNotification().getConsentId());
-			acknowledgementRequest.setStatus("OK");
-			req.setAcknowledgement(acknowledgementRequest);
-			FetchResponse resp=new FetchResponse();
-			resp.setRequestId(collection.getRequestId());
-			
-			req.setResp(resp);
-			Boolean status=false;
-			status=onNotify(req);
-			
-			
-		System.out.println("Status"+status);
-		}
-	}
-		catch (Exception e) {
+				LocalDateTime time = LocalDateTime.now(ZoneOffset.UTC);
+				System.out.println("timeStamp" + time.toString());
+				req.setTimestamp(time.toString());
+				AcknowledgementRequest acknowledgementRequest = new AcknowledgementRequest();
+				acknowledgementRequest.setConsentId(collection.getNotification().getConsentId());
+				acknowledgementRequest.setStatus("OK");
+				req.setAcknowledgement(acknowledgementRequest);
+				FetchResponse resp = new FetchResponse();
+				resp.setRequestId(collection.getRequestId());
+
+				req.setResp(resp);
+				Boolean status = false;
+				status = onNotify(req);
+
+				System.out.println("Status" + status);
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -3854,114 +3932,109 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Boolean onNotify(OnNotifyRequest request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-			//System.out.println("OnNotify "+request);
+			// System.out.println("OnNotify "+request);
 			JSONObject orderRequest = new JSONObject();
 			JSONObject acknowledge = new JSONObject();
 			JSONObject resp = new JSONObject();
 			orderRequest.put("requestId", request.getRequestId());
 			orderRequest.put("timestamp", request.getTimestamp());
-			
+
 			acknowledge.put("status", request.getAcknowledgement().getStatus());
 			acknowledge.put("consentId", request.getAcknowledgement().getConsentId());
-			orderRequest.put("acknowledgement",acknowledge);
-			orderRequest.put("error",request.getError());
-			resp.put("requestId",request.getResp().getRequestId());
-			orderRequest.put("resp",resp);
-			
-			System.out.println("On notify request: " + orderRequest);
-		NdhmOauthResponse oauth = session();
-		System.out.println("token" + oauth.getAccessToken());
+			orderRequest.put("acknowledgement", acknowledge);
+			orderRequest.put("error", request.getError());
+			resp.put("requestId", request.getResp().getRequestId());
+			orderRequest.put("resp", resp);
 
-		String url = "https://dev.ndhm.gov.in/gateway/v0.5/consents/hip/on-notify";
+			System.out.println("On notify request: " + orderRequest);
+			NdhmOauthResponse oauth = session();
+			System.out.println("token" + oauth.getAccessToken());
+
+			String url = "https://dev.abdm.gov.in/gateway/v0.5/consents/hip/on-notify";
 //		JSONObject orderRequest = new JSONObject();
 //		orderRquest.put("txnId", txnId);
 
-		URL obj = new URL(url);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-		con.setDoOutput(true);
+			con.setDoOutput(true);
 
-		System.out.println(con.getErrorStream());
-		con.setDoInput(true);
-		// optional default is POST
-		con.setRequestMethod("POST");
-	//	con.setRequestProperty("Accept-Language", "en-US");
-		con.setRequestProperty("Content-Type", "application/json");
-		con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
-		con.setRequestProperty("X-CM-ID","sbx" );
-		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-		wr.writeBytes(orderRequest.toString());
-		wr.flush();
-		wr.close();
-		con.disconnect();
-		InputStream in = con.getInputStream();
-		// BufferedReader in = new BufferedReader(new
-		// InputStreamReader(con.getInputStream()));
-		String inputLine;
-		System.out.println(con.getErrorStream());
-		/* response = new StringBuffer(); */
-		StringBuffer output = new StringBuffer();
-		int c = 0;
-		while ((c = in.read()) != -1) {
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+			// con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("X-CM-ID", "sbx");
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			// BufferedReader in = new BufferedReader(new
+			// InputStreamReader(con.getInputStream()));
+			String inputLine;
+			System.out.println(con.getErrorStream());
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
 
-			output.append((char) c);
+				output.append((char) c);
 
-		}
-		System.out.println("response:" + output.toString());
-		int responseCode = con.getResponseCode();
-		if(responseCode ==202)
-			response=true;
-		}
-		catch (Exception e) {
+			}
+			System.out.println("response:" + output.toString());
+			int responseCode = con.getResponseCode();
+			if (responseCode == 202)
+				response = true;
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 		}
 		return response;
 
-
 	}
 
 	@Override
 	public OnCareContext getCareContext(String requestId) {
-		OnCareContext response=null;
+		OnCareContext response = null;
 		try {
-			OnCareContextCollection collection	= onCareContextRepository.findByRespRequestId(requestId);
-			response=new OnCareContext();
-			if(collection !=null)
-			{
-				BeanUtil.map(collection,response);
+			OnCareContextCollection collection = onCareContextRepository.findByRespRequestId(requestId);
+			response = new OnCareContext();
+			if (collection != null) {
+				BeanUtil.map(collection, response);
 			}
-			
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 		}
-		 catch (Exception e) {
-				e.printStackTrace();
-				logger.error("Error : " + e.getMessage());
-				throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
-			}
-			return response;
+		return response;
 	}
 
 	@Override
 	public LinkConfirm getLinkConfim(String requestId) {
-		LinkConfirm response=null;
+		LinkConfirm response = null;
 		try {
-		LinkConfirmCollection collection = linkConfirmRepository.findByRequestId(requestId);
-		response=new LinkConfirm();
-		if(collection !=null)
-		{
-			BeanUtil.map(collection,response);
-		}
-		}catch (Exception e) {
-				e.printStackTrace();
-				logger.error("Error : " + e.getMessage());
-				throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+			LinkConfirmCollection collection = linkConfirmRepository.findByRequestId(requestId);
+			response = new LinkConfirm();
+			if (collection != null) {
+				BeanUtil.map(collection, response);
 			}
-			return response;
-	}	
-	
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
 //	public DataEncryptionResponse mapPrescriptionRecordData(List<PrescriptionCollection> prescriptionCollections,String nounce,String keyPair) throws Exception {
 //		List<NDHMPrecriptionRecordData> precriptionRecordData = new ArrayList<NDHMPrecriptionRecordData>();
 //		DataEncryptionResponse data=null;
@@ -4015,17 +4088,15 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public NotifyRequest getNotify(String requestId) {
-		NotifyRequest response=null;
+		NotifyRequest response = null;
 		try {
-			NdhmNotifyCollection collection=ndhmNotifyRepository.findByRequestId(requestId);
-			response=new NotifyRequest();
-			if(collection !=null)
-			{
-				BeanUtil.map(collection,response);
+			NdhmNotifyCollection collection = ndhmNotifyRepository.findByRequestId(requestId);
+			response = new NotifyRequest();
+			if (collection != null) {
+				BeanUtil.map(collection, response);
 			}
-			
-		}
-		catch (Exception e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -4035,45 +4106,41 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public DataFlowRequest getDataFlow(String transactionId) {
-		DataFlowRequest response=null;
-				try{
-					HipDataFlowCollection collection =healthDataFlowRepository.findByTransactionId(transactionId);
-					response=new DataFlowRequest();
-					if(collection !=null)
-					{
-						BeanUtil.map(collection, response);
-					}
-				}
-				catch (Exception e) {
-				
-					e.printStackTrace();
-					logger.error("Error : " + e.getMessage());
-					throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
-				}
-				return response;
-	}
-
-	@Override
-	public ConsentOnInitRequest getConsentInitRequest(String requestId) {
-		ConsentOnInitRequest response=null;
+		DataFlowRequest response = null;
 		try {
-			
-			ConsentInitCollection collection=consentInitRepository.findByRespRequestId(requestId);
-			response=new ConsentOnInitRequest();
-			if(collection !=null)
-			{
-				BeanUtil.map(collection,response);
+			HipDataFlowCollection collection = healthDataFlowRepository.findByTransactionId(transactionId);
+			response = new DataFlowRequest();
+			if (collection != null) {
+				BeanUtil.map(collection, response);
 			}
-			
-		}
-		catch (Exception e) {
-			
+		} catch (Exception e) {
+
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 		}
 		return response;
-		
+	}
+
+	@Override
+	public ConsentOnInitRequest getConsentInitRequest(String requestId) {
+		ConsentOnInitRequest response = null;
+		try {
+
+			ConsentInitCollection collection = consentInitRepository.findByRespRequestId(requestId);
+			response = new ConsentOnInitRequest();
+			if (collection != null) {
+				BeanUtil.map(collection, response);
+			}
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+
 	}
 
 	@Override
@@ -4102,11 +4169,11 @@ public class NDHMserviceImpl implements NDHMservices {
 //			JSONObject requestId = new JSONObject();
 //			requestId.put("requestId", request.getResp().getRequestId());
 //			orderRequest.put("resp",requestId);
-			
+
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://dev.ndhm.gov.in/gateway/v0.5/health-information/notify";
+			String url = "https://dev.abdm.gov.in/gateway/v0.5/health-information/notify";
 
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -4143,10 +4210,9 @@ public class NDHMserviceImpl implements NDHMservices {
 			int responseCode = con.getResponseCode();
 			if (responseCode == 202)
 				response = true;
-			
-		}
-		catch (Exception e) {
-			
+
+		} catch (Exception e) {
+
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -4156,7 +4222,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Boolean onConsentRequestStatus(OnConsentRequestStatus request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
 //			JSONObject orderRequest = new JSONObject();
 //			orderRequest.put("requestId", request.getRequestId());
@@ -4182,11 +4248,11 @@ public class NDHMserviceImpl implements NDHMservices {
 //			JSONObject requestId = new JSONObject();
 //			requestId.put("requestId", request.getResp().getRequestId());
 //			orderRequest.put("resp",requestId);
-			
+
 //			NdhmOauthResponse oauth = session();
 //			System.out.println("token" + oauth.getAccessToken());
 //
-//			String url = "https://dev.ndhm.gov.in/gateway/v0.5/health-information/notify";
+//			String url = "https://dev.abdm.gov.in/gateway/v0.5/health-information/notify";
 //
 //			URL obj = new URL(url);
 //			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -4222,17 +4288,16 @@ public class NDHMserviceImpl implements NDHMservices {
 //			System.out.println("response:" + output.toString());
 //			int responseCode = con.getResponseCode();
 //			if (responseCode == 202)
-			
-			OnConsentRequestStatusCollection collection=new OnConsentRequestStatusCollection();
+
+			OnConsentRequestStatusCollection collection = new OnConsentRequestStatusCollection();
 			BeanUtil.map(request, collection);
 			collection.setCreatedTime(new Date());
 			consentStatusRequestRepository.save(collection);
-			
-				response = true;
-			
-		}
-		catch (Exception e) {
-			
+
+			response = true;
+
+		} catch (Exception e) {
+
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -4242,18 +4307,16 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public OnConsentRequestStatus getConsentStatus(String requestId) {
-		OnConsentRequestStatus response=null;
+		OnConsentRequestStatus response = null;
 		try {
-			OnConsentRequestStatusCollection collection=consentStatusRequestRepository.findByRespRequestId(requestId);
-			response=new OnConsentRequestStatus();
-			if(collection !=null)
-			{
+			OnConsentRequestStatusCollection collection = consentStatusRequestRepository.findByRespRequestId(requestId);
+			response = new OnConsentRequestStatus();
+			if (collection != null) {
 				BeanUtil.map(collection, response);
 			}
-			
-		}
-		catch (Exception e) {
-			
+
+		} catch (Exception e) {
+
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -4263,65 +4326,65 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Boolean findPatient(NdhmPatientRequest request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-		JSONObject orderRequest = new JSONObject();
-		orderRequest.put("requestId", request.getRequestId());
-		orderRequest.put("timestamp", request.getTimestamp());
+			JSONObject orderRequest = new JSONObject();
+			orderRequest.put("requestId", request.getRequestId());
+			orderRequest.put("timestamp", request.getTimestamp());
 
-		JSONObject hiRequestRequest = new JSONObject();
-		
-		JSONObject patient = new JSONObject();
-		patient.put("id", request.getQuery().getPatient().getId());
-		hiRequestRequest.put("patient", patient);
-		JSONObject requester = new JSONObject();
-		requester.put("type", request.getQuery().getRequester().getType());
-		requester.put("id", request.getQuery().getRequester().getId());
-		hiRequestRequest.put("requester", requester);
-		System.out.println(hiRequestRequest);
-		orderRequest.put("query", hiRequestRequest);
-		System.out.println("Patient request"+orderRequest);
-		String url = "https://dev.ndhm.gov.in/gateway/v0.5/patients/find";
-		NdhmOauthResponse oauth = session();
-		URL obj = new URL(url);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			JSONObject hiRequestRequest = new JSONObject();
 
-		con.setDoOutput(true);
+			JSONObject patient = new JSONObject();
+			patient.put("id", request.getQuery().getPatient().getId());
+			hiRequestRequest.put("patient", patient);
+			JSONObject requester = new JSONObject();
+			requester.put("type", request.getQuery().getRequester().getType());
+			requester.put("id", request.getQuery().getRequester().getId());
+			hiRequestRequest.put("requester", requester);
+			System.out.println(hiRequestRequest);
+			orderRequest.put("query", hiRequestRequest);
+			System.out.println("Patient request" + orderRequest);
+			String url = "https://dev.abdm.gov.in/gateway/v0.5/patients/find";
+			NdhmOauthResponse oauth = session();
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-		System.out.println(con.getErrorStream());
-		con.setDoInput(true);
-		// optional default is POST
-		con.setRequestMethod("POST");
-		con.setRequestProperty("Accept-Language", "en-US");
-		con.setRequestProperty("Content-Type", "application/json");
-		con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
-		con.setRequestProperty("X-CM-ID", "sbx");
-		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-		wr.writeBytes(orderRequest.toString());
-		wr.flush();
-		wr.close();
-		con.disconnect();
-		InputStream in = con.getInputStream();
-		// BufferedReader in = new BufferedReader(new
-		// InputStreamReader(con.getInputStream()));
-		String inputLine;
-		System.out.println(con.getErrorStream());
-		/* response = new StringBuffer(); */
-		StringBuffer output = new StringBuffer();
-		int c = 0;
-		while ((c = in.read()) != -1) {
+			con.setDoOutput(true);
 
-			output.append((char) c);
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("X-CM-ID", "sbx");
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			// BufferedReader in = new BufferedReader(new
+			// InputStreamReader(con.getInputStream()));
+			String inputLine;
+			System.out.println(con.getErrorStream());
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
 
+				output.append((char) c);
+
+			}
+			System.out.println("response:" + output.toString());
+			int responseCode = con.getResponseCode();
+			if (responseCode == 202)
+				response = true;
 		}
-		System.out.println("response:" + output.toString());
-		int responseCode = con.getResponseCode();
-		if (responseCode == 202)
-			response = true;
-		}
-		
+
 		catch (Exception e) {
-			
+
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -4331,42 +4394,37 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Boolean onFindPatient(NdhmOnPatientFindRequest request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-			NdhmPatientFindCollection collection=new NdhmPatientFindCollection();
+			NdhmPatientFindCollection collection = new NdhmPatientFindCollection();
 			BeanUtil.map(request, collection);
 			collection.setCreatedTime(new Date());
 			collection.setUpdatedTime(new Date());
 			ndhmPatientFindRepository.save(collection);
-			response=true;
-			
-			
-		}
-		catch (Exception e) {
-			
+			response = true;
+
+		} catch (Exception e) {
+
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 		}
 		return response;
 	}
-	
-	
+
 	@Override
 	public NdhmOnPatientFindRequest getNdhmPatient(String requestId) {
-		NdhmOnPatientFindRequest response=null;
+		NdhmOnPatientFindRequest response = null;
 		try {
-			NdhmPatientFindCollection collection=ndhmPatientFindRepository.findByRespRequestId(requestId);
-			response=new NdhmOnPatientFindRequest();
-			if(collection !=null)
-			{
-				response=new NdhmOnPatientFindRequest();
+			NdhmPatientFindCollection collection = ndhmPatientFindRepository.findByRespRequestId(requestId);
+			response = new NdhmOnPatientFindRequest();
+			if (collection != null) {
+				response = new NdhmOnPatientFindRequest();
 				BeanUtil.map(collection, response);
 			}
-			
-		}
-		catch (Exception e) {
-			
+
+		} catch (Exception e) {
+
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -4376,82 +4434,79 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Boolean onNotifyHiu(HiuOnNotify request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-		JSONObject orderRequest = new JSONObject();
-		orderRequest.put("requestId", request.getRequestId());
-		orderRequest.put("timestamp", request.getTimestamp());
+			JSONObject orderRequest = new JSONObject();
+			orderRequest.put("requestId", request.getRequestId());
+			orderRequest.put("timestamp", request.getTimestamp());
 
-		orderRequest.put("acknowledgement", request.getAcknowledgement());
-			
-		orderRequest.put("error",request.getError());
-		JSONObject resp = new JSONObject();
-		resp.put("requestId",request.getResp().getRequestId());
-		orderRequest.put("resp",resp);
-		
-		String url = "https://dev.ndhm.gov.in/gateway/v0.5/consents/hiu/on-notify";
-		NdhmOauthResponse oauth = session();
-		URL obj = new URL(url);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			orderRequest.put("acknowledgement", request.getAcknowledgement());
 
-		con.setDoOutput(true);
+			orderRequest.put("error", request.getError());
+			JSONObject resp = new JSONObject();
+			resp.put("requestId", request.getResp().getRequestId());
+			orderRequest.put("resp", resp);
 
-		System.out.println(con.getErrorStream());
-		con.setDoInput(true);
-		// optional default is POST
-		con.setRequestMethod("POST");
-		con.setRequestProperty("Accept-Language", "en-US");
-		con.setRequestProperty("Content-Type", "application/json");
-		con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
-		con.setRequestProperty("X-CM-ID", "sbx");
-		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-		wr.writeBytes(orderRequest.toString());
-		wr.flush();
-		wr.close();
-		con.disconnect();
-		InputStream in = con.getInputStream();
-		// BufferedReader in = new BufferedReader(new
-		// InputStreamReader(con.getInputStream()));
-		String inputLine;
-		System.out.println(con.getErrorStream());
-		/* response = new StringBuffer(); */
-		StringBuffer output = new StringBuffer();
-		int c = 0;
-		while ((c = in.read()) != -1) {
+			String url = "https://dev.abdm.gov.in/gateway/v0.5/consents/hiu/on-notify";
+			NdhmOauthResponse oauth = session();
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-			output.append((char) c);
+			con.setDoOutput(true);
 
-		}
-		System.out.println("response:" + output.toString());
-		int responseCode = con.getResponseCode();
-		if (responseCode == 202)
-			response = true;
-		}
-		catch (Exception e) {
-			
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("X-CM-ID", "sbx");
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			// BufferedReader in = new BufferedReader(new
+			// InputStreamReader(con.getInputStream()));
+			String inputLine;
+			System.out.println(con.getErrorStream());
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
+
+				output.append((char) c);
+
+			}
+			System.out.println("response:" + output.toString());
+			int responseCode = con.getResponseCode();
+			if (responseCode == 202)
+				response = true;
+		} catch (Exception e) {
+
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 		}
 		return response;
-		
+
 	}
 
 	@Override
 	public Boolean notifyHiu(NotifyHiuRequest request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-			HiuNotifyCollection collection=new HiuNotifyCollection();
+			HiuNotifyCollection collection = new HiuNotifyCollection();
 			BeanUtil.map(request, collection);
 			collection.setCreatedTime(new Date());
 			collection.setUpdatedTime(new Date());
 			hiuNotifyRepository.save(collection);
-			response=true;
-			
-			
-		}
-		catch (Exception e) {
-			
+			response = true;
+
+		} catch (Exception e) {
+
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -4461,18 +4516,16 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public NotifyHiuRequest getHiuNotify(String requestId) {
-		NotifyHiuRequest response=null;
+		NotifyHiuRequest response = null;
 		try {
-			HiuNotifyCollection collection=hiuNotifyRepository.findByNotificationConsentRequestId(requestId);
-			response=new NotifyHiuRequest();
-			if(collection !=null)
-			{
+			HiuNotifyCollection collection = hiuNotifyRepository.findByNotificationConsentRequestId(requestId);
+			response = new NotifyHiuRequest();
+			if (collection != null) {
 				BeanUtil.map(collection, response);
 			}
-			
-		}
-		catch (Exception e) {
-			
+
+		} catch (Exception e) {
+
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -4482,56 +4535,53 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Boolean consentFetch(ConsentFetchRequest request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-		JSONObject orderRequest = new JSONObject();
-		orderRequest.put("requestId", request.getRequestId());
-		orderRequest.put("timestamp", request.getTimestamp());
+			JSONObject orderRequest = new JSONObject();
+			orderRequest.put("requestId", request.getRequestId());
+			orderRequest.put("timestamp", request.getTimestamp());
 
-		orderRequest.put("consentId", request.getConsentId());
-			
-		
-		
-		String url = "https://dev.ndhm.gov.in/gateway/v0.5/consents/fetch";
-		NdhmOauthResponse oauth = session();
-		URL obj = new URL(url);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			orderRequest.put("consentId", request.getConsentId());
 
-		con.setDoOutput(true);
+			String url = "https://dev.abdm.gov.in/gateway/v0.5/consents/fetch";
+			NdhmOauthResponse oauth = session();
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-		System.out.println(con.getErrorStream());
-		con.setDoInput(true);
-		// optional default is POST
-		con.setRequestMethod("POST");
-		con.setRequestProperty("Accept-Language", "en-US");
-		con.setRequestProperty("Content-Type", "application/json");
-		con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
-		con.setRequestProperty("X-CM-ID", "sbx");
-		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-		wr.writeBytes(orderRequest.toString());
-		wr.flush();
-		wr.close();
-		con.disconnect();
-		InputStream in = con.getInputStream();
-		// BufferedReader in = new BufferedReader(new
-		// InputStreamReader(con.getInputStream()));
-		String inputLine;
-		System.out.println(con.getErrorStream());
-		/* response = new StringBuffer(); */
-		StringBuffer output = new StringBuffer();
-		int c = 0;
-		while ((c = in.read()) != -1) {
+			con.setDoOutput(true);
 
-			output.append((char) c);
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("X-CM-ID", "sbx");
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			// BufferedReader in = new BufferedReader(new
+			// InputStreamReader(con.getInputStream()));
+			String inputLine;
+			System.out.println(con.getErrorStream());
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
 
-		}
-		System.out.println("response:" + output.toString());
-		int responseCode = con.getResponseCode();
-		if (responseCode == 202)
-			response = true;
-		}
-		catch (Exception e) {
-			
+				output.append((char) c);
+
+			}
+			System.out.println("response:" + output.toString());
+			int responseCode = con.getResponseCode();
+			if (responseCode == 202)
+				response = true;
+		} catch (Exception e) {
+
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -4541,18 +4591,17 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Boolean onConsentFetch(OnConsentFetchRequest request) {
-			Boolean response=false;
+		Boolean response = false;
 		try {
-			ConsentFetchRequestCollection collection=new ConsentFetchRequestCollection();
-			
-				BeanUtil.map(request, collection);
+			ConsentFetchRequestCollection collection = new ConsentFetchRequestCollection();
+
+			BeanUtil.map(request, collection);
 			collection.setCreatedTime(new Date());
 			collection.setUpdatedTime(new Date());
 			consentFetchRepository.save(collection);
-			response=true;
-		}
-		catch (Exception e) {
-			
+			response = true;
+		} catch (Exception e) {
+
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -4562,18 +4611,16 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public OnConsentFetchRequest getConsentFetch(String requestId) {
-		OnConsentFetchRequest response=null;
+		OnConsentFetchRequest response = null;
 		try {
-			ConsentFetchRequestCollection collection=consentFetchRepository.findByRespRequestId(requestId);
-			response=new OnConsentFetchRequest();
-			if(collection !=null)
-			{
+			ConsentFetchRequestCollection collection = consentFetchRepository.findByRespRequestId(requestId);
+			response = new OnConsentFetchRequest();
+			if (collection != null) {
 				BeanUtil.map(collection, response);
 			}
-			
-		}
-		catch (Exception e) {
-			
+
+		} catch (Exception e) {
+
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -4586,10 +4633,10 @@ public class NDHMserviceImpl implements NDHMservices {
 	public Boolean hiuDataRequest(HiuDataRequest request) {
 		Boolean response = false;
 		try {
-			
-			KeyMaterialRequestDataFlow key=new KeyMaterialRequestDataFlow();
-			DataEncryptionResponse hiu=DhKeyExchangeCryptoHiu.convert();
-			DataEncryptionCollection encryption=new DataEncryptionCollection();
+
+			KeyMaterialRequestDataFlow key = new KeyMaterialRequestDataFlow();
+			DataEncryptionResponse hiu = DhKeyExchangeCryptoHiu.convert();
+			DataEncryptionCollection encryption = new DataEncryptionCollection();
 			BeanUtil.map(hiu, encryption);
 			encryption.setCreatedTime(new Date());
 			encryption.setUpdatedTime(new Date());
@@ -4603,36 +4650,35 @@ public class NDHMserviceImpl implements NDHMservices {
 			JSONObject dateRange = new JSONObject();
 			consent.put("id", request.getHiRequest().getConsent().getId());
 			hiRequestRequest.put("consent", consent);
-			dateRange.put("from",request.getHiRequest().getDateRange().getFrom());
+			dateRange.put("from", request.getHiRequest().getDateRange().getFrom());
 			dateRange.put("to", request.getHiRequest().getDateRange().getTo());
-			hiRequestRequest.put("dateRange",dateRange);
+			hiRequestRequest.put("dateRange", dateRange);
 			hiRequestRequest.put("dataPushUrl", request.getHiRequest().getDataPushUrl());
-		
+
 			JSONObject keymaterial = new JSONObject();
 			keymaterial.put("cryptoAlg", key.getCryptoAlg());
 			keymaterial.put("curve", key.getCurve());
 			keymaterial.put("nonce", hiu.getRandomReceiver());
 			JSONObject dhPublicKey = new JSONObject();
-			dhPublicKey.put("expiry",request.getHiRequest().getKeyMaterial().getDhPublicKey().getExpiry());
-			dhPublicKey.put("parameters",request.getHiRequest().getKeyMaterial().getDhPublicKey().getParameters());
-			dhPublicKey.put("keyValue",hiu.getReceiverPublicKey());
+			dhPublicKey.put("expiry", request.getHiRequest().getKeyMaterial().getDhPublicKey().getExpiry());
+			dhPublicKey.put("parameters", request.getHiRequest().getKeyMaterial().getDhPublicKey().getParameters());
+			dhPublicKey.put("keyValue", hiu.getReceiverPublicKey());
 			keymaterial.put("dhPublicKey", dhPublicKey);
 			hiRequestRequest.put("keyMaterial", keymaterial);
-			
-			//System.out.println("cmRequest"+hiRequestRequest);
+
+			// System.out.println("cmRequest"+hiRequestRequest);
 			orderRequest.put("hiRequest", hiRequestRequest);
 
-			System.out.println("Cm request"+orderRequest);
-		//	JSONObject errorRequest = new JSONObject();
-		//	errorRequest.put("code", request.getError().getCode());
-		//	errorRequest.put("message", request.getError().getMessage());
-		//	System.out.println(errorRequest);
-			
-			
+			System.out.println("Cm request" + orderRequest);
+			// JSONObject errorRequest = new JSONObject();
+			// errorRequest.put("code", request.getError().getCode());
+			// errorRequest.put("message", request.getError().getMessage());
+			// System.out.println(errorRequest);
+
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://dev.ndhm.gov.in/gateway/v0.5/health-information/cm/request";
+			String url = "https://dev.abdm.gov.in/gateway/v0.5/health-information/cm/request";
 
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -4679,7 +4725,7 @@ public class NDHMserviceImpl implements NDHMservices {
 		}
 		return response;
 	}
-	
+
 	@Override
 	public Boolean onHiuDatarequest(GateWayOnRequest request) {
 		Boolean response = false;
@@ -4695,20 +4741,20 @@ public class NDHMserviceImpl implements NDHMservices {
 //			System.out.println(hiRequestRequest);
 //			orderRequest.put("hiRequest", hiRequestRequest);
 
-		//	JSONObject errorRequest = new JSONObject();
-		//	errorRequest.put("code", request.getError().getCode());
-		//	errorRequest.put("message", request.getError().getMessage());
-		//	System.out.println(errorRequest);
-	//		orderRequest.put("error", request.getError());
-			
-	//		JSONObject requestId = new JSONObject();
+			// JSONObject errorRequest = new JSONObject();
+			// errorRequest.put("code", request.getError().getCode());
+			// errorRequest.put("message", request.getError().getMessage());
+			// System.out.println(errorRequest);
+			// orderRequest.put("error", request.getError());
+
+			// JSONObject requestId = new JSONObject();
 //			requestId.put("requestId", request.getResp().getRequestId());
 //			orderRequest.put("resp",requestId);
-			
+
 //			NdhmOauthResponse oauth = session();
 //			System.out.println("token" + oauth.getAccessToken());
 //
-//			String url = "https://dev.ndhm.gov.in/hiu/v0.5/health-information/hiu/on-request";
+//			String url = "https://dev.abdm.gov.in/hiu/v0.5/health-information/hiu/on-request";
 //
 //			URL obj = new URL(url);
 //			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -4745,15 +4791,14 @@ public class NDHMserviceImpl implements NDHMservices {
 //			int responseCode = con.getResponseCode();
 //			if (responseCode == 202)
 //				response = true;
-			
-			HiuDataRequestCollection collection=new HiuDataRequestCollection();
-			
+
+			HiuDataRequestCollection collection = new HiuDataRequestCollection();
+
 			BeanUtil.map(request, collection);
-		collection.setCreatedTime(new Date());
-		collection.setUpdatedTime(new Date());
-		hiuDataRequestRepository.save(collection);
-		response=true;
-			
+			collection.setCreatedTime(new Date());
+			collection.setUpdatedTime(new Date());
+			hiuDataRequestRepository.save(collection);
+			response = true;
 
 		}
 
@@ -4764,25 +4809,23 @@ public class NDHMserviceImpl implements NDHMservices {
 		}
 		return response;
 	}
-	
+
 	@Override
-	public GateWayOnRequest getHiuDataRequest(String requestId,String doctorId,String healthId) {
-		GateWayOnRequest response=null;
+	public GateWayOnRequest getHiuDataRequest(String requestId, String doctorId, String healthId) {
+		GateWayOnRequest response = null;
 		try {
-			HiuDataRequestCollection collection=hiuDataRequestRepository.findByRespRequestId(requestId);
-			if(healthId!=null)
-			{
-			collection.setHealthId(healthId);
-			collection.setDoctorId(new ObjectId(doctorId));
-			hiuDataRequestRepository.save(collection);
+			HiuDataRequestCollection collection = hiuDataRequestRepository.findByRespRequestId(requestId);
+			if (healthId != null) {
+				collection.setHealthId(healthId);
+				collection.setDoctorId(new ObjectId(doctorId));
+				hiuDataRequestRepository.save(collection);
 			}
-			response=new GateWayOnRequest();
+			response = new GateWayOnRequest();
 			BeanUtil.map(collection, response);
 
 //			
-		}
-		catch (Exception e) {
-			
+		} catch (Exception e) {
+
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -4790,35 +4833,29 @@ public class NDHMserviceImpl implements NDHMservices {
 		return response;
 
 	}
-	
-	
+
 	@Override
 	public Boolean onHiuDataTransferApi(DataTransferRequest request) {
 		Boolean response = false;
 		try {
-			
-			HiuDataTransferCollection collection=new HiuDataTransferCollection(); 
+
+			HiuDataTransferCollection collection = new HiuDataTransferCollection();
 			BeanUtil.map(request, collection);
 			collection.setCreatedTime(new Date());
 			collection.setUpdatedTime(new Date());
 			hiuDataTransferRepository.save(collection);
-			
-			HiuDataRequestCollection hiuDataRequest=null;
-			if(collection.getTransactionId() !=null)
-			{
-				hiuDataRequest=hiuDataRequestRepository.findByHiRequestTransactionId(collection.getTransactionId());		
-pushNotificationServices.notifyUser(hiuDataRequest.getDoctorId().toString(),
-					
-					"Ndhm Patient Data Request.", ComponentType.NDHM_PATIENT_DATA.getType(),null,
-					null);
-			
+
+			HiuDataRequestCollection hiuDataRequest = null;
+			if (collection.getTransactionId() != null) {
+				hiuDataRequest = hiuDataRequestRepository.findByHiRequestTransactionId(collection.getTransactionId());
+				pushNotificationServices.notifyUser(hiuDataRequest.getDoctorId().toString(),
+
+						"Ndhm Patient Data Request.", ComponentType.NDHM_PATIENT_DATA.getType(), null, null);
+
 			}
-			
-			
-			
-			
-			response=true;
-			
+
+			response = true;
+
 //			if(response==true)
 //			{
 //				ConsentFetchRequestCollection fetch=consentFetchRepository.findByConsentConsentDetailPatientId(healthId)
@@ -4849,10 +4886,9 @@ pushNotificationServices.notifyUser(hiuDataRequest.getDoctorId().toString(),
 //				info=healthInformationNotify(dataFlow);	
 //				
 //			}
-			
-	//		System.out.println("transferReponse"+transferResponse);
-			
-			
+
+			// System.out.println("transferReponse"+transferResponse);
+
 //			JSONObject orderRequest = new JSONObject();
 //			orderRequest.put("pageNumber", request.getPageNumber());
 //			orderRequest.put("pageCount", request.getPageCount());
@@ -4877,7 +4913,7 @@ pushNotificationServices.notifyUser(hiuDataRequest.getDoctorId().toString(),
 //			NdhmOauthResponse oauth = session();
 //			System.out.println("token" + oauth.getAccessToken());
 //
-//			String url = "https://dev.ndhm.gov.in/patient-hiu/v0.5/health-information/transfer";
+//			String url = "https://dev.abdm.gov.in/patient-hiu/v0.5/health-information/transfer";
 //
 //			URL obj = new URL(url);
 //			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -4923,7 +4959,7 @@ pushNotificationServices.notifyUser(hiuDataRequest.getDoctorId().toString(),
 		}
 		return response;
 	}
-	
+
 	@Override
 	public Boolean healthInformationHIUNotify(HealthInfoNotify request) {
 		Boolean response = false;
@@ -4938,7 +4974,7 @@ pushNotificationServices.notifyUser(hiuDataRequest.getDoctorId().toString(),
 			hiRequestRequest.put("doneAt", request.getNotification().getDoneAt());
 			JSONObject notifierRequest = new JSONObject();
 			notifierRequest.put("type", "HIU");
-			notifierRequest.put("id",request.getNotification().getNotifier().getId());
+			notifierRequest.put("id", request.getNotification().getNotifier().getId());
 			hiRequestRequest.put("doneAt", request.getNotification().getDoneAt());
 			hiRequestRequest.put("notifier", request.getNotification().getNotifier());
 			hiRequestRequest.put("statusNotification", request.getNotification().getStatusNotification());
@@ -4954,11 +4990,11 @@ pushNotificationServices.notifyUser(hiuDataRequest.getDoctorId().toString(),
 //			JSONObject requestId = new JSONObject();
 //			requestId.put("requestId", request.getResp().getRequestId());
 //			orderRequest.put("resp",requestId);
-			
+
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://dev.ndhm.gov.in/gateway/v0.5/health-information/notify";
+			String url = "https://dev.abdm.gov.in/gateway/v0.5/health-information/notify";
 
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -4995,10 +5031,9 @@ pushNotificationServices.notifyUser(hiuDataRequest.getDoctorId().toString(),
 			int responseCode = con.getResponseCode();
 			if (responseCode == 202)
 				response = true;
-			
-		}
-		catch (Exception e) {
-			
+
+		} catch (Exception e) {
+
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -5006,13 +5041,12 @@ pushNotificationServices.notifyUser(hiuDataRequest.getDoctorId().toString(),
 		return response;
 	}
 
-
 	@Override
 	public HiuDataResponse getHiuData(String transactionId) {
-		HiuDataResponse response=new HiuDataResponse();
+		HiuDataResponse response = new HiuDataResponse();
 		try {
-			HiuDataTransferCollection collection=hiuDataTransferRepository.findByTransactionId(transactionId);
-			
+			HiuDataTransferCollection collection = hiuDataTransferRepository.findByTransactionId(transactionId);
+
 //			HiuDataRequestCollection dataRequest=hiuDataRequestRepository.findByHiRequestTransactionId(transactionId);
 //			
 //			
@@ -5025,125 +5059,110 @@ pushNotificationServices.notifyUser(hiuDataRequest.getDoctorId().toString(),
 //				collection.setHealthId(healthId);
 //				hiuDataTransferRepository.save(collection);
 //			}
-			
-			List<EntriesDataTransferRequest>entryList=new ArrayList<EntriesDataTransferRequest>();
-			if(collection!=null)
-			{
-				for(EntriesDataTransferRequest entry:collection.getEntries())
-				{
-					DataEncryptionResponse data=null;
-					DataEncryptionCollection encryption=encryptionKeyRepository.findBySharedSenderNonce(collection.getKeyMaterial().getNonce());
-					data=DHKeyExchangeCrypto.convert(entry.getContent(), collection.getKeyMaterial().getNonce(), collection.getKeyMaterial().getDhPublicKey().getKeyValue(),true,encryption.getRandomReceiver(),encryption.getReceiverPrivateKey());
-			//		String tmp=data.getDecryptedData().replaceFirst("identifier", "identifiers");
-			//		String tmp2=tmp.replaceFirst("identifier", "identifiers");
-			//		System.out.println("temp2"+tmp2);
+
+			List<EntriesDataTransferRequest> entryList = new ArrayList<EntriesDataTransferRequest>();
+			if (collection != null) {
+				for (EntriesDataTransferRequest entry : collection.getEntries()) {
+					DataEncryptionResponse data = null;
+					DataEncryptionCollection encryption = encryptionKeyRepository
+							.findBySharedSenderNonce(collection.getKeyMaterial().getNonce());
+					data = DHKeyExchangeCrypto.convert(entry.getContent(), collection.getKeyMaterial().getNonce(),
+							collection.getKeyMaterial().getDhPublicKey().getKeyValue(), true,
+							encryption.getRandomReceiver(), encryption.getReceiverPrivateKey());
+					// String tmp=data.getDecryptedData().replaceFirst("identifier", "identifiers");
+					// String tmp2=tmp.replaceFirst("identifier", "identifiers");
+					// System.out.println("temp2"+tmp2);
 //					
 //				    
 //				    JSONObject json = new JSONObject(data.getDecryptedData());  
 //					//obj.getJSONObject(data.getDecryptedData());
 //					//entry.setStr(json);
 					FhirContext ctx = FhirContext.forR4();
-					IParser parser=null;
-					Bundle bundle=new Bundle();
-					if(data.getDecryptedData().matches("(?s).*(<(\\w+)[^>]*>.*</\\2>|<(\\w+)[^>]*/>).*"))
-					{
-						 parser = ctx.newXmlParser();
-							//	IBaseResource prescriptionBundle=parser.parseResource(entry.getContent());
-							    bundle = parser.parseResource(Bundle.class, data.getDecryptedData());
+					IParser parser = null;
+					Bundle bundle = new Bundle();
+					if (data.getDecryptedData().matches("(?s).*(<(\\w+)[^>]*>.*</\\2>|<(\\w+)[^>]*/>).*")) {
+						parser = ctx.newXmlParser();
+						// IBaseResource prescriptionBundle=parser.parseResource(entry.getContent());
+						bundle = parser.parseResource(Bundle.class, data.getDecryptedData());
+					} else {
+						parser = ctx.newJsonParser();
+						// IBaseResource prescriptionBundle=parser.parseResource(entry.getContent());
+						bundle = parser.parseResource(Bundle.class, data.getDecryptedData());
 					}
-					else {
-						 parser = ctx.newJsonParser();
-						//	IBaseResource prescriptionBundle=parser.parseResource(entry.getContent());
-						    bundle = parser.parseResource(Bundle.class, data.getDecryptedData());
+
+					if (!isValidBundleType(bundle)) {
+						throw new BusinessException(ServiceError.Unknown, " Response data Bundle validation failed ");
 					}
-						
-					
-				    
-				    if (!isValidBundleType(bundle)) {
-				    	throw new BusinessException(ServiceError.Unknown, " Response data Bundle validation failed " );
-		}
-				    List<NdhmPrescriptionDetails>prescriptions=new ArrayList<NdhmPrescriptionDetails>();
-				    System.out.println("Entry1"+bundle.getEntry().toString());
-				    for(BundleEntryComponent entry1: bundle.getEntry())
-				    {
-				    	NDHMPrecriptionRecordData data1=new NDHMPrecriptionRecordData();
-				    	data1.setFullUrl(entry1.getFullUrl());
-				    	NDHMRecordDataResource resource=new NDHMRecordDataResource();
-				    	resource.setResourceType(entry1.getResource().getResourceType().toString());
-				    	System.out.println("Entry1"+entry1.getFullUrl());
-				    	if(entry1.getFullUrl().contains("Patient"))
-				    	{
-				    		Patient pat= (Patient) entry1.getResource();
-				    		System.out.println("Patient"+pat.getName().get(0).getText());
-				    		NdhmPatientDetails patient=new NdhmPatientDetails();
-				    		patient.setName(pat.getName().get(0).getText());
-				    		response.setPatient(patient);
-				    	//	System.out.println("Patient="+patient.getFirstName());
-				    	}
-				    	else if(entry1.getFullUrl().contains("Practitioner"))
-				    	{
-				    		Practitioner pat= (Practitioner) entry1.getResource();
-				    		System.out.println("Patient"+pat.getName().get(0).getText());
-				    		NdhmDoctorDetails doctor=new NdhmDoctorDetails();
-				    		doctor.setName(pat.getName().get(0).getText());
-				    		
-				    		response.setDoctor(doctor);
-				    	}
-				    	else if(entry1.getFullUrl().contains("MedicationRequest"))
-				    	{
-				    		MedicationRequest pat= (MedicationRequest) entry1.getResource();
-				    		NdhmPrescriptionDetails prescription=new NdhmPrescriptionDetails();
-				    		String drugName=pat.getMedicationCodeableConcept().getText().replace("[","");
-				    		String drugId=pat.getIdBase();
-				    		drugName=drugName.replace("]", "");
-				    		String[]drug1=drugName.split(",");
-				    		List<String>drugs= Arrays.asList(drug1);
-				    		prescription.setAuthoredOn(pat.getAuthoredOn());
-				    		String drugid=drugId.substring(drugId.indexOf('/') + 1);
-				    		prescription.setId(drugid);
-				    		
-				    		String dose = pat.getDosageInstruction().get(0).getText().replace("[","");
-				    		dose=dose.replace("]", "");
-				    		String dose1[]=dose.split(",");
-				    		List<String>dosage=Arrays.asList(dose1);
-				    		
-				    		List<Drug>d1=new ArrayList<Drug>();
-				    		for(int i=0;i<drugs.size();i++)
-				    		{
-				    		Drug d2=new Drug();
-				    		
-				    		
-				    		
-				    		d2.setDrugName(drugs.get(i));
-				    		if(dosage.get(i)!=null)
-				    		d2.setDosage(dosage.get(i).contains("null")?null:dosage.get(i));
-				    		d1.add(d2);
-				    		d2=null;
-				    		}
-				    		
-				    		
-				    		//dosage.add(pat.getDosageInstruction().get(0).getText());
-				    		
-				    		
-				    		
-				    		prescription.setDrug(d1);
-				    		
-				    		prescriptions.add(prescription);
-				    		prescription=null;
-				    		
-				    	}
-				    	
-				    	response.setPrescription(prescriptions);
-			    		response.setTransactionId(collection.getTransactionId());
-			    		response.setCreatedTime(collection.getCreatedTime());
-			    		response.setUpdatedTime(collection.getUpdatedTime());
-				    	
-				    }
+					List<NdhmPrescriptionDetails> prescriptions = new ArrayList<NdhmPrescriptionDetails>();
+					System.out.println("Entry1" + bundle.getEntry().toString());
+					for (BundleEntryComponent entry1 : bundle.getEntry()) {
+						NDHMPrecriptionRecordData data1 = new NDHMPrecriptionRecordData();
+						data1.setFullUrl(entry1.getFullUrl());
+						NDHMRecordDataResource resource = new NDHMRecordDataResource();
+						resource.setResourceType(entry1.getResource().getResourceType().toString());
+						System.out.println("Entry1" + entry1.getFullUrl());
+						if (entry1.getFullUrl().contains("Patient")) {
+							Patient pat = (Patient) entry1.getResource();
+							System.out.println("Patient" + pat.getName().get(0).getText());
+							NdhmPatientDetails patient = new NdhmPatientDetails();
+							patient.setName(pat.getName().get(0).getText());
+							response.setPatient(patient);
+							// System.out.println("Patient="+patient.getFirstName());
+						} else if (entry1.getFullUrl().contains("Practitioner")) {
+							Practitioner pat = (Practitioner) entry1.getResource();
+							System.out.println("Patient" + pat.getName().get(0).getText());
+							NdhmDoctorDetails doctor = new NdhmDoctorDetails();
+							doctor.setName(pat.getName().get(0).getText());
+
+							response.setDoctor(doctor);
+						} else if (entry1.getFullUrl().contains("MedicationRequest")) {
+							MedicationRequest pat = (MedicationRequest) entry1.getResource();
+							NdhmPrescriptionDetails prescription = new NdhmPrescriptionDetails();
+							String drugName = pat.getMedicationCodeableConcept().getText().replace("[", "");
+							String drugId = pat.getIdBase();
+							drugName = drugName.replace("]", "");
+							String[] drug1 = drugName.split(",");
+							List<String> drugs = Arrays.asList(drug1);
+							prescription.setAuthoredOn(pat.getAuthoredOn());
+							String drugid = drugId.substring(drugId.indexOf('/') + 1);
+							prescription.setId(drugid);
+
+							String dose = pat.getDosageInstruction().get(0).getText().replace("[", "");
+							dose = dose.replace("]", "");
+							String dose1[] = dose.split(",");
+							List<String> dosage = Arrays.asList(dose1);
+
+							List<Drug> d1 = new ArrayList<Drug>();
+							for (int i = 0; i < drugs.size(); i++) {
+								Drug d2 = new Drug();
+
+								d2.setDrugName(drugs.get(i));
+								if (dosage.get(i) != null)
+									d2.setDosage(dosage.get(i).contains("null") ? null : dosage.get(i));
+								d1.add(d2);
+								d2 = null;
+							}
+
+							// dosage.add(pat.getDosageInstruction().get(0).getText());
+
+							prescription.setDrug(d1);
+
+							prescriptions.add(prescription);
+							prescription = null;
+
+						}
+
+						response.setPrescription(prescriptions);
+						response.setTransactionId(collection.getTransactionId());
+						response.setCreatedTime(collection.getCreatedTime());
+						response.setUpdatedTime(collection.getUpdatedTime());
+
+					}
 //				   // entry.setStr(bundle);
-				 //   ObjectMapper mapper = new ObjectMapper();
-				  //  ResponseBundle bundl=mapper.readValue(tmp2,ResponseBundle.class);
-				 //   entry.setBundle(bundl);
-				    //				    bundle.getEntry().forEach(bundleEntry -> {
+					// ObjectMapper mapper = new ObjectMapper();
+					// ResponseBundle bundl=mapper.readValue(tmp2,ResponseBundle.class);
+					// entry.setBundle(bundl);
+					// bundle.getEntry().forEach(bundleEntry -> {
 //	                    ResourceType resourceType = bundleEntry.getResource().getResourceType();
 //	                    logger.info("bundle entry resource type:  {}", resourceType);
 //	                    HITypeResourceProcessor processor = identifyResourceProcessor(resourceType);
@@ -5153,97 +5172,81 @@ pushNotificationServices.notifyUser(hiuDataRequest.getDoctorId().toString(),
 //	                    }
 //	                    
 //	});
-				    
-				    
-				    
-				    
-				    
-				    
-				    
-				    
-				    
-				    
-				    
-				    
-				    
+
 					entryList.add(entry);
 				}
 				collection.setEntries(entryList);
-			//	BeanUtil.map(collection,response);
+				// BeanUtil.map(collection,response);
 			}
-			
+
 		}
-			
-		
+
 		catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 		}
 		return response;
-	
+
 	}
-	
-	
+
 	@Override
 	public Boolean shareProfile(PatientShareProfile request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-			
-			PatientShareProfileCollection collection=new PatientShareProfileCollection();
+
+			PatientShareProfileCollection collection = new PatientShareProfileCollection();
 			BeanUtil.map(request, collection);
 			collection.setCreatedTime(new Date());
 			collection.setUpdatedTime(new Date());
 			patientShareRepository.save(collection);
-			
-			OnSharePatientrequest request1=new OnSharePatientrequest();
-			UUID uuid=UUID.randomUUID();
-			LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
+
+			OnSharePatientrequest request1 = new OnSharePatientrequest();
+			UUID uuid = UUID.randomUUID();
+			LocalDateTime time = LocalDateTime.now(ZoneOffset.UTC);
 			request1.setRequestId(uuid.toString());
 			request1.setTimestamp(time.toString());
-			AcknowledgementRequest ack=new AcknowledgementRequest();
+			AcknowledgementRequest ack = new AcknowledgementRequest();
 			ack.setStatus("SUCCESS");
 			ack.setConsentId(request.getProfile().getPatient().getHealthId());
 			request1.setAcknowledgement(ack);
-			FetchResponse fetch=new FetchResponse();
+			FetchResponse fetch = new FetchResponse();
 			fetch.setRequestId(request.getRequestId());
 			request1.setResp(fetch);
 			onShareProfile(request1);
-			
-			PatientRegistrationRequest request2=new PatientRegistrationRequest();
-			List<String>healthIds=new ArrayList<String>();
-			LocationCollection location=locationRepository.findByLocationName(request.getProfile().getHipCode());
+
+			PatientRegistrationRequest request2 = new PatientRegistrationRequest();
+			List<String> healthIds = new ArrayList<String>();
+			LocationCollection location = locationRepository.findByLocationName(request.getProfile().getHipCode());
 			DoctorClinicProfileCollection doctorClinicProfileCollections = doctorClinicProfileRepository
-					.findByLocationIdAndIsSuperAdmin(location.getId(),true);
+					.findByLocationIdAndIsSuperAdmin(location.getId(), true);
 			request2.setDoctorId(doctorClinicProfileCollections.getDoctorId().toString());
 			request2.setLocationId(location.getId().toString());
 			request2.setHospitalId(location.getHospitalId().toString());
-			
+
 			healthIds.add(request.getProfile().getPatient().getHealthId());
 			request2.setHealthId(healthIds);
 			request2.setLocalPatientName(request.getProfile().getPatient().getName());
-			//request2.setAge(request.getProfile().getPatient().getYearOfBirth());
+			// request2.setAge(request.getProfile().getPatient().getYearOfBirth());
 			request2.setFirstName(request.getProfile().getPatient().getName());
-			DOB dob=new DOB();
+			DOB dob = new DOB();
 			dob.setYears(request.getProfile().getPatient().getYearOfBirth());
-			if(request.getProfile().getPatient().getMonthOfBirth()!=null)
-			dob.setMonths(request.getProfile().getPatient().getMonthOfBirth());
-			if(request.getProfile().getPatient().getDayOfBirth()!=null)
-			dob.setDays(request.getProfile().getPatient().getDayOfBirth());
+			if (request.getProfile().getPatient().getMonthOfBirth() != null)
+				dob.setMonths(request.getProfile().getPatient().getMonthOfBirth());
+			if (request.getProfile().getPatient().getDayOfBirth() != null)
+				dob.setDays(request.getProfile().getPatient().getDayOfBirth());
 			request2.setDob(dob);
 			request2.setMobileNumber(request.getProfile().getPatient().getIdentifiers().get(0).getValue());
-			if(request.getProfile().getPatient().getGender().getType().equals("M"))
-			{
+			if (request.getProfile().getPatient().getGender().getType().equals("M")) {
 				request2.setGender("MALE");
-			}
-			else {
+			} else {
 				request2.setGender("FEMALE");
 			}
-			
-pushNotificationServices.notifyUser(doctorClinicProfileCollections.getDoctorId().toString(),
-					
-					"New Patient created using QR Code.", ComponentType.HEALTH_ID.getType(),request2.getHealthId().get(0),
-					null);
+
+			pushNotificationServices.notifyUser(doctorClinicProfileCollections.getDoctorId().toString(),
+
+					"New Patient created using QR Code.", ComponentType.HEALTH_ID.getType(),
+					request2.getHealthId().get(0), null);
 //			RegisteredPatientDetails registeredPatientDetails = registrationService.registerNewPatient(request2);
 //			registrationService.checkPatientCount(request2.getMobileNumber());
 //			transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT,
@@ -5257,12 +5260,10 @@ pushNotificationServices.notifyUser(doctorClinicProfileCollections.getDoctorId()
 //			
 //		//}
 //			}
-				response=true;
-			
-					
-		}
-		catch (Exception e) {
-			
+			response = true;
+
+		} catch (Exception e) {
+
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -5272,88 +5273,84 @@ pushNotificationServices.notifyUser(doctorClinicProfileCollections.getDoctorId()
 
 	@Override
 	public Boolean onShareProfile(OnSharePatientrequest request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-		JSONObject orderRequest = new JSONObject();
-		orderRequest.put("requestId", request.getRequestId());
-		orderRequest.put("timestamp", request.getTimestamp());
-		JSONObject acknowledgementRequest = new JSONObject();
-		acknowledgementRequest.put("status", request.getAcknowledgement().getStatus());
-		acknowledgementRequest.put("healthId", request.getAcknowledgement().getConsentId());
-		orderRequest.put("acknowledgement", acknowledgementRequest);
-			
-		orderRequest.put("error",request.getError());
-		JSONObject resp = new JSONObject();
-		resp.put("requestId",request.getResp().getRequestId());
-		orderRequest.put("resp",resp);
-		
-		String url = "https://dev.ndhm.gov.in/gateway/v0.5/patients/profile/on-share";
-		NdhmOauthResponse oauth = session();
-		URL obj = new URL(url);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			JSONObject orderRequest = new JSONObject();
+			orderRequest.put("requestId", request.getRequestId());
+			orderRequest.put("timestamp", request.getTimestamp());
+			JSONObject acknowledgementRequest = new JSONObject();
+			acknowledgementRequest.put("status", request.getAcknowledgement().getStatus());
+			acknowledgementRequest.put("healthId", request.getAcknowledgement().getConsentId());
+			orderRequest.put("acknowledgement", acknowledgementRequest);
 
-		con.setDoOutput(true);
+			orderRequest.put("error", request.getError());
+			JSONObject resp = new JSONObject();
+			resp.put("requestId", request.getResp().getRequestId());
+			orderRequest.put("resp", resp);
 
-		System.out.println(con.getErrorStream());
-		con.setDoInput(true);
-		// optional default is POST
-		con.setRequestMethod("POST");
-		con.setRequestProperty("Accept-Language", "en-US");
-		con.setRequestProperty("Content-Type", "application/json");
-		con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
-		con.setRequestProperty("X-CM-ID", "sbx");
-		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-		wr.writeBytes(orderRequest.toString());
-		wr.flush();
-		wr.close();
-		con.disconnect();
-		InputStream in = con.getInputStream();
-		// BufferedReader in = new BufferedReader(new
-		// InputStreamReader(con.getInputStream()));
-		String inputLine;
-		System.out.println(con.getErrorStream());
-		/* response = new StringBuffer(); */
-		StringBuffer output = new StringBuffer();
-		int c = 0;
-		while ((c = in.read()) != -1) {
+			String url = "https://dev.abdm.gov.in/gateway/v0.5/patients/profile/on-share";
+			NdhmOauthResponse oauth = session();
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-			output.append((char) c);
+			con.setDoOutput(true);
 
-		}
-		System.out.println("response:" + output.toString());
-		int responseCode = con.getResponseCode();
-		if (responseCode == 202)
-			response = true;
-		
-		
-		}
-		catch (Exception e) {
-			
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("X-CM-ID", "sbx");
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			// BufferedReader in = new BufferedReader(new
+			// InputStreamReader(con.getInputStream()));
+			String inputLine;
+			System.out.println(con.getErrorStream());
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
+
+				output.append((char) c);
+
+			}
+			System.out.println("response:" + output.toString());
+			int responseCode = con.getResponseCode();
+			if (responseCode == 202)
+				response = true;
+
+		} catch (Exception e) {
+
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 		}
 		return response;
-		
+
 	}
-	
-	
+
 	@Override
 	public PatientShareProfile getPatientShare(String healthId) {
-		PatientShareProfile response=null;
+		PatientShareProfile response = null;
 		try {
-			List<PatientShareProfileCollection> collections=patientShareRepository.findByProfilePatientHealthId(healthId);
-			
-			if(collections !=null)
-			{
-				PatientShareProfileCollection collection=collections.get(0);
-				response=new PatientShareProfile();
+			List<PatientShareProfileCollection> collections = patientShareRepository
+					.findByProfilePatientHealthId(healthId);
+
+			if (collections != null) {
+				PatientShareProfileCollection collection = collections.get(0);
+				response = new PatientShareProfile();
 				BeanUtil.map(collection, response);
 			}
-			
-		}
-		catch (Exception e) {
-			
+
+		} catch (Exception e) {
+
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -5361,67 +5358,65 @@ pushNotificationServices.notifyUser(doctorClinicProfileCollections.getDoctorId()
 		return response;
 
 	}
-	
-	
+
 	@Override
 	public Boolean notifyPatientSms(NotifyPatientrequest request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-		String link=	DPDoctorUtils.urlShortner("https://sandbox.ndhm.gov.in/docs/phr_app");
-		JSONObject orderRequest = new JSONObject();
-		orderRequest.put("requestId", request.getRequestId());
-		orderRequest.put("timestamp", request.getTimestamp());
-		JSONObject notificationRequest = new JSONObject();
-		notificationRequest.put("phoneNo", "+91-"+request.getNotification().getPhoneNo());
-		notificationRequest.put("receiverName", request.getNotification().getReceiverName());
-		notificationRequest.put("careContextInfo", request.getNotification().getCareContextInfo());
-		notificationRequest.put("deeplinkUrl", link);
-		JSONObject hipRequest = new JSONObject();
-		
-		hipRequest.put("name", request.getNotification().getHip().getName());
-		hipRequest.put("id",request.getNotification().getHip().getId());
-		notificationRequest.put("hip", hipRequest);
-		orderRequest.put("notification", notificationRequest);
-			
-		
-		System.out.println("Orderrequest:" + orderRequest.toString());
-		String url = "https://dev.ndhm.gov.in/gateway/v0.5/patients/sms/notify";
-		NdhmOauthResponse oauth = session();
-		URL obj = new URL(url);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			String link = DPDoctorUtils.urlShortner("https://sandbox.ndhm.gov.in/docs/phr_app");
+			JSONObject orderRequest = new JSONObject();
+			orderRequest.put("requestId", request.getRequestId());
+			orderRequest.put("timestamp", request.getTimestamp());
+			JSONObject notificationRequest = new JSONObject();
+			notificationRequest.put("phoneNo", "+91-" + request.getNotification().getPhoneNo());
+			notificationRequest.put("receiverName", request.getNotification().getReceiverName());
+			notificationRequest.put("careContextInfo", request.getNotification().getCareContextInfo());
+			notificationRequest.put("deeplinkUrl", link);
+			JSONObject hipRequest = new JSONObject();
 
-		con.setDoOutput(true);
+			hipRequest.put("name", request.getNotification().getHip().getName());
+			hipRequest.put("id", request.getNotification().getHip().getId());
+			notificationRequest.put("hip", hipRequest);
+			orderRequest.put("notification", notificationRequest);
 
-		System.out.println(con.getErrorStream());
-		con.setDoInput(true);
-		// optional default is POST
-		con.setRequestMethod("POST");
-		con.setRequestProperty("Accept-Language", "en-US");
-		con.setRequestProperty("Content-Type", "application/json");
-		con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
-		con.setRequestProperty("X-CM-ID","sbx");
-		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-		wr.writeBytes(orderRequest.toString());
-		wr.flush();
-		wr.close();
-		con.disconnect();
-		InputStream in = con.getInputStream();
-		// BufferedReader in = new BufferedReader(new
-		// InputStreamReader(con.getInputStream()));
-		String inputLine;
-		System.out.println(con.getErrorStream());
-		/* response = new StringBuffer(); */
-		StringBuffer output = new StringBuffer();
-		int c = 0;
-		while ((c = in.read()) != -1) {
+			System.out.println("Orderrequest:" + orderRequest.toString());
+			String url = "https://dev.abdm.gov.in/gateway/v0.5/patients/sms/notify";
+			NdhmOauthResponse oauth = session();
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-			output.append((char) c);
+			con.setDoOutput(true);
 
-		}
-		System.out.println("response:" + output.toString());
-		int responseCode = con.getResponseCode();
-		if (responseCode == 202)
-			response = true;
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("X-CM-ID", "sbx");
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			// BufferedReader in = new BufferedReader(new
+			// InputStreamReader(con.getInputStream()));
+			String inputLine;
+			System.out.println(con.getErrorStream());
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
+
+				output.append((char) c);
+
+			}
+			System.out.println("response:" + output.toString());
+			int responseCode = con.getResponseCode();
+			if (responseCode == 202)
+				response = true;
 //		OnNotifyRequest request1=new OnNotifyRequest();
 //		UUID uuid=UUID.randomUUID();
 //		LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
@@ -5436,54 +5431,48 @@ pushNotificationServices.notifyUser(doctorClinicProfileCollections.getDoctorId()
 //		req.setAcknowledgement(acknowledgementRequest);
 //		onNotifySms();
 		}
-		
-		
+
 		catch (Exception e) {
-			
+
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 		}
 		return response;
-		
+
 	}
-	
+
 	@Override
 	public Boolean onNotifySms(OnNotifySmsRequest request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-			OnNotifySmsCollection collection=new OnNotifySmsCollection();
+			OnNotifySmsCollection collection = new OnNotifySmsCollection();
 			BeanUtil.map(request, collection);
 			collection.setCreatedTime(new Date());
 			collection.setUpdatedTime(new Date());
 			notifySmsRepository.save(collection);
-			response=true;
-		}
-		catch (Exception e) {
+			response = true;
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 		}
 		return response;
 
-
 	}
-	
-	
+
 	@Override
 	public OnNotifySmsRequest getNotifySms(String requestId) {
-		OnNotifySmsRequest response=null;
+		OnNotifySmsRequest response = null;
 		try {
-			OnNotifySmsCollection collection=notifySmsRepository.findByRespRequestId(requestId);
-			response=new OnNotifySmsRequest();
-			if(collection !=null)
-			{
+			OnNotifySmsCollection collection = notifySmsRepository.findByRespRequestId(requestId);
+			response = new OnNotifySmsRequest();
+			if (collection != null) {
 				BeanUtil.map(collection, response);
 			}
-			
-		}
-		catch (Exception e) {
-			
+
+		} catch (Exception e) {
+
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -5491,19 +5480,594 @@ pushNotificationServices.notifyUser(doctorClinicProfileCollections.getDoctorId()
 		return response;
 
 	}
-	
-	  private boolean isValidBundleType(Bundle bundle) {
-	        Bundle.BundleType bundleType = bundle.getType();
-	        if (bundleType.equals(Bundle.BundleType.COLLECTION)) {
-	            return true;
-	        }
-	        if (!bundleType.equals(Bundle.BundleType.DOCUMENT)) {
-	            return false;
-	        }
-	        if (bundle.getEntry().isEmpty()) {
-	            return false;
-	        }
-	        Bundle.BundleEntryComponent firstEntry = bundle.getEntry().get(0);
-	        return firstEntry.getResource().getResourceType().equals(ResourceType.Composition);
+
+	private boolean isValidBundleType(Bundle bundle) {
+		Bundle.BundleType bundleType = bundle.getType();
+		if (bundleType.equals(Bundle.BundleType.COLLECTION)) {
+			return true;
+		}
+		if (!bundleType.equals(Bundle.BundleType.DOCUMENT)) {
+			return false;
+		}
+		if (bundle.getEntry().isEmpty()) {
+			return false;
+		}
+		Bundle.BundleEntryComponent firstEntry = bundle.getEntry().get(0);
+		return firstEntry.getResource().getResourceType().equals(ResourceType.Composition);
 	}
+
+	@Override
+	public RequestOtp generateRequestOtp(EnrollmentV3Request request) {
+		RequestOtp response = null;
+		try {
+
+			NdhmOauthResponse oauth = session();
+			UUID uuid = UUID.randomUUID();
+			TimeZone tz = TimeZone.getTimeZone("UTC");
+			DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+																					// timezone offset
+			df.setTimeZone(tz);
+			String nowAsISO = df.format(new Date());
+
+			String url = "https://abhasbx.abdm.gov.in/abha/api/v3/enrollment/request/otp";
+			JSONObject orderRequest = new JSONObject();
+
+			orderRequest.put("scope", request.getScope());
+			orderRequest.put("loginHint", request.getLoginHint());
+			orderRequest.put("loginId", getEncryptedValueFromABDMPublickey(request.getLoginId(), getRSAKEY()));
+			orderRequest.put("otpSystem", request.getOtpSystem());
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			con.setDoOutput(true);
+
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("REQUEST-ID", uuid.toString());
+			con.setRequestProperty("TIMESTAMP", nowAsISO);
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			System.out.println("Orderrequest:" + orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
+
+				output.append((char) c);
+
+			}
+			ObjectMapper mapper = new ObjectMapper();
+
+			response = mapper.readValue(output.toString(), RequestOtp.class);
+			System.out.println("response" + output.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
+	private String getEncryptedValueFromABDMPublickey(String message, String publicKeyString)
+			throws NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException,
+			InvalidKeySpecException {
+		String encryption = null;
+		try {
+			// Convert the base64 encoded string to a public key
+			PublicKey publicKey = KeyFactory.getInstance("RSA")
+					.generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(publicKeyString.getBytes())));
+			Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-1AndMGF1Padding");
+			cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+			byte[] encryptedbytes = cipher.doFinal(message.getBytes());
+			encryption = new String(Base64.getEncoder().encode(encryptedbytes));
+			System.out.println("encrypted message = " + encryption);
+		} catch (InvalidKeyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return encryption;
+	}
+
+	private String getRSAKEY() {
+		String publicKeyString;
+		try {
+			String url = "https://healthidsbx.abdm.gov.in/api/v1/auth/cert";
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			con.setDoOutput(true);
+
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("GET");
+
+			int responseCode = con.getResponseCode();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			/* response = new StringBuffer(); */
+			StringBuffer respons = new StringBuffer();
+			while ((inputLine = in.readLine()) != null) {
+
+				respons.append(inputLine);
+
+			}
+			in.close();
+			// Extract the key content from the PEM format
+			String publicKeyPEM = respons.toString().replace("-----BEGIN PUBLIC KEY-----", "")
+					.replace("-----END PUBLIC KEY-----", "").replace("\n", "");
+
+			// Decode the Base64-encoded key
+			byte[] keyBytes = Base64.getDecoder().decode(publicKeyPEM);
+
+			// Convert the key bytes into a PublicKey object
+			X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
+			KeyFactory keyFactory = KeyFactory.getInstance("RSA"); // Or the appropriate algorithm (e.g., "EC" for
+																	// elliptic curve)
+			PublicKey publicKey = keyFactory.generatePublic(keySpec);
+
+			// Convert the PublicKey object into a string representation
+			publicKeyString = Base64.getEncoder().encodeToString(publicKey.getEncoded());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return publicKeyString;
+	}
+
+	@Override
+	public VerifyAndUpdateDataResponse verifyAndUpdateData(EnrollmentVerifyAndUpdateV3Request request) {
+		VerifyAndUpdateDataResponse response = null;
+		try {
+
+			NdhmOauthResponse oauth = session();
+
+			String url = "https://abhasbx.abdm.gov.in/abha/api/v3/profile/login/verify";
+			JSONObject orderRequest = new JSONObject();
+			String RSAKEY = getEncryptedValueFromABDMPublickey(request.getAuthData().getOtp().getOtpValue(),
+					getRSAKEY());
+			request.getAuthData().getOtp().setOtpValue(RSAKEY);
+			orderRequest.put("scope", request.getScope());
+			orderRequest.put("authData", request.getAuthData());
+			System.out.println("RSAKEY" + request.getAuthData().getOtp().getOtpValue());
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			con.setDoOutput(true);
+
+			UUID uuid = UUID.randomUUID();
+			TimeZone tz = TimeZone.getTimeZone("UTC");
+			DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+																					// timezone offset
+			df.setTimeZone(tz);
+			String nowAsISO = df.format(new Date());
+			System.out.println("uuid" + uuid.toString());
+			System.out.println("time" + nowAsISO);
+
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("REQUEST-ID", uuid.toString());
+			con.setRequestProperty("TIMESTAMP", nowAsISO);
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			System.out.println("Orderrequest:" + orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
+
+				output.append((char) c);
+
+			}
+			ObjectMapper mapper = new ObjectMapper();
+
+			response = mapper.readValue(output.toString(), VerifyAndUpdateDataResponse.class);
+			System.out.println("response" + output.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
+	public VerifyAndUpdateDataResponse deleteABHANumber(DeleteABHANumberRequest request) {
+		VerifyAndUpdateDataResponse response = null;
+		try {
+
+			NdhmOauthResponse oauth = session();
+
+			String url = "https://healthidsbx.abdm.gov.in/api/v2/account/profile/delete";
+			JSONObject orderRequest = new JSONObject();
+
+			orderRequest.put("txnId", request.getTxnId());
+			orderRequest.put("otp", getEncryptedValueFromABDMPublickey(request.getOtp(), getRSAKEY()));
+			orderRequest.put("authMethods", request.getAuthMethods());
+			orderRequest.put("reasons", request.getReasons());
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			con.setDoOutput(true);
+
+			UUID uuid = UUID.randomUUID();
+			TimeZone tz = TimeZone.getTimeZone("UTC");
+			DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+																					// timezone offset
+			df.setTimeZone(tz);
+			String nowAsISO = df.format(new Date());
+			System.out.println("uuid" + uuid.toString());
+			System.out.println("time" + nowAsISO);
+
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("REQUEST-ID", uuid.toString());
+			con.setRequestProperty("TIMESTAMP", nowAsISO);
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			System.out.println("Orderrequest:" + orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
+
+				output.append((char) c);
+
+			}
+			ObjectMapper mapper = new ObjectMapper();
+			response = mapper.readValue(output.toString(), VerifyAndUpdateDataResponse.class);
+			System.out.println("response" + output.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public EnrollByAadhaarResponse verifyAndEnrollByAadhaar(EnrollmentVerifyAndUpdateV3Request request) {
+		EnrollByAadhaarResponse response = null;
+		try {
+
+			NdhmOauthResponse oauth = session();
+
+			String url = "https://abhasbx.abdm.gov.in/abha/api/v3/enrollment/enrol/byAadhaar";
+			JSONObject orderRequest = new JSONObject();
+			String RSAKEY = getEncryptedValueFromABDMPublickey(request.getAuthData().getOtp().getOtpValue(),
+					getRSAKEY());
+			JSONObject authDataRequest = new JSONObject();
+			authDataRequest.put("authMethods", request.getAuthData().getAuthMethods());
+
+			JSONObject otpRequest = new JSONObject();
+			otpRequest.put("txnId", request.getAuthData().getOtp().getTxnId());
+			otpRequest.put("otpValue", RSAKEY);
+			otpRequest.put("mobile", request.getAuthData().getOtp().getMobile());
+			authDataRequest.put("otp", otpRequest);
+
+			JSONObject consentRequest = new JSONObject();
+			consentRequest.put("code", "abha-enrollment");
+			consentRequest.put("version", "1.4");
+
+			orderRequest.put("authData", authDataRequest);
+			orderRequest.put("consent", consentRequest);
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			con.setRequestMethod("POST");
+
+			System.out.println(con.getErrorStream());
+			// optional default is POST
+			UUID uuid = UUID.randomUUID();
+			TimeZone tz = TimeZone.getTimeZone("UTC");
+			DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+																					// timezone offset
+			df.setTimeZone(tz);
+			String nowAsISO = df.format(new Date());
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("REQUEST-ID", uuid.toString());
+			con.setRequestProperty("TIMESTAMP", nowAsISO);
+			con.setDoOutput(true);
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			System.out.println("Orderrequest:" + orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
+
+				output.append((char) c);
+
+			}
+			System.out.println("response" + output.toString());
+
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+			response = mapper.readValue(output.toString(), EnrollByAadhaarResponse.class);
+			System.out.println("response" + output.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public SuggestedAbhaAddressesResponse getSuggestedAbhaAddresses(String txnId) {
+		SuggestedAbhaAddressesResponse response = null;
+		try {
+
+			NdhmOauthResponse oauth = session();
+
+			String url = "https://abhasbx.abdm.gov.in/abha/api/v3/enrollment/enrol/suggestion";
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			con.setDoOutput(true);
+
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("GET");
+			UUID uuid = UUID.randomUUID();
+			TimeZone tz = TimeZone.getTimeZone("UTC");
+			DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+																					// timezone offset
+			df.setTimeZone(tz);
+			String nowAsISO = df.format(new Date());
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("REQUEST-ID", uuid.toString());
+			con.setRequestProperty("TIMESTAMP", nowAsISO);
+			con.setRequestProperty("TRANSACTION_ID", txnId);
+
+			int responseCode = con.getResponseCode();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			/* response = new StringBuffer(); */
+			StringBuffer respons = new StringBuffer();
+			while ((inputLine = in.readLine()) != null) {
+
+				respons.append(inputLine);
+
+			}
+			in.close();
+			ObjectMapper mapper = new ObjectMapper();
+			String output = respons.toString();
+
+			response = mapper.readValue(output.toString(), SuggestedAbhaAddressesResponse.class);
+			System.out.println("response" + respons.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public CreateAbhaAddresseResponse createAbhaAddresse(CreateAbhaAddressV3Request request) {
+		CreateAbhaAddresseResponse response = null;
+		try {
+
+			NdhmOauthResponse oauth = session();
+
+			String url = "https://abhasbx.abdm.gov.in/abha/api/v3/enrollment/enrol/abha-address";
+			JSONObject orderRequest = new JSONObject();
+			orderRequest.put("txnId", request.getTxnId());
+			orderRequest.put("abhaAddress", request.getAbhaAddress());
+			orderRequest.put("preferred", 1);
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			con.setRequestMethod("POST");
+
+			System.out.println(con.getErrorStream());
+			// optional default is POST
+			UUID uuid = UUID.randomUUID();
+			TimeZone tz = TimeZone.getTimeZone("UTC");
+			DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+																					// timezone offset
+			df.setTimeZone(tz);
+			String nowAsISO = df.format(new Date());
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("REQUEST-ID", uuid.toString());
+			con.setRequestProperty("TIMESTAMP", nowAsISO);
+			con.setDoOutput(true);
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			System.out.println("Orderrequest:" + orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
+
+				output.append((char) c);
+
+			}
+			ObjectMapper mapper = new ObjectMapper();
+			response = mapper.readValue(output.toString(), CreateAbhaAddresseResponse.class);
+			System.out.println("response" + output.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean generateLinkToken(GenerateLinkTokenV3Request request) {
+		Boolean response = false;
+		try {
+
+			NdhmOauthResponse oauth = session();
+
+			String url = "https://dev.abdm.gov.in/hiecm/api/v3/token/generate-token";
+			JSONObject orderRequest = new JSONObject();
+			orderRequest.put("abhaNumber", request.getAbhaNumber());
+			orderRequest.put("abhaAddress", request.getAbhaAddress());
+			orderRequest.put("name", request.getName());
+			orderRequest.put("gender", request.getGender());
+			orderRequest.put("yearOfBirth", request.getYearOfBirth());
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			con.setRequestMethod("POST");
+
+			System.out.println(con.getErrorStream());
+			// optional default is POST
+			UUID uuid = UUID.randomUUID();
+			TimeZone tz = TimeZone.getTimeZone("UTC");
+			DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+																					// timezone offset
+			df.setTimeZone(tz);
+			String nowAsISO = df.format(new Date());
+
+			DoctorClinicProfileCollection doctorClinicProfileCollections = doctorClinicProfileRepository
+					.findByLocationIdAndIsSuperAdmin(new ObjectId(request.getHipId()), true);
+
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("REQUEST-ID", uuid.toString());
+			con.setRequestProperty("TIMESTAMP", nowAsISO);
+			con.setRequestProperty("X-CM-ID", "sbx");
+			con.setRequestProperty("X-HIP-ID", doctorClinicProfileCollections.getClinicHipId());
+			con.setDoOutput(true);
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			System.out.println("Orderrequest:" + orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
+
+				output.append((char) c);
+
+			}
+			System.out.println("response" + output.toString());
+			int responseCode = con.getResponseCode();
+			if (responseCode == 202)
+				response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean generateLinkTokenCallback(GenerateLinkTokenCallbackV3Request request) {
+		Boolean response = false;
+		try {
+
+			NdhmOauthResponse oauth = session();
+			String value = PathProxy.NDHM_BASE_URL + PathProxy.NdhmPushUrls.GET_CALLBACK_GENERATE_TOKEN;
+			String url = "https://dev.abdm.gov.in/" + value + "/get/hiecm/api/v3/hip/token/generate-token";
+			JSONObject orderRequest = new JSONObject();
+			orderRequest.put("abhaAddress", request.getAbhaAddress());
+			orderRequest.put("linkToken", request.getLinkToken());
+
+			JSONObject otpRequest = new JSONObject();
+			otpRequest.put("requestId", request.getRequestId());
+
+			orderRequest.put("response", otpRequest);
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			con.setRequestMethod("POST");
+
+			System.out.println(con.getErrorStream());
+			// optional default is POST
+			UUID uuid = UUID.randomUUID();
+			TimeZone tz = TimeZone.getTimeZone("UTC");
+			DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+																					// timezone offset
+			df.setTimeZone(tz);
+			String nowAsISO = df.format(new Date());
+			DoctorClinicProfileCollection doctorClinicProfileCollections = doctorClinicProfileRepository
+					.findByLocationIdAndIsSuperAdmin(new ObjectId(request.getHipId()), true);
+
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("REQUEST-ID", uuid.toString());
+			con.setRequestProperty("TIMESTAMP", nowAsISO);
+//			con.setRequestProperty("X-HIP-ID", "HELTHCOCO_588687");
+			con.setRequestProperty("X-HIP-ID", doctorClinicProfileCollections.getClinicHipId());
+
+			con.setDoOutput(true);
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			System.out.println("Orderrequest:" + orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
+
+				output.append((char) c);
+
+			}
+			System.out.println("response" + output.toString());
+			int responseCode = con.getResponseCode();
+			if (responseCode == 202)
+				response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
 }

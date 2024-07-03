@@ -36,9 +36,7 @@ import org.hl7.fhir.r4.model.Narrative.NarrativeStatus;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StructureDefinition;
 
-import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.OTReportsCollection;
-import com.dpdocter.collections.OperationNoteCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.UserCollection;
 

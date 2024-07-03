@@ -1,7 +1,5 @@
 package com.dpdocter.beans;
 
-import java.util.List;
-
 public class NdhmPatientDetails {
 
 	private String name;

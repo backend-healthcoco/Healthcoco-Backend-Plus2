@@ -39,11 +39,7 @@ import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.beans.DoctorCalendarView;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FormContent;
-import com.dpdocter.beans.FetchResponse;
-import com.dpdocter.beans.FoodCommunity;
-import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.HipConsent;
-import com.dpdocter.beans.Language;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.NotifyPatientrequest;
 import com.dpdocter.beans.PatientShortCard;
@@ -128,10 +124,10 @@ public class RegistrationApi {
 
 	@Value(value = "${invalid.input}")
 	private String invalidInput;
-	
+
 	@Autowired
 	private NDHMservices ndhmServices;
-	
+
 	@Autowired
 	private LocationRepository locationRepository;
 
@@ -160,36 +156,32 @@ public class RegistrationApi {
 					false);
 			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
 
-			
-			
-			
 		} else {
 			registeredPatientDetails = registrationService.registerExistingPatient(request, infoType);
 			transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT,
 					false);
 			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
 		}
-		
-		
-		if(request.getHealthId().isEmpty()) {
-			NotifyPatientrequest request1=new NotifyPatientrequest();
-			UUID uuid=UUID.randomUUID();
-			LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
+
+		if (request.getHealthId() != null && request.getHealthId().isEmpty()) {
+			NotifyPatientrequest request1 = new NotifyPatientrequest();
+			UUID uuid = UUID.randomUUID();
+			LocalDateTime time = LocalDateTime.now(ZoneOffset.UTC);
 			request1.setRequestId(uuid.toString());
 			request1.setTimestamp(time.toString());
-			SmsPatientNotify sms=new SmsPatientNotify();
-			//sms.setDeeplinkUrl("https://sandbox.ndhm.gov.in/docs/phr_app");
-			HipConsent hip=new HipConsent();
+			SmsPatientNotify sms = new SmsPatientNotify();
+			// sms.setDeeplinkUrl("https://sandbox.ndhm.gov.in/docs/phr_app");
+			HipConsent hip = new HipConsent();
 			hip.setId(registeredPatientDetails.getLocationId());
-			LocationCollection collection=locationRepository.findById(new ObjectId(hip.getId())).orElse(null);
+			LocationCollection collection = locationRepository.findById(new ObjectId(hip.getId())).orElse(null);
 			hip.setName(collection.getLocationName());
 			sms.setHip(hip);
 			sms.setPhoneNo(registeredPatientDetails.getMobileNumber());
 			sms.setReceiverName(registeredPatientDetails.getFirstName());
 			sms.setCareContextInfo("new Patient linking");
 			request1.setNotification(sms);
-			Boolean Registerstatus=ndhmServices.notifyPatientSms(request1);
-		System.out.println("RegisterStatus"+Registerstatus);
+			Boolean Registerstatus = ndhmServices.notifyPatientSms(request1);
+			System.out.println("RegisterStatus" + Registerstatus);
 		}
 		if (request.getFamilyMedicalHistoryHandler() != null) {
 			request.getFamilyMedicalHistoryHandler().setPatientId(registeredPatientDetails.getPatient().getPatientId());
@@ -241,35 +233,27 @@ public class RegistrationApi {
 		transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT, false);
 		esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
 
-		
-		
-		
-		if(request.getHealthId().isEmpty()) {
-			NotifyPatientrequest request1=new NotifyPatientrequest();
-			UUID uuid=UUID.randomUUID();
-			LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
+		if (request.getHealthId() != null && request.getHealthId().isEmpty()) {
+			NotifyPatientrequest request1 = new NotifyPatientrequest();
+			UUID uuid = UUID.randomUUID();
+			LocalDateTime time = LocalDateTime.now(ZoneOffset.UTC);
 			request1.setRequestId(uuid.toString());
 			request1.setTimestamp(time.toString());
-			SmsPatientNotify sms=new SmsPatientNotify();
-			//sms.setDeeplinkUrl("https://sandbox.ndhm.gov.in/docs/phr_app");
-			HipConsent hip=new HipConsent();
+			SmsPatientNotify sms = new SmsPatientNotify();
+			// sms.setDeeplinkUrl("https://sandbox.ndhm.gov.in/docs/phr_app");
+			HipConsent hip = new HipConsent();
 			hip.setId(registeredPatientDetails.getLocationId());
-			LocationCollection collection=locationRepository.findById(new ObjectId(hip.getId())).orElse(null);
+			LocationCollection collection = locationRepository.findById(new ObjectId(hip.getId())).orElse(null);
 			hip.setName(collection.getLocationName());
 			sms.setHip(hip);
 			sms.setPhoneNo(registeredPatientDetails.getMobileNumber());
 			sms.setReceiverName(registeredPatientDetails.getFirstName());
 			sms.setCareContextInfo("new Patient linking");
 			request1.setNotification(sms);
-			Boolean Registerstatus=ndhmServices.notifyPatientSms(request1);
-		System.out.println("RegisterStatus"+Registerstatus);
+			Boolean Registerstatus = ndhmServices.notifyPatientSms(request1);
+			System.out.println("RegisterStatus" + Registerstatus);
 		}
-		
-		
-		
-		
-		
-		
+
 		registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
 		registeredPatientDetails.setThumbnailUrl(getFinalImageURL(registeredPatientDetails.getThumbnailUrl()));
 		response.setData(registeredPatientDetails);

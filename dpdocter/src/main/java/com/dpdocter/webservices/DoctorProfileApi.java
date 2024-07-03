@@ -35,7 +35,6 @@ import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Services;
 import com.dpdocter.beans.Speciality;
-import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;

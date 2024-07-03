@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.RecordsUrlData;
-import com.dpdocter.webservices.PathProxy.RecordsUrls;
 
 public class RecordsAddRequest {
 

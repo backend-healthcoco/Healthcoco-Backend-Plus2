@@ -39,7 +39,6 @@ import org.hl7.fhir.r4.model.StructureDefinition;
 
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.collections.DischargeSummaryCollection;
-import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.UserCollection;
 

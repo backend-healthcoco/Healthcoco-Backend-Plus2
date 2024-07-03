@@ -1,9 +1,6 @@
 package com.dpdocter.services.v2.impl;
 
 import java.io.File;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -37,7 +34,6 @@ import com.dpdocter.beans.v2.RegisteredPatientDetails;
 import com.dpdocter.collections.ExportContactsRequestCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.ImportContactsRequestCollection;
-import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.collections.UserCollection;
@@ -45,16 +41,11 @@ import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.ExportContactsRequestRepository;
 import com.dpdocter.repository.GroupRepository;
 import com.dpdocter.repository.ImportContactsRequestRepository;
-import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientGroupRepository;
 import com.dpdocter.repository.PatientRepository;
-import com.dpdocter.repository.PrescriptionRepository;
-import com.dpdocter.repository.RecordsRepository;
-import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.BulkSMSRequest;
 import com.dpdocter.request.ExportRequest;
@@ -64,7 +55,6 @@ import com.dpdocter.request.PatientGroupAddEditRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.PatientGroupLookupResponse;
 import com.dpdocter.services.FileManager;
-import com.dpdocter.services.OTPService;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.v2.ContactsService;
 import com.mongodb.BasicDBObject;
@@ -226,7 +216,8 @@ public class ContactsServiceImpl implements ContactsService {
 							.append("colorCode", "$user.colorCode").append("user", "$user")
 							.append("address", "$address").append("patientId", "$userId")
 							.append("profession", "$profession").append("relations", "$relations")
-							.append("healthId", "$healthId").append("ndhmToken", "$ndhmToken").append("linkToken", "$linkToken")
+							.append("healthId", "$healthId").append("ndhmToken", "$ndhmToken")
+							.append("abhaNumber", "$abhaNumber").append("linkToken", "$linkToken")
 							.append("consultantDoctorIds", "$consultantDoctorIds").append("doctorId", "$doctorId")
 							.append("registrationDate", "$registrationDate").append("createdTime", "$createdTime")
 							.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")));
@@ -863,6 +854,9 @@ public class ContactsServiceImpl implements ContactsService {
 					registeredPatientDetail.setMobileNumber(patientCard.getUser().getMobileNumber());
 					registeredPatientDetail.setBackendPatientId(patientCard.getId());
 					registeredPatientDetail.setColorCode(patientCard.getUser().getColorCode());
+					registeredPatientDetail.setHealthId(patientCard.getHealthId());
+					registeredPatientDetail.setAbhaNumber(patientCard.getAbhaNumber());
+
 					if (groupIds != null) {
 						groupIdList = new ArrayList<>();
 						for (ObjectId groupId : groupIds) {

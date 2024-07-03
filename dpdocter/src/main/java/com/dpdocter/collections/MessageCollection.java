@@ -8,8 +8,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.enums.MessageStatusType;
-import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.response.MessageData;
 
 @Document(collection = "message_cl")

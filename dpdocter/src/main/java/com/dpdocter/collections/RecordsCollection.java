@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.RecordsUrlData;
 import com.dpdocter.enums.RecordsState;
 

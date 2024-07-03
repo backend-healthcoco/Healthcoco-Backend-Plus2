@@ -114,6 +114,8 @@ public class PatientRegistrationRequest {
 	private String ndhmToken;
 	
 	private String linkToken;
+	
+    private String abhaNumber;
 
 
 	public String getRecordId() {
@@ -500,10 +502,6 @@ public class PatientRegistrationRequest {
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
-	
-	
-
-	
 
 	public String getLinkToken() {
 		return linkToken;
@@ -528,6 +526,14 @@ public class PatientRegistrationRequest {
 
 	public void setLanguage(String language) {
 		this.language = language;
+	}
+
+	public String getAbhaNumber() {
+		return abhaNumber;
+	}
+
+	public void setAbhaNumber(String abhaNumber) {
+		this.abhaNumber = abhaNumber;
 	}
 
 	@Override

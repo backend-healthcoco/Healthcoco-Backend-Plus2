@@ -47,7 +47,7 @@ public class HealthIdRequest {
 	private String wardCode;
 	
 	private String yearOfBirth;
-
+	private String mobile;
 	public String getAddress() {
 		return address;
 	}
@@ -232,9 +232,14 @@ public class HealthIdRequest {
 	public void setYearOfBirth(String yearOfBirth) {
 		this.yearOfBirth = yearOfBirth;
 	}
-	
-	
-	
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
 	
 
 }

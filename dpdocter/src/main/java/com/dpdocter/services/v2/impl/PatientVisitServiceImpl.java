@@ -224,7 +224,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							.append("healthId", new BasicDBObject("$first", "$healthId"))
 							.append("ndhmToken", new BasicDBObject("$first", "$ndhmToken"))
 							.append("linkToken", new BasicDBObject("$first", "$linkToken"))
-
+							.append("abhaNumber", new BasicDBObject("$first", "$abhaNumber"))
 							.append("visitedTime", new BasicDBObject("$first", "$visitedTime"))));
 
 			Aggregation aggregation = null;

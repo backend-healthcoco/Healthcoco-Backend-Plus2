@@ -18,11 +18,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.dpdocter.beans.CareContextDiscoverRequest;
-import com.dpdocter.beans.FetchModesRequest;
 import com.dpdocter.beans.LinkConfirm;
 import com.dpdocter.beans.LinkRequest;
 import com.dpdocter.beans.NdhmOnPatientFindRequest;
-import com.dpdocter.beans.NdhmPatientRequest;
 import com.dpdocter.beans.NotifyHiuRequest;
 import com.dpdocter.beans.NotifyRequest;
 import com.dpdocter.beans.OnAuthConfirmRequest;
@@ -31,7 +29,6 @@ import com.dpdocter.beans.OnCareContext;
 import com.dpdocter.beans.OnConsentFetchRequest;
 import com.dpdocter.beans.OnConsentRequestStatus;
 import com.dpdocter.beans.OnFetchModesRequest;
-import com.dpdocter.beans.OnNotifyRequest;
 import com.dpdocter.beans.OnNotifySmsRequest;
 import com.dpdocter.beans.PatientShareProfile;
 import com.dpdocter.exceptions.BusinessException;
@@ -39,6 +36,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ConsentOnInitRequest;
 import com.dpdocter.request.DataFlowRequest;
 import com.dpdocter.request.DataTransferRequest;
+import com.dpdocter.request.GenerateLinkTokenCallbackV3Request;
 import com.dpdocter.services.NDHMservices;
 
 import common.util.web.Response;
@@ -70,6 +68,34 @@ public class NDHMPushBackApi {
 		response.setData(mobile);
 		return response;
 	}
+//	@Path(value = PathProxy.NdhmPushUrls.GET_CALLBACK_ON_GENERATE_TOKEN)
+//	@POST
+//	@ApiOperation(value = PathProxy.NdhmPushUrls.GET_CALLBACK_ON_GENERATE_TOKEN, notes = PathProxy.NdhmPushUrls.GET_CALLBACK_ON_GENERATE_TOKEN)
+//	public Response<Boolean> generateLinkTokenCallback(@RequestBody GenerateLinkTokenCallbackV3Request request) {
+//
+//		if (request == null) {
+//			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+//		}
+//		Boolean mobile = ndhmService.generateLinkTokenCallback(request);
+//
+//		Response<Boolean> response = new Response<Boolean>();
+//		response.setData(mobile);
+//		return response;
+//	}
+//	
+//	@Path(value = PathProxy.NdhmPushUrls.ON_FETCH_MODES)
+//	@POST
+//	@ApiOperation(value =PathProxy.NdhmPushUrls.ON_FETCH_MODES, notes = PathProxy.NdhmPushUrls.ON_FETCH_MODES)
+//	public Response<Boolean> fetchModes(String request) throws JsonParseException, JsonMappingException, IOException {
+//
+//		System.out.println("request"+request); 
+//		ObjectMapper mapper = new ObjectMapper();
+//		OnFetchModesRequest request1= mapper.readValue(request,OnFetchModesRequest.class);
+//		Boolean mobile = ndhmService.onFetchModes(request1);
+//		Response<Boolean> response = new Response<Boolean>();
+//		response.setData(mobile);
+//		return response;
+//	}
 	
 	@Path(value = PathProxy.NdhmPushUrls.ON_AUTH_INIT)
 	@POST

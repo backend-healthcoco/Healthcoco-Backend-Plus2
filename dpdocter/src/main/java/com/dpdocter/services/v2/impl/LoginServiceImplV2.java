@@ -192,7 +192,7 @@ public class LoginServiceImplV2 implements LoginService {
 									.setIsNutritionist(doctorClinicProfileLookupResponse.getIsAdminNutritionist());
 							locationAndAccessControl
 									.setIsAdminNutritionist(doctorClinicProfileLookupResponse.getIsAdminNutritionist());
-							List<Role> roles = null;
+							locationAndAccessControl.setIsRegisteredNDHMFacility(doctorClinicProfileLookupResponse.getIsRegisteredNDHMFacility());							List<Role> roles = null;
 
 							Boolean isStaff = false;
 							for (UserRoleLookupResponse otherRoleCollection : userRoleLookupResponses) {

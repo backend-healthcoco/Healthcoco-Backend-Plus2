@@ -119,6 +119,9 @@ public class ESPatientDocument {
 	private String ndhmToken;
 	
 	@Field(type = FieldType.Text)
+	private String abhaNumber;
+	
+	@Field(type = FieldType.Text)
 	private String linkToken;
 
 	@Field(type = FieldType.Text)
@@ -420,6 +423,14 @@ public class ESPatientDocument {
 
 	public void setLinkToken(String linkToken) {
 		this.linkToken = linkToken;
+	}
+
+	public String getAbhaNumber() {
+		return abhaNumber;
+	}
+
+	public void setAbhaNumber(String abhaNumber) {
+		this.abhaNumber = abhaNumber;
 	}
 
 	@Override

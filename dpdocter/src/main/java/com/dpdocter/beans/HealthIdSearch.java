@@ -15,6 +15,7 @@ public class HealthIdSearch {
 	private String name;
 	
 	private NdhmTags tags;
+	private String status;
 
 	public String getHealthId() {
 		return healthId;
@@ -56,8 +57,12 @@ public class HealthIdSearch {
 		this.authMethods = authMethods;
 	}
 
-	
-	
-	
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	
 }

@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.DoctorAndCost;
 import com.dpdocter.beans.FlowSheet;
 import com.dpdocter.beans.MonitoringChart;
-import com.dpdocter.beans.OTReports;
 import com.dpdocter.beans.PrescriptionAndAdvice;
 import com.dpdocter.beans.Surgery;
 import com.dpdocter.beans.TimeDuration;

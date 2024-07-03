@@ -92,7 +92,8 @@ public class LocationAndAccessControl {
     private String googleMapShortUrl;
     
 	private Boolean isDentalChain = false;
-	
+	private Boolean isRegisteredNDHMFacility = false;
+
 	public String getId() {
 		return id;
 	}
@@ -434,6 +435,14 @@ public class LocationAndAccessControl {
 
 	public void setIsDentalChain(Boolean isDentalChain) {
 		this.isDentalChain = isDentalChain;
+	}
+
+	public Boolean getIsRegisteredNDHMFacility() {
+		return isRegisteredNDHMFacility;
+	}
+
+	public void setIsRegisteredNDHMFacility(Boolean isRegisteredNDHMFacility) {
+		this.isRegisteredNDHMFacility = isRegisteredNDHMFacility;
 	}
 	
 }

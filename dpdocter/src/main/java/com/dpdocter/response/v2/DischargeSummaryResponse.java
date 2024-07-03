@@ -8,7 +8,6 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import com.dpdocter.beans.DoctorAndCost;
 import com.dpdocter.beans.FlowSheet;
 import com.dpdocter.beans.MonitoringChart;
-import com.dpdocter.beans.OTReports;
 import com.dpdocter.beans.Surgery;
 import com.dpdocter.beans.TimeDuration;
 import com.dpdocter.beans.VitalSigns;

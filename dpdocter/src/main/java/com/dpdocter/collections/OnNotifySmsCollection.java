@@ -5,7 +5,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.AcknowledgementRequest;
 import com.dpdocter.beans.FetchResponse;
 import com.dpdocter.beans.NdhmErrorObject;
 

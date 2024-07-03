@@ -237,6 +237,7 @@ public class LoginServiceImpl implements LoginService {
 									.setIsNutritionist(doctorClinicProfileLookupResponse.getIsAdminNutritionist());
 							locationAndAccessControl
 									.setIsAdminNutritionist(doctorClinicProfileLookupResponse.getIsAdminNutritionist());
+							locationAndAccessControl.setIsRegisteredNDHMFacility(doctorClinicProfileLookupResponse.getIsRegisteredNDHMFacility());
 							List<Role> roles = null;
 
 							Boolean isStaff = false;

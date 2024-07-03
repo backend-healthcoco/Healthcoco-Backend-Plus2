@@ -1,7 +1,5 @@
 package com.dpdocter.response;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 public class AmountDueAnalyticsDataResponse {
 
 	private Double invoiced = 0.0;

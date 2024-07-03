@@ -7,11 +7,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.enums.PaymentMode;
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.DoctorConsultation;
 import com.dpdocter.beans.UserResponse;
+import com.dpdocter.enums.PaymentMode;
 
 @Document(collection = "online_consultation_payment_cl")
 public class OnlineConsultionPaymentCollection extends GenericCollection {

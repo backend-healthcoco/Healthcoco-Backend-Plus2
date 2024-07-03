@@ -148,6 +148,8 @@ public class PatientCollection extends GenericCollection {
 	
 	@Field
 	private String linkToken;
+	@Field
+	private String abhaNumber;
 
 	public ObjectId getId() {
 		return id;
@@ -486,9 +488,13 @@ public class PatientCollection extends GenericCollection {
 		this.ndhmToken = ndhmToken;
 	}
 	
-	
+	public String getAbhaNumber() {
+		return abhaNumber;
+	}
 
-	
+	public void setAbhaNumber(String abhaNumber) {
+		this.abhaNumber = abhaNumber;
+	}
 
 	public String getLinkToken() {
 		return linkToken;

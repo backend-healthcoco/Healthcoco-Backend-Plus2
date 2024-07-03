@@ -8,7 +8,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.IPRDetail;
 import com.dpdocter.enums.BrandOfAligner;
 import com.dpdocter.enums.RetainerType;

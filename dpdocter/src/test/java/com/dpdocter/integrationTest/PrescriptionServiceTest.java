@@ -1,9 +1,5 @@
 package com.dpdocter.integrationTest;
 
-import org.testng.annotations.Test;
-import org.testng.AssertJUnit;
-import java.util.Date;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -11,18 +7,10 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.testng.AssertJUnit;
-import org.testng.annotations.Test;
 
-import com.dpdocter.beans.Drug;
-import com.dpdocter.beans.DrugType;
-import com.dpdocter.collections.UserCollection;
 import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.UserRepository;
-import com.dpdocter.request.DrugAddEditRequest;
-import com.dpdocter.request.DrugTypeAddEditRequest;
-import com.dpdocter.response.DrugTypeAddEditResponse;
 import com.dpdocter.services.PrescriptionServices;
 
 @ContextConfiguration(locations = "classpath:spring-context.xml")

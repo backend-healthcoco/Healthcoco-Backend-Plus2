@@ -1,8 +1,6 @@
 package com.dpdocter.webservices;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -19,8 +17,6 @@ import javax.ws.rs.core.MediaType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -62,18 +58,27 @@ import com.dpdocter.beans.OnLinkConfirm;
 import com.dpdocter.beans.OnLinkRequest;
 import com.dpdocter.beans.OnNotifyRequest;
 import com.dpdocter.beans.OnNotifySmsRequest;
-import com.dpdocter.beans.OnPatientShare;
 import com.dpdocter.beans.OnSharePatientrequest;
 import com.dpdocter.beans.PatientShareProfile;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ConsentOnInitRequest;
 import com.dpdocter.request.CreateAadhaarRequest;
+import com.dpdocter.request.CreateAbhaAddressV3Request;
 import com.dpdocter.request.CreateProfileRequest;
 import com.dpdocter.request.DataFlowRequest;
-import com.dpdocter.request.DataTransferRequest;
+import com.dpdocter.request.DeleteABHANumberRequest;
+import com.dpdocter.request.EnrollmentV3Request;
+import com.dpdocter.request.EnrollmentVerifyAndUpdateV3Request;
 import com.dpdocter.request.GatewayConsentInitRequest;
 import com.dpdocter.request.GatewayConsentStatusRequest;
+import com.dpdocter.request.GenerateLinkTokenCallbackV3Request;
+import com.dpdocter.request.GenerateLinkTokenV3Request;
+import com.dpdocter.response.CreateAbhaAddresseResponse;
+import com.dpdocter.response.EnrollByAadhaarResponse;
+import com.dpdocter.response.RequestOtp;
+import com.dpdocter.response.SuggestedAbhaAddressesResponse;
+import com.dpdocter.response.VerifyAndUpdateDataResponse;
 import com.dpdocter.services.NDHMservices;
 
 import common.util.web.Response;
@@ -295,9 +300,6 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
-	
-	
-	
 
 	@Path(value = PathProxy.NdhmUrls.GET_LIST_STATES)
 	@GET
@@ -374,7 +376,8 @@ public class NdhmApi {
 //	@Produces("application/pdf")
 //	@RequestMapping(value = PathProxy.NdhmUrls.GET_PROFILE_CARD, method = RequestMethod.GET)
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_PROFILE_CARD, notes = PathProxy.NdhmUrls.GET_PROFILE_CARD)
-	public ResponseEntity<byte[]> ProfileGetCard(@QueryParam(value = "authToken") String authToken, HttpServletResponse response) throws IOException {
+	public ResponseEntity<byte[]> ProfileGetCard(@QueryParam(value = "authToken") String authToken,
+			HttpServletResponse response) throws IOException {
 
 		if (authToken == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " authToken Required");
@@ -392,6 +395,32 @@ public class NdhmApi {
 			throw new BusinessException(ServiceError.InvalidInput, " authToken Required");
 		}
 		Response<Object> response = ndhmService.profileGetPngCard(authToken);
+
+		return response;
+	}
+
+	@Path(value = PathProxy.NdhmUrls.GET_PROFILE_QR_CODE)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_PROFILE_QR_CODE, notes = PathProxy.NdhmUrls.GET_PROFILE_QR_CODE)
+	public Response<Object> ProfileGetQRCode(@QueryParam(value = "authToken") String authToken) {
+
+		if (authToken == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " authToken Required");
+		}
+		Response<Object> response = ndhmService.profileGetQRCode(authToken);
+
+		return response;
+	}
+
+	@Path(value = PathProxy.NdhmUrls.GET_PROFILE_QR_CODE_V3)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_PROFILE_QR_CODE_V3, notes = PathProxy.NdhmUrls.GET_PROFILE_QR_CODE_V3)
+	public Response<Object> ProfileGetQRCodeV3(@QueryParam(value = "authToken") String authToken) {
+
+		if (authToken == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " authToken Required");
+		}
+		Response<Object> response = ndhmService.profileGetQRCodeV3(authToken);
 
 		return response;
 	}
@@ -435,7 +464,7 @@ public class NdhmApi {
 
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmUrls.FETCH_MODES)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmUrls.FETCH_MODES, notes = PathProxy.NdhmUrls.FETCH_MODES)
@@ -446,11 +475,11 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmUrls.GET_FETCH_MODES)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_FETCH_MODES, notes = PathProxy.NdhmUrls.GET_FETCH_MODES)
-	public Response<OnFetchModesRequest> getfetchModes(@QueryParam ("requestId")String requestId) {
+	public Response<OnFetchModesRequest> getfetchModes(@QueryParam("requestId") String requestId) {
 
 		OnFetchModesRequest mobile = ndhmService.getFetchModes(requestId);
 		Response<OnFetchModesRequest> response = new Response<OnFetchModesRequest>();
@@ -468,11 +497,11 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmUrls.GET_AUTH_INIT_HIP)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_AUTH_INIT_HIP, notes = PathProxy.NdhmUrls.GET_AUTH_INIT_HIP)
-	public Response<OnAuthInitRequest> getAuthInit(@QueryParam ("requestId")String requestId) {
+	public Response<OnAuthInitRequest> getAuthInit(@QueryParam("requestId") String requestId) {
 
 		OnAuthInitRequest mobile = ndhmService.getOnAuthInit(requestId);
 		Response<OnAuthInitRequest> response = new Response<OnAuthInitRequest>();
@@ -490,18 +519,18 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmUrls.GET_AUTH_CONFIRM_HIP)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_AUTH_CONFIRM_HIP, notes = PathProxy.NdhmUrls.GET_AUTH_CONFIRM_HIP)
-	public Response<OnAuthConfirmRequest> getAuthConfirm(@QueryParam ("requestId")String requestId) {
+	public Response<OnAuthConfirmRequest> getAuthConfirm(@QueryParam("requestId") String requestId) {
 
 		OnAuthConfirmRequest mobile = ndhmService.getOnAuthConfirm(requestId);
 		Response<OnAuthConfirmRequest> response = new Response<OnAuthConfirmRequest>();
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmUrls.ADD_CARE_CONTEXT)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmUrls.ADD_CARE_CONTEXT, notes = PathProxy.NdhmUrls.ADD_CARE_CONTEXT)
@@ -512,19 +541,18 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmUrls.GET_CARE_CONTEXT)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_CARE_CONTEXT, notes = PathProxy.NdhmUrls.GET_CARE_CONTEXT)
-	public Response<OnCareContext> getCareContext(@QueryParam("requestId")String requestId) {
+	public Response<OnCareContext> getCareContext(@QueryParam("requestId") String requestId) {
 
 		OnCareContext mobile = ndhmService.getCareContext(requestId);
 		Response<OnCareContext> response = new Response<OnCareContext>();
 		response.setData(mobile);
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.NdhmUrls.ON_DISCOVER)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmUrls.ON_DISCOVER, notes = PathProxy.NdhmUrls.ON_DISCOVER)
@@ -535,18 +563,17 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmUrls.GET_DISCOVER)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_DISCOVER, notes = PathProxy.NdhmUrls.GET_DISCOVER)
-	public Response<CareContextDiscoverRequest> getDiscover(@QueryParam("requestId")String requestId) {
+	public Response<CareContextDiscoverRequest> getDiscover(@QueryParam("requestId") String requestId) {
 
 		CareContextDiscoverRequest mobile = ndhmService.getCareContextDiscover(requestId);
 		Response<CareContextDiscoverRequest> response = new Response<CareContextDiscoverRequest>();
 		response.setData(mobile);
 		return response;
 	}
-	
 
 	@Path(value = PathProxy.NdhmUrls.ON_LINK_INIT)
 	@POST
@@ -558,21 +585,22 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmUrls.GET_LINK_INIT)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_LINK_INIT, notes = PathProxy.NdhmUrls.GET_LINK_INIT)
-	public Response<LinkRequest> getLinkInit(@QueryParam("requestId")String requestId) {
+	public Response<LinkRequest> getLinkInit(@QueryParam("requestId") String requestId) {
 
 		LinkRequest mobile = ndhmService.getLinkInit(requestId);
 		Response<LinkRequest> response = new Response<LinkRequest>();
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	/**
-	 * API called by CM to request Health information from HIP against a validated consent artefact
-	 * Data Flow health information request
+	 * API called by CM to request Health information from HIP against a validated
+	 * consent artefact Data Flow health information request
+	 * 
 	 * @param request
 	 * @return
 	 */
@@ -590,7 +618,6 @@ public class NdhmApi {
 //		return response;
 //	}
 
-	
 	@Path(value = PathProxy.NdhmUrls.ON_LINK_CONFIRM)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmUrls.ON_LINK_CONFIRM, notes = PathProxy.NdhmUrls.ON_LINK_CONFIRM)
@@ -605,19 +632,20 @@ public class NdhmApi {
 	@Path(value = PathProxy.NdhmUrls.GET_LINK_CONFIRM)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_LINK_CONFIRM, notes = PathProxy.NdhmUrls.GET_LINK_CONFIRM)
-	public Response<LinkConfirm> getLinkConfirm(@QueryParam("requestId")String requestId) {
+	public Response<LinkConfirm> getLinkConfirm(@QueryParam("requestId") String requestId) {
 
 		LinkConfirm mobile = ndhmService.getLinkConfim(requestId);
 		Response<LinkConfirm> response = new Response<LinkConfirm>();
 		response.setData(mobile);
 		return response;
 	}
-	
 
-	
 	/**
-	 * API called by HIP to acknowledge Health information request receipt. Either the hiRequest or error must be specified. hiRequest element returns the same transactionId as before with a status indicating that the request is acknowledged.
-	 * Gateway health information on-request
+	 * API called by HIP to acknowledge Health information request receipt. Either
+	 * the hiRequest or error must be specified. hiRequest element returns the same
+	 * transactionId as before with a status indicating that the request is
+	 * acknowledged. Gateway health information on-request
+	 * 
 	 * @param request
 	 * @return
 	 */
@@ -633,24 +661,21 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
-	
 
-	
 	@Path(value = PathProxy.NdhmUrls.ON_NOTIFY)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmUrls.ON_NOTIFY, notes = PathProxy.NdhmUrls.ON_NOTIFY)
 	public Response<Boolean> onNotify(@RequestBody OnNotifyRequest request) {
 
-	Boolean mobile = ndhmService.onNotify(request);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(mobile);
-	return response;
-}
-	
-	
-	
+		Boolean mobile = ndhmService.onNotify(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+
 	/**
-	 * gateway consent-requests/init hiu swagger  init api
+	 * gateway consent-requests/init hiu swagger init api
+	 * 
 	 * @param request
 	 * @return
 	 */
@@ -667,9 +692,10 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	/**
-	 * gateway consent-requests/status hiu swagger  init api
+	 * gateway consent-requests/status hiu swagger init api
+	 * 
 	 * @param request
 	 * @return
 	 */
@@ -686,42 +712,39 @@ public class NdhmApi {
 		return response;
 	}
 
-	
-	
 	@Path(value = PathProxy.NdhmUrls.GET_NOTIFY)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_NOTIFY, notes = PathProxy.NdhmUrls.GET_NOTIFY)
-	public Response<NotifyRequest> getNotify(@QueryParam("requestId")String requestId) {
+	public Response<NotifyRequest> getNotify(@QueryParam("requestId") String requestId) {
 
 		NotifyRequest mobile = ndhmService.getNotify(requestId);
 		Response<NotifyRequest> response = new Response<NotifyRequest>();
 		response.setData(mobile);
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.NdhmUrls.GET_DATAFLOW)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_DATAFLOW, notes = PathProxy.NdhmUrls.GET_DATAFLOW)
-	public Response<DataFlowRequest> getHealthDataFlow(@QueryParam("transactionId")String transactionId) {
+	public Response<DataFlowRequest> getHealthDataFlow(@QueryParam("transactionId") String transactionId) {
 
 		DataFlowRequest mobile = ndhmService.getDataFlow(transactionId);
 		Response<DataFlowRequest> response = new Response<DataFlowRequest>();
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmUrls.GET_CONSENT_INIT)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_CONSENT_INIT, notes = PathProxy.NdhmUrls.GET_CONSENT_INIT)
-	public Response<ConsentOnInitRequest> getConsentInit(@QueryParam("requestId")String requestId) {
+	public Response<ConsentOnInitRequest> getConsentInit(@QueryParam("requestId") String requestId) {
 
 		ConsentOnInitRequest mobile = ndhmService.getConsentInitRequest(requestId);
 		Response<ConsentOnInitRequest> response = new Response<ConsentOnInitRequest>();
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmUrls.HEALTH_INFORMATION_NOTIFY)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmUrls.HEALTH_INFORMATION_NOTIFY, notes = PathProxy.NdhmUrls.HEALTH_INFORMATION_NOTIFY)
@@ -734,11 +757,11 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmUrls.GET_CONSENT_STATUS)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_CONSENT_STATUS, notes = PathProxy.NdhmUrls.GET_CONSENT_STATUS)
-	public Response<OnConsentRequestStatus> getConsentStatus(@QueryParam("requestId")String requestId) {
+	public Response<OnConsentRequestStatus> getConsentStatus(@QueryParam("requestId") String requestId) {
 
 		OnConsentRequestStatus mobile = ndhmService.getConsentStatus(requestId);
 		Response<OnConsentRequestStatus> response = new Response<OnConsentRequestStatus>();
@@ -758,18 +781,18 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmUrls.GET_NDHM_PATIENT)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_NDHM_PATIENT, notes = PathProxy.NdhmUrls.GET_NDHM_PATIENT)
-	public Response<NdhmOnPatientFindRequest> getNdhmPatient(@QueryParam("requestId")String requestId) {
+	public Response<NdhmOnPatientFindRequest> getNdhmPatient(@QueryParam("requestId") String requestId) {
 
 		NdhmOnPatientFindRequest mobile = ndhmService.getNdhmPatient(requestId);
 		Response<NdhmOnPatientFindRequest> response = new Response<NdhmOnPatientFindRequest>();
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmUrls.HIU_ON_NOTIFY)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmUrls.HIU_ON_NOTIFY, notes = PathProxy.NdhmUrls.HIU_ON_NOTIFY)
@@ -782,19 +805,18 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.NdhmUrls.GET_HIU_NOTIFY)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_HIU_NOTIFY, notes = PathProxy.NdhmUrls.GET_HIU_NOTIFY)
-	public Response<NotifyHiuRequest> getHiuNotify(@QueryParam("requestId")String requestId) {
+	public Response<NotifyHiuRequest> getHiuNotify(@QueryParam("requestId") String requestId) {
 
 		NotifyHiuRequest mobile = ndhmService.getHiuNotify(requestId);
 		Response<NotifyHiuRequest> response = new Response<NotifyHiuRequest>();
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmUrls.HIU_CONSENT_FETCH)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmUrls.HIU_CONSENT_FETCH, notes = PathProxy.NdhmUrls.HIU_CONSENT_FETCH)
@@ -807,12 +829,11 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.NdhmUrls.GET_CONSENT_FETCH)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_CONSENT_FETCH, notes = PathProxy.NdhmUrls.GET_CONSENT_FETCH)
-	public Response<OnConsentFetchRequest> getHiuConsentArtifact(@QueryParam("requestId")String requestId) {
+	public Response<OnConsentFetchRequest> getHiuConsentArtifact(@QueryParam("requestId") String requestId) {
 
 		OnConsentFetchRequest mobile = ndhmService.getConsentFetch(requestId);
 		Response<OnConsentFetchRequest> response = new Response<OnConsentFetchRequest>();
@@ -820,7 +841,6 @@ public class NdhmApi {
 		return response;
 	}
 
-	
 	@Path(value = PathProxy.NdhmUrls.HIU_DATA_REQUEST)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmUrls.HIU_DATA_REQUEST, notes = PathProxy.NdhmUrls.HIU_DATA_REQUEST)
@@ -833,31 +853,30 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmUrls.GET_HIU_DATA_REQUEST)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_HIU_DATA_REQUEST, notes = PathProxy.NdhmUrls.GET_HIU_DATA_REQUEST)
-	public Response<GateWayOnRequest> getHiuDataRequest(@QueryParam("requestId")String requestId,
-			@QueryParam("doctorId")String doctorId,@QueryParam("healthId")String healthId) {
+	public Response<GateWayOnRequest> getHiuDataRequest(@QueryParam("requestId") String requestId,
+			@QueryParam("doctorId") String doctorId, @QueryParam("healthId") String healthId) {
 
-		GateWayOnRequest mobile = ndhmService.getHiuDataRequest(requestId,doctorId,healthId);
+		GateWayOnRequest mobile = ndhmService.getHiuDataRequest(requestId, doctorId, healthId);
 		Response<GateWayOnRequest> response = new Response<GateWayOnRequest>();
 		response.setData(mobile);
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.NdhmUrls.GET_HIU_DATA)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_HIU_DATA, notes = PathProxy.NdhmUrls.GET_HIU_DATA)
-	public Response<HiuDataResponse> getHiuData(@QueryParam("transactionId")String transactionId) {
+	public Response<HiuDataResponse> getHiuData(@QueryParam("transactionId") String transactionId) {
 
 		HiuDataResponse mobile = ndhmService.getHiuData(transactionId);
 		Response<HiuDataResponse> response = new Response<HiuDataResponse>();
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmUrls.SHARE_PATIENT)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmUrls.SHARE_PATIENT, notes = PathProxy.NdhmUrls.SHARE_PATIENT)
@@ -870,18 +889,18 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmUrls.GET_SHARE_PATIENT)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_SHARE_PATIENT, notes = PathProxy.NdhmUrls.GET_SHARE_PATIENT)
-	public Response<PatientShareProfile> getPatientShare(@QueryParam("healthId")String healthId) {
+	public Response<PatientShareProfile> getPatientShare(@QueryParam("healthId") String healthId) {
 
 		PatientShareProfile mobile = ndhmService.getPatientShare(healthId);
 		Response<PatientShareProfile> response = new Response<PatientShareProfile>();
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmUrls.PATIENT_NOTIFY_SMS)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmUrls.PATIENT_NOTIFY_SMS, notes = PathProxy.NdhmUrls.PATIENT_NOTIFY_SMS)
@@ -894,19 +913,118 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmUrls.GET_PATIENT_NOTIFY_SMS)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_PATIENT_NOTIFY_SMS, notes = PathProxy.NdhmUrls.GET_PATIENT_NOTIFY_SMS)
-	public Response<OnNotifySmsRequest> getNotifySms(@QueryParam("requestId")String requestId) {
+	public Response<OnNotifySmsRequest> getNotifySms(@QueryParam("requestId") String requestId) {
 
 		OnNotifySmsRequest mobile = ndhmService.getNotifySms(requestId);
 		Response<OnNotifySmsRequest> response = new Response<OnNotifySmsRequest>();
 		response.setData(mobile);
 		return response;
 	}
-	
-	
-	
-	
+
+	@Path(value = PathProxy.NdhmUrls.UPDATE_PROFILE_GENERATE_OTP)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.UPDATE_PROFILE_GENERATE_OTP, notes = PathProxy.NdhmUrls.UPDATE_PROFILE_GENERATE_OTP)
+	public Response<RequestOtp> generateRequestOtp(@RequestBody EnrollmentV3Request request) {
+
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		RequestOtp mobile = ndhmService.generateRequestOtp(request);
+
+		Response<RequestOtp> response = new Response<RequestOtp>();
+		response.setData(mobile);
+		return response;
+	}
+
+	@Path(value = PathProxy.NdhmUrls.UPDATE_PASSWORD_VIA_AADHAAR_OTP)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.UPDATE_PASSWORD_VIA_AADHAAR_OTP, notes = PathProxy.NdhmUrls.UPDATE_PASSWORD_VIA_AADHAAR_OTP)
+	public Response<VerifyAndUpdateDataResponse> verifyAndUpdateData(
+			@RequestBody EnrollmentVerifyAndUpdateV3Request request) {
+
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		VerifyAndUpdateDataResponse mobile = ndhmService.verifyAndUpdateData(request);
+
+		Response<VerifyAndUpdateDataResponse> response = new Response<VerifyAndUpdateDataResponse>();
+		response.setData(mobile);
+		return response;
+	}
+
+	@Path(value = PathProxy.NdhmUrls.DELETE_ABHA_NUMBER_VIA_AADHAAR_OTP)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.DELETE_ABHA_NUMBER_VIA_AADHAAR_OTP, notes = PathProxy.NdhmUrls.DELETE_ABHA_NUMBER_VIA_AADHAAR_OTP)
+	public Response<VerifyAndUpdateDataResponse> deleteABHANumber(@RequestBody DeleteABHANumberRequest request) {
+
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		VerifyAndUpdateDataResponse mobile = ndhmService.deleteABHANumber(request);
+
+		Response<VerifyAndUpdateDataResponse> response = new Response<VerifyAndUpdateDataResponse>();
+		response.setData(mobile);
+		return response;
+	}
+
+	@Path(value = PathProxy.NdhmUrls.ENROL_BY_AADHAAR_VERIFICATION)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.ENROL_BY_AADHAAR_VERIFICATION, notes = PathProxy.NdhmUrls.ENROL_BY_AADHAAR_VERIFICATION)
+	public Response<EnrollByAadhaarResponse> verifyAndEnrollByAadhaar(
+			@RequestBody EnrollmentVerifyAndUpdateV3Request request) {
+
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		EnrollByAadhaarResponse mobile = ndhmService.verifyAndEnrollByAadhaar(request);
+
+		Response<EnrollByAadhaarResponse> response = new Response<EnrollByAadhaarResponse>();
+		response.setData(mobile);
+		return response;
+	}
+
+	@Path(value = PathProxy.NdhmUrls.SUGGEST_ABHA_ADDRESS)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.SUGGEST_ABHA_ADDRESS, notes = PathProxy.NdhmUrls.SUGGEST_ABHA_ADDRESS)
+	public Response<SuggestedAbhaAddressesResponse> getSuggestedAbhaAddresses(@QueryParam("txnId") String txnId) {
+		SuggestedAbhaAddressesResponse mobile = ndhmService.getSuggestedAbhaAddresses(txnId);
+		Response<SuggestedAbhaAddressesResponse> response = new Response<SuggestedAbhaAddressesResponse>();
+		response.setData(mobile);
+		return response;
+	}
+
+	@Path(value = PathProxy.NdhmUrls.CREATE_ABHA_ADDRESS)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.CREATE_ABHA_ADDRESS, notes = PathProxy.NdhmUrls.CREATE_ABHA_ADDRESS)
+	public Response<CreateAbhaAddresseResponse> createAbhaAddresse(@RequestBody CreateAbhaAddressV3Request request) {
+
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		CreateAbhaAddresseResponse mobile = ndhmService.createAbhaAddresse(request);
+
+		Response<CreateAbhaAddresseResponse> response = new Response<CreateAbhaAddresseResponse>();
+		response.setData(mobile);
+		return response;
+	}
+
+	@Path(value = PathProxy.NdhmUrls.GET_GENERATE_TOKEN)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_GENERATE_TOKEN, notes = PathProxy.NdhmUrls.GET_GENERATE_TOKEN)
+	public Response<Boolean> generateLinkToken(@RequestBody GenerateLinkTokenV3Request request) {
+
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		Boolean mobile = ndhmService.generateLinkToken(request);
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+
 }

@@ -49,6 +49,7 @@ public class ESPatientResponse {
 	
 	private String linkToken;
 
+	private String abhaNumber;
 
 	public String getId() {
 		return id;
@@ -202,6 +203,14 @@ public class ESPatientResponse {
 
 	public void setLinkToken(String linkToken) {
 		this.linkToken = linkToken;
+	}
+
+	public String getAbhaNumber() {
+		return abhaNumber;
+	}
+
+	public void setAbhaNumber(String abhaNumber) {
+		this.abhaNumber = abhaNumber;
 	}
 
 	@Override
