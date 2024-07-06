@@ -1062,7 +1062,7 @@ public class ContactsServiceImpl implements ContactsService {
 
 					doctorRepository.save(doctorCollections);
 					Boolean bulkResponse = bulkSmsAsync(mobileNumbers, message, request.getDoctorId(),
-							request.getLocationId(), subCredits);
+							request.getLocationId(), subCredits, request.getTemplateId(), request.getSmsRoute());
 					if (bulkResponse == true)
 						status = "bulk sms sent successfully";
 				} else {
@@ -1078,14 +1078,15 @@ public class ContactsServiceImpl implements ContactsService {
 
 	@Async
 	Boolean bulkSmsAsync(List<String> mobileNumbers, String message, String doctorId, String locationId,
-			long subCredits) {
+			long subCredits, String templateId, String smsRoute) {
 		Boolean response = false;
 		List<String> sublist = null;
 		Integer size = 100;
 		for (int start = 0; start < mobileNumbers.size(); start += size) {
 			int end = Math.min(start + size, mobileNumbers.size());
 			sublist = mobileNumbers.subList(start, end);
-			if (!smsServices.getBulkSMSResponse(sublist, message, doctorId, locationId, subCredits)
+			if (!smsServices
+					.getBulkSMSResponse(sublist, message, doctorId, locationId, subCredits, templateId, smsRoute)
 					.equalsIgnoreCase("FAILED")) {
 				response = true;
 			}

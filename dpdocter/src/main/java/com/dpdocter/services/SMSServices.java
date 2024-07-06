@@ -42,7 +42,7 @@ public interface SMSServices {
 
 	Boolean sendPatientOTP(String mobileNumber, String otp);
 
-	String getBulkSMSResponse(List<String> mobileNumbers, String message, String doctorId, String locationId, long subCredits);
+	String getBulkSMSResponse(List<String> mobileNumbers, String message, String doctorId, String locationId, long subCredits, String templateId, String smsRoute);
 
 	Boolean sendDentalChainSMS(SMSTrackDetail smsTrackDetail, boolean b);
 	MessageStatus getSmsStatus(String messageId);

@@ -2,12 +2,12 @@
 <testng-results total="1" passed="1" failed="0" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2024-03-01T10:18:43Z" name="Surefire suite" finished-at="2024-03-01T10:18:43Z" duration-ms="30">
+  <suite started-at="2024-07-04T16:30:22Z" name="Surefire suite" finished-at="2024-07-04T16:30:22Z" duration-ms="24">
     <groups>
     </groups>
-    <test started-at="2024-03-01T10:18:43Z" name="Surefire test" finished-at="2024-03-01T10:18:43Z" duration-ms="30">
+    <test started-at="2024-07-04T16:30:22Z" name="Surefire test" finished-at="2024-07-04T16:30:22Z" duration-ms="24">
       <class name="com.dpDoctor.testCases.NewTest">
-        <test-method signature="f()[pri:0, instance:com.dpDoctor.testCases.NewTest@157853da]" started-at="2024-03-01T15:48:43Z" name="f" finished-at="2024-03-01T15:48:43Z" duration-ms="13" status="PASS">
+        <test-method signature="f()[pri:0, instance:com.dpDoctor.testCases.NewTest@3cc1435c]" started-at="2024-07-04T22:00:22Z" name="f" finished-at="2024-07-04T22:00:22Z" duration-ms="9" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- f -->

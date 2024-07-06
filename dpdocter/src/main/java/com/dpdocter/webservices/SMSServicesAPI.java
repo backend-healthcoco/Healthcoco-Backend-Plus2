@@ -224,7 +224,7 @@ public class SMSServicesAPI {
 	public Response<String> sendBulkSMS(@MatrixParam("mobileNumbers") List<String> mobileNumbers,
 			@PathParam(value = "message") String message) {
 
-		String send = smsServices.getBulkSMSResponse(mobileNumbers, message, null, null, 0L);
+		String send = smsServices.getBulkSMSResponse(mobileNumbers, message, null, null, 0L,null,null);
 		Response<String> response = new Response<String>();
 		response.setData(send);
 		return response;

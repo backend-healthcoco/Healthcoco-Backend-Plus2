@@ -763,9 +763,8 @@ public class ContactsServiceImpl implements ContactsService {
 
 				}
 			}
-			if (!smsServices
-					.getBulkSMSResponse(mobileNumbers, message, request.getDoctorId(), request.getLocationId(), 0L)
-					.equalsIgnoreCase("FAILED")) {
+			if (smsServices.getBulkSMSResponse(mobileNumbers, message, request.getDoctorId(), request.getLocationId(),
+					0L, request.getTemplateId(), request.getSmsRoute()) != null) {
 				status = true;
 			}
 

@@ -17,7 +17,9 @@ public class BulkSMSRequest {
 	private String message;
 
 	private List<String> patientIds;
-	
+	private String templateId;
+	private String smsRoute;
+
 	public String getLocationId() {
 		return locationId;
 	}
@@ -72,6 +74,22 @@ public class BulkSMSRequest {
 
 	public void setPatientIds(List<String> patientIds) {
 		this.patientIds = patientIds;
+	}
+
+	public String getTemplateId() {
+		return templateId;
+	}
+
+	public void setTemplateId(String templateId) {
+		this.templateId = templateId;
+	}
+
+	public String getSmsRoute() {
+		return smsRoute;
+	}
+
+	public void setSmsRoute(String smsRoute) {
+		this.smsRoute = smsRoute;
 	}
 
 	@Override

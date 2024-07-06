@@ -707,12 +707,12 @@ public class SMSServicesImpl implements SMSServices {
 	// new sms service
 	@Override
 	public String getBulkSMSResponse(List<String> mobileNumbers, String message, String doctorId, String locationId,
-			long subCredits) {
+			long subCredits, String templateId, String smsRoute) {
 		String response = null;
 		try {
 
 			message = StringEscapeUtils.unescapeJava(message);
-			String type = "MKT";
+			String type = smsRoute;
 
 			String strUrl = "https://api.ap.kaleyra.io/v1/" + SID + "/messages";
 
@@ -722,7 +722,7 @@ public class SMSServicesImpl implements SMSServices {
 			HttpClient client = HttpClients.custom().build();
 			HttpUriRequest httprequest = RequestBuilder.post().addParameter("to", numberString)
 					.addParameter("type", type).addParameter("body", message).addParameter("sender", SENDER_ID)
-					// .addParameter("unicode", "1")
+					 .addParameter("template_id", templateId)
 					.setUri(strUrl).setHeader("api-key", KEY).build();
 			// System.out.println("response"+client.execute(httprequest));
 			org.apache.http.HttpResponse responses = client.execute(httprequest);
@@ -754,9 +754,7 @@ public class SMSServicesImpl implements SMSServices {
 			e.printStackTrace();
 			return "Failed";
 		}
-
 		return response.toString();
-
 	}
 
 	@Override
