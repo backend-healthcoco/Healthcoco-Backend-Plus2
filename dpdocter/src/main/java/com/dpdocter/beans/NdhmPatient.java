@@ -5,15 +5,17 @@ import java.util.List;
 public class NdhmPatient {
 
 	private String id;
-	
+
 	private String name;
-	
+
 	private String gender;
-	
+
 	private String yearOfBirth;
-	
+	private String dayOfBirth;
+	private String monthOfBirth;
+
 	private NdhmAddress address;
-	
+
 	private List<AuthConfirmIdentifier> identifiers;
 
 	public String getId() {
@@ -64,12 +66,20 @@ public class NdhmPatient {
 		this.identifiers = identifiers;
 	}
 
-	
-	
+	public String getDayOfBirth() {
+		return dayOfBirth;
+	}
 
-	
-	
-	
-	
-	
+	public void setDayOfBirth(String dayOfBirth) {
+		this.dayOfBirth = dayOfBirth;
+	}
+
+	public String getMonthOfBirth() {
+		return monthOfBirth;
+	}
+
+	public void setMonthOfBirth(String monthOfBirth) {
+		this.monthOfBirth = monthOfBirth;
+	}
+
 }

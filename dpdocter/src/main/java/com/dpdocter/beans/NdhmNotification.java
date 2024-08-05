@@ -3,11 +3,12 @@ package com.dpdocter.beans;
 public class NdhmNotification {
 
 	private String status;
-	
+
 	private String consentId;
-	
+
 	private ConsentDetail consentDetail;
-	
+
+	private Boolean grantAcknowledgement;
 	private String signature;
 
 	public String getStatus() {
@@ -33,7 +34,7 @@ public class NdhmNotification {
 	public void setConsentDetail(ConsentDetail consentDetail) {
 		this.consentDetail = consentDetail;
 	}
-	
+
 	public String getSignature() {
 		return signature;
 	}
@@ -41,6 +42,13 @@ public class NdhmNotification {
 	public void setSignature(String signature) {
 		this.signature = signature;
 	}
-	
-	
+
+	public Boolean getGrantAcknowledgement() {
+		return grantAcknowledgement;
+	}
+
+	public void setGrantAcknowledgement(Boolean grantAcknowledgement) {
+		this.grantAcknowledgement = grantAcknowledgement;
+	}
+
 }

@@ -27,7 +27,13 @@ public class OnCareContextCollection extends GenericCollection{
 	private NdhmErrorObject error;
 	
 	@Field
-	private FetchResponse resp;
+	private FetchResponse response;
+	
+	@Field
+	private String abhaAddress;
+	@Field
+	private String status;
+
 
 	public ObjectId getId() {
 		return id;
@@ -69,14 +75,28 @@ public class OnCareContextCollection extends GenericCollection{
 		this.error = error;
 	}
 
-	public FetchResponse getResp() {
-		return resp;
+	public FetchResponse getResponse() {
+		return response;
 	}
 
-	public void setResp(FetchResponse resp) {
-		this.resp = resp;
+	public void setResponse(FetchResponse response) {
+		this.response = response;
 	}
-	
-	
+
+	public String getAbhaAddress() {
+		return abhaAddress;
+	}
+
+	public void setAbhaAddress(String abhaAddress) {
+		this.abhaAddress = abhaAddress;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
 }

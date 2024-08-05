@@ -1,6 +1,7 @@
 package com.dpdocter.webservices;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -14,8 +15,10 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.dpdocter.beans.CareContextDiscoverRequest;
 import com.dpdocter.beans.LinkConfirm;
@@ -37,6 +40,7 @@ import com.dpdocter.request.ConsentOnInitRequest;
 import com.dpdocter.request.DataFlowRequest;
 import com.dpdocter.request.DataTransferRequest;
 import com.dpdocter.request.GenerateLinkTokenCallbackV3Request;
+import com.dpdocter.request.OnGenerateTokenRequest;
 import com.dpdocter.services.NDHMservices;
 
 import common.util.web.Response;
@@ -49,20 +53,35 @@ import io.swagger.annotations.ApiOperation;
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.NDHM_PUSH_BACK_BASE_URL, description = "Endpoint for ndhm push back url")
 public class NDHMPushBackApi {
-	
+
 	private static Logger logger = LogManager.getLogger(NDHMPushBackApi.class.getName());
-	
+
 	@Autowired
 	private NDHMservices ndhmService;
-	
+
+	@Path(value = PathProxy.NdhmPushUrls.ON_CALLBACK_GENERATE_TOKEN)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmPushUrls.ON_CALLBACK_GENERATE_TOKEN, notes = PathProxy.NdhmPushUrls.ON_CALLBACK_GENERATE_TOKEN)
+	public Response<Boolean> onGenerateToken(String request)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		System.out.println("onGenerateToken request" + request);
+		ObjectMapper mapper = new ObjectMapper();
+		OnGenerateTokenRequest request1 = mapper.readValue(request, OnGenerateTokenRequest.class);
+		Boolean mobile = ndhmService.onGenerateToken(request1);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+
 	@Path(value = PathProxy.NdhmPushUrls.ON_FETCH_MODES)
 	@POST
-	@ApiOperation(value =PathProxy.NdhmPushUrls.ON_FETCH_MODES, notes = PathProxy.NdhmPushUrls.ON_FETCH_MODES)
+	@ApiOperation(value = PathProxy.NdhmPushUrls.ON_FETCH_MODES, notes = PathProxy.NdhmPushUrls.ON_FETCH_MODES)
 	public Response<Boolean> fetchModes(String request) throws JsonParseException, JsonMappingException, IOException {
 
-		System.out.println("request"+request); 
+		System.out.println("fetchModes request" + request);
 		ObjectMapper mapper = new ObjectMapper();
-		OnFetchModesRequest request1= mapper.readValue(request,OnFetchModesRequest.class);
+		OnFetchModesRequest request1 = mapper.readValue(request, OnFetchModesRequest.class);
 		Boolean mobile = ndhmService.onFetchModes(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
@@ -96,90 +115,86 @@ public class NDHMPushBackApi {
 //		response.setData(mobile);
 //		return response;
 //	}
-	
+
 	@Path(value = PathProxy.NdhmPushUrls.ON_AUTH_INIT)
 	@POST
-	@ApiOperation(value =PathProxy.NdhmPushUrls.ON_AUTH_INIT, notes = PathProxy.NdhmPushUrls.ON_AUTH_INIT)
+	@ApiOperation(value = PathProxy.NdhmPushUrls.ON_AUTH_INIT, notes = PathProxy.NdhmPushUrls.ON_AUTH_INIT)
 	public Response<Boolean> authInit(String request) throws JsonParseException, JsonMappingException, IOException {
 
-		System.out.println("request"+request); 
+		System.out.println("authInit request" + request);
 		ObjectMapper mapper = new ObjectMapper();
-		OnAuthInitRequest request1= mapper.readValue(request,OnAuthInitRequest.class);
+		OnAuthInitRequest request1 = mapper.readValue(request, OnAuthInitRequest.class);
 		Boolean mobile = ndhmService.onAuthinit(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmPushUrls.ON_AUTH_CONFIRM)
 	@POST
-	@ApiOperation(value =PathProxy.NdhmPushUrls.ON_AUTH_CONFIRM, notes = PathProxy.NdhmPushUrls.ON_AUTH_CONFIRM)
+	@ApiOperation(value = PathProxy.NdhmPushUrls.ON_AUTH_CONFIRM, notes = PathProxy.NdhmPushUrls.ON_AUTH_CONFIRM)
 	public Response<Boolean> authConfirm(String request) throws JsonParseException, JsonMappingException, IOException {
 
-		System.out.println("request"+request); 
+		System.out.println("authConfirm request" + request);
 		ObjectMapper mapper = new ObjectMapper();
-		OnAuthConfirmRequest request1= mapper.readValue(request,OnAuthConfirmRequest.class);
+		OnAuthConfirmRequest request1 = mapper.readValue(request, OnAuthConfirmRequest.class);
 		Boolean mobile = ndhmService.onAuthConfirm(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.NdhmPushUrls.ON_CARE_CONTEXT)
 	@POST
-	@ApiOperation(value=PathProxy.NdhmPushUrls.ON_CARE_CONTEXT, notes = PathProxy.NdhmPushUrls.ON_CARE_CONTEXT)
-	public Response<Boolean> onCareContext(String request) throws JsonParseException, JsonMappingException, IOException {
+	@ApiOperation(value = PathProxy.NdhmPushUrls.ON_CARE_CONTEXT, notes = PathProxy.NdhmPushUrls.ON_CARE_CONTEXT)
+	public Response<Boolean> onCareContext(String request)
+			throws JsonParseException, JsonMappingException, IOException {
 
-		System.out.println("request"+request); 
+		System.out.println("onCareContext request" + request);
 		ObjectMapper mapper = new ObjectMapper();
-		OnCareContext request1= mapper.readValue(request,OnCareContext.class);
+		OnCareContext request1 = mapper.readValue(request, OnCareContext.class);
 		Boolean mobile = ndhmService.onCareContext(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.NdhmPushUrls.DISCOVER)
 	@POST
-	@ApiOperation(value=PathProxy.NdhmPushUrls.DISCOVER, notes = PathProxy.NdhmPushUrls.DISCOVER)
+	@ApiOperation(value = PathProxy.NdhmPushUrls.DISCOVER, notes = PathProxy.NdhmPushUrls.DISCOVER)
 	public Response<Boolean> discover(String request) throws JsonParseException, JsonMappingException, IOException {
 
-		System.out.println("request"+request); 
+		System.out.println("discover request" + request);
 		ObjectMapper mapper = new ObjectMapper();
-		CareContextDiscoverRequest request1= mapper.readValue(request,CareContextDiscoverRequest.class);
+		CareContextDiscoverRequest request1 = mapper.readValue(request, CareContextDiscoverRequest.class);
 		Boolean mobile = ndhmService.discover(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;
 	}
-	
 
-	
 	@Path(value = PathProxy.NdhmPushUrls.LINK_INIT)
 	@POST
-	@ApiOperation(value=PathProxy.NdhmPushUrls.LINK_INIT, notes = PathProxy.NdhmPushUrls.LINK_INIT)
+	@ApiOperation(value = PathProxy.NdhmPushUrls.LINK_INIT, notes = PathProxy.NdhmPushUrls.LINK_INIT)
 	public Response<Boolean> linkInit(String request) throws JsonParseException, JsonMappingException, IOException {
 
-		System.out.println("request"+request); 
+		System.out.println("linkInit request" + request);
 		ObjectMapper mapper = new ObjectMapper();
-		LinkRequest request1= mapper.readValue(request,LinkRequest.class);
+		LinkRequest request1 = mapper.readValue(request, LinkRequest.class);
 		Boolean mobile = ndhmService.linkInit(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.NdhmPushUrls.LINK_CONFIRM)
 	@POST
-	@ApiOperation(value=PathProxy.NdhmPushUrls.LINK_CONFIRM, notes = PathProxy.NdhmPushUrls.LINK_CONFIRM)
+	@ApiOperation(value = PathProxy.NdhmPushUrls.LINK_CONFIRM, notes = PathProxy.NdhmPushUrls.LINK_CONFIRM)
 	public Response<Boolean> linkConfirm(String request) throws JsonParseException, JsonMappingException, IOException {
 
-		System.out.println("request"+request); 
+		System.out.println("linkConfirm request" + request);
 		ObjectMapper mapper = new ObjectMapper();
-		LinkConfirm request1= mapper.readValue(request,LinkConfirm.class);
+		LinkConfirm request1 = mapper.readValue(request, LinkConfirm.class);
 		Boolean mobile = ndhmService.linkConfirm(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
@@ -189,80 +204,86 @@ public class NDHMPushBackApi {
 	@Path(value = PathProxy.NdhmPushUrls.HEALTH_INFORMATION_REQUEST)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmPushUrls.HEALTH_INFORMATION_REQUEST, notes = PathProxy.NdhmPushUrls.HEALTH_INFORMATION_REQUEST)
-	public Response<Boolean> onDataFlowRequest(String request) throws JsonParseException, JsonMappingException, IOException {
+	public Response<Boolean> onDataFlowRequest(String request)
+			throws JsonParseException, JsonMappingException, IOException {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " request Required");
 		}
-		System.out.println("request"+request); 
+		System.out.println("onDataFlowRequest request" + request);
 		ObjectMapper mapper = new ObjectMapper();
-		DataFlowRequest request1=mapper.readValue(request,DataFlowRequest.class);
+		DataFlowRequest request1 = mapper.readValue(request, DataFlowRequest.class);
 		Boolean mobile = ndhmService.onDataFlowRequest(request1);
 
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.NdhmPushUrls.NOTIFY)
 	@POST
-	@ApiOperation(value=PathProxy.NdhmPushUrls.NOTIFY, notes = PathProxy.NdhmPushUrls.NOTIFY)
-	public Response<Boolean> notify(String request) throws JsonParseException, JsonMappingException, IOException {
+	@ApiOperation(value = PathProxy.NdhmPushUrls.NOTIFY, notes = PathProxy.NdhmPushUrls.NOTIFY)
+	public Response<Boolean> notify(@RequestHeader Map<String, String> headers, @RequestBody String request)
+			throws JsonParseException, JsonMappingException, IOException {
 
-		System.out.println("request"+request); 
+		System.out.println("notify request" + request);
+		System.out.println("notify headers" + headers);
+
 		ObjectMapper mapper = new ObjectMapper();
-		NotifyRequest request1= mapper.readValue(request,NotifyRequest.class);
+		NotifyRequest request1 = mapper.readValue(request, NotifyRequest.class);
 		Boolean mobile = ndhmService.ndhmNotify(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	/**
-	 * consent request hiu swagger  on-init api
+	 * consent request hiu swagger on-init api
+	 * 
 	 * @param request
 	 * @return
 	 */
 	@Path(value = PathProxy.NdhmPushUrls.CONSENT_REQUEST_ON_INIT)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmPushUrls.CONSENT_REQUEST_ON_INIT, notes = PathProxy.NdhmPushUrls.CONSENT_REQUEST_ON_INIT)
-	public Response<Boolean> onConsentRequestOnInitApi(String request)throws JsonParseException, JsonMappingException, IOException {
+	public Response<Boolean> onConsentRequestOnInitApi(String request)
+			throws JsonParseException, JsonMappingException, IOException {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " request Required");
 		}
-		System.out.println("request"+request); 
+		System.out.println("onConsentRequestOnInitApi request" + request);
 		ObjectMapper mapper = new ObjectMapper();
-		ConsentOnInitRequest request1= mapper.readValue(request,ConsentOnInitRequest.class);
+		ConsentOnInitRequest request1 = mapper.readValue(request, ConsentOnInitRequest.class);
 		Boolean mobile = ndhmService.onConsentRequestOnInitApi(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.NdhmPushUrls.CONSENT_REQUEST_ON_STATUS)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmPushUrls.CONSENT_REQUEST_ON_STATUS, notes = PathProxy.NdhmPushUrls.CONSENT_REQUEST_ON_STATUS)
-	public Response<Boolean> onConsentRequestOnStatus(String request)throws JsonParseException, JsonMappingException, IOException {
+	public Response<Boolean> onConsentRequestOnStatus(String request)
+			throws JsonParseException, JsonMappingException, IOException {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " request Required");
 		}
-		System.out.println("request"+request); 
+		System.out.println("onConsentRequestOnStatus request" + request);
 		ObjectMapper mapper = new ObjectMapper();
-		OnConsentRequestStatus request1= mapper.readValue(request,OnConsentRequestStatus.class);
+		OnConsentRequestStatus request1 = mapper.readValue(request, OnConsentRequestStatus.class);
 		Boolean mobile = ndhmService.onConsentRequestStatus(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	/**
 	 * Data Transfer health information transfer api
+	 * 
 	 * @param request
 	 * @return
-	 * @throws IOException 
-	 * @throws JsonMappingException 
-	 * @throws JsonParseException 
+	 * @throws IOException
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
 	 */
 //	@Path(value = PathProxy.NdhmPushUrls.HEALTH_INFORMATION_TRANSFER)
 //	@POST
@@ -278,7 +299,7 @@ public class NDHMPushBackApi {
 //		response.setData(mobile);
 //		return response;
 //	}
-	
+
 	@Path(value = PathProxy.NdhmPushUrls.NDHM_ON_PATIENT)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmPushUrls.NDHM_ON_PATIENT, notes = PathProxy.NdhmPushUrls.NDHM_ON_PATIENT)
@@ -286,15 +307,15 @@ public class NDHMPushBackApi {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " request Required");
 		}
-		System.out.println("request"+request); 
+		System.out.println("findPatient request" + request);
 		ObjectMapper mapper = new ObjectMapper();
-		NdhmOnPatientFindRequest request1= mapper.readValue(request,NdhmOnPatientFindRequest.class);
+		NdhmOnPatientFindRequest request1 = mapper.readValue(request, NdhmOnPatientFindRequest.class);
 		Boolean mobile = ndhmService.onFindPatient(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmPushUrls.HIU_NOTIFY)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmPushUrls.HIU_NOTIFY, notes = PathProxy.NdhmPushUrls.HIU_NOTIFY)
@@ -302,88 +323,88 @@ public class NDHMPushBackApi {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " request Required");
 		}
-		System.out.println("request"+request); 
+		System.out.println("hiuNotify request" + request);
 		ObjectMapper mapper = new ObjectMapper();
-		NotifyHiuRequest request1= mapper.readValue(request,NotifyHiuRequest.class);
+		NotifyHiuRequest request1 = mapper.readValue(request, NotifyHiuRequest.class);
 
 		Boolean mobile = ndhmService.notifyHiu(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmPushUrls.ON_CONSENT_FETCH)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmPushUrls.ON_CONSENT_FETCH, notes = PathProxy.NdhmPushUrls.ON_CONSENT_FETCH)
-	public Response<Boolean> hiuOnConsentFetch(String request) throws JsonParseException, JsonMappingException, IOException {
+	public Response<Boolean> hiuOnConsentFetch(String request)
+			throws JsonParseException, JsonMappingException, IOException {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " request Required");
 		}
-		System.out.println("request"+request); 
+		System.out.println("hiuOnConsentFetch request" + request);
 		ObjectMapper mapper = new ObjectMapper();
-		OnConsentFetchRequest request1= mapper.readValue(request,OnConsentFetchRequest.class);
+		OnConsentFetchRequest request1 = mapper.readValue(request, OnConsentFetchRequest.class);
 
 		Boolean mobile = ndhmService.onConsentFetch(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmPushUrls.ON_HIU_DATA_REQUEST)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmPushUrls.ON_HIU_DATA_REQUEST, notes = PathProxy.NdhmPushUrls.ON_HIU_DATA_REQUEST)
-	public Response<Boolean> hiuOnConsentFe(String request) throws JsonParseException, JsonMappingException, IOException {
+	public Response<Boolean> hiuOnConsentFe(String request)
+			throws JsonParseException, JsonMappingException, IOException {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " request Required");
 		}
-		System.out.println("request"+request); 
+		System.out.println("hiuOnConsentFe request" + request);
 		ObjectMapper mapper = new ObjectMapper();
-		GateWayOnRequest request1= mapper.readValue(request,GateWayOnRequest.class);
+		GateWayOnRequest request1 = mapper.readValue(request, GateWayOnRequest.class);
 
 		Boolean mobile = ndhmService.onHiuDatarequest(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.NdhmPushUrls.HIU_DATA_TRANSFER)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmPushUrls.HIU_DATA_TRANSFER, notes = PathProxy.NdhmPushUrls.HIU_DATA_TRANSFER)
-	public Response<Boolean> hiuDataTransfer(String request) throws JsonParseException, JsonMappingException, IOException {
+	public Response<Boolean> hiuDataTransfer(String request)
+			throws JsonParseException, JsonMappingException, IOException {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " request Required");
 		}
-		System.out.println("request"+request); 
+		System.out.println("hiuDataTransfer request" + request);
 		ObjectMapper mapper = new ObjectMapper();
-		DataTransferRequest request1= mapper.readValue(request,DataTransferRequest.class);
+		DataTransferRequest request1 = mapper.readValue(request, DataTransferRequest.class);
 
 		Boolean mobile = ndhmService.onHiuDataTransferApi(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;
 	}
-	
-	
-	
-	
+
 	@Path(value = PathProxy.NdhmPushUrls.ON_PROFILE_SHARE)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmPushUrls.ON_PROFILE_SHARE, notes = PathProxy.NdhmPushUrls.ON_PROFILE_SHARE)
-	public Response<Boolean> onProfileShare(String request) throws JsonParseException, JsonMappingException, IOException {
+	public Response<Boolean> onProfileShare(String request)
+			throws JsonParseException, JsonMappingException, IOException {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " request Required");
 		}
-		System.out.println("request"+request); 
+		System.out.println("onProfileShare request" + request);
 		ObjectMapper mapper = new ObjectMapper();
-		PatientShareProfile request1= mapper.readValue(request,PatientShareProfile.class);
+		PatientShareProfile request1 = mapper.readValue(request, PatientShareProfile.class);
 
 		Boolean mobile = ndhmService.shareProfile(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.NdhmPushUrls.ON_NOTIFY_SMS)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmPushUrls.ON_NOTIFY_SMS, notes = PathProxy.NdhmPushUrls.ON_NOTIFY_SMS)
@@ -391,9 +412,9 @@ public class NDHMPushBackApi {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " request Required");
 		}
-		System.out.println("request"+request); 
+		System.out.println("onNotifySmsrequest" + request);
 		ObjectMapper mapper = new ObjectMapper();
-		OnNotifySmsRequest request1= mapper.readValue(request,OnNotifySmsRequest.class);
+		OnNotifySmsRequest request1 = mapper.readValue(request, OnNotifySmsRequest.class);
 
 		Boolean mobile = ndhmService.onNotifySms(request1);
 		Response<Boolean> response = new Response<Boolean>();

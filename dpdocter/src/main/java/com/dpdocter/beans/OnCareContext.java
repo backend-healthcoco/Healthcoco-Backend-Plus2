@@ -1,6 +1,8 @@
 package com.dpdocter.beans;
 
 public class OnCareContext {
+	private String abhaAddress;
+	private String status;
 
 	private String requestId;
 	
@@ -10,7 +12,7 @@ public class OnCareContext {
 	
 	private NdhmErrorObject error;
 	
-	private FetchResponse resp;
+	private FetchResponse response;
 
 	public String getRequestId() {
 		return requestId;
@@ -44,13 +46,29 @@ public class OnCareContext {
 		this.error = error;
 	}
 
-	public FetchResponse getResp() {
-		return resp;
+
+	public String getStatus() {
+		return status;
 	}
 
-	public void setResp(FetchResponse resp) {
-		this.resp = resp;
+	public void setStatus(String status) {
+		this.status = status;
 	}
-	
+
+	public FetchResponse getResponse() {
+		return response;
+	}
+
+	public void setResponse(FetchResponse response) {
+		this.response = response;
+	}
+
+	public String getAbhaAddress() {
+		return abhaAddress;
+	}
+
+	public void setAbhaAddress(String abhaAddress) {
+		this.abhaAddress = abhaAddress;
+	}
 	
 }

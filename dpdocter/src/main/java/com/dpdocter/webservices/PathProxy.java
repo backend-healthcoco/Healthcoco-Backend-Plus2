@@ -2594,7 +2594,6 @@ public interface PathProxy {
 		public static final String CREATE_ABHA_ADDRESS="/v3/enrollment/enrol/abha-address";
 
 		public static final String GET_GENERATE_TOKEN="/v3/token/generateToken";
-
 		// Authentication
 		public static final String GET_AUTH_INIT = "/auth/init";
 		public static final String GET_AUTH_WITH_MOBILE = "/auth/getAuthMobile";
@@ -2643,6 +2642,8 @@ public interface PathProxy {
 
 		
 		public static final String ADD_CARE_CONTEXT="/addCareContext";
+		public static final String ADD_CARE_CONTEXT_V3="/addCareContextV3";
+
 		
 		public static final String ON_DISCOVER="/onDiscover";
 		
@@ -2710,9 +2711,8 @@ public interface PathProxy {
 	
 	public static final String NDHM_PUSH_BACK_BASE_URL =  "/ndhmPushBack";
 	public interface NdhmPushUrls{
-		public static final String GET_CALLBACK_ON_GENERATE_TOKEN="/v3/token/onGenerateToken";
 		
-		public static final String GET_CALLBACK_GENERATE_TOKEN="/onGenerateToken";
+		public static final String ON_CALLBACK_GENERATE_TOKEN="/v3/hip/token/on-generate-token";
 
 		public static final String ON_FETCH_MODES="/v0.5/users/auth/on-fetch-modes";
 		
@@ -2720,11 +2720,11 @@ public interface PathProxy {
 		
 		public static final String ON_AUTH_CONFIRM="/v0.5/users/auth/on-confirm";
 		
-		public static final String ON_CARE_CONTEXT="/v0.5/links/link/on-add-contexts";
+		public static final String ON_CARE_CONTEXT="/api/v3/link/on_carecontext";
 		
 		public static final String DISCOVER = "/v0.5/care-contexts/discover";
 		
-		public static final String NOTIFY="/v0.5/consents/hip/notify";
+		public static final String NOTIFY="/api/v3/consent/request/hip/notify";
 
 		public static final String LINK_INIT = "/v0.5/links/link/init";
 		

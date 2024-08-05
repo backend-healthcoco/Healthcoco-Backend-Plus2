@@ -56,6 +56,7 @@ import com.dpdocter.request.GatewayConsentInitRequest;
 import com.dpdocter.request.GatewayConsentStatusRequest;
 import com.dpdocter.request.GenerateLinkTokenCallbackV3Request;
 import com.dpdocter.request.GenerateLinkTokenV3Request;
+import com.dpdocter.request.OnGenerateTokenRequest;
 import com.dpdocter.response.CreateAbhaAddresseResponse;
 import com.dpdocter.response.EnrollByAadhaarResponse;
 import com.dpdocter.response.RequestOtp;
@@ -254,6 +255,8 @@ public interface NDHMservices {
 
 	Boolean generateLinkToken(GenerateLinkTokenV3Request request);
 
-	Boolean generateLinkTokenCallback(GenerateLinkTokenCallbackV3Request request);
+	Boolean addContextV3(CareContextRequest request);
+
+	Boolean onGenerateToken(OnGenerateTokenRequest request1);
 
 }

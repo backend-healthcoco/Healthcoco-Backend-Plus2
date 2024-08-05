@@ -5,9 +5,9 @@ public class NdhmAuthConfirm {
 	private String accessToken;
 	
 	private NdhmPatient patient;
-	
-	
+	private NdhmValidity validity;
 
+	
 	public String getAccessToken() {
 		return accessToken;
 	}
@@ -22,6 +22,14 @@ public class NdhmAuthConfirm {
 
 	public void setPatient(NdhmPatient patient) {
 		this.patient = patient;
+	}
+
+	public NdhmValidity getValidity() {
+		return validity;
+	}
+
+	public void setValidity(NdhmValidity validity) {
+		this.validity = validity;
 	}
 
 	

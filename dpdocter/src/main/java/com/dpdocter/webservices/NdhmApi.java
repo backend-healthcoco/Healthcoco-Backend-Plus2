@@ -541,6 +541,18 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
+	
+	@Path(value = PathProxy.NdhmUrls.ADD_CARE_CONTEXT_V3)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.ADD_CARE_CONTEXT_V3, notes = PathProxy.NdhmUrls.ADD_CARE_CONTEXT_V3)
+	public Response<Boolean> addContextV3(@RequestBody CareContextRequest request) {
+
+		Boolean mobile = ndhmService.addContextV3(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
 
 	@Path(value = PathProxy.NdhmUrls.GET_CARE_CONTEXT)
 	@GET

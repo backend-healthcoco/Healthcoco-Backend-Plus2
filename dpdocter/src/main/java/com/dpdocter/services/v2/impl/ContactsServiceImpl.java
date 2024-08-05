@@ -856,7 +856,8 @@ public class ContactsServiceImpl implements ContactsService {
 					registeredPatientDetail.setColorCode(patientCard.getUser().getColorCode());
 					registeredPatientDetail.setHealthId(patientCard.getHealthId());
 					registeredPatientDetail.setAbhaNumber(patientCard.getAbhaNumber());
-
+					registeredPatientDetail.setDob(patientCard.getDob());
+					
 					if (groupIds != null) {
 						groupIdList = new ArrayList<>();
 						for (ObjectId groupId : groupIds) {

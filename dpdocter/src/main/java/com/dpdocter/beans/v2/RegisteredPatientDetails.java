@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.beans.DOB;
 import com.dpdocter.collections.GenericCollection;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
@@ -30,6 +31,8 @@ public class RegisteredPatientDetails extends GenericCollection {
 	private String hospitalId;
 
 	private String PID;
+	
+	private DOB dob;
 
 	private String colorCode;
 
@@ -235,6 +238,14 @@ public class RegisteredPatientDetails extends GenericCollection {
 
 	public void setAbhaNumber(String abhaNumber) {
 		this.abhaNumber = abhaNumber;
+	}
+
+	public DOB getDob() {
+		return dob;
+	}
+
+	public void setDob(DOB dob) {
+		this.dob = dob;
 	}
 
 	

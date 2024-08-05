@@ -18,6 +18,8 @@ public class NdhmNotifyCollection extends GenericCollection{
 	private String timestamp;
 	@Field
 	private NdhmNotification notification;
+	
+	
 	public ObjectId getId() {
 		return id;
 	}

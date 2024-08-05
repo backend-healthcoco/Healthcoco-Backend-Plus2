@@ -215,6 +215,11 @@
 			<artifactId>spring-web</artifactId>
 			<version>5.0.7.RELEASE</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>5.0.7.RELEASE</version>
+		</dependency>
 		<!-- Various Application Context utilities, including EhCache, JavaMail, 
 			Quartz, and Freemarker integration Define this if you need any of these integrations -->
 		<dependency>

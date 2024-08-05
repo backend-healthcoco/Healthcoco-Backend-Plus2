@@ -7,6 +7,6 @@ import com.dpdocter.collections.OnCareContextCollection;
 
 public interface OnCareContextRepository extends MongoRepository<OnCareContextCollection, ObjectId>{
 
-	OnCareContextCollection findByRespRequestId(String requestId);
+	OnCareContextCollection findByResponseRequestId(String requestId);
 
 }

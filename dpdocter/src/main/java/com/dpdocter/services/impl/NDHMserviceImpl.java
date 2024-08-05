@@ -136,6 +136,7 @@ import com.dpdocter.collections.OnAuthInitCollection;
 import com.dpdocter.collections.OnCareContextCollection;
 import com.dpdocter.collections.OnConsentRequestStatusCollection;
 import com.dpdocter.collections.OnFetchModeCollection;
+import com.dpdocter.collections.OnGenerateTokenCollection;
 import com.dpdocter.collections.OnNotifySmsCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientShareProfileCollection;
@@ -173,6 +174,7 @@ import com.dpdocter.repository.OnAuthConfirmRepository;
 import com.dpdocter.repository.OnAuthInitRepository;
 import com.dpdocter.repository.OnCareContextRepository;
 import com.dpdocter.repository.OnFetchModeRepository;
+import com.dpdocter.repository.OnGenerateTokenRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientShareRepository;
 import com.dpdocter.repository.PrescriptionRepository;
@@ -190,11 +192,12 @@ import com.dpdocter.request.EnrollmentVerifyAndUpdateV3Request;
 import com.dpdocter.request.EntriesDataTransferRequest;
 import com.dpdocter.request.GatewayConsentInitRequest;
 import com.dpdocter.request.GatewayConsentStatusRequest;
-import com.dpdocter.request.GenerateLinkTokenCallbackV3Request;
 import com.dpdocter.request.GenerateLinkTokenV3Request;
 import com.dpdocter.request.KeyMaterialRequestDataFlow;
+import com.dpdocter.request.OnGenerateTokenRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.CreateAbhaAddresseResponse;
+import com.dpdocter.response.EnrollByAadhaarResponse;
 import com.dpdocter.response.GetCardProfileResponse;
 import com.dpdocter.response.RequestOtp;
 import com.dpdocter.response.SuggestedAbhaAddressesResponse;
@@ -209,11 +212,8 @@ import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
-import com.dpdocter.response.EnrollByAadhaarResponse;
 import com.dpdocter.webservices.GateWayHiOnRequest;
 import com.dpdocter.webservices.GateWayOnRequest;
-import com.dpdocter.webservices.PathProxy;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -245,6 +245,8 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Autowired
 	private OnFetchModeRepository onFetchModeRepository;
+	@Autowired
+	private OnGenerateTokenRepository onGenerateTokenRepository;
 
 	@Autowired
 	private OnAuthInitRepository onAuthInitRepository;
@@ -2595,6 +2597,85 @@ public class NDHMserviceImpl implements NDHMservices {
 	}
 
 	@Override
+	public Boolean addContextV3(CareContextRequest request) {
+		Boolean response = false;
+		try {
+
+			JSONObject orderRequest = new JSONObject();
+
+			JSONArray orderRequest1 = new JSONArray();
+			JSONObject orderRequest2 = new JSONObject();
+
+			orderRequest.put("abhaNumber", request.getAbhaNumber());
+			orderRequest.put("abhaAddress", request.getAbhaAddress());
+
+			orderRequest2.put("referenceNumber", request.getLink().getPatient().getReferenceNumber());
+			orderRequest2.put("display", request.getLink().getPatient().getDisplay());
+			orderRequest2.put("careContexts", request.getLink().getPatient().getCareContexts());
+			orderRequest2.put("hiType", request.getLink().getHiType());
+			orderRequest2.put("count", request.getLink().getCount());
+
+			orderRequest1.put(orderRequest2);
+			orderRequest.put("patient", orderRequest1);
+			System.out.println("orderRequest " + orderRequest.toString());
+
+			NdhmOauthResponse oauth = session();
+			System.out.println("token" + oauth.getAccessToken());
+
+			String url = "https://dev.abdm.gov.in/hiecm/api/v3/link/carecontext";
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			con.setDoOutput(true);
+
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("X-LINK-TOKEN", "Bearer " + request.getLink().getAccessToken());
+			con.setRequestProperty("REQUEST-ID", request.getRequestId());
+			con.setRequestProperty("TIMESTAMP", request.getTimestamp());
+			con.setRequestProperty("X-CM-ID", "sbx");
+			con.setRequestProperty("X-HIP-ID", request.getHipId());
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			// BufferedReader in = new BufferedReader(new
+			// InputStreamReader(con.getInputStream()));
+			String inputLine;
+			System.out.println(con.getErrorStream());
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
+
+				output.append((char) c);
+
+			}
+			System.out.println("response:" + output.toString());
+			int responseCode = con.getResponseCode();
+			if (responseCode == 202)
+				response = true;
+
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+
+	}
+
+	@Override
 	public Boolean onCareContext(OnCareContext request) {
 		Boolean response = false;
 		try {
@@ -3952,7 +4033,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://dev.abdm.gov.in/gateway/v0.5/consents/hip/on-notify";
+			String url = "https://dev.abdm.gov.in/hiecm/api/v3/consent/request/hip/on-notify";
 //		JSONObject orderRequest = new JSONObject();
 //		orderRquest.put("txnId", txnId);
 
@@ -4004,7 +4085,7 @@ public class NDHMserviceImpl implements NDHMservices {
 	public OnCareContext getCareContext(String requestId) {
 		OnCareContext response = null;
 		try {
-			OnCareContextCollection collection = onCareContextRepository.findByRespRequestId(requestId);
+			OnCareContextCollection collection = onCareContextRepository.findByResponseRequestId(requestId);
 			response = new OnCareContext();
 			if (collection != null) {
 				BeanUtil.map(collection, response);
@@ -6004,65 +6085,19 @@ public class NDHMserviceImpl implements NDHMservices {
 	}
 
 	@Override
-	public Boolean generateLinkTokenCallback(GenerateLinkTokenCallbackV3Request request) {
+	public Boolean onGenerateToken(OnGenerateTokenRequest request) {
 		Boolean response = false;
 		try {
 
-			NdhmOauthResponse oauth = session();
-			String value = PathProxy.NDHM_BASE_URL + PathProxy.NdhmPushUrls.GET_CALLBACK_GENERATE_TOKEN;
-			String url = "https://dev.abdm.gov.in/" + value + "/get/hiecm/api/v3/hip/token/generate-token";
-			JSONObject orderRequest = new JSONObject();
-			orderRequest.put("abhaAddress", request.getAbhaAddress());
-			orderRequest.put("linkToken", request.getLinkToken());
+			OnGenerateTokenCollection collection = new OnGenerateTokenCollection();
 
-			JSONObject otpRequest = new JSONObject();
-			otpRequest.put("requestId", request.getRequestId());
+			BeanUtil.map(request, collection);
+			collection.setCreatedTime(new Date());
+			onGenerateTokenRepository.save(collection);
+			response = true;
+		}
 
-			orderRequest.put("response", otpRequest);
-			URL obj = new URL(url);
-			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-			con.setRequestMethod("POST");
-
-			System.out.println(con.getErrorStream());
-			// optional default is POST
-			UUID uuid = UUID.randomUUID();
-			TimeZone tz = TimeZone.getTimeZone("UTC");
-			DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
-																					// timezone offset
-			df.setTimeZone(tz);
-			String nowAsISO = df.format(new Date());
-			DoctorClinicProfileCollection doctorClinicProfileCollections = doctorClinicProfileRepository
-					.findByLocationIdAndIsSuperAdmin(new ObjectId(request.getHipId()), true);
-
-			con.setRequestProperty("Content-Type", "application/json");
-			con.setRequestProperty("Accept-Language", "en-US");
-			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
-			con.setRequestProperty("REQUEST-ID", uuid.toString());
-			con.setRequestProperty("TIMESTAMP", nowAsISO);
-//			con.setRequestProperty("X-HIP-ID", "HELTHCOCO_588687");
-			con.setRequestProperty("X-HIP-ID", doctorClinicProfileCollections.getClinicHipId());
-
-			con.setDoOutput(true);
-			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			wr.writeBytes(orderRequest.toString());
-			System.out.println("Orderrequest:" + orderRequest.toString());
-			wr.flush();
-			wr.close();
-			con.disconnect();
-			InputStream in = con.getInputStream();
-			/* response = new StringBuffer(); */
-			StringBuffer output = new StringBuffer();
-			int c = 0;
-			while ((c = in.read()) != -1) {
-
-				output.append((char) c);
-
-			}
-			System.out.println("response" + output.toString());
-			int responseCode = con.getResponseCode();
-			if (responseCode == 202)
-				response = true;
-		} catch (Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
