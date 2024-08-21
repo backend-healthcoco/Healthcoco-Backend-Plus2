@@ -29,6 +29,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -194,6 +195,7 @@ import com.dpdocter.request.GatewayConsentInitRequest;
 import com.dpdocter.request.GatewayConsentStatusRequest;
 import com.dpdocter.request.GenerateLinkTokenV3Request;
 import com.dpdocter.request.KeyMaterialRequestDataFlow;
+import com.dpdocter.request.NotifyPatientrequestV3;
 import com.dpdocter.request.OnGenerateTokenRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.CreateAbhaAddresseResponse;
@@ -1928,7 +1930,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 			UUID uuid = UUID.randomUUID();
 			TimeZone tz = TimeZone.getTimeZone("UTC");
-			DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
 																					// timezone offset
 			df.setTimeZone(tz);
 			String nowAsISO = df.format(new Date());
@@ -2713,7 +2715,7 @@ public class NDHMserviceImpl implements NDHMservices {
 //				String nowAsISO = df.format(new Date());
 				// discover.setTimestamp(nowAsISO);
 				TimeZone tz = TimeZone.getTimeZone("UTC");
-				DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
 																						// timezone offset
 				df.setTimeZone(tz);
 				String nowAsISO = df.format(new Date());
@@ -2952,7 +2954,7 @@ public class NDHMserviceImpl implements NDHMservices {
 //				df.setTimeZone(tz);
 				// String nowAsISO = df.format(new Date());
 				TimeZone tz = TimeZone.getTimeZone("UTC");
-				DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
 																						// timezone offset
 				df.setTimeZone(tz);
 				String nowAsISO = df.format(new Date());
@@ -3241,6 +3243,240 @@ public class NDHMserviceImpl implements NDHMservices {
 	@Override
 	@Transactional
 	@Async
+	public Boolean onDataFlowRequestV3(DataFlowRequest request) {
+		Boolean response = false;
+		try {
+			System.out.println("OnDataFlow Request");
+			HipDataFlowCollection collection = new HipDataFlowCollection();
+			BeanUtil.map(request, collection);
+			collection.setCreatedTime(new Date());
+			hipDataFlowRepository.save(collection);
+			response = true;
+			Boolean status = false;
+			if (response == true) {
+				GateWayOnRequest gate = new GateWayOnRequest();
+				UUID uuid = UUID.randomUUID();
+				gate.setRequestId(uuid.toString());
+				LocalDateTime time = LocalDateTime.now(ZoneOffset.UTC);
+				System.out.println("timeStamp" + time.toString());
+				gate.setTimestamp(time.toString());
+				GateWayHiOnRequest gateWay = new GateWayHiOnRequest();
+				gateWay.setTransactionId(collection.getTransactionId());
+				gateWay.setSessionStatus("ACKNOWLEDGED");
+				gate.setHiRequest(gateWay);
+				FetchResponse resp = new FetchResponse();
+				resp.setRequestId(collection.getRequestId());
+				gate.setResponse(resp);
+				status = onGateWayOnRequestV3(gate);
+			}
+
+			NdhmNotifyCollection notify = ndhmNotifyRepository
+					.findByNotificationConsentId(request.getHiRequest().getConsent().getId());
+
+			if (notify != null) {
+				List<String> hiTypes = notify.getNotification().getConsentDetail().getHiTypes();
+				System.out.println("HiTypes" + hiTypes);
+				if (hiTypes != null) {
+					// String hiType=hiTypes.get(0);
+					String healthId = notify.getNotification().getConsentDetail().getPatient().getId();
+					String locationId = notify.getNotification().getConsentDetail().getHip().getId();
+					List<PatientCollection> patientCollections = patientRepository
+							.findByHealthId(healthId);
+					PatientCollection patientCollection = patientCollections.get(0);
+
+					List<EntriesDataTransferRequest> entries = new ArrayList<EntriesDataTransferRequest>();
+					KeyMaterialRequestDataFlow key = new KeyMaterialRequestDataFlow();
+
+					if (hiTypes.contains("Prescription")) {
+
+						if (patientCollection != null) {
+							UserCollection user = userRepository.findById(patientCollection.getUserId()).orElse(null);
+							patientCollection.setSecMobile(user.getMobileNumber());
+							Criteria criteria = new Criteria();
+							criteria.and("doctorId").is(patientCollection.getDoctorId());
+							criteria.and("patientId").is(patientCollection.getUserId());
+							Aggregation aggregation = null;
+							aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+									Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+							List<PrescriptionCollection> prescriptionCollections = mongoTemplate
+									.aggregate(aggregation, PrescriptionCollection.class, PrescriptionCollection.class)
+									.getMappedResults();
+							System.out.println("aggregation" + aggregation);
+							if (prescriptionCollections != null) {
+								DoctorCollection doctorCollection = doctorRepository
+										.findByUserId(patientCollection.getDoctorId());
+								System.out
+
+										.println("Doctor " + doctorCollection);
+								UserCollection userCollection = userRepository.findById(doctorCollection.getUserId())
+										.orElse(null);
+								System.out.println("User " + doctorCollection);
+								String bundle = PrescriptionSample.prescriptionConvert(prescriptionCollections,
+										patientCollection, userCollection);
+								System.out.println("Fhir:" + null);
+								DataEncryptionResponse data = null;
+								if (collection.getHiRequest().getKeyMaterial() != null) {
+									data = DHKeyExchangeCrypto.convert(bundle,
+											collection.getHiRequest().getKeyMaterial().getNonce(),
+											collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue(),
+											false, null, null);
+
+									DataEncryptionCollection encryption = encryptionKeyRepository.findByRandomReceiver(
+											collection.getHiRequest().getKeyMaterial().getNonce());
+									if (encryption != null) {
+										encryption.setSharedSenderNonce(data.getRandomSender());
+										encryptionKeyRepository.save(encryption);
+									}
+									System.out.println("encrypt" + data);
+									EntriesDataTransferRequest entry = new EntriesDataTransferRequest();
+									entry.setCareContextReference("Prescription");
+									entry.setContent(data.getEncryptedData());
+
+									key.setNonce(data.getRandomSender());
+									DhPublicKeyDataFlowRequest dhPublic = new DhPublicKeyDataFlowRequest();
+									dhPublic.setKeyValue(data.getSenderPublicKey());
+									key.setDhPublicKey(dhPublic);
+
+									entries.add(entry);
+								}
+							}
+						}
+					}
+
+					DataTransferRequest transfer = new DataTransferRequest();
+					transfer.setKeyMaterial(key);
+					transfer.setPageCount(0);
+					transfer.setPageNumber(0);
+					transfer.setEntries(entries);
+					transfer.setTransactionId(collection.getTransactionId());
+					transfer.setDataPushUrl(request.getHiRequest().getDataPushUrl());
+					Boolean transferResponse = onDataTransfer(transfer);
+
+					Boolean info = false;
+					if (transferResponse == true) {
+						HealthInfoNotify dataFlow = new HealthInfoNotify();
+						UUID uuid = UUID.randomUUID();
+
+						LocalDateTime time = LocalDateTime.now(ZoneOffset.UTC);
+						dataFlow.setRequestId(uuid.toString());
+						dataFlow.setTimestamp(time.toString());
+
+						HipInfoNotify hipNotify = new HipInfoNotify();
+						hipNotify.setTransactionId(collection.getTransactionId());
+						hipNotify.setConsentId(request.getHiRequest().getConsent().getId());
+						hipNotify.setDoneAt(time.toString());
+						HipNotifier notifier = new HipNotifier();
+						notifier.setId(NDHM_CLIENTID);
+						notifier.setType("HIP");
+						StatusNotify statusNotify = new StatusNotify();
+						statusNotify.setSessionStatus("TRANSFERRED");
+						statusNotify.setHipId(NDHM_CLIENTID);
+						StatusResponse statusResponse = new StatusResponse();
+						statusResponse.setHiStatus("DELIVERED");
+						statusResponse.setCareContextReference("Healthcoco");
+						statusNotify.setStatusResponses(statusResponse);
+						hipNotify.setStatusNotification(statusNotify);
+						dataFlow.setNotification(hipNotify);
+						info = healthInformationNotifyV3(dataFlow);
+
+					}
+
+					System.out.println("transferReponse" + transferResponse);
+					System.out.println("HealthNotify" + info);
+				}
+			}
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
+	private Boolean onGateWayOnRequestV3(GateWayOnRequest request) {
+		Boolean response = false;
+		try {
+			System.out.println("OnGateway Request");
+			JSONObject orderRequest = new JSONObject();
+
+			JSONObject hiRequestRequest = new JSONObject();
+			hiRequestRequest.put("transactionId", request.getHiRequest().getTransactionId());
+			hiRequestRequest.put("sessionStatus", request.getHiRequest().getSessionStatus());
+			System.out.println(hiRequestRequest);
+			orderRequest.put("hiRequest", hiRequestRequest);
+
+			orderRequest.put("error", request.getError());
+
+			JSONObject requestId = new JSONObject();
+			requestId.put("requestId", request.getResponse().getRequestId());
+			orderRequest.put("response", requestId);
+
+			NdhmOauthResponse oauth = session();
+			System.out.println("token" + oauth.getAccessToken());
+
+			String url = "https://dev.abdm.gov.in/hiecm/api/v3/data-flow/health-information/hip/on-request";
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			con.setDoOutput(true);
+
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+
+			UUID uuid = UUID.randomUUID();
+			TimeZone tz = TimeZone.getTimeZone("UTC");
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+																					// timezone offset
+			df.setTimeZone(tz);
+			String nowAsISO = df.format(new Date());
+
+			// optional default is POST
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("X-CM-ID", "sbx");
+			con.setRequestProperty("REQUEST-ID", uuid.toString());
+			con.setRequestProperty("TIMESTAMP", nowAsISO);
+
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			String inputLine;
+			System.out.println(con.getErrorStream());
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
+
+				output.append((char) c);
+
+			}
+			System.out.println("response:" + output.toString());
+			int responseCode = con.getResponseCode();
+			if (responseCode == 202)
+				response = true;
+
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	@Async
 	public Boolean onDataFlowRequest(DataFlowRequest request) {
 		Boolean response = false;
 		try {
@@ -3304,7 +3540,7 @@ public class NDHMserviceImpl implements NDHMservices {
 				gate.setHiRequest(gateWay);
 				FetchResponse resp = new FetchResponse();
 				resp.setRequestId(collection.getRequestId());
-				gate.setResp(resp);
+				gate.setResponse(resp);
 				status = onGateWayOnRequest(gate);
 			}
 
@@ -3565,7 +3801,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			orderRequest.put("error", request.getError());
 
 			JSONObject requestId = new JSONObject();
-			requestId.put("requestId", request.getResp().getRequestId());
+			requestId.put("requestId", request.getResponse().getRequestId());
 			orderRequest.put("resp", requestId);
 
 			NdhmOauthResponse oauth = session();
@@ -3980,16 +4216,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			System.out.println("response" + response);
 			if (response == true) {
 				OnNotifyRequest req = new OnNotifyRequest();
-				UUID uuid = UUID.randomUUID();
-				req.setRequestId(uuid.toString());
-//			TimeZone tz = TimeZone.getTimeZone("UTC");
-//			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SS"); // Quoted "Z" to indicate UTC, no timezone offset
-//			df.setTimeZone(tz);
-//			String nowAsISO = df.format(new Date());
-//			req.setTimestamp(nowAsISO);
-				LocalDateTime time = LocalDateTime.now(ZoneOffset.UTC);
-				System.out.println("timeStamp" + time.toString());
-				req.setTimestamp(time.toString());
+
 				AcknowledgementRequest acknowledgementRequest = new AcknowledgementRequest();
 				acknowledgementRequest.setConsentId(collection.getNotification().getConsentId());
 				acknowledgementRequest.setStatus("OK");
@@ -4015,27 +4242,20 @@ public class NDHMserviceImpl implements NDHMservices {
 	public Boolean onNotify(OnNotifyRequest request) {
 		Boolean response = false;
 		try {
-			// System.out.println("OnNotify "+request);
 			JSONObject orderRequest = new JSONObject();
 			JSONObject acknowledge = new JSONObject();
 			JSONObject resp = new JSONObject();
-			orderRequest.put("requestId", request.getRequestId());
-			orderRequest.put("timestamp", request.getTimestamp());
 
 			acknowledge.put("status", request.getAcknowledgement().getStatus());
 			acknowledge.put("consentId", request.getAcknowledgement().getConsentId());
 			orderRequest.put("acknowledgement", acknowledge);
-			orderRequest.put("error", request.getError());
 			resp.put("requestId", request.getResp().getRequestId());
-			orderRequest.put("resp", resp);
+			orderRequest.put("response", resp);
 
 			System.out.println("On notify request: " + orderRequest);
 			NdhmOauthResponse oauth = session();
-			System.out.println("token" + oauth.getAccessToken());
 
 			String url = "https://dev.abdm.gov.in/hiecm/api/v3/consent/request/hip/on-notify";
-//		JSONObject orderRequest = new JSONObject();
-//		orderRquest.put("txnId", txnId);
 
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -4044,21 +4264,32 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			System.out.println(con.getErrorStream());
 			con.setDoInput(true);
+
+			UUID uuid = UUID.randomUUID();
+			TimeZone tz = TimeZone.getTimeZone("UTC");
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+																					// timezone offset
+			df.setTimeZone(tz);
+			String nowAsISO = df.format(new Date());
+			System.out.println("uuid" + uuid.toString());
+			System.out.println("time" + nowAsISO);
 			// optional default is POST
 			con.setRequestMethod("POST");
-			// con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Accept-Language", "en-US");
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
 			con.setRequestProperty("X-CM-ID", "sbx");
+			con.setRequestProperty("REQUEST-ID", uuid.toString());
+			con.setRequestProperty("TIMESTAMP", nowAsISO);
+
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			wr.writeBytes(orderRequest.toString());
 			wr.flush();
 			wr.close();
 			con.disconnect();
+
 			InputStream in = con.getInputStream();
-			// BufferedReader in = new BufferedReader(new
-			// InputStreamReader(con.getInputStream()));
-			String inputLine;
+
 			System.out.println(con.getErrorStream());
 			/* response = new StringBuffer(); */
 			StringBuffer output = new StringBuffer();
@@ -4222,6 +4453,81 @@ public class NDHMserviceImpl implements NDHMservices {
 		}
 		return response;
 
+	}
+
+	@Override
+	public Boolean healthInformationNotifyV3(HealthInfoNotify request) {
+		Boolean response = false;
+		try {
+			JSONObject orderRequest = new JSONObject();
+
+			JSONObject hiRequestRequest = new JSONObject();
+			hiRequestRequest.put("consentId", request.getNotification().getTransactionId());
+			hiRequestRequest.put("transactionId", request.getNotification().getTransactionId());
+			hiRequestRequest.put("doneAt", request.getNotification().getDoneAt());
+			hiRequestRequest.put("notifier", request.getNotification().getNotifier());
+			hiRequestRequest.put("statusNotification", request.getNotification().getStatusNotification());
+			System.out.println(hiRequestRequest);
+			orderRequest.put("notification", hiRequestRequest);
+
+			NdhmOauthResponse oauth = session();
+			System.out.println("token" + oauth.getAccessToken());
+
+			String url = "https://dev.abdm.gov.in/gateway/hiecm/api/v3/data-flow/health-information/notify";
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			con.setDoOutput(true);
+
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+
+			UUID uuid = UUID.randomUUID();
+			TimeZone tz = TimeZone.getTimeZone("UTC");
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+																					// timezone offset
+			df.setTimeZone(tz);
+			String nowAsISO = df.format(new Date());
+
+			// optional default is POST
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("X-CM-ID", "sbx");
+			con.setRequestProperty("REQUEST-ID", uuid.toString());
+			con.setRequestProperty("TIMESTAMP", nowAsISO);
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			// BufferedReader in = new BufferedReader(new
+			// InputStreamReader(con.getInputStream()));
+			String inputLine;
+			System.out.println(con.getErrorStream());
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
+
+				output.append((char) c);
+
+			}
+			System.out.println("response:" + output.toString());
+			int responseCode = con.getResponseCode();
+			if (responseCode == 202)
+				response = true;
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
 	}
 
 	@Override
@@ -5524,6 +5830,81 @@ public class NDHMserviceImpl implements NDHMservices {
 	}
 
 	@Override
+	public Boolean notifyPatientSmsV3(NotifyPatientrequestV3 request) {
+		Boolean response = false;
+		try {
+			JSONObject orderRequest = new JSONObject();
+			orderRequest.put("requestId", request.getRequestId());
+			orderRequest.put("timestamp", request.getTimestamp());
+			JSONObject notificationRequest = new JSONObject();
+			notificationRequest.put("phoneNo", request.getPhoneNo());
+			JSONObject hipRequest = new JSONObject();
+
+			hipRequest.put("name", request.getName());
+			hipRequest.put("id", request.getId());
+			notificationRequest.put("hip", hipRequest);
+			orderRequest.put("notification", notificationRequest);
+
+			System.out.println("Orderrequest:" + orderRequest.toString());
+			String url = "https://dev.abdm.gov.in/hiecm/api/v3/link/patient/links/sms/notify2";
+			NdhmOauthResponse oauth = session();
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			con.setDoOutput(true);
+
+			System.out.println(con.getErrorStream());
+
+			UUID uuid = UUID.randomUUID();
+			TimeZone tz = TimeZone.getTimeZone("UTC");
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+																					// timezone offset
+			df.setTimeZone(tz);
+			String nowAsISO = df.format(new Date());
+
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Content-Type", "applidcation/json");
+			con.setRequestProperty("REQUEST-ID", uuid.toString());
+			con.setRequestProperty("TIMESTAMP", nowAsISO);
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("X-CM-ID", "sbx");
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			// BufferedReader in = new BufferedReader(new
+			// InputStreamReader(con.getInputStream()));
+			String inputLine;
+			System.out.println(con.getErrorStream());
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
+
+				output.append((char) c);
+
+			}
+			System.out.println("response:" + output.toString());
+			int responseCode = con.getResponseCode();
+			if (responseCode == 202)
+				response = true;
+		}
+
+		catch (Exception e) {
+
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
 	public Boolean onNotifySms(OnNotifySmsRequest request) {
 		Boolean response = false;
 		try {
@@ -5585,7 +5966,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			UUID uuid = UUID.randomUUID();
 			TimeZone tz = TimeZone.getTimeZone("UTC");
-			DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
 																					// timezone offset
 			df.setTimeZone(tz);
 			String nowAsISO = df.format(new Date());
@@ -5729,7 +6110,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			UUID uuid = UUID.randomUUID();
 			TimeZone tz = TimeZone.getTimeZone("UTC");
-			DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
 																					// timezone offset
 			df.setTimeZone(tz);
 			String nowAsISO = df.format(new Date());
@@ -5793,7 +6174,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			UUID uuid = UUID.randomUUID();
 			TimeZone tz = TimeZone.getTimeZone("UTC");
-			DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
 																					// timezone offset
 			df.setTimeZone(tz);
 			String nowAsISO = df.format(new Date());
@@ -5869,7 +6250,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			// optional default is POST
 			UUID uuid = UUID.randomUUID();
 			TimeZone tz = TimeZone.getTimeZone("UTC");
-			DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
 																					// timezone offset
 			df.setTimeZone(tz);
 			String nowAsISO = df.format(new Date());
@@ -5928,7 +6309,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			con.setRequestMethod("GET");
 			UUID uuid = UUID.randomUUID();
 			TimeZone tz = TimeZone.getTimeZone("UTC");
-			DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
 																					// timezone offset
 			df.setTimeZone(tz);
 			String nowAsISO = df.format(new Date());
@@ -5983,7 +6364,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			// optional default is POST
 			UUID uuid = UUID.randomUUID();
 			TimeZone tz = TimeZone.getTimeZone("UTC");
-			DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
 																					// timezone offset
 			df.setTimeZone(tz);
 			String nowAsISO = df.format(new Date());
@@ -6041,7 +6422,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			// optional default is POST
 			UUID uuid = UUID.randomUUID();
 			TimeZone tz = TimeZone.getTimeZone("UTC");
-			DateFormat df = new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
 																					// timezone offset
 			df.setTimeZone(tz);
 			String nowAsISO = df.format(new Date());

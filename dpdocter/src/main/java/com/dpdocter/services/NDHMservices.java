@@ -56,6 +56,7 @@ import com.dpdocter.request.GatewayConsentInitRequest;
 import com.dpdocter.request.GatewayConsentStatusRequest;
 import com.dpdocter.request.GenerateLinkTokenCallbackV3Request;
 import com.dpdocter.request.GenerateLinkTokenV3Request;
+import com.dpdocter.request.NotifyPatientrequestV3;
 import com.dpdocter.request.OnGenerateTokenRequest;
 import com.dpdocter.response.CreateAbhaAddresseResponse;
 import com.dpdocter.response.EnrollByAadhaarResponse;
@@ -258,5 +259,11 @@ public interface NDHMservices {
 	Boolean addContextV3(CareContextRequest request);
 
 	Boolean onGenerateToken(OnGenerateTokenRequest request1);
+
+	Boolean notifyPatientSmsV3(NotifyPatientrequestV3 request);
+
+	Boolean onDataFlowRequestV3(DataFlowRequest dataFlowRequest);
+
+	Boolean healthInformationNotifyV3(HealthInfoNotify request);
 
 }

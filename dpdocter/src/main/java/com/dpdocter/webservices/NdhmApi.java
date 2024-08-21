@@ -74,6 +74,7 @@ import com.dpdocter.request.GatewayConsentInitRequest;
 import com.dpdocter.request.GatewayConsentStatusRequest;
 import com.dpdocter.request.GenerateLinkTokenCallbackV3Request;
 import com.dpdocter.request.GenerateLinkTokenV3Request;
+import com.dpdocter.request.NotifyPatientrequestV3;
 import com.dpdocter.response.CreateAbhaAddresseResponse;
 import com.dpdocter.response.EnrollByAadhaarResponse;
 import com.dpdocter.response.RequestOtp;
@@ -921,6 +922,19 @@ public class NdhmApi {
 			throw new BusinessException(ServiceError.InvalidInput, " request Required");
 		}
 		Boolean mobile = ndhmService.notifyPatientSms(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.PATIENT_NOTIFY_SMS_V3)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.PATIENT_NOTIFY_SMS_V3, notes = PathProxy.NdhmUrls.PATIENT_NOTIFY_SMS_V3)
+	public Response<Boolean> notifyPatientSmsV3(@RequestBody NotifyPatientrequestV3 request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		Boolean mobile = ndhmService.notifyPatientSmsV3(request);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;

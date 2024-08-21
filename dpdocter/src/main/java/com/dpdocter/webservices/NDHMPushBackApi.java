@@ -1,9 +1,9 @@
 package com.dpdocter.webservices;
 
 import java.io.IOException;
-import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -15,10 +15,8 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.dpdocter.beans.CareContextDiscoverRequest;
 import com.dpdocter.beans.LinkConfirm;
@@ -39,7 +37,6 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ConsentOnInitRequest;
 import com.dpdocter.request.DataFlowRequest;
 import com.dpdocter.request.DataTransferRequest;
-import com.dpdocter.request.GenerateLinkTokenCallbackV3Request;
 import com.dpdocter.request.OnGenerateTokenRequest;
 import com.dpdocter.services.NDHMservices;
 
@@ -218,19 +215,42 @@ public class NDHMPushBackApi {
 		response.setData(mobile);
 		return response;
 	}
+	
+	@Path(value = PathProxy.NdhmPushUrls.HEALTH_INFORMATION_REQUEST_V3)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmPushUrls.HEALTH_INFORMATION_REQUEST_V3, notes = PathProxy.NdhmPushUrls.HEALTH_INFORMATION_REQUEST_V3)
+	public Response<Boolean> onDataFlowRequestV3(String request,@HeaderParam("request-id") String requestId)
+			throws JsonParseException, JsonMappingException, IOException {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		System.out.println("onDataFlowRequestV3 request" + request);
+		System.out.println("onDataFlowRequestV3 headers " + requestId);
+
+		ObjectMapper mapper = new ObjectMapper();
+		DataFlowRequest dataFlowRequest = mapper.readValue(request, DataFlowRequest.class);
+		dataFlowRequest.setRequestId(requestId);
+		Boolean mobile = ndhmService.onDataFlowRequestV3(dataFlowRequest);
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
 
 	@Path(value = PathProxy.NdhmPushUrls.NOTIFY)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmPushUrls.NOTIFY, notes = PathProxy.NdhmPushUrls.NOTIFY)
-	public Response<Boolean> notify(@RequestHeader Map<String, String> headers, @RequestBody String request)
+	public Response<Boolean> notify(@RequestBody String request, @HeaderParam("request-id") String requestId)
 			throws JsonParseException, JsonMappingException, IOException {
 
 		System.out.println("notify request" + request);
-		System.out.println("notify headers" + headers);
+		System.out.println("notify headers " + requestId);
 
 		ObjectMapper mapper = new ObjectMapper();
-		NotifyRequest request1 = mapper.readValue(request, NotifyRequest.class);
-		Boolean mobile = ndhmService.ndhmNotify(request1);
+		NotifyRequest notifyRequest = null;
+		notifyRequest = mapper.readValue(request, NotifyRequest.class);
+		notifyRequest.setRequestId(requestId);
+		Boolean mobile = ndhmService.ndhmNotify(notifyRequest);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;

@@ -2667,7 +2667,8 @@ public interface PathProxy {
 		public static final String GET_DATAFLOW="/health/dataflow/get";
 
 		public static final String HEALTH_INFORMATION_ON_REQUEST="/health-information/hip/on-request";
-		// data transfer
+//		public static final String HEALTH_INFORMATION_ON_REQUEST="/health-information/hip/on-request";
+// data transfer
 	
 		//consent flow
 		
@@ -2704,6 +2705,8 @@ public interface PathProxy {
 		public static final String GET_SHARE_PATIENT="/sharePatient/get";
 		
 		public static final String PATIENT_NOTIFY_SMS="/patient/notifySms";
+		public static final String PATIENT_NOTIFY_SMS_V3="/patient/notifySmsV3";
+
 		
 		public static final String GET_PATIENT_NOTIFY_SMS="/patient/notifySms/get";
 
@@ -2732,6 +2735,8 @@ public interface PathProxy {
 
 		public static final String HEALTH_INFORMATION_REQUEST="/v0.5/health-information/hip/request";
 		
+		public static final String HEALTH_INFORMATION_REQUEST_V3="/api/v3/hip/health-information/request";
+
 		public static final String CONSENT_REQUEST_ON_INIT="/v0.5/consent-requests/on-init";
 		
 		public static final String CONSENT_REQUEST_ON_STATUS="/v0.5/consent-requests/on-status";
