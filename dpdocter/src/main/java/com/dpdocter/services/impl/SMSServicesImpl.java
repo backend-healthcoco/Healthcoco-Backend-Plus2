@@ -714,7 +714,7 @@ public class SMSServicesImpl implements SMSServices {
 			message = StringEscapeUtils.unescapeJava(message);
 			String type = smsRoute;
 
-			String strUrl = "https://api.ap.kaleyra.io/v1/" + SID + "/messages";
+			String strUrl = "https://api.kaleyra.io/v1/" + SID + "/messages";
 
 			List<String> numberlist = new ArrayList<String>(mobileNumbers);
 			String numberString = StringUtils.join(numberlist, ',');
@@ -722,8 +722,7 @@ public class SMSServicesImpl implements SMSServices {
 			HttpClient client = HttpClients.custom().build();
 			HttpUriRequest httprequest = RequestBuilder.post().addParameter("to", numberString)
 					.addParameter("type", type).addParameter("body", message).addParameter("sender", SENDER_ID)
-					 .addParameter("template_id", templateId)
-					.setUri(strUrl).setHeader("api-key", KEY).build();
+					.addParameter("template_id", templateId).setUri(strUrl).setHeader("api-key", KEY).build();
 			// System.out.println("response"+client.execute(httprequest));
 			org.apache.http.HttpResponse responses = client.execute(httprequest);
 
@@ -810,7 +809,7 @@ public class SMSServicesImpl implements SMSServices {
 
 			String message = smsTrackDetail.getSmsDetails().get(0).getSms().getSmsText();
 			String mobileNumber = smsTrackDetail.getSmsDetails().get(0).getSms().getSmsAddress().getRecipient();
-			String strUrl = "https://api.ap.kaleyra.io/v1/" + SID + "/messages";
+			String strUrl = "https://api.kaleyra.io/v1/" + SID + "/messages";
 
 			String senderId = null;
 
@@ -856,7 +855,8 @@ public class SMSServicesImpl implements SMSServices {
 						// .addParameter("unicode", "1")
 						.addParameter("template_id", smsTrackDetail.getTemplateId()).setUri(strUrl)
 						.setHeader("api-key", KEY).build();
-				// System.out.println("response"+client.execute(httprequest));
+				System.out.println("httprequest " + httprequest.toString());
+				System.out.println("response" + client.execute(httprequest).getStatusLine().getStatusCode());
 				org.apache.http.HttpResponse responses = client.execute(httprequest);
 				responses.getEntity().writeTo(out);
 				list = mapper.readValue(out.toString(), MessageResponse.class);
@@ -1148,7 +1148,7 @@ public class SMSServicesImpl implements SMSServices {
 						MessageStatus response = null;
 						String url = null;
 
-						url = "https://api.ap.kaleyra.io/v1/" + SID + "/messages/status?message_ids="
+						url = "https://api.kaleyra.io/v1/" + SID + "/messages/status?message_ids="
 								+ messageIdLookupResponse.getMessageId();
 						ByteArrayOutputStream out = new ByteArrayOutputStream();
 						String numberString = StringUtils.join(messageIdLookupResponse.getMessageId(), ',');
@@ -1192,7 +1192,7 @@ public class SMSServicesImpl implements SMSServices {
 			messageStatus.add(messageId);
 			String url = null;
 
-			url = "https://api.ap.kaleyra.io/v1/" + SID + "/messages/status?message_ids=" + messageStatus;
+			url = "https://api.kaleyra.io/v1/" + SID + "/messages/status?message_ids=" + messageStatus;
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			String numberString = StringUtils.join(messageStatus, ',');
 			HttpClient client = HttpClients.custom().build();
@@ -1224,7 +1224,7 @@ public class SMSServicesImpl implements SMSServices {
 			String type = "OTP";
 			String message = smsTrackDetail.getSmsDetails().get(0).getSms().getSmsText();
 			String mobileNumber = smsTrackDetail.getSmsDetails().get(0).getSms().getSmsAddress().getRecipient();
-			String strUrl = "https://api.ap.kaleyra.io/v1/" + SID + "/messages";
+			String strUrl = "https://api.kaleyra.io/v1/" + SID + "/messages";
 
 			String senderId = null;
 
@@ -1298,7 +1298,7 @@ public class SMSServicesImpl implements SMSServices {
 					type = "MKT";
 			String message = smsTrackDetail.getSmsDetails().get(0).getSms().getSmsText();
 			String mobileNumber = smsTrackDetail.getSmsDetails().get(0).getSms().getSmsAddress().getRecipient();
-			String strUrl = "https://api.ap.kaleyra.io/v1/" + SID + "/messages";
+			String strUrl = "https://api.kaleyra.io/v1/" + SID + "/messages";
 
 			String senderId = SMILEBIRD_SENDER_ID;
 
