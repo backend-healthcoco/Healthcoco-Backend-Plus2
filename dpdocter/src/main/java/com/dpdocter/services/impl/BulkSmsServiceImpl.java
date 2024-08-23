@@ -632,7 +632,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 			messageStatus.add(messageId);
 			String url = null;
 
-			url = "https://api.ap.kaleyra.io/v1/" + SID + "/messages/status?message_ids=" + messageStatus;
+			url = "https://api.kaleyra.io/v1/" + SID + "/messages/status?message_ids=" + messageStatus;
 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			String numberString = StringUtils.join(messageStatus, ',');
