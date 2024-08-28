@@ -849,14 +849,12 @@ public class SMSServicesImpl implements SMSServices {
 					list = mapper.readValue(out.toString(), MessageResponse.class);
 				}
 			} else {
-				HttpClient client = HttpClients.custom().build();
+			HttpClient client = HttpClients.custom().build();
 				HttpUriRequest httprequest = RequestBuilder.post().addParameter("to", COUNTRY_CODE + mobileNumber)
 						.addParameter("type", type).addParameter("body", message).addParameter("sender", SENDER_ID)
-						// .addParameter("unicode", "1")
 						.addParameter("template_id", smsTrackDetail.getTemplateId()).setUri(strUrl)
 						.setHeader("api-key", KEY).build();
-				System.out.println("httprequest " + httprequest.toString());
-				System.out.println("response" + client.execute(httprequest).getStatusLine().getStatusCode());
+				System.out.println("senderId" + senderId);
 				org.apache.http.HttpResponse responses = client.execute(httprequest);
 				responses.getEntity().writeTo(out);
 				list = mapper.readValue(out.toString(), MessageResponse.class);
