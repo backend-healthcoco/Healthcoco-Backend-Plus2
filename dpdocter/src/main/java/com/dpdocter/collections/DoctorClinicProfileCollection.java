@@ -177,14 +177,20 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Field
 	private Boolean isShowDoctorInCalender = true;
+	@Field
+	private String clinicHipId;
 
-	
 	@Field
 	private Boolean isRegisteredNDHMFacility = false;
 	
-	@Field
-	private String clinicHipId;
-	
+	public Boolean getIsRegisteredNDHMFacility() {
+		return isRegisteredNDHMFacility;
+	}
+
+	public void setIsRegisteredNDHMFacility(Boolean isRegisteredNDHMFacility) {
+		this.isRegisteredNDHMFacility = isRegisteredNDHMFacility;
+	}
+
 	public String getClinicHipId() {
 		return clinicHipId;
 	}
@@ -192,6 +198,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	public void setClinicHipId(String clinicHipId) {
 		this.clinicHipId = clinicHipId;
 	}
+
 
 	public ObjectId getId() {
 		return id;
@@ -586,14 +593,6 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setTransactionalSms(boolean isTransactionalSms) {
 		this.isTransactionalSms = isTransactionalSms;
-	}
-
-	public Boolean getIsRegisteredNDHMFacility() {
-		return isRegisteredNDHMFacility;
-	}
-
-	public void setIsRegisteredNDHMFacility(Boolean isRegisteredNDHMFacility) {
-		this.isRegisteredNDHMFacility = isRegisteredNDHMFacility;
 	}
 
 	public Boolean getIsPatientWelcomeMessageOn() {

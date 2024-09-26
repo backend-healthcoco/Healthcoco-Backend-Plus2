@@ -38,7 +38,8 @@
 		</profile>
 		<profile>
 			<id>dev</id>
-			<!-- 			<activation><activeByDefault>true</activeByDefault></activation> -->
+			<!--
+			<activation><activeByDefault>true</activeByDefault></activation> -->
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -79,7 +80,8 @@
 		</profile>
 		<profile>
 			<id>production</id>
-			<!-- 			<activation><activeByDefault>true</activeByDefault></activation> -->
+			<!--
+			<activation><activeByDefault>true</activeByDefault></activation> -->
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -88,7 +90,8 @@
 						<filtering>true</filtering>
 					</resource>
 					<resource>
-						<directory>src/main/resources/spring-properties/production</directory>
+						<directory>
+							src/main/resources/spring-properties/production</directory>
 						<filtering>true</filtering>
 					</resource>
 					<resource>
@@ -193,7 +196,8 @@
 			<artifactId>jersey-json</artifactId>
 			<version>1.19.4</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-server -->
+		<!--
+		https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-server -->
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-server</artifactId>
@@ -216,7 +220,8 @@
 			<version>5.0.7.RELEASE</version>
 		</dependency>
 		<!-- Various Application Context utilities, including EhCache, JavaMail, 
-			Quartz, and Freemarker integration Define this if you need any of these integrations -->
+			Quartz, and Freemarker integration Define this if you need any of these
+		integrations -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
@@ -1006,7 +1011,7 @@
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-elasticsearch</artifactId>
-			<version>3.2.0.M2</version>
+			<version>3.2.0.RELEASE</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.springframework.data</groupId>
@@ -1037,7 +1042,8 @@
 			<artifactId>sms-util</artifactId>
 			<version>1.0</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports-fonts -->
+		<!--
+		https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports-fonts -->
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports-fonts</artifactId>
@@ -1048,11 +1054,14 @@
 			<artifactId>jasperreports-htmlcomponent</artifactId>
 			<version>5.0.1</version>
 			<scope>system</scope>
-			<systemPath>${basedir}/src/main/resources/jasperreports-htmlcomponent-5.0.1.jar</systemPath>
+			<systemPath>
+				${basedir}/src/main/resources/jasperreports-htmlcomponent-5.0.1.jar</systemPath>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports-html-component -->
-		
-		<!-- https://mvnrepository.com/artifact/org.xhtmlrenderer/flying-saucer-pdf -->
+		<!--
+		https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports-html-component -->
+
+		<!--
+		https://mvnrepository.com/artifact/org.xhtmlrenderer/flying-saucer-pdf -->
 		<dependency>
 			<groupId>org.xhtmlrenderer</groupId>
 			<artifactId>flying-saucer-pdf</artifactId>
@@ -1070,7 +1079,8 @@
 			<artifactId>poi</artifactId>
 			<version>3.17</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/se.jiderhamn/classloader-leak-prevention -->
+		<!--
+		https://mvnrepository.com/artifact/se.jiderhamn/classloader-leak-prevention -->
 		<dependency>
 			<groupId>se.jiderhamn</groupId>
 			<artifactId>classloader-leak-prevention</artifactId>
@@ -1093,7 +1103,8 @@
 			<artifactId>asm</artifactId>
 			<version>6.2.1</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.jboss.spec.javax.net.ssl/jboss-jsse-api_8.0_spec -->
+		<!--
+		https://mvnrepository.com/artifact/org.jboss.spec.javax.net.ssl/jboss-jsse-api_8.0_spec -->
 		<dependency>
 			<groupId>org.jboss.spec.javax.net.ssl</groupId>
 			<artifactId>jboss-jsse-api_8.0_spec</artifactId>
@@ -1152,7 +1163,7 @@
 		<repository>
 			<id>spring-milestone</id>
 			<name>Spring Milestone Maven Repository</name>
-			<url>https://repo.springsource.org/libs-milestone</url>
+			<url>https://repo.spring.io/milestone/</url>
 		</repository>
 		<repository>
 			<id>bippo-nexus-public</id>
@@ -1164,7 +1175,8 @@
 		</repository>
 		<repository>
 			<id>jaspersoft-third-party</id>
-			<url>https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/</url>
+			<url>
+				https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/</url>
 		</repository>
 		<repository>
 			<id>MongoJasperRepo</id>

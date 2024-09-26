@@ -4,24 +4,25 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-@JsonIgnoreProperties(ignoreUnknown=true)
 public class ABHAProfile {
-	private String firstName;
-	private String middleName;
-	private String lastName;
-	private String dob;
-	private String gender;
-	private String photo;
-	private String mobile;
-	private String email;
-	private List<String> phrAddress;
-	private String address;
-	private String districtCode;
-	private String stateCode;
-	private String abhaType;
+	public String firstName;
+	public String middleName;
+	public String lastName;
+	public String dob;
+	public String gender;
+	public String photo;
+	public String mobile;
+	public String email;
+    @JsonProperty("phrAddress")  // Map JSON field to Java property
+	public List<String> phrAddress;
+	public String address;
+	public String districtCode;
+	public String stateCode;
+	public String abhaType;
     @JsonProperty("ABHANumber")
-	private String ABHANumber;
-	private String abhaStatus;
+	public String ABHANumber;
+	public String abhaStatus;
+	
 
 	public String getFirstName() {
 		return firstName;

@@ -98,6 +98,18 @@ public class UserLocationWithDoctorClinicProfile {
 
 	private Boolean isShowDoctorInCalender = true;
 
+	private String clinicHipId;
+
+	private Boolean isRegisteredNDHMFacility;
+
+	public String getClinicHipId() {
+		return clinicHipId;
+	}
+
+	public void setClinicHipId(String clinicHipId) {
+		this.clinicHipId = clinicHipId;
+	}
+
 	public String getDoctorId() {
 		return doctorId;
 	}
@@ -432,6 +444,15 @@ public class UserLocationWithDoctorClinicProfile {
 
 	public void setIsShowDoctorInCalender(Boolean isShowDoctorInCalender) {
 		this.isShowDoctorInCalender = isShowDoctorInCalender;
+	}
+	
+
+	public Boolean getIsRegisteredNDHMFacility() {
+		return isRegisteredNDHMFacility;
+	}
+
+	public void setIsRegisteredNDHMFacility(Boolean isRegisteredNDHMFacility) {
+		this.isRegisteredNDHMFacility = isRegisteredNDHMFacility;
 	}
 
 	@Override

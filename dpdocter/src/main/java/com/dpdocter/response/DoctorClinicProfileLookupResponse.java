@@ -102,6 +102,17 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	private Boolean isShowPatientNumber = false;
 
 	private Boolean isShowDoctorInCalender;
+	private String clinicHipId;
+
+	private Boolean isRegisteredNDHMFacility = false;
+
+	public String getClinicHipId() {
+		return clinicHipId;
+	}
+
+	public void setClinicHipId(String clinicHipId) {
+		this.clinicHipId = clinicHipId;
+	}
 
 	public Boolean getIsShowPatientNumber() {
 		return isShowPatientNumber;
@@ -111,9 +122,6 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 		this.isShowPatientNumber = isShowPatientNumber;
 	}
 
-	
-	private Boolean isRegisteredNDHMFacility = false;
-	
 	public ObjectId getId() {
 		return id;
 	}
@@ -433,8 +441,6 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	public void setClinicOwnershipImageUrl(String clinicOwnershipImageUrl) {
 		this.clinicOwnershipImageUrl = clinicOwnershipImageUrl;
 	}
-	
-	
 
 	public Boolean getIsRegisteredNDHMFacility() {
 		return isRegisteredNDHMFacility;

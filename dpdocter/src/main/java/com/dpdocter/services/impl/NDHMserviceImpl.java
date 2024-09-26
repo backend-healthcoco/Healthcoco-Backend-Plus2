@@ -29,7 +29,6 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -49,6 +48,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -217,8 +217,8 @@ import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.webservices.GateWayHiOnRequest;
 import com.dpdocter.webservices.GateWayOnRequest;
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
@@ -355,10 +355,19 @@ public class NDHMserviceImpl implements NDHMservices {
 	public NdhmOauthResponse session() {
 		NdhmOauthResponse response = null;
 		try {
-			String url = "https://dev.abdm.gov.in/gateway/v0.5/sessions";
+			String url = "https://dev.abdm.gov.in/api/hiecm/gateway/v3/sessions";
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("clientId", NDHM_CLIENTID);
 			orderRequest.put("clientSecret", NDHM_CLIENT_SECRET);
+			orderRequest.put("grantType", "client_credentials");
+
+			
+			UUID uuid = UUID.randomUUID();
+			TimeZone tz = TimeZone.getTimeZone("UTC");
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
+			df.setTimeZone(tz);
+			String nowAsISO = df.format(new Date());
+
 
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -371,7 +380,9 @@ public class NDHMserviceImpl implements NDHMservices {
 			con.setRequestMethod("POST");
 
 			con.setRequestProperty("Content-Type", "application/json");
-			// con.setRequestProperty("Authorization", "Basic " + authStringEnc);
+			con.setRequestProperty("X-CM-ID", "sbx");
+			con.setRequestProperty("REQUEST-ID", uuid.toString());
+			con.setRequestProperty("TIMESTAMP", nowAsISO);
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			wr.writeBytes(orderRequest.toString());
 			System.out.println("Orderrequest:" + orderRequest.toString());
@@ -1949,22 +1960,31 @@ public class NDHMserviceImpl implements NDHMservices {
 			con.setRequestProperty("X-Token", "Bearer " + authToken);
 			con.setRequestProperty("REQUEST-ID", uuid.toString());
 			con.setRequestProperty("TIMESTAMP", nowAsISO);
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			String inputLine;
-			/* response = new StringBuffer(); */
-			StringBuffer respons = new StringBuffer();
-			while ((inputLine = in.readLine()) != null) {
 
-				respons.append(inputLine);
+			byte[] output = con.getInputStream().readAllBytes();
 
-			}
-			in.close();
-			ObjectMapper mapper = new ObjectMapper();
-			String output = respons.toString();
+		
 
-			System.out.println("response" + respons.toString());
+			// Convert BufferedImage to byte array
+		
+			// Return the image in the response
+			response.setData(ResponseEntity.ok().contentType(MediaType.IMAGE_PNG)
+					.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"image.png\"").body(output));
 
-			response.setData(mapper.readValue(output.toString(), GetCardProfileResponse.class));
+//			return new ResponseEntity<byte[]>(output, responseHeaders, HttpStatus.OK);
+
+//			try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+//		        String inputLine;
+//		        StringBuilder respons = new StringBuilder();
+//
+//		        while ((inputLine = in.readLine()) != null) {
+//		            respons.append(inputLine);
+//		        }
+//
+//		        String output = respons.toString();
+//		        System.out.println("response: " + output);
+//		        response.setData(output);
+//		    }
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3280,8 +3300,7 @@ public class NDHMserviceImpl implements NDHMservices {
 					// String hiType=hiTypes.get(0);
 					String healthId = notify.getNotification().getConsentDetail().getPatient().getId();
 					String locationId = notify.getNotification().getConsentDetail().getHip().getId();
-					List<PatientCollection> patientCollections = patientRepository
-							.findByHealthId(healthId);
+					List<PatientCollection> patientCollections = patientRepository.findByHealthId(healthId);
 					PatientCollection patientCollection = patientCollections.get(0);
 
 					List<EntriesDataTransferRequest> entries = new ArrayList<EntriesDataTransferRequest>();
@@ -6277,10 +6296,12 @@ public class NDHMserviceImpl implements NDHMservices {
 			}
 			System.out.println("response" + output.toString());
 
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
-			response = mapper.readValue(output.toString(), EnrollByAadhaarResponse.class);
-			System.out.println("response" + output.toString());
+//			ObjectMapper mapper = new ObjectMapper();
+//			mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+//			response = mapper.readValue(output.toString(), EnrollByAadhaarResponse.class);
+			Gson gson = new Gson();
+			response = gson.fromJson(output.toString(), EnrollByAadhaarResponse.class);
+			System.out.println("responseAfter" + output.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());

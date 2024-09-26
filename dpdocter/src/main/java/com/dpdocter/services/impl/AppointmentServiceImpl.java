@@ -615,7 +615,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 						doctorClinicProfile.setIsPidHasDate(location.getIsPidHasDate());
 						doctorClinicProfile.setPatientInitial(location.getPatientInitial());
 						doctorClinicProfile.setPatientCounter(location.getPatientCounter());
+						doctorClinicProfile.setClinicHipId(doctorClinicProfileCollection.getClinicHipId());
+						doctorClinicProfile.setIsRegisteredNDHMFacility(doctorClinicProfileCollection.getIsRegisteredNDHMFacility());
 
+						
 						ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
 								Fields.field("role", "$role.role"), Fields.field("locationId", "$locationId"),
 								Fields.field("hospitalId", "$hospitalId")));
@@ -641,6 +644,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						doctor.setIsDentalChain(doctorClinicProfile.getIsDentalChain());
 						doctor.setIsShowDoctorInCalender(doctorClinicProfile.getIsShowDoctorInCalender());
 						doctor.setIsShowPatientNumber(doctorClinicProfile.getIsShowPatientNumber());
+						doctor.setIsRegisteredNDHMFacility(doctorClinicProfile.getIsRegisteredNDHMFacility());
 
 						if (doctorCollection.getSpecialities() != null
 								&& !doctorCollection.getSpecialities().isEmpty()) {

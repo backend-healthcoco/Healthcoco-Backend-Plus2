@@ -800,6 +800,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 						doctorClinic.setIsShowPatientNumber(true);
 						doctorClinic.setIsShowDoctorInCalender(true);
 					}
+					doctorClinic.setClinicHipId(doctorClinicProfileLookupResponse.getClinicHipId());
 //					} else {
 //						doctorClinic.setIsShowPatientNumber(doctorClinicProfileLookupResponse.getIsShowPatientNumber());
 //						doctorClinic.setIsShowDoctorInCalender(

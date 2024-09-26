@@ -3,6 +3,6 @@
 .project
 .classpath
 /bin/
-/pom.xml
 /target
-/src/
+/.apt_generated/
+/.apt_generated_tests/

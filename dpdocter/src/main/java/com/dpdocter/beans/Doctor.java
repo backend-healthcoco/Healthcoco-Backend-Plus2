@@ -52,7 +52,17 @@ public class Doctor {
 	private Boolean isShowPatientNumber = false;
 
 	private Boolean isShowDoctorInCalender = true;
+	private Boolean isRegisteredNDHMFacility = false;
+
 	
+
+	public Boolean getIsRegisteredNDHMFacility() {
+		return isRegisteredNDHMFacility;
+	}
+
+	public void setIsRegisteredNDHMFacility(Boolean isRegisteredNDHMFacility) {
+		this.isRegisteredNDHMFacility = isRegisteredNDHMFacility;
+	}
 
 	public Boolean getIsDentalChain() {
 		return isDentalChain;

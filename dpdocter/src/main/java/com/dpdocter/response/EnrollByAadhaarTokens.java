@@ -1,12 +1,16 @@
 package com.dpdocter.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class EnrollByAadhaarTokens {
-	private String token;
-	private String expiresIn;
-	private String refreshToken;
-	private String refreshExpiresIn;
-
+	@JsonProperty("token") // This annotation is optional if the names match
+	public String token;
+	@JsonProperty("expiresIn") // This annotation is optional if the names match
+	public String expiresIn;
+	@JsonProperty("refreshToken") // This annotation is optional if the names match
+	public String refreshToken;
+	@JsonProperty("refreshExpiresIn") // This annotation is optional if the names match
+	public String refreshExpiresIn;
 
 	public String getToken() {
 		return token;
