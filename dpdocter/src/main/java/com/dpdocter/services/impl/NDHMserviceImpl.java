@@ -361,13 +361,11 @@ public class NDHMserviceImpl implements NDHMservices {
 			orderRequest.put("clientSecret", NDHM_CLIENT_SECRET);
 			orderRequest.put("grantType", "client_credentials");
 
-			
 			UUID uuid = UUID.randomUUID();
 			TimeZone tz = TimeZone.getTimeZone("UTC");
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"); // Quoted "Z" to indicate UTC, no
 			df.setTimeZone(tz);
 			String nowAsISO = df.format(new Date());
-
 
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -1963,10 +1961,8 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			byte[] output = con.getInputStream().readAllBytes();
 
-		
-
 			// Convert BufferedImage to byte array
-		
+
 			// Return the image in the response
 			response.setData(ResponseEntity.ok().contentType(MediaType.IMAGE_PNG)
 					.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"image.png\"").body(output));
@@ -6500,6 +6496,54 @@ public class NDHMserviceImpl implements NDHMservices {
 		}
 
 		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Response<Object> getAbhaCardV3(String authToken) {
+		Response<Object> response = new Response<Object>();
+
+		try {
+
+			NdhmOauthResponse oauth = session();
+			System.out.println("token" + oauth.getAccessToken());
+
+			String url = "https://abhasbx.abdm.gov.in/abha/api/v3/profile/account/abha-card";
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			UUID uuid = UUID.randomUUID();
+			TimeZone tz = TimeZone.getTimeZone("UTC");
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+			df.setTimeZone(tz);
+			String nowAsISO = df.format(new Date());
+			System.out.println("uuid" + uuid.toString());
+			System.out.println("time" + nowAsISO);
+			con.setDoOutput(true);
+
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("GET");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("accept", "*/*");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("X-Token", "Bearer " + authToken);
+			con.setRequestProperty("REQUEST-ID", uuid.toString());
+			con.setRequestProperty("TIMESTAMP", nowAsISO);
+
+			byte[] output = con.getInputStream().readAllBytes();
+
+			response.setData(ResponseEntity.ok().contentType(MediaType.IMAGE_PNG)
+					.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"image.png\"").body(output));
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());

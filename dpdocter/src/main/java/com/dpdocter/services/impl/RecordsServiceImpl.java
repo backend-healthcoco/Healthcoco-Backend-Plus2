@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import javax.imageio.ImageIO;
 import javax.mail.MessagingException;
@@ -79,6 +80,7 @@ import com.dpdocter.collections.UserAllowanceDetailsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRecordsCollection;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
+import com.dpdocter.enums.AuditActionType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.RecordsState;
 import com.dpdocter.enums.Resource;
@@ -109,6 +111,7 @@ import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.RecordsLookupResponse;
 import com.dpdocter.services.AdmitCardService;
+import com.dpdocter.services.AuditService;
 import com.dpdocter.services.BillingService;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.DischargeSummaryService;
@@ -249,10 +252,13 @@ public class RecordsServiceImpl implements RecordsService {
 	@Autowired
 	private TransactionalManagementService transnationalService;
 
+	@Autowired
+	private AuditService auditService;
+
 	@Override
 	@Transactional
 	public Records addRecord(RecordsAddRequest request, String createdBy) {
-		Records records = null;
+		Records records = new Records();
 		try {
 			String localPatientName = null, patientMobileNumber = null;
 			PrescriptionCollection prescriptionCollection = null;
@@ -404,12 +410,19 @@ public class RecordsServiceImpl implements RecordsService {
 						recordsCollection.getPatientId());
 
 			}
-			records = new Records();
 			BeanUtil.map(recordsCollection, records);
 
 			pushNotificationServices.notifyUser(recordsCollection.getDoctorId().toString(), "Records Added",
 					ComponentType.RECORDS_REFRESH.getType(), recordsCollection.getPatientId().toString(), null);
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.CREATE_FILES, records.getUniqueEmrId(), records.getId(),
+							records.getPatientId(), records.getDoctorId(), records.getLocationId(),
+							records.getHospitalId());
 
+				}
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -497,7 +510,15 @@ public class RecordsServiceImpl implements RecordsService {
 
 			pushNotificationServices.notifyUser(recordsCollection.getDoctorId().toString(), "Records Added",
 					ComponentType.RECORDS_REFRESH.getType(), recordsCollection.getPatientId().toString(), null);
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.UPDATE_FILES, records.getUniqueEmrId(), records.getId(),
+							records.getPatientId(), records.getDoctorId(), records.getLocationId(),
+							records.getHospitalId());
 
+				}
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -780,7 +801,16 @@ public class RecordsServiceImpl implements RecordsService {
 						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
 			response = new Records();
 			BeanUtil.map(recordsCollection, response);
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.DELETE_FILES, recordsCollection.getUniqueEmrId(),
+							recordsCollection.getId().toString(), recordsCollection.getPatientId().toString(),
+							recordsCollection.getDoctorId().toString(), recordsCollection.getLocationId().toString(),
+							recordsCollection.getHospitalId().toString());
 
+				}
+			});
 		} catch (BusinessException e) {
 			logger.error(e);
 			throw e;

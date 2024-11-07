@@ -174,6 +174,7 @@ import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.repository.ESPatientRepository;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
+import com.dpdocter.enums.AuditActionType;
 import com.dpdocter.enums.CardioPermissionEnum;
 import com.dpdocter.enums.ColorCode;
 import com.dpdocter.enums.ColorCode.RandomEnum;
@@ -244,6 +245,7 @@ import com.dpdocter.response.UserLookupResponse;
 import com.dpdocter.response.UserNutritionSubscriptionResponse;
 import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.AccessControlServices;
+import com.dpdocter.services.AuditService;
 import com.dpdocter.services.DynamicUIService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.FileManager;
@@ -477,6 +479,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Value(value = "${healthcoco.support.number}")
 	private String healthcocoSupportNumber;
+
+	@Autowired
+	private AuditService auditService;
 
 	@Override
 	@Transactional
@@ -788,7 +793,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 				createImmunisationChart(registeredPatientDetails);
 				createBabyAchievementChart(registeredPatientDetails);
 			}
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.CREATE_PATIENT, registeredPatientDetails.getPID(),
+							registeredPatientDetails.getUserId(), registeredPatientDetails.getUserId(),
+							registeredPatientDetails.getDoctorId(), registeredPatientDetails.getLocationId(),
+							registeredPatientDetails.getHospitalId());
 
+				}
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -1240,7 +1254,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 				createImmunisationChart(registeredPatientDetails);
 				createBabyAchievementChart(registeredPatientDetails);
 			}
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.UPDATE_PATIENT, registeredPatientDetails.getPID(),
+							registeredPatientDetails.getUserId(), registeredPatientDetails.getUserId(),
+							registeredPatientDetails.getDoctorId(), registeredPatientDetails.getLocationId(),
+							registeredPatientDetails.getHospitalId());
 
+				}
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -2057,6 +2080,22 @@ public class RegistrationServiceImpl implements RegistrationService {
 			locationCollection = locationRepository.save(locationCollection);
 			response = new ClinicProfile();
 			BeanUtil.map(locationCollection, response);
+			String locationId = locationCollection.getId().toString();
+			DoctorClinicProfileCollection doctorClinicProfileCollection = null;
+			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+					.findByLocationId(locationCollection.getId());
+			if (!DPDoctorUtils.isNullOrEmptyList(doctorClinicProfileCollections)) {
+				doctorClinicProfileCollection = doctorClinicProfileCollections.get(0);
+				String doctorId = doctorClinicProfileCollection.getId().toString();
+				Executors.newSingleThreadExecutor().execute(new Runnable() {
+					@Override
+					public void run() {
+						auditService.addAuditData(AuditActionType.UPDATE_CLINIC_PROFILE, null, locationId, null,
+								doctorId, locationId, null);
+
+					}
+				});
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error While Updating Clinic Details");
@@ -2084,6 +2123,22 @@ public class RegistrationServiceImpl implements RegistrationService {
 			locationCollection = locationRepository.save(locationCollection);
 			response = new ClinicAddress();
 			BeanUtil.map(locationCollection, response);
+			String locationId = locationCollection.getId().toString();
+			DoctorClinicProfileCollection doctorClinicProfileCollection = null;
+			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+					.findByLocationId(locationCollection.getId());
+			if (!DPDoctorUtils.isNullOrEmptyList(doctorClinicProfileCollections)) {
+				doctorClinicProfileCollection = doctorClinicProfileCollections.get(0);
+				String doctorId = doctorClinicProfileCollection.getId().toString();
+				Executors.newSingleThreadExecutor().execute(new Runnable() {
+					@Override
+					public void run() {
+						auditService.addAuditData(AuditActionType.UPDATE_CLINIC_PROFILE, null, locationId, null,
+								doctorId, locationId, null);
+
+					}
+				});
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error While Updating Clinic Details");
@@ -2105,6 +2160,22 @@ public class RegistrationServiceImpl implements RegistrationService {
 			locationCollection = locationRepository.save(locationCollection);
 			response = new ClinicTiming();
 			BeanUtil.map(locationCollection, response);
+			String locationId = locationCollection.getId().toString();
+			DoctorClinicProfileCollection doctorClinicProfileCollection = null;
+			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+					.findByLocationId(locationCollection.getId());
+			if (!DPDoctorUtils.isNullOrEmptyList(doctorClinicProfileCollections)) {
+				doctorClinicProfileCollection = doctorClinicProfileCollections.get(0);
+				String doctorId = doctorClinicProfileCollection.getId().toString();
+				Executors.newSingleThreadExecutor().execute(new Runnable() {
+					@Override
+					public void run() {
+						auditService.addAuditData(AuditActionType.UPDATE_CLINIC_PROFILE, null, locationId, null,
+								doctorId, locationId, null);
+
+					}
+				});
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error While Updating Clinic Details");
@@ -2341,7 +2412,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Override
 	@Transactional
 	public RegisterDoctorResponse registerNewUser(DoctorRegisterRequest request) {
-		RegisterDoctorResponse response = null;
+		RegisterDoctorResponse response = new RegisterDoctorResponse();
 		try {
 			RoleCollection doctorRole = null;
 			if (request.getRoleId() != null) {
@@ -2438,7 +2509,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 						request.getAddedBy());
 				mailService.sendEmail(userCollection.getEmailAddress(), staffmemberAccountVerifySub, body, null);
 			}
-			response = new RegisterDoctorResponse();
 			userCollection.setPassword(null);
 			BeanUtil.map(userCollection, response);
 			response.setHospitalId(request.getHospitalId());
@@ -2456,6 +2526,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 				roles.add(role);
 				response.setRole(roles);
 			}
+			String doctorId = doctorCollection.getId().toString();
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.ADD_DOCTOR, null, response.getUserId(), null, doctorId,
+							response.getLocationId(), response.getHospitalId());
+
+				}
+			});
 		} catch (DuplicateKeyException de) {
 			logger.error(de);
 			throw new BusinessException(ServiceError.Unknown, "Email address already registerd. Please login");
@@ -2470,7 +2549,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Override
 	@Transactional
 	public RegisterDoctorResponse registerExisitingUser(DoctorRegisterRequest request) {
-		RegisterDoctorResponse response = null;
+		RegisterDoctorResponse response = new RegisterDoctorResponse();
 		try {
 
 			RoleCollection doctorRole = null;
@@ -2549,7 +2628,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 			}
 
-			response = new RegisterDoctorResponse();
 			userCollection.setPassword(null);
 			BeanUtil.map(userCollection, response);
 			response.setHospitalId(request.getHospitalId());
@@ -2595,7 +2673,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 					mailService.sendEmail(userCollection.getEmailAddress(),
 							addExistingDoctorToClinicSub + " " + locationCollection.getLocationName(), body, null);
 				}
+				String doctorId = doctorCollection.getId().toString();
+				Executors.newSingleThreadExecutor().execute(new Runnable() {
+					@Override
+					public void run() {
+						auditService.addAuditData(AuditActionType.ADD_DOCTOR, null, response.getUserId(), null,
+								doctorId, response.getLocationId(), response.getHospitalId());
 
+					}
+				});
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3407,6 +3493,22 @@ public class RegistrationServiceImpl implements RegistrationService {
 			locationCollection = locationRepository.save(locationCollection);
 			response = new ClinicProfile();
 			BeanUtil.map(locationCollection, response);
+			String locationId = locationCollection.getId().toString();
+			DoctorClinicProfileCollection doctorClinicProfileCollection = null;
+			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+					.findByLocationId(locationCollection.getId());
+			if (!DPDoctorUtils.isNullOrEmptyList(doctorClinicProfileCollections)) {
+				doctorClinicProfileCollection = doctorClinicProfileCollections.get(0);
+				String doctorId = doctorClinicProfileCollection.getId().toString();
+				Executors.newSingleThreadExecutor().execute(new Runnable() {
+					@Override
+					public void run() {
+						auditService.addAuditData(AuditActionType.UPDATE_CLINIC_PROFILE, null, locationId, null,
+								doctorId, locationId, null);
+
+					}
+				});
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error While Updating Clinic Details");
@@ -4818,6 +4920,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 				response.setData(true);
 				response.setDataList(patientShortCards);
 			}
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.DELETE_PATIENT, null, patientId, patientId, doctorId,
+							locationId, hospitalId);
+
+				}
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);

@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -65,6 +66,7 @@ import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
+import com.dpdocter.enums.AuditActionType;
 import com.dpdocter.enums.CardioPermissionEnum;
 import com.dpdocter.enums.DoctorExperienceUnit;
 import com.dpdocter.enums.GynacPermissionsEnum;
@@ -113,6 +115,7 @@ import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.AccessControlServices;
+import com.dpdocter.services.AuditService;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.DynamicUIService;
 import com.dpdocter.services.FileManager;
@@ -178,6 +181,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	@Autowired
 	SubscriptionRepository subscriptionRepository;
+	@Autowired
+	private AuditService auditService;
 
 	@Override
 	@Transactional
@@ -1244,6 +1249,15 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				response.setSpecialities(specialitiesresponse);
 				response.setParentSpecialities(parentSpecialitiesresponse);
 			}
+			String doctorId = doctorCollection.getId().toString();
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.UPDATE_DOCTOR_PROFILE, doctorId, doctorId, null,
+							request.getDoctorId(), null, null);
+
+				}
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Editing Doctor Profile");
@@ -1936,7 +1950,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	@Override
 	public DoctorOnlineConsultationFees addEditOnlineConsultingFees(DoctorOnlineConsultationFees request) {
 		List<DoctorClinicProfileCollection> doctorClinicProfileCollections = new ArrayList<DoctorClinicProfileCollection>();
-		DoctorOnlineConsultationFees response = null;
+		DoctorOnlineConsultationFees response = new DoctorOnlineConsultationFees();
 		DoctorClinicProfileCollection oldDoctorClinicProfileCollection = new DoctorClinicProfileCollection();
 
 		try {
@@ -1955,13 +1969,19 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					doctorClinicProfileCollection.setConsultationType(request.getConsultationType());
 					doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 				}
-			response = new DoctorOnlineConsultationFees();
 			// oldDoctorClinicProfileCollection);
 			if (doctorClinicProfileCollections != null)
 				oldDoctorClinicProfileCollection = doctorClinicProfileCollections.get(0);
 
 			BeanUtil.map(oldDoctorClinicProfileCollection, response);
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.UPDATE_COUNSULTATION_SETTING, null,
+							response.getId(), null, response.getDoctorId(), null, null);
 
+				}
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error While add/edit Online Consulting fees");

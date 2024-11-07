@@ -13,6 +13,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -48,6 +49,7 @@ import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.MessageCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.AuditActionType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
@@ -64,6 +66,7 @@ import com.dpdocter.request.PaymentSignatureRequest;
 import com.dpdocter.response.BulkSmsPaymentResponse;
 import com.dpdocter.response.MessageResponse;
 import com.dpdocter.response.OrderReponse;
+import com.dpdocter.services.AuditService;
 import com.dpdocter.services.BulkSmsServices;
 import com.dpdocter.services.SMSServices;
 import com.razorpay.RazorpayException;
@@ -111,6 +114,9 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 
 	@Value(value = "${API_KEY}")
 	private String KEY;
+
+	@Autowired
+	private AuditService auditService;
 
 	@Override
 	public BulkSmsPackage addEditBulkSmsPackage(BulkSmsPackage request) {
@@ -420,6 +426,17 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 				response = new BulkSmsPaymentResponse();
 				BeanUtil.map(collection, response);
 			}
+			String collectionId = response.getId();
+			String orderId = response.getOrderId();
+
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.BUY_SMS_CREDITS, orderId, collectionId, null,
+							request.getDoctorId(), request.getLocationId(), null);
+
+				}
+			});
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();

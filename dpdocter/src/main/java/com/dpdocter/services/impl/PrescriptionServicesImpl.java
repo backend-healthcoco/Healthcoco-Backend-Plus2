@@ -126,6 +126,7 @@ import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESGenericCodesAndReactions;
 import com.dpdocter.elasticsearch.repository.ESGenericCodesAndReactionsRepository;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
+import com.dpdocter.enums.AuditActionType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FieldAlign;
 import com.dpdocter.enums.LineSpace;
@@ -188,6 +189,7 @@ import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponseDetails;
 import com.dpdocter.response.TestAndRecordDataResponse;
 import com.dpdocter.services.AppointmentService;
+import com.dpdocter.services.AuditService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.InventoryService;
 import com.dpdocter.services.JasperReportService;
@@ -367,6 +369,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Value(value = "${interakt.secret.key}")
 	private String secretKey;
+
+	@Autowired
+	private AuditService auditService;
 
 	LoadingCache<String, List<Code>> Cache = CacheBuilder.newBuilder().maximumSize(100)
 			// maximum 100 records can be cached
@@ -843,7 +848,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Transactional
 	public PrescriptionAddEditResponse addPrescription(PrescriptionAddEditRequest request, Boolean isAppointmentAdd,
 			String createdBy, Appointment appointment) {
-		PrescriptionAddEditResponse response = null;
+		final PrescriptionAddEditResponse response = new PrescriptionAddEditResponse();
+		;
 		List<PrescriptionItemDetail> itemDetails = null;
 		try {
 			if (isAppointmentAdd) {
@@ -995,7 +1001,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			prescriptionCollection.setCreatedBy(createdBy);
 			prescriptionRepository.save(prescriptionCollection);
 
-			response = new PrescriptionAddEditResponse();
 			List<TestAndRecordData> prescriptionTest = prescriptionCollection.getDiagnosticTests();
 			prescriptionCollection.setDiagnosticTests(null);
 			BeanUtil.map(prescriptionCollection, response);
@@ -1044,7 +1049,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 				}
 			});
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.CREATE_PRESCRIPTION, response.getUniqueEmrId(),
+							response.getId(), response.getPatientId(), response.getDoctorId(), response.getLocationId(),
+							response.getHospitalId());
 
+				}
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving Prescription");
@@ -1129,7 +1142,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Override
 	@Transactional
 	public PrescriptionAddEditResponseDetails editPrescription(PrescriptionAddEditRequest request) {
-		PrescriptionAddEditResponseDetails response = null;
+		final PrescriptionAddEditResponseDetails response = new PrescriptionAddEditResponseDetails();
 		PrescriptionAddEditResponse prescription = null;
 		List<PrescriptionItemDetail> itemDetails = null;
 		try {
@@ -1278,7 +1291,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			BeanUtil.map(prescriptionCollection, prescription);
 
 			if (prescription != null) {
-				response = new PrescriptionAddEditResponseDetails();
 				BeanUtil.map(prescription, response);
 				// List<PrescriptionItemDetail> prescriptionItemDetails = new
 				// ArrayList<PrescriptionItemDetail>();
@@ -1321,6 +1333,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
 					"Your prescription by " + prescriptionCollection.getCreatedBy() + " has changed - Tap to view it!",
 					ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
+
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.UPDATE_PRESCRIPTION, response.getUniqueEmrId(),
+							response.getId(), response.getPatientId(), response.getDoctorId(), response.getLocationId(),
+							response.getHospitalId());
+
+				}
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Editing Prescription");
@@ -1333,7 +1355,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Transactional
 	public Prescription deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId,
 			String patientId, Boolean discarded) {
-		Prescription response = null;
+		Prescription response = new Prescription();
 		PrescriptionCollection prescriptionCollection = null;
 		LocationCollection locationCollection = null;
 		try {
@@ -1350,7 +1372,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						prescriptionCollection.setDiscarded(discarded);
 						prescriptionCollection.setUpdatedTime(new Date());
 						prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
-						response = new Prescription();
 						List<TestAndRecordData> tests = prescriptionCollection.getDiagnosticTests();
 						prescriptionCollection.setDiagnosticTests(null);
 						BeanUtil.map(prescriptionCollection, response);
@@ -1404,6 +1425,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 										+ ", for further details please contact "
 										+ locationCollection.getLocationName(),
 								ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
+						Executors.newSingleThreadExecutor().execute(new Runnable() {
+							@Override
+							public void run() {
+								auditService.addAuditData(AuditActionType.DELETE_PRESCRIPTION,
+										response.getUniqueEmrId(), prescriptionId, patientId, doctorId, locationId,
+										hospitalId);
+
+							}
+						});
 					} else {
 						logger.warn("Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
 						throw new BusinessException(ServiceError.NotAuthorized,

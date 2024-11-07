@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -33,6 +34,7 @@ import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
+import com.dpdocter.enums.AuditActionType;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
@@ -47,6 +49,7 @@ import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.ForgotPasswordResponse;
 import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.AccessControlServices;
+import com.dpdocter.services.AuditService;
 import com.dpdocter.services.ForgotPasswordService;
 import com.dpdocter.services.v2.LoginService;
 import com.dpdocter.tokenstore.CustomPasswordEncoder;
@@ -85,6 +88,8 @@ public class LoginServiceImplV2 implements LoginService {
 
 	@Autowired
 	private ForgotPasswordService forgotPasswordService;
+	@Autowired
+	private AuditService auditService;
 
 	/**
 	 * This method is used for login purpose.
@@ -192,7 +197,9 @@ public class LoginServiceImplV2 implements LoginService {
 									.setIsNutritionist(doctorClinicProfileLookupResponse.getIsAdminNutritionist());
 							locationAndAccessControl
 									.setIsAdminNutritionist(doctorClinicProfileLookupResponse.getIsAdminNutritionist());
-							locationAndAccessControl.setIsRegisteredNDHMFacility(doctorClinicProfileLookupResponse.getIsRegisteredNDHMFacility());							List<Role> roles = null;
+							locationAndAccessControl.setIsRegisteredNDHMFacility(
+									doctorClinicProfileLookupResponse.getIsRegisteredNDHMFacility());
+							List<Role> roles = null;
 
 							Boolean isStaff = false;
 							for (UserRoleLookupResponse otherRoleCollection : userRoleLookupResponses) {
@@ -304,6 +311,18 @@ public class LoginServiceImplV2 implements LoginService {
 					}
 				}
 			}
+			String doctorId = userCollection.getId().toString();
+			String locationId = response.getUser().getLocationId();
+			String hospitalId = response.getUser().getHospitalId();
+
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.LOGIN, null, doctorId, null, doctorId, locationId,
+							hospitalId);
+
+				}
+			});
 		} catch (BusinessException be) {
 			logger.error(be);
 			throw be;

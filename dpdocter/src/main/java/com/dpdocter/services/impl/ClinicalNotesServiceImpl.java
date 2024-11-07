@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
 
 import javax.mail.MessagingException;
 
@@ -113,6 +114,7 @@ import com.dpdocter.collections.ProvisionalDiagnosisCollection;
 import com.dpdocter.collections.SystemExamCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.XRayDetailsCollection;
+import com.dpdocter.enums.AuditActionType;
 import com.dpdocter.enums.ClinicalItems;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.LineSpace;
@@ -177,6 +179,7 @@ import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.services.AppointmentService;
+import com.dpdocter.services.AuditService;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.FileManager;
@@ -367,11 +370,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	@Autowired
 	private PatientTreatmentServices patientTreatmentServices;
 
+	@Autowired
+	private AuditService auditService;
+
 	@Override
 	@Transactional
 	public ClinicalNotes addNotes(ClinicalNotesAddRequest request, Boolean isAppointmentAdd, String createdBy,
 			Appointment appointment) {
-		ClinicalNotes clinicalNotes = null;
+		ClinicalNotes clinicalNotes = new ClinicalNotes();
 		List<ObjectId> diagramIds = null;
 
 		try {
@@ -421,7 +427,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 //			PatientTreatmentResponse treatment=addPatientTreatmentsThroughClinicalNotes(clinicalNotesCollection,
 //					request.getTreatmentObservation().getTreatments());
 
-			clinicalNotes = new ClinicalNotes();
 			BeanUtil.map(clinicalNotesCollection, clinicalNotes);
 			TreatmentObservation treatmentObservation = new TreatmentObservation();
 //			treatmentObservation.setTreatments(treatment.getTreatments());
@@ -463,6 +468,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						"Clinical Notes Added", ComponentType.CLINICAL_NOTES_REFRESH.getType(),
 						clinicalNotesCollection.getPatientId().toString(), null);
 
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.CREATE_CLINICAL_NOTES, clinicalNotes.getUniqueEmrId(),
+							clinicalNotes.getId(), clinicalNotes.getPatientId(), clinicalNotes.getDoctorId(),
+							request.getLocationId(), request.getHospitalId());
+
+				}
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -568,7 +582,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	@Override
 	@Transactional
 	public ClinicalNotes editNotes(ClinicalNotesEditRequest request) {
-		ClinicalNotes clinicalNotes = null;
+		ClinicalNotes clinicalNotes = new ClinicalNotes();
 		List<ObjectId> diagnosisIds = null;
 		List<ObjectId> diagramIds = null;
 		Appointment appointment = null;
@@ -633,7 +647,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 //					request.getTreatmentObservation().getTreatments());
 //			
 
-			clinicalNotes = new ClinicalNotes();
 			BeanUtil.map(clinicalNotesCollection, clinicalNotes);
 			TreatmentObservation treatmentObservation = new TreatmentObservation();
 			// treatmentObservation.setTreatments(treatment.getTreatments());
@@ -653,7 +666,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			pushNotificationServices.notifyUser(clinicalNotesCollection.getDoctorId().toString(),
 					"Clinical Notes Updated", ComponentType.CLINICAL_NOTES_REFRESH.getType(),
 					clinicalNotesCollection.getPatientId().toString(), null);
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.UPDATE_CLINICAL_NOTES, clinicalNotes.getUniqueEmrId(),
+							clinicalNotes.getId(), clinicalNotes.getPatientId(), clinicalNotes.getDoctorId(),
+							request.getLocationId(), request.getHospitalId());
 
+				}
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -673,16 +694,23 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	@Override
 	@Transactional
 	public ClinicalNotes deleteNote(String id, Boolean discarded) {
-		ClinicalNotes response = null;
+		ClinicalNotes response = new ClinicalNotes();
 		try {
 			ClinicalNotesCollection clinicalNotes = clinicalNotesRepository.findById(new ObjectId(id)).orElse(null);
 			if (clinicalNotes != null) {
 				clinicalNotes.setDiscarded(discarded);
 				clinicalNotes.setUpdatedTime(new Date());
 				clinicalNotes = clinicalNotesRepository.save(clinicalNotes);
-				response = new ClinicalNotes();
 				BeanUtil.map(clinicalNotes, response);
 			}
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.DELETE_CLINICAL_NOTES, response.getUniqueEmrId(),
+							response.getId(), response.getPatientId(), response.getDoctorId(), response.getLocationId(),
+							response.getHospitalId());
+				}
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);

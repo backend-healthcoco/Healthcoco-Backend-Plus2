@@ -111,6 +111,7 @@ import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
+import com.dpdocter.enums.AuditActionType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.enums.LineSpace;
@@ -168,6 +169,7 @@ import com.dpdocter.response.SlotDataResponse;
 import com.dpdocter.response.UserLocationWithDoctorClinicProfile;
 import com.dpdocter.response.UserRoleResponse;
 import com.dpdocter.services.AppointmentService;
+import com.dpdocter.services.AuditService;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.MailBodyGenerator;
@@ -270,6 +272,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
+
+	@Autowired
+	private AuditService auditService;
 
 	@Autowired
 	PushNotificationServices pushNotificationServices;
@@ -616,9 +621,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 						doctorClinicProfile.setPatientInitial(location.getPatientInitial());
 						doctorClinicProfile.setPatientCounter(location.getPatientCounter());
 						doctorClinicProfile.setClinicHipId(doctorClinicProfileCollection.getClinicHipId());
-						doctorClinicProfile.setIsRegisteredNDHMFacility(doctorClinicProfileCollection.getIsRegisteredNDHMFacility());
+						doctorClinicProfile.setIsRegisteredNDHMFacility(
+								doctorClinicProfileCollection.getIsRegisteredNDHMFacility());
 
-						
 						ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
 								Fields.field("role", "$role.role"), Fields.field("locationId", "$locationId"),
 								Fields.field("hospitalId", "$hospitalId")));
@@ -679,7 +684,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Transactional
 	public Appointment updateAppointment(final AppointmentRequest request, Boolean updateVisit,
 			Boolean isStatusChange) {
-		Appointment response = null;
+		Appointment response = new Appointment();
 		PatientTreatmentResponse patientTreatmentResponse = new PatientTreatmentResponse();
 		try {
 			AppointmentLookupResponse appointmentLookupResponse = mongoTemplate.aggregate(Aggregation.newAggregation(
@@ -898,8 +903,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 					appointmentCollection.setUpdatedTime(new Date());
 					appointmentRepository.save(appointmentCollection);
 				}
+				final String appointmentCollectionId = appointmentCollection.getId().toString();
 
-				response = new Appointment();
 				BeanUtil.map(appointmentCollection, response);
 				response.setPatientTreatmentResponse(patientTreatmentResponse);
 				if (patientCard != null) {
@@ -954,6 +959,18 @@ public class AppointmentServiceImpl implements AppointmentService {
 					response.setLatitude(appointmentLookupResponse.getLocation().getLatitude());
 					response.setLongitude(appointmentLookupResponse.getLocation().getLongitude());
 				}
+				final String patientName = (patientCard != null && patientCard.getLocalPatientName() != null)
+						? patientCard.getLocalPatientName().split(" ")[0]
+						: (request.getLocalPatientName() != null ? request.getLocalPatientName().split(" ")[0] : "");
+				Executors.newSingleThreadExecutor().execute(new Runnable() {
+					@Override
+					public void run() {
+						auditService.addAuditData(AuditActionType.UPDATE_APPOINTMENT, response.getAppointmentId(),
+								response.getId(), response.getPatientId(), response.getDoctorId(),
+								request.getLocationId(), request.getHospitalId());
+
+					}
+				});
 				// for Online consultation
 				if (request.getType() != null && request.getType().equals(AppointmentType.ONLINE_CONSULTATION)) {
 					List<DoctorClinicProfileCollection> doctorClinicProfileCollectionn = doctorClinicProfileRepository
@@ -987,7 +1004,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Override
 	@Transactional
 	public Appointment addAppointment(final AppointmentRequest request, Boolean isFormattedResponseRequired) {
-		Appointment response = null;
+		Appointment response = new Appointment();
 		DoctorClinicProfileCollection clinicProfileCollection = null;
 		try {
 
@@ -1186,9 +1203,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 					}
 				});
+				final String appointmentCollectionId = appointmentCollection.getId().toString();
 
 				if (appointmentCollection != null) {
-					response = new Appointment();
 					BeanUtil.map(appointmentCollection, response);
 
 					response.setPatientTreatmentResponse(patientTreatmentResponse);
@@ -1247,6 +1264,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 						}
 					}
 
+					Executors.newSingleThreadExecutor().execute(new Runnable() {
+						@Override
+						public void run() {
+							auditService.addAuditData(AuditActionType.CREATE_APPOINTMENT, response.getAppointmentId(),
+									response.getId(), response.getPatientId(), response.getDoctorId(),
+									request.getLocationId(), request.getHospitalId());
+
+						}
+					});
 					// for online consultation
 
 					if (request.getType() != null && request.getType().equals(AppointmentType.ONLINE_CONSULTATION)) {
@@ -1386,7 +1412,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 		 * (clinicProfileCollection != null) ? clinicProfileCollection.getFacility() :
 		 * null);
 		 */
-
 		if (isAddAppointment) {
 			if (request.getCreatedBy().equals(AppointmentCreatedBy.DOCTOR)) {
 
@@ -1432,9 +1457,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 								appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch,
 								googleMapShortUrl, null, null);
 					}
-					sendPushNotification("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), doctorMobileNumber,
-							patientName, appointmentCollectionId, appointmentId, dateTime, doctorName, clinicName,
-							clinicContactNum, branch, null);
+//					sendPushNotification("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), doctorMobileNumber,
+//							patientName, appointmentCollectionId, appointmentId, dateTime, doctorName, clinicName,
+//							clinicContactNum, branch, null);
 
 					if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
 							&& patientEmailAddress != null)
@@ -1447,10 +1472,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
 								doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl, null, null);
 					}
-					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
-						sendPushNotification("CONFIRMED_APPOINTMENT_TO_PATIENT", request.getPatientId(),
-								patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch, null);
+//					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
+//						sendPushNotification("CONFIRMED_APPOINTMENT_TO_PATIENT", request.getPatientId(),
+//								patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
+//								doctorName, clinicName, clinicContactNum, branch, null);
 				}
 			} else if (request.getCreatedBy().equals(AppointmentCreatedBy.PATIENT)
 					&& request.getType().equals(AppointmentType.ONLINE_CONSULTATION)) {
@@ -1611,14 +1636,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 									clinicContactNum, branch, googleMapShortUrl, null, null);
 					}
 
-					if (request.getState().getState().equals(AppointmentState.CONFIRM.getState()))
-						sendPushNotification("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
-								doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch, null);
-					else
-						sendPushNotification("RESCHEDULE_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
-								doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch, null);
+//					if (request.getState().getState().equals(AppointmentState.CONFIRM.getState()))
+//						sendPushNotification("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
+//								doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
+//								doctorName, clinicName, clinicContactNum, branch, null);
+//					else
+//						sendPushNotification("RESCHEDULE_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
+//								doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
+//								doctorName, clinicName, clinicContactNum, branch, null);
 				}
 				if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
 						&& !DPDoctorUtils.allStringsEmpty(patientEmailAddress)) {
@@ -1640,19 +1665,18 @@ public class AppointmentServiceImpl implements AppointmentService {
 								doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl, null, null);
 				}
 
-				if (request.getState().getState().equals(AppointmentState.CONFIRM.getState())
-						&& !DPDoctorUtils.anyStringEmpty(patientMobileNumber))
-					sendPushNotification("CONFIRMED_APPOINTMENT_TO_PATIENT", request.getPatientId(),
-							patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-							doctorName, clinicName, clinicContactNum, branch, null);
-				else if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
-					sendPushNotification("RESCHEDULE_APPOINTMENT_TO_PATIENT", request.getPatientId(),
-							patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-							doctorName, clinicName, clinicContactNum, branch, null);
+//				if (request.getState().getState().equals(AppointmentState.CONFIRM.getState())
+//						&& !DPDoctorUtils.anyStringEmpty(patientMobileNumber))
+//					sendPushNotification("CONFIRMED_APPOINTMENT_TO_PATIENT", request.getPatientId(),
+//							patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
+//							doctorName, clinicName, clinicContactNum, branch, null);
+//				else if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
+//					sendPushNotification("RESCHEDULE_APPOINTMENT_TO_PATIENT", request.getPatientId(),
+//							patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
+//							doctorName, clinicName, clinicContactNum, branch, null);
 			}
 		}
 	}
-
 
 	private void sendPushNotification(String type, String userId, String mobileNumber, String patientName,
 			String appointmentCollectionId, String appointmentId, String dateTime, String doctorName, String clinicName,
@@ -1944,10 +1968,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 		case "CONFIRMED_APPOINTMENT_TO_PATIENT": {
 			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
 					+ (!branch.isEmpty() ? ", " + branch : "") + (clinicContactNum != "" ? ", " + clinicContactNum : "")
-					+ "    has been confirmed @ " + dateTime + (googleMapShortUrl != "" ? ", " + googleMapShortUrl : "")
-					+ ". Download Healthcoco App- " + patientAppBitLink;
+					+ " has been confirmed @ " + dateTime + ".-Healthcoco";
 			smsDetail.setUserName(patientName);
-			smsTrackDetail.setTemplateId("1307161191156377476");
+			smsTrackDetail.setTemplateId("1407172985966597334");
 		}
 			break;
 
@@ -2020,10 +2043,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 		case "RESCHEDULE_APPOINTMENT_TO_PATIENT": {
 			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "") + ","
 					+ (!branch.isEmpty() ? " " + branch : "") + (clinicContactNum != "" ? " " + clinicContactNum : "")
-					+ "  has been rescheduled @ " + dateTime + (googleMapShortUrl != "" ? ", " + googleMapShortUrl : "")
-					+ ". Download Healthcoco App- " + patientAppBitLink;
+					+ "  has been rescheduled @ " + dateTime + ". -Healthcoco";
 			smsDetail.setUserName(patientName);
-			smsTrackDetail.setTemplateId("1307161191460900446");
+			smsTrackDetail.setTemplateId("1407173097212398562");
 		}
 			break;
 
@@ -2039,8 +2061,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			text = "Your online " + consultationType + " consultation with " + doctorName
 					+ (clinicName != "" ? ", " + clinicName : "") + (!branch.isEmpty() ? ", " + branch : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been confirmed @ " + dateTime
-					+ (googleMapShortUrl != "" ? ", " + googleMapShortUrl : "") + ". Download Healthcoco App- "
-					+ patientAppBitLink;
+					+ ". -Healthcoco";
 			smsDetail.setUserName(patientName);
 			smsTrackDetail.setTemplateId("1307161562814636124");
 		}

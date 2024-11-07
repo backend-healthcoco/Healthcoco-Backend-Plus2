@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
 
 import javax.mail.MessagingException;
 
@@ -71,6 +72,7 @@ import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.AuditActionType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.DischargeSummaryItem;
 import com.dpdocter.enums.FieldAlign;
@@ -112,6 +114,7 @@ import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PrescriptionAddEditResponseDetails;
 import com.dpdocter.services.AppointmentService;
+import com.dpdocter.services.AuditService;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.DischargeSummaryService;
 import com.dpdocter.services.EmailTackService;
@@ -220,11 +223,14 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	@Autowired
 	PushNotificationServices pushNotificationServices;
 
+	@Autowired
+	private AuditService auditService;
+
 	@Transactional
 	@Override
 	public DischargeSummaryResponse addEditDischargeSummary(DischargeSummaryRequest dischargeSummary) {
 
-		DischargeSummaryResponse response = null;
+		DischargeSummaryResponse response = new DischargeSummaryResponse();
 		DischargeSummaryCollection oldDischargeSummaryCollection = null;
 		try {
 
@@ -329,7 +335,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				Boolean isFlowsheet = false;
 				addEditFlowSheets(addEditFlowSheetRequest, isFlowsheet);
 			}
-			response = new DischargeSummaryResponse();
 			BeanUtil.map(dischargeSummaryCollection, response);
 			response.setPrescriptions(prescription);
 			if (dischargeSummaryCollection.getDiagrams() != null
@@ -344,9 +349,20 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			pushNotificationServices.notifyUser(dischargeSummary.getDoctorId(), "Discharge Summary Added",
 					ComponentType.DISCHARGE_SUMMARY_REFRESH.getType(), response.getPatientId(), null);
 
-		} catch (
-
-		Exception e) {
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					if (dischargeSummary.getId() == null)
+						auditService.addAuditData(AuditActionType.CREATE_DS, response.getUniqueEmrId(),
+								response.getId(), response.getPatientId(), response.getDoctorId(),
+								response.getLocationId(), response.getHospitalId());
+					else
+						auditService.addAuditData(AuditActionType.UPDATE_DS, response.getUniqueEmrId(),
+								response.getId(), response.getPatientId(), response.getDoctorId(),
+								response.getLocationId(), response.getHospitalId());
+				}
+			});
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error while adding  discharge summary : " + e.getCause().getMessage());
 			throw new BusinessException(ServiceError.Unknown,
@@ -520,6 +536,19 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 								"Invalid Doctor Id, Hospital Id, Or Location Id");
 					}
 				}
+				Executors.newSingleThreadExecutor().execute(new Runnable() {
+					@Override
+					public void run() {
+						auditService.addAuditData(AuditActionType.DELETE_DS,
+								dischargeSummaryCollection.getUniqueEmrId(),
+								dischargeSummaryCollection.getId().toString(),
+								dischargeSummaryCollection.getPatientId().toString(),
+								dischargeSummaryCollection.getDoctorId().toString(),
+								dischargeSummaryCollection.getLocationId().toString(),
+								dischargeSummaryCollection.getHospitalId().toString());
+
+					}
+				});
 			} else {
 				logger.warn("Discharge Summary not found!");
 				throw new BusinessException(ServiceError.NoRecord, "Discharge Summary not found!");

@@ -216,28 +216,28 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			if (userDeviceCollections != null && !userDeviceCollections.isEmpty()) {
 				for (UserDeviceCollection userDeviceCollection : userDeviceCollections) {
 					if (userDeviceCollection.getDeviceType() != null) {
-						if (userDeviceCollection.getDeviceType().getType()
-								.equalsIgnoreCase(DeviceType.ANDROID.getType())
-								|| userDeviceCollection.getDeviceType().getType()
-										.equalsIgnoreCase(DeviceType.ANDROID_PAD.getType()))
-							pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
-									userDeviceCollection.getPushToken(), message, componentType, componentTypeId,
-									userDeviceCollection.getRole().getRole(), userId,
-									userDeviceCollection.getDeviceType().getType());
-						else if (userDeviceCollection.getDeviceType().getType()
-								.equalsIgnoreCase(DeviceType.IOS.getType())
-								|| userDeviceCollection.getDeviceType().getType()
-										.equalsIgnoreCase(DeviceType.IPAD.getType())) {
-							pushNotificationOnIosDevices(userDeviceCollection.getDeviceId(),
-									userDeviceCollection.getPushToken(), message, componentType, componentTypeId,
-									userDeviceCollection.getDeviceType().getType(),
-									userDeviceCollection.getRole().getRole(), userId);
-							userDeviceCollection.setBatchCount(userDeviceCollection.getBatchCount() + 1);
-							userDeviceRepository.save(userDeviceCollection);
-						} else if (userDeviceCollection.getDeviceType().getType()
-								.equalsIgnoreCase(DeviceType.WEB.getType())
-								|| userDeviceCollection.getDeviceType().getType()
-										.equalsIgnoreCase(DeviceType.WEB.getType())) {
+//						if (userDeviceCollection.getDeviceType().getType()
+//								.equalsIgnoreCase(DeviceType.ANDROID.getType())
+//								|| userDeviceCollection.getDeviceType().getType()
+//										.equalsIgnoreCase(DeviceType.ANDROID_PAD.getType()))
+//							pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
+//									userDeviceCollection.getPushToken(), message, componentType, componentTypeId,
+//									userDeviceCollection.getRole().getRole(), userId,
+//									userDeviceCollection.getDeviceType().getType());
+//						else if (userDeviceCollection.getDeviceType().getType()
+//								.equalsIgnoreCase(DeviceType.IOS.getType())
+//								|| userDeviceCollection.getDeviceType().getType()
+//										.equalsIgnoreCase(DeviceType.IPAD.getType())) {
+//							pushNotificationOnIosDevices(userDeviceCollection.getDeviceId(),
+//									userDeviceCollection.getPushToken(), message, componentType, componentTypeId,
+//									userDeviceCollection.getDeviceType().getType(),
+//									userDeviceCollection.getRole().getRole(), userId);
+//							userDeviceCollection.setBatchCount(userDeviceCollection.getBatchCount() + 1);
+//							userDeviceRepository.save(userDeviceCollection);
+//						} else if (userDeviceCollection.getDeviceType().getType()
+//								.equalsIgnoreCase(DeviceType.WEB.getType())
+//								|| userDeviceCollection.getDeviceType().getType()
+//										.equalsIgnoreCase(DeviceType.WEB.getType())) {
 //							pushNotificationOnWebDevices(userDeviceCollection.getDeviceId(),
 //									userDeviceCollection.getPushToken(), message, componentType, componentTypeId,
 //									userDeviceCollection.getDeviceType().getType(),
@@ -246,10 +246,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 //							userDeviceRepository.save(userDeviceCollection);
 						}
 
-						else if (userDeviceCollection.getDeviceType().getType()
-								.equalsIgnoreCase(DeviceType.WEB_ADMIN.getType())
-								|| userDeviceCollection.getDeviceType().getType()
-										.equalsIgnoreCase(DeviceType.WEB_ADMIN.getType())) {
+//						else if (userDeviceCollection.getDeviceType().getType()
+//								.equalsIgnoreCase(DeviceType.WEB_ADMIN.getType())
+//								|| userDeviceCollection.getDeviceType().getType()
+//										.equalsIgnoreCase(DeviceType.WEB_ADMIN.getType())) {
 //							pushNotificationOnAdminWebDevices(userDeviceCollection.getDeviceId(),
 						
 //						else if (userDeviceCollection.getDeviceType().getType()
@@ -262,9 +262,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 //									userDeviceCollection.getRole().getRole(), userId);
 //							userDeviceCollection.setBatchCount(userDeviceCollection.getBatchCount() + 1);
 //							userDeviceRepository.save(userDeviceCollection);
-						}
 //						}
-					}
+//						}
+//					}
 				}
 			}
 		} catch (Exception e) {

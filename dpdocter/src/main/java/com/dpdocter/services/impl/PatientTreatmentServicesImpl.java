@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -51,6 +52,7 @@ import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.repository.ESTreatmentServiceRepository;
 import com.dpdocter.elasticsearch.services.ESTreatmentService;
+import com.dpdocter.enums.AuditActionType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.PatientTreatmentService;
 import com.dpdocter.enums.PrintSettingType;
@@ -78,6 +80,7 @@ import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.response.TreatmentResponse;
 import com.dpdocter.services.AppointmentService;
+import com.dpdocter.services.AuditService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailBodyGenerator;
@@ -159,6 +162,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 	@Autowired
 	PushNotificationServices pushNotificationServices;
+
+	@Autowired
+	private AuditService auditService;
 
 	@Override
 	@Transactional
@@ -309,7 +315,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	@Transactional
 	public PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request,
 			Boolean isAppointmentAdd, String createdBy, Appointment appointment) {
-		PatientTreatmentResponse response;
+		PatientTreatmentResponse response = new PatientTreatmentResponse();
 		PatientTreatmentCollection patientTreatmentCollection = new PatientTreatmentCollection();
 		try {
 			if (isAppointmentAdd) {
@@ -418,14 +424,26 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 			patientTreatmentCollection = patientTreamentRepository.save(patientTreatmentCollection);
 
-			response = new PatientTreatmentResponse();
 			BeanUtil.map(patientTreatmentCollection, response);
 			response.setTreatments(treatmentResponses);
 
 			pushNotificationServices.notifyUser(patientTreatmentCollection.getDoctorId().toString(), "Treament Added",
 					ComponentType.TREATMENTS_REFRESH.getType(), patientTreatmentCollection.getPatientId().toString(),
 					null);
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					if (DPDoctorUtils.anyStringEmpty(request.getId()))
+						auditService.addAuditData(AuditActionType.CREATE_TREATMENT, response.getUniqueEmrId(),
+								response.getId(), response.getPatientId(), response.getDoctorId(),
+								response.getLocationId(), response.getHospitalId());
+					else
+						auditService.addAuditData(AuditActionType.UPDATE_TREATMENT, response.getUniqueEmrId(),
+								response.getId(), response.getPatientId(), response.getDoctorId(),
+								response.getLocationId(), response.getHospitalId());
 
+				}
+			});
 		} catch (Exception e) {
 			logger.error("Error occurred while adding or editing treatment for patients", e);
 			e.printStackTrace();
@@ -508,6 +526,18 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				logger.warn("No treatment found for the given id");
 				throw new BusinessException(ServiceError.NotFound, "No treatment found for the given id");
 			}
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.DELETE_TREATMENT,
+							patientTreatmentCollection.getUniqueEmrId(), patientTreatmentCollection.getId().toString(),
+							patientTreatmentCollection.getPatientId().toString(),
+							patientTreatmentCollection.getDoctorId().toString(),
+							patientTreatmentCollection.getLocationId().toString(),
+							patientTreatmentCollection.getHospitalId().toString());
+
+				}
+			});
 		} catch (Exception e) {
 			logger.error("Error while deleting treatment", e);
 			e.printStackTrace();
@@ -536,6 +566,18 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				logger.warn("No treatment found for the given id");
 				throw new BusinessException(ServiceError.NotFound, "No treatment found for the given id");
 			}
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.DELETE_TREATMENT,
+							patientTreatmentCollection.getUniqueEmrId(), patientTreatmentCollection.getId().toString(),
+							patientTreatmentCollection.getPatientId().toString(),
+							patientTreatmentCollection.getDoctorId().toString(),
+							patientTreatmentCollection.getLocationId().toString(),
+							patientTreatmentCollection.getHospitalId().toString());
+
+				}
+			});
 		} catch (Exception e) {
 			logger.error("Error while deleting treatment", e);
 			e.printStackTrace();
@@ -1270,8 +1312,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			}
 			Collection<String> specialities = null;
 			if (!DPDoctorUtils.anyStringEmpty(ratelistId)) {
-				aggregation = DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded,
-						ratelistId);
+				aggregation = DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, ratelistId);
 			} else if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
 				specialities = CollectionUtils.collect(
 						(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),

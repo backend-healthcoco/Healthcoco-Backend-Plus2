@@ -772,6 +772,7 @@ public class SMSServicesImpl implements SMSServices {
 		if (doctorClinicProfileCollection != null) {
 			List<SubscriptionCollection> subscriptionCollections = subscriptionRepository
 					.findByDoctorId(doctorClinicProfileCollection.getDoctorId());
+
 			SubscriptionCollection subscriptionCollection = null;
 			if (!DPDoctorUtils.isNullOrEmptyList(subscriptionCollections)) {
 				subscriptionCollection = subscriptionCollections.get(0);

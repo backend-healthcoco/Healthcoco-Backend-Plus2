@@ -3,6 +3,7 @@ package com.dpdocter.services.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -23,6 +24,7 @@ import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.AuditActionType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.SMSStatus;
@@ -38,6 +40,7 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.request.ResetPasswordRequest;
 import com.dpdocter.response.ForgotPasswordResponse;
+import com.dpdocter.services.AuditService;
 import com.dpdocter.services.ForgotPasswordService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
@@ -104,6 +107,9 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	@Autowired
 	PushNotificationServices pushNotificationServices;
 
+	@Autowired
+	private AuditService auditService;
+	
 	@Override
 	@Transactional
 	public ForgotPasswordResponse forgotPasswordForDoctor(ForgotUsernamePasswordRequest request) {
@@ -143,6 +149,16 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 				throw new BusinessException(ServiceError.Unknown,
 						"No account present with email address, please sign up");
 			}
+			
+			String doctorId = userCollection.getId().toString();
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.UPDATE_PASSWORD,null, doctorId, null,
+							doctorId,null,null);
+
+				}
+			});
 			return response;
 		} catch (BusinessException be) {
 			logger.error(be + "No account present with email address, please sign up" + request.getEmailAddress());

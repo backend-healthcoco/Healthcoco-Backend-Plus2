@@ -416,6 +416,19 @@ public class NdhmApi {
 	@Path(value = PathProxy.NdhmUrls.GET_PROFILE_QR_CODE_V3)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_PROFILE_QR_CODE_V3, notes = PathProxy.NdhmUrls.GET_PROFILE_QR_CODE_V3)
+	public Response<Object> getAbhaCardV3(@QueryParam(value = "authToken") String authToken) {
+
+		if (authToken == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " authToken Required");
+		}
+		Response<Object> response = ndhmService.getAbhaCardV3(authToken);
+
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.GET_ABHA_CARD_V3)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_ABHA_CARD_V3, notes = PathProxy.NdhmUrls.GET_ABHA_CARD_V3)
 	public Response<Object> ProfileGetQRCodeV3(@QueryParam(value = "authToken") String authToken) {
 
 		if (authToken == null) {
@@ -425,6 +438,7 @@ public class NdhmApi {
 
 		return response;
 	}
+	
 
 	@Path(value = PathProxy.NdhmUrls.GET_PROFILE)
 	@GET

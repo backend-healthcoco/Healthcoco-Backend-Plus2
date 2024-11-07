@@ -72,6 +72,7 @@ import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
+import com.dpdocter.enums.AuditActionType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.enums.QueueStatus;
@@ -104,6 +105,7 @@ import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.response.SlotDataResponse;
 import com.dpdocter.response.TreatmentResponse;
 import com.dpdocter.response.v2.AppointmentLookupResponse;
+import com.dpdocter.services.AuditService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientVisitService;
@@ -144,6 +146,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Autowired
 	private AppointmentBookedSlotRepository appointmentBookedSlotRepository;
+
+	@Autowired
+	private AuditService auditService;
 
 	@Autowired
 	private AppointmentWorkFlowRepository appointmentWorkFlowRepository;
@@ -1030,7 +1035,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Override
 	@Transactional
 	public Appointment addAppointment(final AppointmentRequest request, Boolean isFormattedResponseRequired) {
-		Appointment response = null;
+		Appointment response = new Appointment();
 		DoctorClinicProfileCollection clinicProfileCollection = null;
 
 		System.out.println(request.getFromDate() + " to " + request.getToDate());
@@ -1192,6 +1197,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					@Override
 					public void run() {
 						try {
+
 							if (locationCollection.getIsDentalChain()) {
 								sendSmilebirdAppointmentEmailSmsNotification(false, request, id, appointmentId,
 										doctorName, patientName, dateTime, clinicName, clinicContactNum,
@@ -1209,9 +1215,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 					}
 				});
-
+				final String appointmentCollectionId = appointmentCollection.getId().toString();
 				if (appointmentCollection != null) {
-					response = new Appointment();
 					BeanUtil.map(appointmentCollection, response);
 
 					if (isFormattedResponseRequired) {
@@ -1267,12 +1272,22 @@ public class AppointmentServiceImpl implements AppointmentService {
 							response.setLongitude(locationCollection.getLongitude());
 						}
 					}
-					List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
-							.findByLocationId(locationId);
-					for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
-						pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
-								"New appointment created.", ComponentType.APPOINTMENT_REFRESH.getType(), null, null);
-					}
+					Executors.newSingleThreadExecutor().execute(new Runnable() {
+						@Override
+						public void run() {
+							auditService.addAuditData(AuditActionType.CREATE_APPOINTMENT,response.getAppointmentId(), response.getId(),
+									response.getPatientId(), response.getDoctorId(), response.getLocationId(),
+									response.getHospitalId());
+
+						}
+					});
+
+//					List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+//							.findByLocationId(locationId);
+//					for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
+//						pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
+//								"New appointment created.", ComponentType.APPOINTMENT_REFRESH.getType(), null, null);
+//					}
 				}
 			}
 

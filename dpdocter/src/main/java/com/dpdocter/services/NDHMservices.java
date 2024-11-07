@@ -266,4 +266,6 @@ public interface NDHMservices {
 
 	Boolean healthInformationNotifyV3(HealthInfoNotify request);
 
+	Response<Object> getAbhaCardV3(String authToken);
+
 }

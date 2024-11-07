@@ -2613,6 +2613,7 @@ public interface PathProxy {
 		public static final String GET_PROFILE_CARD = "/profile/account/getCard";
 		public static final String GET_PROFILE_QR_CODE = "/profile/account/getQrCode";
 		public static final String GET_PROFILE_QR_CODE_V3 = "/profile/account/getQrCodeV3";
+		public static final String GET_ABHA_CARD_V3 = "/profile/account/getAbhaCardV3";
 		public static final String GET_PROFILE_PNGCARD = "/profile/account/getPngCard";
 		public static final String GET_PROFILE = "/profile/account/getProfile";
 		public static final String CREATE_PROFILE = "/profile/account/createProfile";
@@ -2756,6 +2757,14 @@ public interface PathProxy {
 		public static final String ON_PROFILE_SHARE="/v0.5/patients/profile/share";
 		
 		public static final String HIU_DATA_TRANSFER = "/hiu-data/transfer";
+
+	}
+	
+	public static final String AUDIT_TRAIL_BASE_URL = BASE_URL + "/auditTrail";
+
+	public interface AuditTrailUrls {
+
+		public static final String GET_AUDIT_TRAIL_REPORT = "/audit/get";
 
 	}
 }

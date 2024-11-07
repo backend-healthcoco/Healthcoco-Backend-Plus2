@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -78,6 +79,7 @@ import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.VendorExpenseCollection;
 import com.dpdocter.elasticsearch.document.ESExpenseTypeDocument;
 import com.dpdocter.elasticsearch.services.ESExpenseTypeService;
+import com.dpdocter.enums.AuditActionType;
 import com.dpdocter.enums.BillingType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.ConsultationType;
@@ -118,6 +120,7 @@ import com.dpdocter.response.DoctorPatientReceiptLookupResponse;
 import com.dpdocter.response.InvoiceItemResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
+import com.dpdocter.services.AuditService;
 import com.dpdocter.services.BillingService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.InventoryService;
@@ -233,6 +236,9 @@ public class BillingServiceImpl implements BillingService {
 	@Autowired
 	private VendorExpenseRepository vendorExpenseRepository;
 
+	@Autowired
+	private AuditService auditService;
+
 	@Override
 	public InvoiceAndReceiptInitials getInitials(String locationId) {
 		InvoiceAndReceiptInitials response = null;
@@ -286,7 +292,7 @@ public class BillingServiceImpl implements BillingService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public DoctorPatientInvoice addEditInvoice(DoctorPatientInvoice request) {
-		DoctorPatientInvoice response = null;
+		DoctorPatientInvoice response = new DoctorPatientInvoice();
 		try {
 			Map<String, UserCollection> doctorsMap = new HashMap<String, UserCollection>();
 			DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = new DoctorPatientInvoiceCollection();
@@ -534,7 +540,6 @@ public class BillingServiceImpl implements BillingService {
 			}
 			if (doctorPatientInvoiceCollection != null) {
 				doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
-				response = new DoctorPatientInvoice();
 				BeanUtil.map(doctorPatientInvoiceCollection, response);
 
 				DoctorPatientLedgerCollection doctorPatientLedgerCollection = doctorPatientLedgerRepository
@@ -577,6 +582,19 @@ public class BillingServiceImpl implements BillingService {
 					"Invoice Added", ComponentType.INVOICE_REFRESH.getType(),
 					doctorPatientInvoiceCollection.getPatientId().toString(), null);
 
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					if (DPDoctorUtils.anyStringEmpty(request.getId()))
+						auditService.addAuditData(AuditActionType.CREATE_INVOICE, response.getUniqueInvoiceId(),
+								response.getId(), response.getPatientId(), response.getDoctorId(),
+								request.getLocationId(), request.getHospitalId());
+					else
+						auditService.addAuditData(AuditActionType.UPDATE_INVOICE, response.getUniqueInvoiceId(),
+								response.getId(), response.getPatientId(), response.getDoctorId(),
+								request.getLocationId(), request.getHospitalId());
+				}
+			});
 		} catch (BusinessException be) {
 			logger.error(be);
 			throw be;
@@ -695,7 +713,7 @@ public class BillingServiceImpl implements BillingService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public DoctorPatientInvoice deleteInvoice(String invoiceId, Boolean discarded) {
-		DoctorPatientInvoice response = null;
+		DoctorPatientInvoice response = new DoctorPatientInvoice();
 		Collection<ObjectId> itemIds = null;
 		try {
 			DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = doctorPatientInvoiceRepository
@@ -757,7 +775,6 @@ public class BillingServiceImpl implements BillingService {
 			}
 
 			if (doctorPatientInvoiceCollection != null) {
-				response = new DoctorPatientInvoice();
 				BeanUtil.map(doctorPatientInvoiceCollection, response);
 			}
 
@@ -786,6 +803,15 @@ public class BillingServiceImpl implements BillingService {
 				}
 
 			}
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.DELETE_INVOICE, response.getUniqueInvoiceId(),
+							response.getId(), response.getPatientId(), response.getDoctorId(), response.getLocationId(),
+							response.getHospitalId());
+
+				}
+			});
 		} catch (BusinessException be) {
 			be.printStackTrace();
 			logger.error(be);
@@ -801,7 +827,7 @@ public class BillingServiceImpl implements BillingService {
 	@Override
 	public DoctorPatientReceiptAddEditResponse addEditReceipt(DoctorPatientReceiptRequest request) {
 		DoctorPatientReceiptAddEditResponse response = null;
-		DoctorPatientReceipt receipt = null;
+		DoctorPatientReceipt receipt = new DoctorPatientReceipt();
 		DoctorPatientInvoice invoice = null;
 		try {
 			Double dueAmount = 0.0;
@@ -1070,7 +1096,6 @@ public class BillingServiceImpl implements BillingService {
 			}
 			if (doctorPatientReceiptCollection != null) {
 				response = new DoctorPatientReceiptAddEditResponse();
-				receipt = new DoctorPatientReceipt();
 				BeanUtil.map(doctorPatientReceiptCollection, receipt);
 				response.setInvoice(invoice);
 				response.setDoctorPatientReceipt(receipt);
@@ -1162,7 +1187,19 @@ public class BillingServiceImpl implements BillingService {
 			pushNotificationServices.notifyUser(doctorPatientReceiptCollection.getDoctorId().toString(),
 					"Receipt Added", ComponentType.RECEIPT_REFRESH.getType(),
 					doctorPatientReceiptCollection.getPatientId().toString(), null);
-
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					if (DPDoctorUtils.anyStringEmpty(request.getId()))
+						auditService.addAuditData(AuditActionType.CREATE_RECEIPT, receipt.getUniqueReceiptId(),
+								receipt.getId(), receipt.getPatientId(), receipt.getDoctorId(), request.getLocationId(),
+								request.getHospitalId());
+					else
+						auditService.addAuditData(AuditActionType.UPDATE_RECEIPT, receipt.getUniqueReceiptId(),
+								receipt.getId(), receipt.getPatientId(), receipt.getDoctorId(), request.getLocationId(),
+								request.getHospitalId());
+				}
+			});
 		} catch (BusinessException be) {
 			logger.error(be);
 			throw be;
@@ -1283,7 +1320,7 @@ public class BillingServiceImpl implements BillingService {
 	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	public DoctorPatientReceipt deleteReceipt(String receiptId, Boolean discarded) {
-		DoctorPatientReceipt response = null;
+		DoctorPatientReceipt response = new DoctorPatientReceipt();
 		try {
 			DoctorPatientReceiptCollection doctorPatientReceiptCollection = doctorPatientReceiptRepository
 					.findById(new ObjectId(receiptId)).orElse(null);
@@ -1371,9 +1408,17 @@ public class BillingServiceImpl implements BillingService {
 			doctorPatientReceiptCollection.setDiscarded(discarded);
 			doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
 			if (doctorPatientReceiptCollection != null) {
-				response = new DoctorPatientReceipt();
 				BeanUtil.map(doctorPatientReceiptCollection, response);
 			}
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.DELETE_RECEIPT, response.getUniqueReceiptId(),
+							response.getId(), response.getPatientId(), response.getDoctorId(), response.getLocationId(),
+							response.getHospitalId());
+
+				}
+			});
 		} catch (BusinessException be) {
 			logger.error(be);
 			throw be;

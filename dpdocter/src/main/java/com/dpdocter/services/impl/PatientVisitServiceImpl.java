@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -86,6 +87,7 @@ import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.AuditActionType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FONTSTYLE;
 import com.dpdocter.enums.FieldAlign;
@@ -131,6 +133,7 @@ import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponseDetails;
 import com.dpdocter.response.TestAndRecordDataResponse;
 import com.dpdocter.services.AppointmentService;
+import com.dpdocter.services.AuditService;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.JasperReportService;
@@ -273,6 +276,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Autowired
 	private LocationRepository locationRepository;
+
+	@Autowired
+	private AuditService auditService;
 
 	@Override
 	@Transactional
@@ -879,6 +885,21 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				pushNotificationServices.notifyUser(patientVisitCollection.getDoctorId().toString(),
 						"Patient Visit Added", ComponentType.PATIENT_VISIT_REFRESH.getType(),
 						patientVisitCollection.getPatientId().toString(), null);
+
+				Executors.newSingleThreadExecutor().execute(new Runnable() {
+					@Override
+					public void run() {
+						if (!DPDoctorUtils.anyStringEmpty(request.getVisitId()))
+							auditService.addAuditData(AuditActionType.UPDATE_VISIT, response.getUniqueEmrId(),
+									response.getId(), response.getPatientId(), response.getDoctorId(),
+									response.getLocationId(), response.getHospitalId());
+						else
+							auditService.addAuditData(AuditActionType.CREATE_VISIT, response.getUniqueEmrId(),
+									response.getId(), response.getPatientId(), response.getDoctorId(),
+									response.getLocationId(), response.getHospitalId());
+
+					}
+				});
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2906,7 +2927,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Override
 	@Transactional
 	public PatientVisitResponse deleteVisit(String visitId, Boolean discarded) {
-		PatientVisitResponse response = null;
+		final PatientVisitResponse response = new PatientVisitResponse();
 		try {
 			List<Prescription> prescriptions = new ArrayList<Prescription>();
 			List<ClinicalNotes> clinicalNotes = new ArrayList<ClinicalNotes>();
@@ -2968,13 +2989,21 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				eyePrescription = new EyePrescription();
 				BeanUtil.map(eyePrescriptionCollection, eyePrescription);
 			}
-			response = new PatientVisitResponse();
 			BeanUtil.map(patientVisitCollection, response);
 			response.setPrescriptions(prescriptions);
 			response.setClinicalNotes(clinicalNotes);
 			response.setRecords(records);
 			response.setPatientTreatment(patientTreatments);
 			response.setEyePrescription(eyePrescription);
+
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					auditService.addAuditData(AuditActionType.DELETE_VISIT, response.getUniqueEmrId(), response.getId(),
+							response.getPatientId(), response.getDoctorId(), response.getLocationId(),
+							response.getHospitalId());
+				}
+			});
 		} catch (BusinessException be) {
 			logger.error(be);
 			throw be;

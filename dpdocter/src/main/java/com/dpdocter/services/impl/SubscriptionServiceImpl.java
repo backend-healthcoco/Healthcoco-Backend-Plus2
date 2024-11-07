@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
@@ -54,6 +55,7 @@ import com.dpdocter.collections.SubscriptionDetailCollection;
 import com.dpdocter.collections.SubscriptionHistoryCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
+import com.dpdocter.enums.AuditActionType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.RoleEnum;
@@ -75,6 +77,7 @@ import com.dpdocter.request.SubscriptionPaymentSignatureRequest;
 import com.dpdocter.request.SubscriptionRequest;
 import com.dpdocter.response.OrderReponse;
 import com.dpdocter.response.SubscriptionResponse;
+import com.dpdocter.services.AuditService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.SMSServices;
@@ -136,6 +139,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
 	@Autowired
 	private LocationRepository locationRepository;
+
+	@Autowired
+	private AuditService auditService;
 
 	@Override
 	public List<SubscriptionDetail> addsubscriptionData() {
@@ -590,6 +596,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					response = new SubscriptionResponse();
 					BeanUtil.map(payment, response);
 				}
+
+				Executors.newSingleThreadExecutor().execute(new Runnable() {
+					@Override
+					public void run() {
+						auditService.addAuditData(AuditActionType.UPDATE_SUBSCRIPTION_PLAN, null, request.getId(), null,
+								request.getDoctorId().toString(), null, null);
+					}
+				});
 			}
 
 		} catch (Exception e) {
@@ -724,7 +738,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 									.setPackageType(subscriptionCollection.getPackageName().toString());
 
 							doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-							//active incative sms flag for STANDARD account
+							// active incative sms flag for STANDARD account
 							LocationCollection locationCollection = locationRepository
 									.findById(doctorClinicProfileCollection.getLocationId()).orElse(null);
 
