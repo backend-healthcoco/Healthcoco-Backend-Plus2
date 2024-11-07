@@ -3,6 +3,7 @@ package com.dpdocter.services.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +19,7 @@ import java.util.TimeZone;
 import java.util.concurrent.Executors;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -70,6 +72,7 @@ import com.dpdocter.beans.Location;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.Patient;
+import com.dpdocter.beans.PatientBarcodeData;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.Profession;
@@ -264,6 +267,7 @@ import com.mongodb.BasicDBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
+import common.util.web.BarcodeUtil;
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -571,6 +575,31 @@ public class RegistrationServiceImpl implements RegistrationService {
 				userCollection.setSalt(checkPatientSignUpResponse.getSalt());
 			}
 			userCollection.setFirstName(request.getLocalPatientName());
+
+			// BARCODE
+			byte[] barcode = null;
+			PatientBarcodeData patientBarcodeData = new PatientBarcodeData();
+			patientBarcodeData.setUserId(request.getUserId());
+
+			try {
+				barcode = BarcodeUtil.generateBarcode(request.getUserId());
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			String string = new String(barcode, StandardCharsets.UTF_8); // or "UTF-8"
+			FileDetails fileDetail = new FileDetails();
+			fileDetail.setFileEncoded(Base64.encodeBase64String(barcode));
+
+			fileDetail.setFileName("UserBarcode" + (new Date()).getTime());
+			fileDetail.setFileExtension("jpg");
+			fileDetail.setFileDecoded(new String(barcode));
+			String pathBarcode = "user" + File.separator + request.getLocalPatientName();
+			ImageURLResponse imageURLResponse1 = fileManager.saveImageAndReturnImageUrl(fileDetail, pathBarcode, false);
+			userCollection.setBarcodeImageUrl(imageURLResponse1.getImageUrl());
+			userCollection = userRepository.save(userCollection);
+
 			userCollection = userRepository.save(userCollection);
 
 			// assign roles
@@ -979,16 +1008,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					throw new BusinessException(ServiceError.InvalidInput,
 							"Incorrect User Id, DoctorId, LocationId, HospitalId");
 				}
-				if (request.getImage() != null) {
-					String path = "profile-images";
-					request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-					ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path,
-							true);
-					patientCollection.setImageUrl(imageURLResponse.getImageUrl());
-					userCollection.setImageUrl(null);
-					patientCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
-					userCollection.setThumbnailUrl(null);
-				}
+
 				// patientCollection.setRegistrationDate(request.getRegistrationDate());
 				patientCollection.setUpdatedTime(new Date());
 				userCollection = userRepository.save(userCollection);
@@ -1138,6 +1158,41 @@ public class RegistrationServiceImpl implements RegistrationService {
 					userCollection.setThumbnailUrl(null);
 					registeredPatientDetails.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 				}
+				if (request.getImage() != null) {
+					String path = "profile-images";
+					request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
+					ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path,
+							true);
+					patientCollection.setImageUrl(imageURLResponse.getImageUrl());
+					userCollection.setImageUrl(null);
+					patientCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
+					userCollection.setThumbnailUrl(null);
+				}
+				// BARCODE
+				byte[] barcode = null;
+				PatientBarcodeData patientBarcodeData = new PatientBarcodeData();
+				patientBarcodeData.setUserId(request.getUserId());
+
+				try {
+					barcode = BarcodeUtil.generateBarcode(request.getUserId());
+
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				String string = new String(barcode, StandardCharsets.UTF_8); // or "UTF-8"
+				FileDetails fileDetail = new FileDetails();
+				fileDetail.setFileEncoded(Base64.encodeBase64String(barcode));
+
+				fileDetail.setFileName("UserBarcode" + (new Date()).getTime());
+				fileDetail.setFileExtension("jpg");
+				fileDetail.setFileDecoded(new String(barcode));
+				String path = "user" + File.separator + request.getLocalPatientName();
+				ImageURLResponse imageURLResponse1 = fileManager.saveImageAndReturnImageUrl(fileDetail, path, false);
+				userCollection.setBarcodeImageUrl(imageURLResponse1.getImageUrl());
+				userCollection = userRepository.save(userCollection);
+
 				if (!userCollection.isSignedUp()) {
 					userCollection.setFirstName(request.getLocalPatientName());
 					userCollection.setUpdatedTime(new Date());
