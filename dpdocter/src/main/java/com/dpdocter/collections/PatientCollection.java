@@ -139,6 +139,19 @@ public class PatientCollection extends GenericCollection {
 	private Boolean isChild = false;
 	@Field
 	private String language;
+	
+	@Field
+	private List<String> healthId;
+	
+	@Field
+	private String ndhmToken;
+	
+	@Field
+	private String linkToken;
+	@Field
+	private String abhaNumber;
+	@Field
+	private String barcodeImageUrl;
 
 	public ObjectId getId() {
 		return id;
@@ -463,6 +476,14 @@ public class PatientCollection extends GenericCollection {
 
 	public void setLanguage(String language) {
 		this.language = language;
+	}
+
+	public String getBarcodeImageUrl() {
+		return barcodeImageUrl;
+	}
+
+	public void setBarcodeImageUrl(String barcodeImageUrl) {
+		this.barcodeImageUrl = barcodeImageUrl;
 	}
 
 	@Override

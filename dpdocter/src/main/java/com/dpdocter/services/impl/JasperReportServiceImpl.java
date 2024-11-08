@@ -292,6 +292,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 			if (parameters.get("patientLeftText") != null && parameters.get("patientRightText") != null) {
 				((JRDesignSection) jasperDesign.getDetailSection()).addBand(createPatienDetailBand(dsr, jasperDesign,
 						columnWidth, showTableOne, parameters.get("headerHtml")));
+				if (parameters.get("barcode") != null) {
+					((JRDesignSection) jasperDesign.getDetailSection()).addBand(createPatienDetailBarcodeBand(dsr,
+							jasperDesign, columnWidth, showTableOne, parameters.get("headerHtml")));
+				}
 				((JRDesignSection) jasperDesign.getDetailSection())
 						.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
 			}
@@ -2747,6 +2751,36 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignLine.setWidth(columnWidth);
 		jrDesignLine.setPositionType(positionTypeEnum);
 		band.addElement(jrDesignLine);
+		return band;
+	}
+
+	private JRBand createPatienDetailBarcodeBand(JRDesignDatasetRun dsr, JasperDesign jasperDesign, int columnWidth,
+			Boolean showTableOne, Object headerHtml) throws JRException {
+
+		band = new JRDesignBand();
+	    band.setHeight(40); // Increase band height if needed
+	    band.setPrintWhenExpression(new JRDesignExpression("!$P{barcode}.equals(null) && !$P{barcode}.isEmpty()"));
+		JRDesignImage jrDesignImage = new JRDesignImage(null);
+	    jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
+	    expression = new JRDesignExpression();
+		expression.setText("$P{barcode}");
+		jrDesignImage.setExpression(expression);
+		
+		// Align barcode to the right
+		int pageWidth = jasperDesign.getPageWidth(); // Get the page width from the JasperDesign
+		int rightMargin = jasperDesign.getRightMargin(); // Get the right margin
+		int leftMargin = jasperDesign.getLeftMargin(); // Get the left margin
+
+		int contentWidth = pageWidth - leftMargin - rightMargin; // Calculate usable content width
+
+		jrDesignImage.setX(contentWidth - 200); // Adjust X to align the barcode on the right side
+		jrDesignImage.setY(5); // A small margin from the top
+		jrDesignImage.setHeight(30); // Reduce barcode height
+		jrDesignImage.setWidth(120); // Set width for the barcode
+
+		jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.LEFT);
+		band.addElement(jrDesignImage);
+
 		return band;
 	}
 

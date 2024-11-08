@@ -3,6 +3,7 @@ package com.dpdocter.services.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +19,7 @@ import java.util.TimeZone;
 import java.util.concurrent.Executors;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -262,6 +264,7 @@ import com.mongodb.BasicDBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
+import common.util.web.BarcodeUtil;
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
@@ -478,6 +481,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Value(value = "${healthcoco.support.number}")
 	private String healthcocoSupportNumber;
 
+
 	@Override
 	@Transactional
 	public User checkIfPatientExist(PatientRegistrationRequest request) {
@@ -568,12 +572,35 @@ public class RegistrationServiceImpl implements RegistrationService {
 			userCollection.setFirstName(request.getLocalPatientName());
 			userCollection = userRepository.save(userCollection);
 
+			// BARCODE
+			byte[] barcode = null;
+
+			try {
+				barcode = BarcodeUtil.generateBarcode(userCollection.getId().toString());
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			FileDetails fileDetail = new FileDetails();
+			fileDetail.setFileEncoded(Base64.encodeBase64String(barcode));
+
+			fileDetail.setFileName("UserBarcode" + (new Date()).getTime());
+			fileDetail.setFileExtension("jpg");
+			fileDetail.setFileDecoded(new String(barcode));
+			String pathBarcode = "user" + File.separator + request.getLocalPatientName();
+			ImageURLResponse imageURLResponse1 = fileManager.saveImageAndReturnImageUrl(fileDetail, pathBarcode, false);
+			userCollection.setBarcodeImageUrl(imageURLResponse1.getImageUrl());
+			userCollection = userRepository.save(userCollection);
+
+
 			// assign roles
 			UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(),
 					roleCollection.getId(), null, null);
 			userRoleCollection.setCreatedTime(new Date());
 			userRoleRepository.save(userRoleCollection);
-
+			
+			
 			if (checkPatientSignUpResponse != null) {
 				PatientCollection patientCollection = new PatientCollection();
 				patientCollection.setCreatedTime(new Date());
@@ -591,6 +618,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 			patientCollection.setFirstName(request.getLocalPatientName());
 			patientCollection.setUserId(userCollection.getId());
 			patientCollection.setIsChild(request.getIsChild());
+
+
 			if (request.getRegistrationDate() != null)
 				patientCollection.setRegistrationDate(request.getRegistrationDate());
 			else
@@ -645,6 +674,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 				patientCollection.setReferredBy(referencesCollection.getId());
 			}
+			
+			patientCollection.setBarcodeImageUrl(imageURLResponse1.getImageUrl());
+
 			patientCollection = patientRepository.save(patientCollection);
 
 			// assign groups
@@ -774,7 +806,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				createImmunisationChart(registeredPatientDetails);
 				createBabyAchievementChart(registeredPatientDetails);
 			}
-
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -923,22 +955,17 @@ public class RegistrationServiceImpl implements RegistrationService {
 					}
 
 					patientCollection.setIsChild(request.getIsChild());
+
+					if (request.getAdhaarId() != null)
+						patientCollection.setAdhaarId(request.getAdhaarId());
+
 					// patientCollection.setRegistrationDate(request.getRegistrationDate());
 				} else {
 					logger.error("Incorrect User Id, DoctorId, LocationId, HospitalId");
 					throw new BusinessException(ServiceError.InvalidInput,
 							"Incorrect User Id, DoctorId, LocationId, HospitalId");
 				}
-				if (request.getImage() != null) {
-					String path = "profile-images";
-					request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-					ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path,
-							true);
-					patientCollection.setImageUrl(imageURLResponse.getImageUrl());
-					userCollection.setImageUrl(null);
-					patientCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
-					userCollection.setThumbnailUrl(null);
-				}
+
 				// patientCollection.setRegistrationDate(request.getRegistrationDate());
 				patientCollection.setUpdatedTime(new Date());
 				userCollection = userRepository.save(userCollection);
@@ -1087,6 +1114,37 @@ public class RegistrationServiceImpl implements RegistrationService {
 					userCollection.setThumbnailUrl(null);
 					registeredPatientDetails.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 				}
+				if (request.getImage() != null) {
+					String path = "profile-images";
+					request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
+					ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path,
+							true);
+					patientCollection.setImageUrl(imageURLResponse.getImageUrl());
+					userCollection.setImageUrl(null);
+					patientCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
+					userCollection.setThumbnailUrl(null);
+				}
+				// BARCODE
+				byte[] barcode = null;
+				try {
+					barcode = BarcodeUtil.generateBarcode(request.getUserId());
+
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				FileDetails fileDetail = new FileDetails();
+				fileDetail.setFileEncoded(Base64.encodeBase64String(barcode));
+
+				fileDetail.setFileName("UserBarcode" + (new Date()).getTime());
+				fileDetail.setFileExtension("jpg");
+				fileDetail.setFileDecoded(new String(barcode));
+				String path = "user" + File.separator + request.getLocalPatientName();
+				ImageURLResponse imageURLResponse1 = fileManager.saveImageAndReturnImageUrl(fileDetail, path, false);
+				userCollection.setBarcodeImageUrl(imageURLResponse1.getImageUrl());
+				userCollection = userRepository.save(userCollection);
+
 				if (!userCollection.isSignedUp()) {
 					userCollection.setFirstName(request.getLocalPatientName());
 					userCollection.setUpdatedTime(new Date());
@@ -1103,6 +1161,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					consultantDoctorIds.add(new ObjectId(request.getDoctorId()));
 				patientCollection.setConsultantDoctorIds(consultantDoctorIds);
 				// }
+				patientCollection.setBarcodeImageUrl(imageURLResponse1.getImageUrl());
 
 				patientCollection = patientRepository.save(patientCollection);
 				registeredPatientDetails.setImageUrl(patientCollection.getImageUrl());
@@ -1203,7 +1262,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				createImmunisationChart(registeredPatientDetails);
 				createBabyAchievementChart(registeredPatientDetails);
 			}
-
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -2047,6 +2106,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			locationCollection = locationRepository.save(locationCollection);
 			response = new ClinicAddress();
 			BeanUtil.map(locationCollection, response);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error While Updating Clinic Details");
@@ -2068,6 +2128,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			locationCollection = locationRepository.save(locationCollection);
 			response = new ClinicTiming();
 			BeanUtil.map(locationCollection, response);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error While Updating Clinic Details");
@@ -2304,7 +2365,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Override
 	@Transactional
 	public RegisterDoctorResponse registerNewUser(DoctorRegisterRequest request) {
-		RegisterDoctorResponse response = null;
+		RegisterDoctorResponse response = new RegisterDoctorResponse();
 		try {
 			RoleCollection doctorRole = null;
 			if (request.getRoleId() != null) {
@@ -2401,7 +2462,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 						request.getAddedBy());
 				mailService.sendEmail(userCollection.getEmailAddress(), staffmemberAccountVerifySub, body, null);
 			}
-			response = new RegisterDoctorResponse();
 			userCollection.setPassword(null);
 			BeanUtil.map(userCollection, response);
 			response.setHospitalId(request.getHospitalId());
@@ -2419,6 +2479,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				roles.add(role);
 				response.setRole(roles);
 			}
+			
 		} catch (DuplicateKeyException de) {
 			logger.error(de);
 			throw new BusinessException(ServiceError.Unknown, "Email address already registerd. Please login");
@@ -2433,7 +2494,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Override
 	@Transactional
 	public RegisterDoctorResponse registerExisitingUser(DoctorRegisterRequest request) {
-		RegisterDoctorResponse response = null;
+		RegisterDoctorResponse response = new RegisterDoctorResponse();
 		try {
 
 			RoleCollection doctorRole = null;
@@ -2512,7 +2573,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 			}
 
-			response = new RegisterDoctorResponse();
 			userCollection.setPassword(null);
 			BeanUtil.map(userCollection, response);
 			response.setHospitalId(request.getHospitalId());
@@ -2558,7 +2618,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 					mailService.sendEmail(userCollection.getEmailAddress(),
 							addExistingDoctorToClinicSub + " " + locationCollection.getLocationName(), body, null);
 				}
-
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3666,7 +3725,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (patient.getPatient() != null) {
 				BeanUtil.map(patient.getPatient(), esPatientDocument);
 			}
+
 			BeanUtil.map(patient, esPatientDocument);
+
 			if (patient.getBackendPatientId() != null)
 				esPatientDocument.setId(patient.getBackendPatientId());
 			if (patient.getReferredBy() != null)

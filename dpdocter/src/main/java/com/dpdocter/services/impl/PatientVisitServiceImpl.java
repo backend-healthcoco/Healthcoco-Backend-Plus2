@@ -1725,7 +1725,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							printSettings.getContentSetup().getInstructionAlign().getAlign());
 				} else {
 					parameters.put("instructionAlign", FieldAlign.VERTICAL.getAlign());
-				}
+				} 
 			}
 			if (printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getCustomHeader()
 					&& !printSettings.getHeaderSetup().getShowHeaderImage()) {
@@ -1962,6 +1962,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				if (patientDetails.getShowDate())
 					patientDetailList.add("<b>Date: </b>" + sdf.format(date));
 			}
+			
 
 			if (patientDetails.getShowBloodGroup() && patientCard != null
 					&& !DPDoctorUtils.anyStringEmpty(patientCard.getBloodGroup())) {
@@ -2019,6 +2020,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 			parameters.put("patientLeftText", patientLeftText);
 			parameters.put("patientRightText", patientRightText);
+			if (patientDetails.getShowBarcode()) {
+				String barcodeImageUrl = getFinalImageURL(patientCard.getBarcodeImageUrl());
+//				patientDetailList.add("<b>Barcode: </b>" + barcodeImageUrl);
+				parameters.put("barcode", barcodeImageUrl);
+			}	
+
 		}
 	}
 

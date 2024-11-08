@@ -26,12 +26,21 @@ public class PatientDetails {
 	private Boolean showHospitalId = false;
 
 	private Boolean showCity = false;
+	private Boolean showBarcode = false;
 
 	private PrintSettingsText style;
 
 	private Boolean showPatientDetailsInCertificate = true;
 
 	private String PIDKey = "PID";
+
+	public Boolean getShowBarcode() {
+		return showBarcode;
+	}
+
+	public void setShowBarcode(Boolean showBarcode) {
+		this.showBarcode = showBarcode;
+	}
 
 	public Boolean getShowCity() {
 		return showCity;

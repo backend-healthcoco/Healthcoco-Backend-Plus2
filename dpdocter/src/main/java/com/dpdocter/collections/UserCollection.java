@@ -103,7 +103,9 @@ public class UserCollection extends GenericCollection {
 	@Field
 	private String language;
 	
-	
+	@Field
+	private String barcodeImageUrl;
+
 	public Boolean getIsDentalChainVerified() {
 		return isDentalChainVerified;
 	}
@@ -348,6 +350,14 @@ public class UserCollection extends GenericCollection {
 	
 
 	
+	public String getBarcodeImageUrl() {
+		return barcodeImageUrl;
+	}
+
+	public void setBarcodeImageUrl(String barcodeImageUrl) {
+		this.barcodeImageUrl = barcodeImageUrl;
+	}
+
 	public UserCollection(ObjectId id, String title, String firstName, String lastName, String middleName,
 			String userName, char[] password, char[] salt, String emailAddress, String mobileNumber, String imageUrl,
 			String thumbnailUrl, Boolean isActive, Boolean isVerified, String coverImageUrl,
