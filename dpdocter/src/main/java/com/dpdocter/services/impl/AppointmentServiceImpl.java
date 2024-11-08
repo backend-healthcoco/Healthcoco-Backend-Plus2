@@ -1940,10 +1940,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 		case "CONFIRMED_APPOINTMENT_TO_PATIENT": {
 			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
 					+ (!branch.isEmpty() ? ", " + branch : "") + (clinicContactNum != "" ? ", " + clinicContactNum : "")
-					+ "    has been confirmed @ " + dateTime + (googleMapShortUrl != "" ? ", " + googleMapShortUrl : "")
-					+ ". Download Healthcoco App- " + patientAppBitLink;
+					+ " has been confirmed @ " + dateTime + ".-Healthcoco";
 			smsDetail.setUserName(patientName);
-			smsTrackDetail.setTemplateId("1307161191156377476");
+			smsTrackDetail.setTemplateId("1407172985966597334");
 		}
 			break;
 
@@ -2016,10 +2015,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 		case "RESCHEDULE_APPOINTMENT_TO_PATIENT": {
 			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "") + ","
 					+ (!branch.isEmpty() ? " " + branch : "") + (clinicContactNum != "" ? " " + clinicContactNum : "")
-					+ "  has been rescheduled @ " + dateTime + (googleMapShortUrl != "" ? ", " + googleMapShortUrl : "")
-					+ ". Download Healthcoco App- " + patientAppBitLink;
+					+ "  has been rescheduled @ " + dateTime + ". -Healthcoco";
 			smsDetail.setUserName(patientName);
-			smsTrackDetail.setTemplateId("1307161191460900446");
+			smsTrackDetail.setTemplateId("1407173097212398562");
 		}
 			break;
 
@@ -2035,10 +2033,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 			text = "Your online " + consultationType + " consultation with " + doctorName
 					+ (clinicName != "" ? ", " + clinicName : "") + (!branch.isEmpty() ? ", " + branch : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been confirmed @ " + dateTime
-					+ (googleMapShortUrl != "" ? ", " + googleMapShortUrl : "") + ". Download Healthcoco App- "
-					+ patientAppBitLink;
+					+ ". -Healthcoco";
 			smsDetail.setUserName(patientName);
-			smsTrackDetail.setTemplateId("1307161562814636124");
+			smsTrackDetail.setTemplateId("1407173097253596342");
 		}
 			break;
 
