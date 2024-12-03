@@ -28,4 +28,6 @@ public interface PrintSettingsService {
 
 	String createBlankPrint(String patientId, String locationId, String hospitalId, String doctorId);
 
+	String createPatientSticker(String patientId, String locationId, String hospitalId, String doctorId);
+
 }

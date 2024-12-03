@@ -259,4 +259,20 @@ public class PrintSettingsApi {
 		response.setData(printSettingsService.createBlankPrint(patientId, locationId, hospitalId, doctorId));
 		return response;
 	}
+	
+	
+	@Path(value = PathProxy.PrintSettingsUrls.PRINT_PATIENT_STICKER)
+	@GET
+	@ApiOperation(value = PathProxy.PrintSettingsUrls.PRINT_PATIENT_STICKER, notes = PathProxy.PrintSettingsUrls.PRINT_PATIENT_STICKER)
+	public Response<String> createPatientSticker(@PathParam("patientId") String patientId,
+			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId) {
+		if (DPDoctorUtils.anyStringEmpty(patientId)) {
+			logger.error("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<String> response = new Response<String>();
+		response.setData(printSettingsService.createPatientSticker(patientId, locationId, hospitalId, doctorId));
+		return response;
+	}
 }

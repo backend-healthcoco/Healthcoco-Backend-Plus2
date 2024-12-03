@@ -951,6 +951,8 @@ public interface PathProxy {
 		public static final String UPLOAD_SIGNATURE = "/upload/signature/";
 
 		public static final String BLANK_PRINT = "/blank/print/{patientId}";
+		
+		public static final String PRINT_PATIENT_STICKER = "/patientSticker/{patientId}";
 
 	}
 
