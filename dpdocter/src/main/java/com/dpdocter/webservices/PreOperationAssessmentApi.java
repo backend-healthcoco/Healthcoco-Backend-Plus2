@@ -75,7 +75,7 @@ public class PreOperationAssessmentApi {
 			@DefaultValue("0") @QueryParam(value = "page") int page,
 			@DefaultValue("0") @QueryParam(value = "size") int size,
 			@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
-		if (DPDoctorUtils.anyStringEmpty(patientId, hospitalId, locationId, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(patientId, hospitalId, locationId)) {
 			logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
