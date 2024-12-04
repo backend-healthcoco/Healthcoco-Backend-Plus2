@@ -161,9 +161,14 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			Criteria criteria = new Criteria("patientId").is(patientObjectId).and("locationId").is(locationObjectId)
-					.and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId);
+			Criteria criteria = new Criteria("patientId").is(patientObjectId);
 			criteria = criteria.and("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(locationObjectId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				criteria.and("hospitalId").is(hospitalObjectId);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(doctorObjectId);
 
 			Aggregation aggregation = null;
 			if (size > 0) {
@@ -177,7 +182,6 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 			response = mongoTemplate
 					.aggregate(aggregation, InitialAssessmentCollection.class, InitialAssessmentResponse.class)
 					.getMappedResults();
-
 		} catch (BusinessException e) {
 			logger.error("Error while getting assessment " + e.getMessage());
 			e.printStackTrace();
@@ -246,9 +250,16 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			Criteria criteria = new Criteria("patientId").is(patientObjectId).and("locationId").is(locationObjectId)
-					.and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId);
+			Criteria criteria = new Criteria("patientId").is(patientObjectId);
 			criteria = criteria.and("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(locationObjectId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				criteria.and("hospitalId").is(hospitalObjectId);
+			
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(doctorObjectId);
+
 
 			Aggregation aggregation = null;
 			if (size > 0) {
@@ -329,9 +340,15 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			Criteria criteria = new Criteria("patientId").is(patientObjectId).and("locationId").is(locationObjectId)
-					.and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId);
+			Criteria criteria = new Criteria("patientId").is(patientObjectId);
 			criteria = criteria.and("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(locationObjectId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				criteria.and("hospitalId").is(hospitalObjectId);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(doctorObjectId);
+
 
 			Aggregation aggregation = null;
 			if (size > 0) {
