@@ -2,12 +2,15 @@ package com.dpdocter.services.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.Age;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.PatientStickerJasperDetails;
@@ -50,7 +54,10 @@ import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrintSettingsService;
 import com.google.protobuf.TextFormat.ParseException;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 
+import common.util.web.BarcodeUtil;
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -75,6 +82,9 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 	@Value(value = "${image.path}")
 	private String imagePath;
+
+	@Value(value = "${jasper.print.patient.sticker.a4.fileName}")
+	private String patientStickerA4FileName;
 
 	@Autowired
 	private JasperReportService jasperReportService;
@@ -701,13 +711,6 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			String printSettingType) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
-		List<PatientStickerJasperDetails> patientStickerJasperDetails = null;
-
-		patientStickerJasperDetails = new ArrayList<PatientStickerJasperDetails>();
-
-		patientStickerJasperDetails.add(null);
-
-		parameters.put("isBlankPdf", true);
 
 		PrintSettingsCollection printSettings = null;
 		printSettings = printSettingsRepository
@@ -728,14 +731,83 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 		}
 
-		patientVisitService.generatePatientDetails(
-				(printSettings != null && printSettings.getHeaderSetup() != null
-						? printSettings.getHeaderSetup().getPatientDetails()
-						: null),
-				patient, null, patient.getLocalPatientName(), user.getMobileNumber(), parameters, new Date(),
-				printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
-		patientVisitService.generatePrintSetup(parameters, printSettings, doctorIdObj);
-		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "BLANKPDF-" + new Date().getTime();
+		DBObject dbObject = new BasicDBObject();
+		String dobString = null;
+
+		if (patient != null && patient.getDob() != null && patient.getDob().getAge() != null) {
+			String age = null;
+			Age ageObj = patient.getDob().getAge();
+			LocalDate dob = null;
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+			if (patient.getDob().getDays() > 0 && patient.getDob().getMonths() > 0 && patient.getDob().getYears() > 0) {
+				dob = LocalDate.parse(patient.getDob().getDays() + "/" + patient.getDob().getMonths() + "/"
+						+ patient.getDob().getYears(), formatter);
+			}
+
+			if (ageObj.getYears() > 14)
+				age = ageObj.getYears() + "yrs";
+			else {
+				if (ageObj.getYears() > 0)
+					age = ageObj.getYears() + "yrs";
+				else {
+					if (ageObj.getYears() > 0)
+						age = ageObj.getYears() + "yrs";
+					if (ageObj.getMonths() > 0) {
+						if (DPDoctorUtils.anyStringEmpty(age))
+							age = ageObj.getMonths() + "months";
+						else
+							age = age + " " + ageObj.getMonths() + " months";
+					}
+					if (ageObj.getDays() > 0) {
+						if (DPDoctorUtils.anyStringEmpty(age))
+							age = ageObj.getDays() + "days";
+						else
+							age = age + " " + ageObj.getDays() + "days";
+					}
+				}
+			}
+			if (!DPDoctorUtils.anyStringEmpty(age))
+				dobString = dob + " (" + age + ")";
+			else
+				dobString = dob + " (" + "--" + ")";
+
+		}
+		String barcodeImageUrl = null;
+		byte[] barcode = null;
+		if (patient.getBarcodeImageUrl() == null) {
+			// BARCODE
+
+			try {
+				barcode = BarcodeUtil.generateBarcode(patient.getUserId().toString());
+
+				FileDetails fileDetail = new FileDetails();
+				fileDetail.setFileEncoded(Base64.encodeBase64String(barcode));
+
+				fileDetail.setFileName("UserBarcode" + (new Date()).getTime());
+				fileDetail.setFileExtension("jpg");
+				fileDetail.setFileDecoded(new String(barcode));
+				String pathBarcode = "user" + File.separator + patient.getLocalPatientName();
+				ImageURLResponse imageURLResponse1 = fileManager.saveImageAndReturnImageUrl(fileDetail, pathBarcode,
+						false);
+				barcodeImageUrl = getFinalImageURL(imageURLResponse1.getImageUrl());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else
+			barcodeImageUrl = getFinalImageURL(patient.getBarcodeImageUrl());
+
+		parameters.put("localPatientName", patient.getLocalPatientName() != null ? patient.getLocalPatientName() : "");
+		parameters.put("pid", patient.getPID() != null ? patient.getPID() : "--");
+		parameters.put("gender", patient.getGender() != null ? patient.getGender() : "--");
+		parameters.put("dob", dobString != null ? dobString : "--");
+		parameters.put("barcode", barcodeImageUrl != null ? barcodeImageUrl : "");
+
+		parameters.put("patientSticker", dbObject);
+
+		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "PATIENTSTICKER-"
+				+ new Date().getTime();
 		String layout = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 				: "PORTRAIT";
@@ -759,10 +831,18 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 						: 20)
 				: 20;
 
-		response = jasperReportService.createPDF(ComponentType.PATIENT_STICKER, parameters, null, layout, pageSize,
-				topMargin, bottonMargin, leftMargin, rightMargin, 12, pdfName.replaceAll("\\s+", ""));
+		response = jasperReportService.createPDF(ComponentType.PATIENT_STICKER, parameters, patientStickerA4FileName,
+				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin, 10, pdfName.replaceAll("\\s+", ""));
 
 		return response;
+	}
+
+	public static Byte[] toObject(byte[] byteArray) {
+		Byte[] byteObjects = new Byte[byteArray.length];
+		for (int i = 0; i < byteArray.length; i++) {
+			byteObjects[i] = byteArray[i]; // Auto-boxing
+		}
+		return byteObjects;
 	}
 
 }

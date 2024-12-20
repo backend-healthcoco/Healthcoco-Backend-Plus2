@@ -44,6 +44,7 @@ public class MessageResponse extends GenericCollection {
 
 	private String template_id;
 	private String status;
+	private String code;
 
 	public String getBody() {
 		return body;
@@ -195,6 +196,14 @@ public class MessageResponse extends GenericCollection {
 
 	public void setTemplate_id(String template_id) {
 		this.template_id = template_id;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 }

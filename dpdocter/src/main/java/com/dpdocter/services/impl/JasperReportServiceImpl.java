@@ -49,6 +49,7 @@ import net.sf.jasperreports.engine.design.JRDesignImage;
 import net.sf.jasperreports.engine.design.JRDesignLine;
 import net.sf.jasperreports.engine.design.JRDesignRectangle;
 import net.sf.jasperreports.engine.design.JRDesignSection;
+import net.sf.jasperreports.engine.design.JRDesignStaticText;
 import net.sf.jasperreports.engine.design.JRDesignStyle;
 import net.sf.jasperreports.engine.design.JRDesignSubreport;
 import net.sf.jasperreports.engine.design.JRDesignSubreportParameter;
@@ -215,6 +216,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.VACCINATION.getType())) {
 			jasperDesign = JRXmlLoader
 					.load(JASPER_TEMPLATES_RESOURCE + "new/" + "mongo-vaccinations_subreport-A4.jrxml");
+		} else if (componentType.getType().equalsIgnoreCase(ComponentType.PATIENT_STICKER.getType())) {
+			jasperDesign = JRXmlLoader
+					.load(JASPER_TEMPLATES_RESOURCE + "new/" + "mongo-patient-sticker-report-A4.jrxml");
 		} else {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-multiple-data-A4.jrxml");
 		}
@@ -281,7 +285,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 			if (parameters.get("headerImage") != null && !parameters.get("headerImage").toString().isEmpty()) {
 				jasperDesign.setPageHeader(createPageImageHeader(columnWidth, parameters));
 			} else {
-				jasperDesign.setPageHeader(createPageHeader(dsr, columnWidth, showTableOne, parameters));
+				if (showTableOne != null)
+					jasperDesign.setPageHeader(createPageHeader(dsr, columnWidth, showTableOne, parameters));
 			}
 
 			if (parameters.get("headerHtml") != null && !String.valueOf(parameters.get("headerHtml")).trim().isEmpty())
@@ -425,6 +430,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.VACCINATION.getType()))
 			createVaccinationReport(jasperDesign, parameters, contentFontSize, columnWidth, pageWidth, pageHeight,
 					normalStyle);
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.PATIENT_STICKER.getType()))
+			createPatientStickerReport(jasperDesign, parameters, contentFontSize, columnWidth, pageWidth, pageHeight,
+					normalStyle);
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.BLANK.getType()))
 			createBlankPdfReport(jasperDesign, parameters, contentFontSize, columnWidth, pageWidth, pageHeight,
 					normalStyle);
@@ -465,7 +473,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.DIET_PLAN.getType())) {
 			if (parameters.get("footerImage") != null && !parameters.get("footerImage").toString().isEmpty()) {
 				jasperDesign.setPageFooter(createPageImageFooter(columnWidth, parameters, contentFontSize));
-			} else {
+			} else if (parameters.get("footerImage") != null) {
 				jasperDesign.setPageFooter(createPageFooter(columnWidth, parameters, contentFontSize));
 			}
 
@@ -473,6 +481,117 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		return jasperDesign;
 
+	}
+
+	private void createPatientStickerReport(JasperDesign jasperDesign, Map<String, Object> parameters,
+			Integer contentFontSize, int columnWidth, int pageWidth, int pageHeight, JRDesignStyle normalStyle) {
+		int columnSpacing = 10;
+		// Calculate column width
+		columnWidth = (pageWidth - jasperDesign.getLeftMargin() - jasperDesign.getRightMargin()
+				- (jasperDesign.getColumnCount() - 1) * jasperDesign.getColumnSpacing())
+				/ jasperDesign.getColumnCount();
+		jasperDesign.setColumnWidth(columnWidth);
+		jasperDesign.setColumnSpacing(columnSpacing);
+
+		pageWidth = 595; // A4 width in points
+		pageHeight = 842; // A4 height in points
+
+		jasperDesign.setPageWidth(pageWidth);
+		jasperDesign.setPageHeight(pageHeight);
+		jasperDesign.setLeftMargin(20);
+		jasperDesign.setRightMargin(20);
+		jasperDesign.setTopMargin(10);
+		jasperDesign.setBottomMargin(10);
+
+		// Calculate usable height for rows (excluding margins)
+		int rowHeight = 160; // Adjusted to fit all elements and barcode
+		// Create 4 rows for each column
+		for (int i = 0; i < 5; i++) {
+			JRDesignBand detailBand = new JRDesignBand();
+			detailBand.setHeight(rowHeight);
+
+			try {
+				// Add fields in each row
+				addFieldToDetailBand(detailBand, "localPatientName", "Patient Name:", 0, 0, columnWidth,
+						contentFontSize);
+				addFieldToDetailBand(detailBand, "pid", "PID:", 0, 20, columnWidth, contentFontSize);
+				addFieldToDetailBand(detailBand, "gender", "Gender:", 0, 40, columnWidth, contentFontSize);
+				addFieldToDetailBand(detailBand, "dob", "DOB (Age):", 0, 60, columnWidth, contentFontSize);
+				// Add Barcode if present
+				if (parameters.get("barcode") != null) {
+					addBarcodeToDetailBand(jasperDesign, detailBand, "barcode", 0, 80, columnWidth, 20);
+				}
+				// Vertical line
+//				jrDesignLine = new JRDesignLine();
+//				jrDesignLine.setX(columnWidth / 2 + columnSpacing / 2);
+//				jrDesignLine.setY(0);
+//				jrDesignLine.setHeight(rowHeight);
+//				jrDesignLine.setWidth(1);
+//				jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+//				detailBand.addElement(jrDesignLine);
+
+				// Item 2 (placed next to Item 1)
+				addFieldToDetailBand(detailBand, "localPatientName", "Patient Name:", columnWidth / 2, 0,
+						columnWidth / 2, contentFontSize);
+				addFieldToDetailBand(detailBand, "pid", "PID:", columnWidth / 2, 20, columnWidth / 2, contentFontSize);
+				addFieldToDetailBand(detailBand, "gender", "Gender:", columnWidth / 2, 40, columnWidth / 2,
+						contentFontSize);
+				addFieldToDetailBand(detailBand, "dob", "DOB (Age):", columnWidth / 2, 60, columnWidth / 2,
+						contentFontSize);
+				// Add Barcode in the second column if present
+				if (parameters.get("barcode") != null) {
+					addBarcodeToDetailBand(jasperDesign, detailBand, "barcode", columnWidth / 2, 80, columnWidth / 2,
+							20);
+				}
+//				 // Horizontal line
+//				band = new JRDesignBand();
+//				band.setHeight(1);
+//				jrDesignLine = new JRDesignLine();
+//				jrDesignLine.setX(0);
+//				jrDesignLine.setY(rowHeight - 1);
+//				jrDesignLine.setHeight(1);
+//				jrDesignLine.setWidth(columnWidth * 2 + columnSpacing);
+//				jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+//				detailBand.addElement(jrDesignLine);
+
+			} catch (JRException e) {
+				e.printStackTrace();
+			}
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(detailBand);
+		}
+	}
+
+	private void addFieldToDetailBand(JRDesignBand detailBand, String fieldName, String label, int x, int y, int width,
+			int fontSize) throws JRException {
+		JRDesignStaticText staticText = new JRDesignStaticText();
+		staticText.setText(label);
+		staticText.setX(x);
+		staticText.setY(y);
+		staticText.setWidth(80); // Label width
+		staticText.setHeight(20);
+		detailBand.addElement(staticText);
+
+		JRDesignTextField textField = new JRDesignTextField();
+		textField.setExpression(new JRDesignExpression("$P{" + fieldName + "}"));
+		textField.setX(x + 80); // Position after label
+		textField.setY(y);
+		textField.setWidth(width - 80); // Remaining width
+		textField.setHeight(20);
+		detailBand.addElement(textField);
+	}
+
+	private JRBand addBarcodeToDetailBand(JasperDesign jasperDesign, JRDesignBand detailBand, String fieldName, int x,
+			int y, int width, int height) throws JRException {
+
+		JRDesignImage barcodeImage = new JRDesignImage(null);
+		barcodeImage.setX(x);
+		barcodeImage.setY(y);
+		barcodeImage.setWidth(width);
+		barcodeImage.setHeight(height);
+		barcodeImage.setExpression(new JRDesignExpression("$P{" + fieldName + "}"));
+//		barcodeImage.setHorizontalImageAlign(HorizontalImageAlignEnum.RIGHT);
+		detailBand.addElement(barcodeImage);
+		return band;
 	}
 
 	private JRBand addMonitor(Map<String, Object> parameters, Integer contentFontSize, int columnWidth, int pageWidth,
@@ -2741,6 +2860,19 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	}
 
+	private JRBand createVerticalLine(int xPosition, int height) {
+		band = new JRDesignBand();
+		band.setHeight(1);
+		jrDesignLine = new JRDesignLine();
+		jrDesignLine.setX(xPosition);
+		jrDesignLine.setY(0);
+		jrDesignLine.setHeight(height);
+		jrDesignLine.setWidth(1);
+		jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+		band.addElement(jrDesignLine);
+		return band;
+	}
+
 	private JRBand createLine(int yPoint, int columnWidth, PositionTypeEnum positionTypeEnum) {
 		band = new JRDesignBand();
 		band.setHeight(1);
@@ -2758,14 +2890,14 @@ public class JasperReportServiceImpl implements JasperReportService {
 			Boolean showTableOne, Object headerHtml) throws JRException {
 
 		band = new JRDesignBand();
-	    band.setHeight(40); // Increase band height if needed
-	    band.setPrintWhenExpression(new JRDesignExpression("!$P{barcode}.equals(null) && !$P{barcode}.isEmpty()"));
+		band.setHeight(40); // Increase band height if needed
+		band.setPrintWhenExpression(new JRDesignExpression("!$P{barcode}.equals(null) && !$P{barcode}.isEmpty()"));
 		JRDesignImage jrDesignImage = new JRDesignImage(null);
-	    jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
-	    expression = new JRDesignExpression();
+		jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
+		expression = new JRDesignExpression();
 		expression.setText("$P{barcode}");
 		jrDesignImage.setExpression(expression);
-		
+
 		// Align barcode to the right
 		int pageWidth = jasperDesign.getPageWidth(); // Get the page width from the JasperDesign
 		int rightMargin = jasperDesign.getRightMargin(); // Get the right margin
