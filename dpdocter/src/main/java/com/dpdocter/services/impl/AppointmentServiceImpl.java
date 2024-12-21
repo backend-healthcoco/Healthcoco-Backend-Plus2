@@ -1649,7 +1649,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 		}
 	}
 
-
 	private void sendPushNotification(String type, String userId, String mobileNumber, String patientName,
 			String appointmentCollectionId, String appointmentId, String dateTime, String doctorName, String clinicName,
 			String clinicContactNum, String branch, String consultationType) {
@@ -5327,10 +5326,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 							: 0) / 60;
 					min = (calenderResponse.getTime().getFromTime() != null ? calenderResponse.getTime().getFromTime()
 							: 0) % 60;
-					if (hour > 12) {
-						hour = (hour % 12);
-						calenderJasperBean.setTiming(hour + ":" + (min == 0 ? "00" : min) + " PM - ");
-
+					if (hour >= 12) {
+						if (hour == 12) {
+							// 12 PM case
+							calenderJasperBean.setTiming(
+									calenderJasperBean.getTiming() + hour + ":" + (min == 0 ? "00" : min) + " PM - ");
+						} else {
+							hour = (hour % 12);
+							calenderJasperBean.setTiming(hour + ":" + (min == 0 ? "00" : min) + " PM - ");
+						}
 					} else {
 						if (hour == 0) {
 							hour = 12;
@@ -5342,11 +5346,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 							/ 60;
 					min = (calenderResponse.getTime().getToTime() != null ? calenderResponse.getTime().getToTime() : 0)
 							% 60;
-					if (hour > 12) {
-						hour = (hour % 12);
-						calenderJasperBean.setTiming(
-								calenderJasperBean.getTiming() + hour + ":" + (min == 0 ? "00" : min) + " PM");
-
+					if (hour >= 12) {
+						if (hour == 12) {
+							// 12 PM case
+							calenderJasperBean.setTiming(
+									calenderJasperBean.getTiming() + hour + ":" + (min == 0 ? "00" : min) + " PM");
+						} else {
+							hour = (hour % 12);
+							calenderJasperBean.setTiming(
+									calenderJasperBean.getTiming() + hour + ":" + (min == 0 ? "00" : min) + " PM");
+						}
 					} else {
 						if (hour == 0) {
 							hour = 12;

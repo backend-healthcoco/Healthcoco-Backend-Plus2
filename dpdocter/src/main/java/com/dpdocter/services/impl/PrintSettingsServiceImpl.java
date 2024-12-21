@@ -800,10 +800,10 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 		parameters.put("localPatientName", patient.getLocalPatientName() != null ? patient.getLocalPatientName() : "");
 		parameters.put("pid", patient.getPID() != null ? patient.getPID() : "--");
+		parameters.put("mobileNumber", user.getMobileNumber() != null ? user.getMobileNumber() : "--");
 		parameters.put("gender", patient.getGender() != null ? patient.getGender() : "--");
-		parameters.put("dob", dobString != null ? dobString : "--");
+        parameters.put("dob", dobString != null ? dobString : "--");
 		parameters.put("barcode", barcodeImageUrl != null ? barcodeImageUrl : "");
-
 		parameters.put("patientSticker", dbObject);
 
 		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "PATIENTSTICKER-"

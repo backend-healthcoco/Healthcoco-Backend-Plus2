@@ -487,9 +487,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 			Integer contentFontSize, int columnWidth, int pageWidth, int pageHeight, JRDesignStyle normalStyle) {
 		int columnSpacing = 10;
 		// Calculate column width
-		columnWidth = (pageWidth - jasperDesign.getLeftMargin() - jasperDesign.getRightMargin()
-				- (jasperDesign.getColumnCount() - 1) * jasperDesign.getColumnSpacing())
-				/ jasperDesign.getColumnCount();
+		columnWidth = (pageWidth - jasperDesign.getLeftMargin() - jasperDesign.getRightMargin() - 2 * columnSpacing)
+				/ 3;
 		jasperDesign.setColumnWidth(columnWidth);
 		jasperDesign.setColumnSpacing(columnSpacing);
 
@@ -504,55 +503,57 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jasperDesign.setBottomMargin(10);
 
 		// Calculate usable height for rows (excluding margins)
-		int rowHeight = 160; // Adjusted to fit all elements and barcode
-		// Create 4 rows for each column
-		for (int i = 0; i < 5; i++) {
+		int rowHeight = 140; // Adjusted to fit all elements and barcode
+
+		for (int i = 0; i < 6; i++) {
 			JRDesignBand detailBand = new JRDesignBand();
 			detailBand.setHeight(rowHeight);
 
 			try {
-				// Add fields in each row
 				addFieldToDetailBand(detailBand, "localPatientName", "Patient Name:", 0, 0, columnWidth,
 						contentFontSize);
-				addFieldToDetailBand(detailBand, "pid", "PID:", 0, 20, columnWidth, contentFontSize);
-				addFieldToDetailBand(detailBand, "gender", "Gender:", 0, 40, columnWidth, contentFontSize);
-				addFieldToDetailBand(detailBand, "dob", "DOB (Age):", 0, 60, columnWidth, contentFontSize);
-				// Add Barcode if present
+				addFieldToDetailBand(detailBand, "pid", "PID:", 0, 12, columnWidth, contentFontSize); // Adjusted
+																										// spacing
+				addFieldToDetailBand(detailBand, "mobileNumber", "Mobile No.:", 0, 24, columnWidth, contentFontSize); // Adjusted
+																														// spacing
+				addFieldToDetailBand(detailBand, "gender", "Gender:", 0, 36, columnWidth, contentFontSize); // Adjusted
+																											// spacing
+				addFieldToDetailBand(detailBand, "dob", "DOB (Age):", 0, 48, columnWidth, contentFontSize); // Adjusted
+																											// spacing
 				if (parameters.get("barcode") != null) {
-					addBarcodeToDetailBand(jasperDesign, detailBand, "barcode", 0, 80, columnWidth, 20);
+					addBarcodeToDetailBand(jasperDesign, detailBand, "barcode", 0, 70, columnWidth, 20);
 				}
-				// Vertical line
-//				jrDesignLine = new JRDesignLine();
-//				jrDesignLine.setX(columnWidth / 2 + columnSpacing / 2);
-//				jrDesignLine.setY(0);
-//				jrDesignLine.setHeight(rowHeight);
-//				jrDesignLine.setWidth(1);
-//				jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
-//				detailBand.addElement(jrDesignLine);
 
-				// Item 2 (placed next to Item 1)
-				addFieldToDetailBand(detailBand, "localPatientName", "Patient Name:", columnWidth / 2, 0,
-						columnWidth / 2, contentFontSize);
-				addFieldToDetailBand(detailBand, "pid", "PID:", columnWidth / 2, 20, columnWidth / 2, contentFontSize);
-				addFieldToDetailBand(detailBand, "gender", "Gender:", columnWidth / 2, 40, columnWidth / 2,
-						contentFontSize);
-				addFieldToDetailBand(detailBand, "dob", "DOB (Age):", columnWidth / 2, 60, columnWidth / 2,
-						contentFontSize);
-				// Add Barcode in the second column if present
+				addFieldToDetailBand(detailBand, "localPatientName", "Patient Name:", columnWidth + columnSpacing, 0,
+						columnWidth, contentFontSize);
+				addFieldToDetailBand(detailBand, "pid", "PID:", columnWidth + columnSpacing, 12, columnWidth,
+						contentFontSize); // Adjusted spacing
+				addFieldToDetailBand(detailBand, "mobileNumber", "Mobile No.:", columnWidth + columnSpacing, 24,
+						columnWidth, contentFontSize); // Adjusted spacing
+				addFieldToDetailBand(detailBand, "gender", "Gender:", columnWidth + columnSpacing, 36, columnWidth,
+						contentFontSize); // Adjusted spacing
+				addFieldToDetailBand(detailBand, "dob", "DOB (Age):", columnWidth + columnSpacing, 48, columnWidth,
+						contentFontSize); // Adjusted spacing
 				if (parameters.get("barcode") != null) {
-					addBarcodeToDetailBand(jasperDesign, detailBand, "barcode", columnWidth / 2, 80, columnWidth / 2,
-							20);
+					addBarcodeToDetailBand(jasperDesign, detailBand, "barcode", columnWidth + columnSpacing, 70,
+							columnWidth, 20);
 				}
-//				 // Horizontal line
-//				band = new JRDesignBand();
-//				band.setHeight(1);
-//				jrDesignLine = new JRDesignLine();
-//				jrDesignLine.setX(0);
-//				jrDesignLine.setY(rowHeight - 1);
-//				jrDesignLine.setHeight(1);
-//				jrDesignLine.setWidth(columnWidth * 2 + columnSpacing);
-//				jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
-//				detailBand.addElement(jrDesignLine);
+
+				// Column 3
+				addFieldToDetailBand(detailBand, "localPatientName", "Patient Name:", 2 * (columnWidth + columnSpacing),
+						0, columnWidth, contentFontSize);
+				addFieldToDetailBand(detailBand, "pid", "PID:", 2 * (columnWidth + columnSpacing), 12, columnWidth,
+						contentFontSize); // Adjusted spacing
+				addFieldToDetailBand(detailBand, "mobileNumber", "Mobile No.:", 2 * (columnWidth + columnSpacing), 24,
+						columnWidth, contentFontSize); // Adjusted spacing
+				addFieldToDetailBand(detailBand, "gender", "Gender:", 2 * (columnWidth + columnSpacing), 36,
+						columnWidth, contentFontSize); // Adjusted spacing
+				addFieldToDetailBand(detailBand, "dob", "DOB (Age):", 2 * (columnWidth + columnSpacing), 48,
+						columnWidth, contentFontSize); // Adjusted spacing
+				if (parameters.get("barcode") != null) {
+					addBarcodeToDetailBand(jasperDesign, detailBand, "barcode", 2 * (columnWidth + columnSpacing), 70,
+							columnWidth, 20);
+				}
 
 			} catch (JRException e) {
 				e.printStackTrace();
@@ -582,7 +583,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	private JRBand addBarcodeToDetailBand(JasperDesign jasperDesign, JRDesignBand detailBand, String fieldName, int x,
 			int y, int width, int height) throws JRException {
-
+	
 		JRDesignImage barcodeImage = new JRDesignImage(null);
 		barcodeImage.setX(x);
 		barcodeImage.setY(y);
