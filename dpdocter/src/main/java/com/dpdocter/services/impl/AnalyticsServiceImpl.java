@@ -1,8 +1,11 @@
 package com.dpdocter.services.impl;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.bson.Document;
@@ -35,6 +38,7 @@ import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.ModeOfPayment;
+import com.dpdocter.enums.PaymentStatusType;
 import com.dpdocter.enums.SearchType;
 import com.dpdocter.enums.UnitType;
 import com.dpdocter.exceptions.BusinessException;
@@ -42,6 +46,8 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.AllAnalyticResponse;
 import com.dpdocter.response.AmountDueAnalyticsDataResponse;
 import com.dpdocter.response.AnalyticResponse;
+import com.dpdocter.response.DailyReportAnalyticItem;
+import com.dpdocter.response.DailyReportAnalyticResponse;
 import com.dpdocter.response.DoctorVisitAnalyticResponse;
 import com.dpdocter.response.ExpenseCountResponse;
 import com.dpdocter.response.IncomeAnalyticsDataResponse;
@@ -49,9 +55,11 @@ import com.dpdocter.response.InvoiceAnalyticsDataDetailResponse;
 import com.dpdocter.response.PaymentAnalyticsDataResponse;
 import com.dpdocter.response.PaymentDetailsAnalyticsDataResponse;
 import com.dpdocter.services.AnalyticsService;
+import com.ibm.icu.impl.CalendarUtil;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
+import common.util.web.DateUtil;
 
 //Billing analytic 
 @Service
@@ -2153,7 +2161,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
 
-		//
+			//
 			criteria.and("discarded").is(false);
 			criteria.and("createdTime").gte(new DateTime(from)).lte(new DateTime(to));
 			Aggregation aggregation = null;
@@ -2200,7 +2208,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Criteria criteriaPrescription = new Criteria();
 			criteriaPrescription.and("discarded").is(false);
 			criteriaPrescription.and("createdTime").gte(new DateTime(from)).lte(new DateTime(to));
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteriaPrescription = criteriaPrescription.and("doctorId").is(new ObjectId(doctorId));
 			}
@@ -2212,7 +2220,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteriaPrescription = criteriaPrescription.and("hospitalId").is(new ObjectId(hospitalId));
 			}
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteriaPrescription));
-			response.setTotalPrescription((int) mongoTemplate.count(new Query(criteriaPrescription), PrescriptionCollection.class));
+			response.setTotalPrescription(
+					(int) mongoTemplate.count(new Query(criteriaPrescription), PrescriptionCollection.class));
 
 			//
 			Criteria criteria1 = new Criteria();
@@ -2303,6 +2312,143 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				response.setTotalPayment(amountDueAnalyticsDataResponse.getInvoiced());
 				response.setTotalAmountDue(amountDueAnalyticsDataResponse.getAmountDue());
 				response.setTotalDiscount(amountDueAnalyticsDataResponse.getTotalDiscount());
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While getting all analytic");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting all analytic");
+		}
+
+		return response;
+
+	}
+
+	@Override
+	public DailyReportAnalyticResponse getDailyReportAnalytics(String doctorId, String locationId, String hospitalId,
+			String fromDate, String toDate) {
+		DailyReportAnalyticResponse response = new DailyReportAnalyticResponse();
+		try {
+			Criteria criteria = new Criteria();
+			Date from = null;
+			Date to = null;
+
+			from = DateUtil.getStartOfDay(new Date());
+			to = DateUtil.getEndOfDay(new Date());
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria = criteria.and("locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+
+			//
+			criteria.and("discarded").is(false);
+			criteria.and("createdTime").gte(new DateTime(from)).lte(new DateTime(to));
+			Aggregation aggregation = null;
+
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"), Aggregation.unwind("patient"),
+					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
+					Aggregation.lookup("doctor_patient_invoice_cl", "invoiceId", "_id", "invoice"),
+					new CustomAggregationOperation(new Document("$project",
+							new BasicDBObject().append("_id", "$_id").append("date", "$receivedDate")
+									.append("patientId", "$patient.PID").append("invoiceId", "$invoiceId")
+									.append("patientName", "$patient.localPatientName")
+									.append("locationName", "$location.locationName")
+									.append("serviceFees", new BasicDBObject("$sum", "$invoice.totalCost"))
+									.append("discount", new BasicDBObject("$sum", new BasicDBObject("$map",
+											new BasicDBObject("input", "$invoice.totalDiscount")
+													.append("as", "discount").append("in", "$$discount.value"))))
+									// Add new patient/returning patient logic
+									.append("isNewPatient", new BasicDBObject("$cond",
+											Arrays.asList(new BasicDBObject("$gte",
+													Arrays.asList("$patient.createdTime", from)), true, false)))
+									.append("isReturningPatient", new BasicDBObject("$cond",
+											Arrays.asList(new BasicDBObject("$lt",
+													Arrays.asList("$patient.createdTime", from)), true, false)))
+									.append("totalAmountPaid", "$amountPaid")
+									.append("totalAmountPending", "$balanceAmount")
+									.append("advancedAmount", "$amountPaid").append("paymentMode", "$modeOfPayment")
+									.append("consultingDentist",
+											new BasicDBObject("$concat",
+													Arrays.asList("$doctor.title", " ", "$doctor.firstName")))
+									.append("serviceName", "$invoice.invoiceItems.name"))),
+
+					Aggregation.sort(Direction.DESC, "createdTime"));
+			System.out.println("aggregation" + aggregation);
+			List<DailyReportAnalyticItem> dailyReportAnalyticItems = mongoTemplate
+					.aggregate(aggregation, DoctorPatientReceiptCollection.class, DailyReportAnalyticItem.class)
+					.getMappedResults();
+
+			double finalTotalAmount = 0.0;
+			double finalTotalAmountPending = 0.0;
+			double finalTotalDiscount = 0.0;
+			double finalTotalServiceFees = 0.0;
+			double finalTotalAmountByCash = 0.0;
+			double finalTotalAmountByCard = 0.0;
+
+			if (dailyReportAnalyticItems != null) {
+				response.setDailyReportAnalyticItem(dailyReportAnalyticItems);
+				// Use a Map to track already processed patients
+				Map<String, Double> patientTotalAmountPaidMap = new HashMap<>();
+				Map<String, Double> patientTotalDiscountMap = new HashMap<>();
+				Map<String, Double> patientTotalAmountPendingMap = new HashMap<>();
+
+				for (DailyReportAnalyticItem dailyReportAnalyticItem : dailyReportAnalyticItems) {
+					String invoiceId = dailyReportAnalyticItem.getInvoiceId();
+
+					// If the patientId hasn't been processed yet, add the totalAmountPaid to the
+					// map
+					if (!patientTotalAmountPaidMap.containsKey(invoiceId)) {
+						patientTotalAmountPaidMap.put(invoiceId, dailyReportAnalyticItem.getServiceFees());
+						patientTotalDiscountMap.put(invoiceId, dailyReportAnalyticItem.getDiscount());
+						patientTotalAmountPendingMap.put(invoiceId, dailyReportAnalyticItem.getTotalAmountPending());
+					}
+
+					finalTotalAmount += dailyReportAnalyticItem.getTotalAmountPaid();
+
+					// Payment Status
+					dailyReportAnalyticItem.setPaymentStatus(PaymentStatusType.PAID);
+
+					// Accumulate totals based on payment mode
+					if (dailyReportAnalyticItem.getPaymentMode()
+							.equals(dailyReportAnalyticItem.getPaymentMode().CASH)) {
+						finalTotalAmountByCash += dailyReportAnalyticItem.getTotalAmountPaid();
+					}
+
+					if (dailyReportAnalyticItem.getPaymentMode().equals(dailyReportAnalyticItem.getPaymentMode().CARD)
+							|| dailyReportAnalyticItem.getPaymentMode()
+									.equals(dailyReportAnalyticItem.getPaymentMode().ONLINE)
+							|| dailyReportAnalyticItem.getPaymentMode()
+									.equals(dailyReportAnalyticItem.getPaymentMode().CHEQUE)
+							|| dailyReportAnalyticItem.getPaymentMode()
+									.equals(dailyReportAnalyticItem.getPaymentMode().UPI)
+							|| dailyReportAnalyticItem.getPaymentMode()
+									.equals(dailyReportAnalyticItem.getPaymentMode().WALLET)) {
+						finalTotalAmountByCard += dailyReportAnalyticItem.getTotalAmountPaid();
+					}
+				}
+
+				// Calculate the final total amount for unique patients
+				finalTotalServiceFees = patientTotalAmountPaidMap.values().stream().mapToDouble(Double::doubleValue)
+						.sum();
+				finalTotalAmountPending = patientTotalAmountPendingMap.values().stream().mapToDouble(Double::doubleValue)
+						.sum();
+				finalTotalDiscount = patientTotalDiscountMap.values().stream().mapToDouble(Double::doubleValue).sum();
+				// Set the final totals in the response
+				response.setTotalAmountByCash(finalTotalAmountByCash);
+				response.setTotalAmountByCard(finalTotalAmountByCard);
+				response.setTotalAmountPaid(finalTotalAmount);
+				response.setTotalAmountPending(finalTotalAmountPending);
+				response.setTotalDiscount(finalTotalDiscount);
+				response.setTotalServiceFees(finalTotalServiceFees);
 			}
 
 		} catch (Exception e) {

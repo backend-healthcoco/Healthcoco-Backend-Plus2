@@ -35,6 +35,7 @@ import com.dpdocter.response.AppointmentAnalyticResponse;
 import com.dpdocter.response.AppointmentAverageTimeAnalyticResponse;
 import com.dpdocter.response.AppointmentBookedByCountResponse;
 import com.dpdocter.response.BookedAndCancelAppointmentCount;
+import com.dpdocter.response.DailyReportAnalyticResponse;
 import com.dpdocter.response.DoctorAnalyticPieChartResponse;
 import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
 import com.dpdocter.response.DoctorPatientAnalyticResponse;
@@ -95,6 +96,21 @@ public class AnalyticsAPI {
 		return response;
 	}
 
+
+	@Path(value = PathProxy.AnalyticsUrls.GET_DAILY_REPORT_ANALYTIC)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_DAILY_REPORT_ANALYTIC, notes = PathProxy.AnalyticsUrls.GET_DAILY_REPORT_ANALYTIC)
+	public Response<DailyReportAnalyticResponse> getDailyReportAnalytics(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate) {
+		DailyReportAnalyticResponse patientAnalyticResponse = analyticsService.getDailyReportAnalytics(doctorId, locationId,
+				hospitalId, fromDate, toDate);
+
+		Response<DailyReportAnalyticResponse> response = new Response<DailyReportAnalyticResponse>();
+		response.setData(patientAnalyticResponse);
+		return response;
+	}
+	
 	@Path(value = PathProxy.AnalyticsUrls.GET_PATIENT_ANALYTICS_DATA)
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PATIENT_ANALYTICS_DATA, notes = PathProxy.AnalyticsUrls.GET_PATIENT_ANALYTICS_DATA)

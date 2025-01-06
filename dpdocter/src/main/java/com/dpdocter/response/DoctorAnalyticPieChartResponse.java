@@ -5,6 +5,9 @@ public class DoctorAnalyticPieChartResponse {
 	private String id;
 
 	private String firstName;
+	private String clinicName;
+
+	private String treatmentName;
 
 	private long count;
 
@@ -30,6 +33,22 @@ public class DoctorAnalyticPieChartResponse {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getClinicName() {
+		return clinicName;
+	}
+
+	public void setClinicName(String clinicName) {
+		this.clinicName = clinicName;
+	}
+
+	public String getTreatmentName() {
+		return treatmentName;
+	}
+
+	public void setTreatmentName(String treatmentName) {
+		this.treatmentName = treatmentName;
 	}
 
 }

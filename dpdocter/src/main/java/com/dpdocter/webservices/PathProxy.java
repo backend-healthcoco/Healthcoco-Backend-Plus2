@@ -1755,6 +1755,7 @@ public interface PathProxy {
 		public static final String GET_PAYMENT_SETTLEMENT = "payment/settlements";
 		public static final String GET_PATIENT_PAYMENT_SETTLEMENTS = "patients/payment/settlements";
 		public static final String GET_ALL_ANALYTIC = "getAll";
+		public static final String GET_DAILY_REPORT_ANALYTIC = "getDailyReportAnalytics";
 
 	}
 

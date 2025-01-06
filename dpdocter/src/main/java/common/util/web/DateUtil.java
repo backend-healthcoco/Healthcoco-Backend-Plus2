@@ -45,7 +45,7 @@ public class DateUtil {
 		dateTime.plusDays(daysToBeAdded);
 		return dateTime.getMillis();
 	}
-	
+
 	public static long subtractDaysInCurrentDt(int daysToBeSubracted, TIME_RESET_ENUM timeReset) {
 		Calendar calendar = getCurrentDtCal(DEFAULT_TIMEZONE, timeReset);
 		DateTime dateTime = new DateTime(calendar.getTimeInMillis());
@@ -55,7 +55,8 @@ public class DateUtil {
 
 	public static Date addDaysInCurrentDate(int daysToBeAdded, TIME_RESET_ENUM timeReset) {
 		Calendar calendar = getCurrentDtCal(DEFAULT_TIMEZONE, timeReset);
-		//long aftrDaysAddMillis = calendar.getTimeInMillis() + (daysToBeAdded * ONE_DAY_TIME);
+		// long aftrDaysAddMillis = calendar.getTimeInMillis() + (daysToBeAdded *
+		// ONE_DAY_TIME);
 		DateTime dateTime = new DateTime(calendar.getTimeInMillis());
 		dateTime.plusDays(daysToBeAdded);
 		return new Date(dateTime.getMillis());
@@ -125,8 +126,8 @@ public class DateUtil {
 
 		return timeinMillis;
 	}
-	
-	public static StartEndTimeinMillis getDateStartEndTime(TimeZone timeZone , Integer days) {
+
+	public static StartEndTimeinMillis getDateStartEndTime(TimeZone timeZone, Integer days) {
 		StartEndTimeinMillis timeinMillis = new StartEndTimeinMillis();
 		Calendar calendar;
 		if (timeZone == null) {
@@ -134,11 +135,10 @@ public class DateUtil {
 		} else {
 			calendar = Calendar.getInstance(timeZone);
 		}
-		if(days != null)
-		{
+		if (days != null) {
 			calendar.add(Calendar.DATE, days);
 		}
-		
+
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
@@ -153,8 +153,7 @@ public class DateUtil {
 		return timeinMillis;
 	}
 
-	
-	public static StartEndTimeinDate getDateStartEndTimeinDate(TimeZone timeZone , Integer days) {
+	public static StartEndTimeinDate getDateStartEndTimeinDate(TimeZone timeZone, Integer days) {
 		StartEndTimeinDate timeinDate = new StartEndTimeinDate();
 		Calendar calendar;
 		if (timeZone == null) {
@@ -162,11 +161,10 @@ public class DateUtil {
 		} else {
 			calendar = Calendar.getInstance(timeZone);
 		}
-		if(days != null)
-		{
+		if (days != null) {
 			calendar.add(Calendar.DATE, days);
 		}
-		
+
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
@@ -180,8 +178,8 @@ public class DateUtil {
 
 		return timeinDate;
 	}
-	
-	public static StartEndTImeinDateTime getDateStartEndTimeinDateTime(TimeZone timeZone , Integer days) {
+
+	public static StartEndTImeinDateTime getDateStartEndTimeinDateTime(TimeZone timeZone, Integer days) {
 		StartEndTImeinDateTime timeinDate = new StartEndTImeinDateTime();
 		Calendar calendar;
 		if (timeZone == null) {
@@ -189,11 +187,10 @@ public class DateUtil {
 		} else {
 			calendar = Calendar.getInstance(timeZone);
 		}
-		if(days != null)
-		{
+		if (days != null) {
 			calendar.add(Calendar.DATE, days);
 		}
-		
+
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
@@ -208,7 +205,26 @@ public class DateUtil {
 		return timeinDate;
 	}
 
-	
+	public static Date getStartOfDay(Date date) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		return calendar.getTime();
+	}
+
+	public static Date getEndOfDay(Date date) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		calendar.set(Calendar.HOUR_OF_DAY, 23);
+		calendar.set(Calendar.MINUTE, 59);
+		calendar.set(Calendar.SECOND, 59);
+		calendar.set(Calendar.MILLISECOND, 999);
+		return calendar.getTime();
+	}
+
 	public static void main(String[] args) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.DATE, -40);

@@ -8,6 +8,9 @@ public class TreatmentAnalyticDetail {
 	private String id;
 	private String firstName;
 	private String localPatientName;
+	
+	private String mobileNumber;
+
 	private String uniqueEmrId;
 	private Date createdTime;
 	private List<TreatmentService> services;
@@ -76,6 +79,14 @@ public class TreatmentAnalyticDetail {
 
 	public void setUniqueEmrId(String uniqueEmrId) {
 		this.uniqueEmrId = uniqueEmrId;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 
 }

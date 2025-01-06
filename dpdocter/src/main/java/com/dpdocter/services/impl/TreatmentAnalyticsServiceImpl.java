@@ -559,12 +559,14 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 						Aggregation.unwind("services"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
 						Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-						Aggregation.unwind("patient"), Aggregation.match(criteriaSecond),
+						Aggregation.unwind("patient"), Aggregation.lookup("user_cl", "patient.userId", "_id", "user"),
+						Aggregation.unwind("user"), Aggregation.match(criteriaSecond),
 						new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id")
 								.append("services", new BasicDBObject("$push", "$services"))
 								.append("status", new BasicDBObject("$push", "$treatments.status"))
 								.append("localPatientName", new BasicDBObject("$first", "$patient.localPatientName"))
 								.append("firstName", new BasicDBObject("$first", "$patient.firstName"))
+								.append("mobileNumber", new BasicDBObject("$first", "$user.mobileNumber"))
 								.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 								.append("doctorName", new BasicDBObject("$first", "$doctor.firstName")))),
@@ -578,12 +580,14 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 						Aggregation.unwind("services"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
 						Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-						Aggregation.unwind("patient"), Aggregation.match(criteriaSecond),
+						Aggregation.unwind("patient"), Aggregation.lookup("user_cl", "patient.userId", "_id", "user"),
+						Aggregation.unwind("user"), Aggregation.match(criteriaSecond),
 						new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id")
 								.append("services", new BasicDBObject("$push", "$services"))
 								.append("status", new BasicDBObject("$push", "$treatments.status"))
 								.append("localPatientName", new BasicDBObject("$first", "$patient.localPatientName"))
 								.append("firstName", new BasicDBObject("$first", "$patient.firstName"))
+								.append("mobileNumber", new BasicDBObject("$first", "$user.mobileNumber"))
 								.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 								.append("doctorName", new BasicDBObject("$first", "$doctor.firstName")))),
@@ -651,6 +655,8 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 							.append("count", new BasicDBObject("$first", "$doctorId"))
+							.append("clinicName", new BasicDBObject("$first", "$clinicName"))
+							.append("treatmentName", new BasicDBObject("$first", "$treatmentName"))
 							.append("firstName", new BasicDBObject("$first", "$doctor.firstName"))));
 
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),

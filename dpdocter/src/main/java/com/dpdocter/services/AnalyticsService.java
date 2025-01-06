@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.response.AllAnalyticResponse;
 import com.dpdocter.response.AmountDueAnalyticsDataResponse;
 import com.dpdocter.response.AnalyticResponse;
+import com.dpdocter.response.DailyReportAnalyticResponse;
 import com.dpdocter.response.DoctorVisitAnalyticResponse;
 import com.dpdocter.response.ExpenseCountResponse;
 import com.dpdocter.response.IncomeAnalyticsDataResponse;
@@ -56,6 +57,9 @@ public interface AnalyticsService {
 			String toDate, String queryType, String searchType);
 
 	public AllAnalyticResponse getAllAnalyticData(String doctorId, String locationId, String hospitalId,
+			String fromDate, String toDate);
+
+	public DailyReportAnalyticResponse getDailyReportAnalytics(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate);
 	
 
