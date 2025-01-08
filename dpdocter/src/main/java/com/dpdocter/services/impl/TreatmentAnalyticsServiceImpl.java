@@ -1,6 +1,7 @@
 package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -545,7 +546,8 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteriaSecond.orOperator(new Criteria("patient.firstName").regex(searchTerm, "i"),
-						new Criteria("patient.localPatientName").regex(searchTerm, "i"));
+						new Criteria("patient.localPatientName").regex(searchTerm, "i"),
+						new Criteria("services.name").regex(searchTerm, "i"));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(status)) {
 				criteriaSecond.and("treatments.status").is(status.toUpperCase());
@@ -649,25 +651,24 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
-			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
-					new BasicDBObject("_id", "$_id").append("date", new BasicDBObject("$first", "$fromDate"))
-							.append("locationId", new BasicDBObject("$first", "$locationId"))
-							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-							.append("count", new BasicDBObject("$first", "$doctorId"))
-							.append("clinicName", new BasicDBObject("$first", "$clinicName"))
-							.append("treatmentName", new BasicDBObject("$first", "$treatmentName"))
-							.append("firstName", new BasicDBObject("$first", "$doctor.firstName"))));
-
-			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria), // Match filters
 					Aggregation.unwind("treatments"),
-					Aggregation.lookup("treatment_services_cl", "$treatments.treatmentServiceId", "_id", "services"),
+					Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id", "services"), // Lookup
+																														// services
 					Aggregation.unwind("services"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-					Aggregation.unwind("doctor"), group,
-					new CustomAggregationOperation(new Document("$group",
-							new BasicDBObject("_id", "$doctorId").append("count", new BasicDBObject("$sum", 1))
-									.append("firstName", new BasicDBObject("$first", "$firstName")))));
+					Aggregation.unwind("doctor"), Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+					Aggregation.unwind("location"),
+					Aggregation.group("doctorId").count().as("count").first("location.locationName").as("clinicName")
+							.push("services.name").as("treatmentNames")
 
+							.first("doctor.firstName").as("firstName"),
+					Aggregation.project("count", "clinicName", "firstName")
+							.and(context -> new Document("$trim", new Document("input", new Document("$reduce",
+									new Document("input", "$treatmentNames").append("initialValue", "").append("in",
+											new Document("$concat", Arrays.asList("$$value", ", ", "$$this")))))
+									.append("chars", ", "))) // Trim leading ", "
+							.as("treatmentName"));
+			System.out.println("aggregation" + aggregation);
 			AggregationResults<DoctorAnalyticPieChartResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PatientTreatmentCollection.class, DoctorAnalyticPieChartResponse.class);
 			response = aggregationResults.getMappedResults();
