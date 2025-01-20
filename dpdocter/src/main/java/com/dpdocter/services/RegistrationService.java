@@ -97,7 +97,7 @@ public interface RegistrationService {
 	RegisterDoctorResponse updateStaffRole(DoctorRegisterRequest request);
 
 	List<Role> getRole(String range, long page, int size, String locationId, String hospitalId, String updatedTime,
-			String role);
+			String role, Boolean isDentalChain);
 
 	void checkPatientCount(String mobileNumber);
 
@@ -200,5 +200,9 @@ public interface RegistrationService {
 	Boolean updateShowPatient(String doctorId, Boolean isShowPatientNumber, String locationId);
 	
 	Boolean updateIsShowDoctorInCalender(String doctorId, Boolean isShowDoctorInCalender, String locationId);
+
+	RegisterDoctorResponse registerNewSmilebirdAdmin(DoctorRegisterRequest request);
+
+	RegisterDoctorResponse registerExisitingSmilebirdAdmin(DoctorRegisterRequest request);
 
 }

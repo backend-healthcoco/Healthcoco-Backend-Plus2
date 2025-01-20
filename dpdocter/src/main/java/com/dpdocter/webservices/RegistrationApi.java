@@ -667,6 +667,30 @@ public class RegistrationApi {
 		response.setData(doctorResponse);
 		return response;
 	}
+	
+	@Path(value = PathProxy.RegistrationUrls.SMILEBIRD_ADMIN_REGISTER_IN_CLINIC)
+	@POST
+	@ApiOperation(value = PathProxy.RegistrationUrls.SMILEBIRD_ADMIN_REGISTER_IN_CLINIC, notes = PathProxy.RegistrationUrls.SMILEBIRD_ADMIN_REGISTER_IN_CLINIC)
+	public Response<RegisterDoctorResponse> smilebirdAdminRegister(DoctorRegisterRequest request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getEmailAddress(), request.getFirstName(),
+				request.getLocationId(), request.getHospitalId())) {
+			logger.warn(invalidInput);
+			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
+		}
+		RegisterDoctorResponse doctorResponse = null;
+		if (!registrationService.checktDoctorExistByEmailAddress(request.getEmailAddress())) {
+			doctorResponse = registrationService.registerNewSmilebirdAdmin(request);
+		} else {
+			doctorResponse = registrationService.registerExisitingSmilebirdAdmin(request);
+		}
+
+		transnationalService.addResource(new ObjectId(doctorResponse.getUserId()), Resource.DOCTOR, false);
+		if (doctorResponse != null)
+			esRegistrationService.addDoctor(registrationService.getESDoctorDocument(doctorResponse));
+		Response<RegisterDoctorResponse> response = new Response<RegisterDoctorResponse>();
+		response.setData(doctorResponse);
+		return response;
+	}
 
 	@Path(value = PathProxy.RegistrationUrls.EDIT_USER_IN_CLINIC)
 	@PUT
@@ -739,13 +763,14 @@ public class RegistrationApi {
 			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 			@QueryParam(value = "page") long page, @QueryParam(value = "size") int size,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-			@QueryParam(value = "role") String role) {
+			@QueryParam(value = "role") String role,
+			@DefaultValue("false") @QueryParam(value = "isDentalChain") Boolean isDentalChain) {
 		if (DPDoctorUtils.anyStringEmpty(range, locationId, hospitalId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 		}
 		List<Role> professionResponse = registrationService.getRole(range, page, size, locationId, hospitalId,
-				updatedTime, role);
+				updatedTime, role,isDentalChain);
 		Response<Role> response = new Response<Role>();
 		response.setDataList(professionResponse);
 		return response;

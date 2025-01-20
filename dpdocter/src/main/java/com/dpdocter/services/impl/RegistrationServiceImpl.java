@@ -424,6 +424,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Value(value = "${mail.staffmember.account.verify.subject}")
 	private String staffmemberAccountVerifySub;
 
+	@Value(value = "${mail.add.smbsuperadmin.to.clinic.verify.subject}")
+	private String smbsuperadminAccountVerifySub;
+
 	@Value(value = "${mail.add.existing.doctor.to.clinic.subject}")
 	private String addExistingDoctorToClinicSub;
 
@@ -480,7 +483,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Value(value = "${healthcoco.support.number}")
 	private String healthcocoSupportNumber;
-
 
 	@Override
 	@Transactional
@@ -593,14 +595,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 			userCollection.setBarcodeImageUrl(imageURLResponse1.getImageUrl());
 			userCollection = userRepository.save(userCollection);
 
-
 			// assign roles
 			UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(),
 					roleCollection.getId(), null, null);
 			userRoleCollection.setCreatedTime(new Date());
 			userRoleRepository.save(userRoleCollection);
-			
-			
+
 			if (checkPatientSignUpResponse != null) {
 				PatientCollection patientCollection = new PatientCollection();
 				patientCollection.setCreatedTime(new Date());
@@ -618,7 +618,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 			patientCollection.setFirstName(request.getLocalPatientName());
 			patientCollection.setUserId(userCollection.getId());
 			patientCollection.setIsChild(request.getIsChild());
-
 
 			if (request.getRegistrationDate() != null)
 				patientCollection.setRegistrationDate(request.getRegistrationDate());
@@ -674,7 +673,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 				patientCollection.setReferredBy(referencesCollection.getId());
 			}
-			
+
 			patientCollection.setBarcodeImageUrl(imageURLResponse1.getImageUrl());
 
 			patientCollection = patientRepository.save(patientCollection);
@@ -806,7 +805,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				createImmunisationChart(registeredPatientDetails);
 				createBabyAchievementChart(registeredPatientDetails);
 			}
-		
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -1129,7 +1128,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 				try {
 					barcode = BarcodeUtil.generateBarcode(request.getUserId());
 
-
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -1262,7 +1260,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				createImmunisationChart(registeredPatientDetails);
 				createBabyAchievementChart(registeredPatientDetails);
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -2106,7 +2104,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			locationCollection = locationRepository.save(locationCollection);
 			response = new ClinicAddress();
 			BeanUtil.map(locationCollection, response);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error While Updating Clinic Details");
@@ -2128,7 +2126,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			locationCollection = locationRepository.save(locationCollection);
 			response = new ClinicTiming();
 			BeanUtil.map(locationCollection, response);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error While Updating Clinic Details");
@@ -2479,7 +2477,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				roles.add(role);
 				response.setRole(roles);
 			}
-			
+
 		} catch (DuplicateKeyException de) {
 			logger.error(de);
 			throw new BusinessException(ServiceError.Unknown, "Email address already registerd. Please login");
@@ -2827,17 +2825,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Override
 	@Transactional
 	public List<Role> getRole(String range, long page, int size, String locationId, String hospitalId,
-			String updatedTime, String role) {
+			String updatedTime, String role, Boolean isDentalChain) {
 		List<Role> response = null;
-
 		try {
 			switch (Range.valueOf(range.toUpperCase())) {
 
 			case CUSTOM:
-				response = getCustomRole(page, size, locationId, hospitalId, updatedTime, role);
+				response = getCustomRole(page, size, locationId, hospitalId, updatedTime, role, isDentalChain);
 				break;
 			case BOTH:
-				response = getCustomGlobalRole(page, size, locationId, hospitalId, updatedTime, role);
+				response = getCustomGlobalRole(page, size, locationId, hospitalId, updatedTime, role, isDentalChain);
 				break;
 			default:
 				break;
@@ -2853,7 +2850,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	private List<Role> getCustomGlobalRole(long page, int size, String locationId, String hospitalId,
-			String updatedTime, String role) {
+			String updatedTime, String role, Boolean isDentalChain) {
 		List<Role> response = null;
 		List<RoleCollection> roleCollections = null;
 		try {
@@ -2898,12 +2895,27 @@ public class RegistrationServiceImpl implements RegistrationService {
 										RoleEnum.ADMIN.getRole(), RoleEnum.PATIENT.getRole(),
 										RoleEnum.SUPER_ADMIN.getRole()),
 								new Sort(Sort.Direction.DESC, "createdTime"));
+				} else if (role.equalsIgnoreCase(RoleEnum.SMB_SUPER_ADMIN.getRole()) && isDentalChain) {
+					if (size > 0)
+						roleCollections = roleRepository.findCustomGlobalDoctorRole(new ObjectId(locationId),
+								new ObjectId(hospitalId), new Date(createdTimeStamp),
+								Arrays.asList(RoleEnum.SMB_SUPER_ADMIN.getRole()),
+								PageRequest.of((int) page, size, Direction.DESC, "createdTime"));
+					else
+						roleCollections = roleRepository.findCustomGlobalDoctorRole(new ObjectId(locationId),
+								new ObjectId(hospitalId), new Date(createdTimeStamp),
+								Arrays.asList(RoleEnum.SMB_SUPER_ADMIN.getRole()),
+								new Sort(Sort.Direction.DESC, "createdTime"));
 				}
 			}
 
 			if (roleCollections != null) {
 				response = new ArrayList<Role>();
 				for (RoleCollection roleCollection : roleCollections) {
+					if (!isDentalChain && RoleEnum.SMB_SUPER_ADMIN.getRole().equals(roleCollection.getRole())) {
+						continue; // Skip this iteration
+					}
+
 					Role roleObj = new Role();
 					AccessControl accessControl = accessControlServices.getAccessControls(roleCollection.getId(),
 							roleCollection.getLocationId(), roleCollection.getHospitalId());
@@ -2922,7 +2934,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	private List<Role> getCustomRole(long page, int size, String locationId, String hospitalId, String updatedTime,
-			String role) {
+			String role, Boolean isDentalChain) {
 		List<Role> response = null;
 		List<RoleCollection> roleCollections = null;
 		try {
@@ -2984,6 +2996,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 										Arrays.asList(RoleEnum.LOCATION_ADMIN.getRole(),
 												RoleEnum.HOSPITAL_ADMIN.getRole()),
 										new Sort(Sort.Direction.DESC, "createdTime"));
+				} else if (role.equalsIgnoreCase(RoleEnum.SMB_SUPER_ADMIN.getRole()) && isDentalChain) {
+					if (size > 0)
+						roleCollections = roleRepository
+								.findByLocationIdAndHospitalIdAndUpdatedTimeGreaterThanAndRoleNotIn(
+										new ObjectId(locationId), new ObjectId(hospitalId), new Date(createdTimeStamp),
+										Arrays.asList(RoleEnum.SMB_SUPER_ADMIN.getRole()),
+										PageRequest.of((int) page, size, Direction.DESC, "createdTime"));
+					else
+						roleCollections = roleRepository
+								.findByLocationIdAndHospitalIdAndUpdatedTimeGreaterThanAndRoleNotIn(
+										new ObjectId(locationId), new ObjectId(hospitalId), new Date(createdTimeStamp),
+										Arrays.asList(RoleEnum.SMB_SUPER_ADMIN.getRole()),
+										new Sort(Sort.Direction.DESC, "createdTime"));
 				} else if (role.equalsIgnoreCase("ALL")) {
 					if (size > 0)
 						roleCollections = roleRepository
@@ -3005,6 +3030,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (roleCollections != null) {
 				response = new ArrayList<Role>();
 				for (RoleCollection roleCollection : roleCollections) {
+					if (!isDentalChain && RoleEnum.SMB_SUPER_ADMIN.getRole().equals(roleCollection.getRole())) {
+						continue; // Skip this iteration
+					}
+
 					Role roleObj = new Role();
 					AccessControl accessControl = accessControlServices.getAccessControls(roleCollection.getId(),
 							roleCollection.getLocationId(), roleCollection.getHospitalId());
@@ -3027,6 +3056,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			String updatedTime, String role, Boolean active, Boolean access, String userState) {
 		List<ClinicDoctorResponse> response = null;
 		try {
+			Aggregation aggregation;
 			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = null;
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
@@ -3048,33 +3078,32 @@ public class RegistrationServiceImpl implements RegistrationService {
 			}
 
 			if (size > 0) {
-				doctorClinicProfileLookupResponses = mongoTemplate
-						.aggregate(
-								Aggregation.newAggregation(
-										Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-										Aggregation.unwind("location"),
-										Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
-										Aggregation.unwind("user"),
-										Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
-										Aggregation.unwind("doctor"),
-										Aggregation.lookup("user_role_cl", "doctorId", "userId", "userRoleCollection"),
-										Aggregation.unwind("userRoleCollection"),
-										Aggregation.match(criteria.and("userRoleCollection.locationId")
-												.is(new ObjectId(locationId))),
-										Aggregation.skip((page) * size), Aggregation.limit(size)),
-								DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
-						.getMappedResults();
-			} else {
-				doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
-						Aggregation.newAggregation(Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-								Aggregation.unwind("location"),
-								Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
-								Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
 
-								Aggregation.unwind("doctor"), Aggregation.match(criteria)),
-						DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
-						.getMappedResults();
+				aggregation = Aggregation.newAggregation(
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
+						Aggregation.unwind("user"), Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.lookup("user_role_cl", "doctorId", "userId", "userRoleCollection"),
+						Aggregation.unwind("userRoleCollection"),
+						Aggregation.match(Criteria.where("userRoleCollection.locationId").is(new ObjectId(locationId))),
+						Aggregation.match(criteria), Aggregation.skip((page) * size), Aggregation.limit(size));
+
+			} else {
+
+				aggregation = Aggregation.newAggregation(
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
+						Aggregation.unwind("user"), Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.lookup("user_role_cl", "doctorId", "userId", "userRoleCollection"),
+						Aggregation.unwind("userRoleCollection"),
+						Aggregation.match(Criteria.where("userRoleCollection.locationId").is(new ObjectId(locationId))),
+						Aggregation.match(criteria));
 			}
+
+			doctorClinicProfileLookupResponses = mongoTemplate.aggregate(aggregation,
+					DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
 
 			if (doctorClinicProfileLookupResponses != null) {
 				response = new ArrayList<ClinicDoctorResponse>();
@@ -3116,6 +3145,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 									.in(Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.CONSULTANT_DOCTOR.getRole(),
 											RoleEnum.LOCATION_ADMIN.getRole(), RoleEnum.HOSPITAL_ADMIN.getRole(),
 											RoleEnum.ADMIN.getRole()));
+						} else if (role.equalsIgnoreCase(RoleEnum.SMB_SUPER_ADMIN.getRole())) {
+
+							roleCriteria = new Criteria("roleCollection.role")
+									.in(Arrays.asList(RoleEnum.SMB_SUPER_ADMIN.getRole()));
 						}
 
 						List<UserRoleLookupResponse> userRoleLookupResponses = mongoTemplate.aggregate(
@@ -3125,7 +3158,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 										Aggregation.lookup("role_cl", "roleId", "_id", "roleCollection"),
 										Aggregation.unwind("roleCollection"), Aggregation.match(roleCriteria)),
 								UserRoleCollection.class, UserRoleLookupResponse.class).getMappedResults();
-
 						if (userRoleLookupResponses != null && !userRoleLookupResponses.isEmpty()) {
 							List<Role> roles = new ArrayList<>();
 							for (UserRoleLookupResponse userRoleLookupResponse : userRoleLookupResponses) {
@@ -5648,6 +5680,283 @@ public class RegistrationServiceImpl implements RegistrationService {
 			doctorClinicProfile.setIsShowDoctorInCalender(isShowDoctorInCalender);
 			doctorClinicProfile = doctorClinicProfileRepository.save(doctorClinicProfile);
 			response = true;
+		}
+		return response;
+	}
+
+	@Transactional
+	@Override
+	public RegisterDoctorResponse registerNewSmilebirdAdmin(DoctorRegisterRequest request) {
+		RegisterDoctorResponse response = new RegisterDoctorResponse();
+		try {
+			RoleCollection doctorRole = null;
+			if (request.getRoleId() != null) {
+				doctorRole = roleRepository.findById(new ObjectId(request.getRoleId())).orElse(null);
+			}
+			if (doctorRole == null) {
+				logger.warn(role);
+				throw new BusinessException(ServiceError.NoRecord, role);
+			}
+			// save user
+			UserCollection userCollection = new UserCollection();
+			BeanUtil.map(request, userCollection);
+			userCollection.setUserName(request.getEmailAddress());
+			userCollection.setUserUId(UniqueIdInitial.USER.getInitial() + DPDoctorUtils.generateRandomId());
+			userCollection.setCreatedTime(new Date());
+			if (DPDoctorUtils.anyStringEmpty(request.getColorCode())) {
+				userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+			}
+			userCollection.setUserState(UserState.NOTVERIFIED);
+			userCollection = userRepository.save(userCollection);
+
+			// save doctor specific details
+			DoctorCollection doctorCollection = new DoctorCollection();
+			BeanUtil.map(request, doctorCollection);
+			doctorCollection.setUserId(userCollection.getId());
+			doctorCollection.setCreatedTime(new Date());
+
+			if (request.getSpeciality() != null && !request.getSpeciality().isEmpty()) {
+				List<SpecialityCollection> specialityCollections = specialityRepository
+						.findBySuperSpecialityIn(request.getSpeciality());
+				@SuppressWarnings("unchecked")
+				Collection<ObjectId> specialityIds = CollectionUtils.collect(specialityCollections,
+						new BeanToPropertyValueTransformer("id"));
+				if (specialityIds != null && !specialityIds.isEmpty()) {
+					doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
+				} else
+					doctorCollection.setSpecialities(null);
+
+				assignDefaultUIPermissions(doctorCollection.getUserId().toString());
+			}
+			doctorCollection = doctorRepository.save(doctorCollection);
+
+			// assign role to doctor
+			UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), doctorRole.getId(),
+					new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+			userRoleCollection.setCreatedTime(new Date());
+			userRoleCollection = userRoleRepository.save(userRoleCollection);
+
+			// save user location.
+			DoctorClinicProfileCollection doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+			doctorClinicProfileCollection.setDoctorId(userCollection.getId());
+			doctorClinicProfileCollection.setLocationId(new ObjectId(request.getLocationId()));
+			doctorClinicProfileCollection.setCreatedTime(new Date());
+			doctorClinicProfileCollection.setIsActivate(request.getIsActivate());
+			doctorClinicProfileCollection.setHasLoginAccess(request.getHasLoginAccess());
+			doctorClinicProfileCollection.setHasBillingAccess(request.getHasBillingAccess());
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+
+			// save token
+			TokenCollection tokenCollection = new TokenCollection();
+			tokenCollection.setResourceId(doctorClinicProfileCollection.getId());
+			tokenCollection.setCreatedTime(new Date());
+			tokenCollection = tokenRepository.save(tokenCollection);
+
+			LocationCollection locationCollection = locationRepository.findById(new ObjectId(request.getLocationId()))
+					.orElse(null);
+			RoleCollection adminRoleCollection = roleRepository
+					.findByRoleAndLocationIdIsNullAndHospitalIdIsNull(RoleEnum.LOCATION_ADMIN.getRole());
+			String admindoctorName = "";
+			if (adminRoleCollection != null) {
+				List<UserRoleCollection> roleCollections = userRoleRepository.findByRoleIdAndLocationIdAndHospitalId(
+						adminRoleCollection.getId(), locationCollection.getId(), locationCollection.getHospitalId());
+				UserRoleCollection roleCollection = null;
+				if (roleCollections != null && !roleCollections.isEmpty()) {
+					roleCollection = roleCollections.get(0);
+					UserCollection doctorUser = userRepository.findById(roleCollection.getUserId()).orElse(null);
+					admindoctorName = doctorUser.getTitle() + " " + doctorUser.getFirstName();
+				}
+			}
+			if (doctorRole.getRole().equals(RoleEnum.DOCTOR.getRole())
+					|| doctorRole.getRole().equals(RoleEnum.CONSULTANT_DOCTOR.getRole())
+					|| doctorRole.getRole().equals(RoleEnum.SUPER_ADMIN.getRole())
+					|| doctorRole.getRole().equals(RoleEnum.HOSPITAL_ADMIN.getRole())
+					|| doctorRole.getRole().equals(RoleEnum.LOCATION_ADMIN.getRole())) {
+				String body = mailBodyGenerator.generateActivationEmailBodyForStaff(
+						userCollection.getTitle() + " " + userCollection.getFirstName(), tokenCollection.getId(),
+						"addDoctorToClinicVerifyTemplate.vm", admindoctorName, locationCollection.getLocationName(),
+						request.getAddedBy());
+				mailService.sendEmail(userCollection.getEmailAddress(), addDoctorToClinicVerifySub, body, null);
+			} else if (doctorRole.getRole().equals(RoleEnum.SMB_SUPER_ADMIN.getRole())) {
+				String body = mailBodyGenerator.generateActivationEmailBodyForStaff(
+						userCollection.getTitle() + " " + userCollection.getFirstName(), tokenCollection.getId(),
+						"addSMBSuperAdminToClinicVerifyTemplate.vm", admindoctorName,
+						locationCollection.getLocationName(), request.getAddedBy());
+				mailService.sendEmail(userCollection.getEmailAddress(), smbsuperadminAccountVerifySub, body, null);
+			} else {
+				String body = mailBodyGenerator.generateActivationEmailBodyForStaff(
+						userCollection.getTitle() + " " + userCollection.getFirstName(), tokenCollection.getId(),
+						"verifyStaffMemberEmailTemplate.vm", admindoctorName, locationCollection.getLocationName(),
+						request.getAddedBy());
+				mailService.sendEmail(userCollection.getEmailAddress(), staffmemberAccountVerifySub, body, null);
+			}
+			userCollection.setPassword(null);
+			BeanUtil.map(userCollection, response);
+			response.setHospitalId(request.getHospitalId());
+			response.setLocationId(request.getLocationId());
+			response.setUserId(userCollection.getId().toString());
+
+			if (doctorRole != null) {
+				List<Role> roles = new ArrayList<Role>();
+				Role role = new Role();
+				BeanUtil.map(doctorRole, role);
+				AccessControl accessControl = accessControlServices.getAccessControls(doctorRole.getId(),
+						doctorRole.getLocationId(), doctorRole.getHospitalId());
+				if (accessControl != null)
+					role.setAccessModules(accessControl.getAccessModules());
+				roles.add(role);
+				response.setRole(roles);
+			}
+
+		} catch (DuplicateKeyException de) {
+			logger.error(de);
+			throw new BusinessException(ServiceError.Unknown, "Email address already registerd. Please login");
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Transactional
+	@Override
+	public RegisterDoctorResponse registerExisitingSmilebirdAdmin(DoctorRegisterRequest request) {
+		RegisterDoctorResponse response = new RegisterDoctorResponse();
+		try {
+
+			RoleCollection doctorRole = null;
+			if (request.getRoleId() != null) {
+				doctorRole = roleRepository.findById(new ObjectId(request.getRoleId())).orElse(null);
+			}
+
+			if (doctorRole == null) {
+				logger.warn(role);
+				throw new BusinessException(ServiceError.NoRecord, role);
+			}
+
+			UserCollection userCollection = userRepository.findByUserNameAndEmailAddress(request.getEmailAddress(),
+					request.getEmailAddress());
+
+			UserRoleCollection userRoleCollection = userRoleRepository.findByUserIdAndLocationIdAndHospitalId(
+					userCollection.getId(), new ObjectId(request.getLocationId()),
+					new ObjectId(request.getHospitalId()));
+
+			if (userRoleCollection != null) {
+//				if (userRoleCollection.getRoleId().toString().equals(request.getRoleId())) {
+//					logger.error("User has  already assigned " + doctorRole.getRole() + "in clinic");
+//					throw new BusinessException(ServiceError.InvalidInput,
+//							"User has  already assigned " + doctorRole.getRole() + " in clinic");
+//				}
+				userRoleCollection = new UserRoleCollection(userCollection.getId(), new ObjectId(request.getRoleId()),
+						new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+				userRoleCollection.setCreatedTime(new Date());
+				userRoleCollection = userRoleRepository.save(userRoleCollection);
+			} else {
+				userRoleCollection = new UserRoleCollection(userCollection.getId(), new ObjectId(request.getRoleId()),
+						new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+				userRoleCollection.setCreatedTime(new Date());
+				userRoleCollection = userRoleRepository.save(userRoleCollection);
+			}
+
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(userCollection.getId());
+			if (doctorCollection.getAdditionalNumbers() != null) {
+				if (!doctorCollection.getAdditionalNumbers().contains(request.getMobileNumber()))
+					doctorCollection.getAdditionalNumbers().add(request.getMobileNumber());
+				else {
+					List<String> additionalNumbers = new ArrayList<String>();
+					additionalNumbers.add(request.getMobileNumber());
+				}
+
+				if (doctorCollection != null) {
+					List<ObjectId> oldSpecialities = doctorCollection.getSpecialities();
+					if (request.getSpeciality() != null && !request.getSpeciality().isEmpty()) {
+						List<SpecialityCollection> specialityCollections = specialityRepository
+								.findBySuperSpecialityIn(request.getSpeciality());
+						@SuppressWarnings("unchecked")
+						Collection<ObjectId> specialityIds = CollectionUtils.collect(specialityCollections,
+								new BeanToPropertyValueTransformer("id"));
+						if (specialityIds != null && !specialityIds.isEmpty()) {
+							doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
+							if (oldSpecialities != null && !oldSpecialities.isEmpty())
+								removeOldSpecialityPermissions(specialityIds, oldSpecialities,
+										doctorCollection.getUserId().toString());
+						} else
+							doctorCollection.setSpecialities(null);
+						assignDefaultUIPermissions(doctorCollection.getUserId().toString());
+					}
+					doctorRepository.save(doctorCollection);
+				}
+			}
+			DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+					.findByDoctorIdAndLocationId(userCollection.getId(), new ObjectId(request.getLocationId()));
+			if (doctorClinicProfileCollection == null) {
+				doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+				doctorClinicProfileCollection.setDoctorId(userCollection.getId());
+				doctorClinicProfileCollection.setLocationId(new ObjectId(request.getLocationId()));
+				doctorClinicProfileCollection.setCreatedTime(new Date());
+				doctorClinicProfileCollection.setIsActivate(request.getIsActivate());
+				doctorClinicProfileCollection.setHasLoginAccess(request.getHasLoginAccess());
+				doctorClinicProfileCollection.setHasBillingAccess(request.getHasBillingAccess());
+				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			}
+
+			userCollection.setPassword(null);
+			BeanUtil.map(userCollection, response);
+			response.setHospitalId(request.getHospitalId());
+			response.setLocationId(request.getLocationId());
+			response.setUserId(userCollection.getId().toString());
+
+			if (doctorRole != null) {
+				List<Role> roles = new ArrayList<Role>();
+				Role role = new Role();
+				BeanUtil.map(doctorRole, role);
+				AccessControl accessControl = accessControlServices.getAccessControls(doctorRole.getId(),
+						doctorRole.getLocationId(), doctorRole.getHospitalId());
+				if (accessControl != null)
+					role.setAccessModules(accessControl.getAccessModules());
+				roles.add(role);
+				response.setRole(roles);
+
+				LocationCollection locationCollection = locationRepository
+						.findById(new ObjectId(request.getLocationId())).orElse(null);
+				RoleCollection adminRoleCollection = roleRepository
+						.findByRoleAndLocationIdIsNullAndHospitalIdIsNull(RoleEnum.LOCATION_ADMIN.getRole());
+				String admindoctorName = "";
+				if (adminRoleCollection != null) {
+					List<UserRoleCollection> userRoleCollections = userRoleRepository
+							.findByRoleIdAndLocationIdAndHospitalId(adminRoleCollection.getId(),
+									new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+					UserRoleCollection roleCollection = null;
+					if (userRoleCollections != null && !userRoleCollections.isEmpty()) {
+						roleCollection = userRoleCollections.get(0);
+						UserCollection doctorUser = userRepository.findById(roleCollection.getUserId()).orElse(null);
+						admindoctorName = doctorUser.getTitle() + " " + doctorUser.getFirstName();
+					}
+				}
+				if (doctorRole.getRole().equals(RoleEnum.DOCTOR.getRole())
+						|| doctorRole.getRole().equals(RoleEnum.CONSULTANT_DOCTOR.getRole())
+						|| doctorRole.getRole().equals(RoleEnum.SUPER_ADMIN.getRole())
+						|| doctorRole.getRole().equals(RoleEnum.HOSPITAL_ADMIN.getRole())
+						|| doctorRole.getRole().equals(RoleEnum.LOCATION_ADMIN.getRole())) {
+					String body = mailBodyGenerator.generateActivationEmailBody(
+							userCollection.getTitle() + " " + userCollection.getFirstName(), null,
+							"addExistingDoctorToClinicTemplate.vm", admindoctorName,
+							locationCollection.getLocationName(), request.getAddedBy());
+					mailService.sendEmail(userCollection.getEmailAddress(),
+							addExistingDoctorToClinicSub + " " + locationCollection.getLocationName(), body, null);
+				} else if (doctorRole.getRole().equals(RoleEnum.SMB_SUPER_ADMIN.getRole())) {
+					String body = mailBodyGenerator.generateActivationEmailBodyForStaff(
+							userCollection.getTitle() + " " + userCollection.getFirstName(), null,
+							"addSMBSuperAdminToClinicVerifyTemplate.vm", admindoctorName,
+							locationCollection.getLocationName(), request.getAddedBy());
+					mailService.sendEmail(userCollection.getEmailAddress(), smbsuperadminAccountVerifySub, body, null);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}

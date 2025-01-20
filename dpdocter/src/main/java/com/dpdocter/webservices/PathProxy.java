@@ -129,6 +129,8 @@ public interface PathProxy {
 		public static final String PATIENT_REGISTER = "/patient";
 
 		public static final String USER_REGISTER_IN_CLINIC = "/user";
+		
+		public static final String SMILEBIRD_ADMIN_REGISTER_IN_CLINIC = "/smilebirdAdmin";
 
 		public static final String EDIT_USER_IN_CLINIC = "/user/{userId}/{locationId}/edit";
 

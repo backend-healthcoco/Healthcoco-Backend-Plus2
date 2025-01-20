@@ -613,8 +613,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					}
 					DoctorClinicProfile doctorClinicProfile = getDoctorClinic(doctorClinicProfileLookupResponse,
 							patientId, isMobileApp, doctorClinicProfileLookupResponses.size());
-					if (doctorClinicProfile != null)
+					if (doctorClinicProfile != null) {
+						System.out.println("doctorClinicProfile " + doctorClinicProfile.toString());
 						clinicProfile.add(doctorClinicProfile);
+					}
 				}
 
 				doctorProfile = new DoctorProfile();
@@ -775,7 +777,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 			for (UserRoleLookupResponse roleLookupResponse : userRoleLookupResponses) {
 				RoleCollection otherRoleCollection = roleLookupResponse.getRoleCollection();
-				if (isMobileApp && locationSize == 1
+				System.out.println("otherRoleCollection" + otherRoleCollection.getRole());
+				if (!isMobileApp
+						&& otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.SMB_SUPER_ADMIN.getRole())) {
+				}
+				else if (isMobileApp && locationSize == 1
 						&& !(otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
 								|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.CONSULTANT_DOCTOR.getRole())
 								|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
@@ -784,11 +790,13 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					logger.warn("You are staff member so please login from website.");
 					throw new BusinessException(ServiceError.NotAuthorized,
 							"You are staff member so please login from website.");
-				} else if (isMobileApp && !(otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
-						|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.CONSULTANT_DOCTOR.getRole())
-						|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
-						|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
-						|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {
+				} else if (isMobileApp
+						&& !(otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
+								|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.CONSULTANT_DOCTOR.getRole())
+								|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
+								|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
+								|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))
+						|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.SMB_SUPER_ADMIN.getRole())) {
 					return null;
 				}
 
@@ -816,6 +824,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					roles.add(role);
 				}
 				doctorClinic.setRoles(roles);
+				System.out.println("doctorClinic" + doctorClinic);
+				System.out.println("doctorClinic " + doctorClinic.toString());
 
 				if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 					RecommendationsCollection recommendationsCollection = recommendationsRepository
