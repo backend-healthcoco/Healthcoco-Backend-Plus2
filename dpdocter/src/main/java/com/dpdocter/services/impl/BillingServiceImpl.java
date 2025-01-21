@@ -1971,7 +1971,16 @@ public class BillingServiceImpl implements BillingService {
 				receiptItemJasperDetailList = new ArrayList<ReceiptItemJasperDetails>();
 				for (DoctorPatientReceiptCollection receiptCollection : patientReceiptCollections) {
 					ReceiptItemJasperDetails receiptItemJasperDetails = new ReceiptItemJasperDetails();
-					receiptItemJasperDetails.setAmountPaid(receiptCollection.getAmountPaid());
+					String amountPaid = (receiptCollection.getAmountPaid() != null)
+							? receiptCollection.getAmountPaid() + ""
+							: "";
+					receiptItemJasperDetails.setAmountPaid(amountPaid);
+					if (receiptCollection.getUsedAdvanceAmount() != null
+							&& receiptCollection.getUsedAdvanceAmount() != 0.0) {
+						receiptItemJasperDetails.setAmountPaid(((!DPDoctorUtils.anyStringEmpty(amountPaid) && !amountPaid.equalsIgnoreCase("0.0")) ? amountPaid + "+"
+								: "") + receiptCollection.getUsedAdvanceAmount() + "(From Advance)");
+					}
+					
 					receiptItemJasperDetails
 							.setReceivedDate(simpleDateFormat1.format(receiptCollection.getReceivedDate()));
 					receiptItemJasperDetails.setModeOfPayment(receiptCollection.getModeOfPayment().name());

@@ -7,7 +7,7 @@ public class ReceiptItemJasperDetails {
 
 	private String modeOfPayment;
 
-	private Double amountPaid = 0.0;
+	private String amountPaid ;
 
 	
 	public String getReceiptNo() {
@@ -34,11 +34,11 @@ public class ReceiptItemJasperDetails {
 		this.modeOfPayment = modeOfPayment;
 	}
 
-	public Double getAmountPaid() {
+	public String getAmountPaid() {
 		return amountPaid;
 	}
 
-	public void setAmountPaid(Double amountPaid) {
+	public void setAmountPaid(String amountPaid) {
 		this.amountPaid = amountPaid;
 	}
 
