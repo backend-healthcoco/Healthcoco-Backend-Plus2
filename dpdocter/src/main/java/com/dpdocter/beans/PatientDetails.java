@@ -27,6 +27,7 @@ public class PatientDetails {
 
 	private Boolean showCity = false;
 	private Boolean showBarcode = false;
+	private Boolean showCounsultantDoctor = true;
 
 	private PrintSettingsText style;
 
@@ -152,6 +153,14 @@ public class PatientDetails {
 
 	public void setPIDKey(String pIDKey) {
 		PIDKey = pIDKey;
+	}
+
+	public Boolean getShowCounsultantDoctor() {
+		return showCounsultantDoctor;
+	}
+
+	public void setShowCounsultantDoctor(Boolean showCounsultantDoctor) {
+		this.showCounsultantDoctor = showCounsultantDoctor;
 	}
 
 	@Override

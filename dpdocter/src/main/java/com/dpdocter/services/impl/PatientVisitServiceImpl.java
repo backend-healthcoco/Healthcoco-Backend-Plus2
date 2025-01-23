@@ -1725,7 +1725,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							printSettings.getContentSetup().getInstructionAlign().getAlign());
 				} else {
 					parameters.put("instructionAlign", FieldAlign.VERTICAL.getAlign());
-				} 
+				}
 			}
 			if (printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getCustomHeader()
 					&& !printSettings.getHeaderSetup().getShowHeaderImage()) {
@@ -1949,6 +1949,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					mobileNumber = mobileNumber.replaceAll("\\w(?=\\w{4})", "*");
 				}
 			}
+
 			if (!DPDoctorUtils.anyStringEmpty(uniqueEMRId))
 				patientDetailList.add(uniqueEMRId);
 			if (patientDetails.getShowDOB()) {
@@ -1962,7 +1963,16 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				if (patientDetails.getShowDate())
 					patientDetailList.add("<b>Date: </b>" + sdf.format(date));
 			}
-			
+
+			if (patientDetails.getShowCounsultantDoctor() && patientCard != null
+					&& !DPDoctorUtils.anyStringEmpty(locationCollection.getLocationName())) {
+				UserCollection userCollection = userRepository.findById(patientCard.getDoctorId()).orElse(null);
+				if (userCollection != null) {
+					patientDetailList.add("<b>Counsultant Doctor: </b>"
+							+ (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+							+ userCollection.getFirstName());
+				}
+			}
 
 			if (patientDetails.getShowBloodGroup() && patientCard != null
 					&& !DPDoctorUtils.anyStringEmpty(patientCard.getBloodGroup())) {
@@ -2024,7 +2034,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				String barcodeImageUrl = getFinalImageURL(patientCard.getBarcodeImageUrl());
 //				patientDetailList.add("<b>Barcode: </b>" + barcodeImageUrl);
 				parameters.put("barcode", barcodeImageUrl);
-			}	
+			}
 
 		}
 	}
