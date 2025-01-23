@@ -3101,6 +3101,7 @@ public class BillingServiceImpl implements BillingService {
 				expenseCollection
 						.setUniqueExpenseId(UniqueIdInitial.EXPENSE.getInitial() + DPDoctorUtils.generateRandomId());
 			}
+			
 			expenseCollection = doctorExpenseRepository.save(expenseCollection);
 			response = new DoctorExpense();
 			BeanUtil.map(expenseCollection, response);

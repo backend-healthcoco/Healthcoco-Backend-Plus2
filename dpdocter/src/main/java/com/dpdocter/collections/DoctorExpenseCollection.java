@@ -1,12 +1,14 @@
 package com.dpdocter.collections;
 
 import java.util.Date;
+import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.ExpenseReceiptUrlData;
 import com.dpdocter.beans.VendorExpense;
 import com.dpdocter.enums.ModeOfPayment;
 
@@ -38,6 +40,8 @@ public class DoctorExpenseCollection extends GenericCollection {
 	public VendorExpense vendor;
 	@Field
 	public String uniqueExpenseId;
+	@Field
+	public List<ExpenseReceiptUrlData> expenseReceiptUrlDatas;
 
 	public Boolean getDiscarded() {
 		return discarded;
@@ -141,6 +145,14 @@ public class DoctorExpenseCollection extends GenericCollection {
 
 	public void setVendor(VendorExpense vendor) {
 		this.vendor = vendor;
+	}
+
+	public List<ExpenseReceiptUrlData> getExpenseReceiptUrlDatas() {
+		return expenseReceiptUrlDatas;
+	}
+
+	public void setExpenseReceiptUrlDatas(List<ExpenseReceiptUrlData> expenseReceiptUrlDatas) {
+		this.expenseReceiptUrlDatas = expenseReceiptUrlDatas;
 	}
 
 }

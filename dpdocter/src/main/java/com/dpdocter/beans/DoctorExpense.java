@@ -1,6 +1,7 @@
 package com.dpdocter.beans;
 
 import java.util.Date;
+import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.ModeOfPayment;
@@ -16,6 +17,7 @@ public class DoctorExpense extends GenericCollection {
 	public Double cost = 0.0;
 	public Date toDate = new Date();
 	public String notes;
+	private List<ExpenseReceiptUrlData> expenseReceiptUrlDatas;
 
 	public VendorExpense vendor;
 	public Boolean discarded = false;
@@ -123,6 +125,14 @@ public class DoctorExpense extends GenericCollection {
 
 	public void setVendor(VendorExpense vendor) {
 		this.vendor = vendor;
+	}
+
+	public List<ExpenseReceiptUrlData> getExpenseReceiptUrlDatas() {
+		return expenseReceiptUrlDatas;
+	}
+
+	public void setExpenseReceiptUrlDatas(List<ExpenseReceiptUrlData> expenseReceiptUrlDatas) {
+		this.expenseReceiptUrlDatas = expenseReceiptUrlDatas;
 	}
 
 }
