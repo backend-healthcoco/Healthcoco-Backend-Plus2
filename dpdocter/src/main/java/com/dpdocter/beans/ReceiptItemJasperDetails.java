@@ -8,6 +8,7 @@ public class ReceiptItemJasperDetails {
 	private String modeOfPayment;
 
 	private String amountPaid ;
+	private String chequeNo ;
 
 	
 	public String getReceiptNo() {
@@ -40,6 +41,14 @@ public class ReceiptItemJasperDetails {
 
 	public void setAmountPaid(String amountPaid) {
 		this.amountPaid = amountPaid;
+	}
+
+	public String getChequeNo() {
+		return chequeNo;
+	}
+
+	public void setChequeNo(String chequeNo) {
+		this.chequeNo = chequeNo;
 	}
 
 }

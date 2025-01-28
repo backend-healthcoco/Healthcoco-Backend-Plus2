@@ -1977,10 +1977,12 @@ public class BillingServiceImpl implements BillingService {
 					receiptItemJasperDetails.setAmountPaid(amountPaid);
 					if (receiptCollection.getUsedAdvanceAmount() != null
 							&& receiptCollection.getUsedAdvanceAmount() != 0.0) {
-						receiptItemJasperDetails.setAmountPaid(((!DPDoctorUtils.anyStringEmpty(amountPaid) && !amountPaid.equalsIgnoreCase("0.0")) ? amountPaid + "+"
-								: "") + receiptCollection.getUsedAdvanceAmount() + "(From Advance)");
+						receiptItemJasperDetails.setAmountPaid(
+								((!DPDoctorUtils.anyStringEmpty(amountPaid) && !amountPaid.equalsIgnoreCase("0.0"))
+										? amountPaid + "+"
+										: "") + receiptCollection.getUsedAdvanceAmount() + "(From Advance)");
 					}
-					
+
 					receiptItemJasperDetails
 							.setReceivedDate(simpleDateFormat1.format(receiptCollection.getReceivedDate()));
 					receiptItemJasperDetails.setModeOfPayment(receiptCollection.getModeOfPayment().name());
@@ -2369,10 +2371,41 @@ public class BillingServiceImpl implements BillingService {
 		JasperReportResponse response = null;
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		ReceiptItemJasperDetails receiptItemJasperDetails = null;
+		List<ReceiptItemJasperDetails> receiptItems = new ArrayList<>();
+
 		String userName = "";
 		if (!DPDoctorUtils.allStringsEmpty(user.getTitle())) {
 			userName = user.getTitle();
 		}
+		if (doctorPatientReceiptCollection != null) {
+			SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("dd MMM, yyyy");
+			simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+			receiptItemJasperDetails = new ReceiptItemJasperDetails();
+			String amountPaid = (doctorPatientReceiptCollection.getAmountPaid() != null)
+					? doctorPatientReceiptCollection.getAmountPaid() + ""
+					: "";
+			receiptItemJasperDetails.setAmountPaid(amountPaid);
+			if (doctorPatientReceiptCollection.getUsedAdvanceAmount() != null
+					&& doctorPatientReceiptCollection.getUsedAdvanceAmount() != 0.0) {
+				receiptItemJasperDetails.setAmountPaid(
+						((!DPDoctorUtils.anyStringEmpty(amountPaid) && !amountPaid.equalsIgnoreCase("0.0"))
+								? amountPaid + "+"
+								: "") + doctorPatientReceiptCollection.getUsedAdvanceAmount() + "(From Advance)");
+			}
+
+			receiptItemJasperDetails
+					.setReceivedDate(simpleDateFormat1.format(doctorPatientReceiptCollection.getReceivedDate()));
+			receiptItemJasperDetails.setModeOfPayment(doctorPatientReceiptCollection.getModeOfPayment().name());
+			receiptItemJasperDetails.setReceiptNo(doctorPatientReceiptCollection.getUniqueReceiptId());
+			receiptItemJasperDetails.setChequeNo(doctorPatientReceiptCollection.getTransactionId() != null
+					? doctorPatientReceiptCollection.getTransactionId()
+					: "--");
+		}
+		if (receiptItemJasperDetails != null) {
+			receiptItems.add(receiptItemJasperDetails); // Add the single object to the list
+		}
+		parameters.put("receiptItems", receiptItems);
 		String content = "<br>Received with thanks from &nbsp;&nbsp; " + userName + user.getFirstName()
 				+ "<br>The sum of Rupees:- " + doctorPatientReceiptCollection.getAmountPaid() + "<br> By "
 				+ doctorPatientReceiptCollection.getModeOfPayment() + "<br>Cheque no:- "
@@ -3101,7 +3134,7 @@ public class BillingServiceImpl implements BillingService {
 				expenseCollection
 						.setUniqueExpenseId(UniqueIdInitial.EXPENSE.getInitial() + DPDoctorUtils.generateRandomId());
 			}
-			
+
 			expenseCollection = doctorExpenseRepository.save(expenseCollection);
 			response = new DoctorExpense();
 			BeanUtil.map(expenseCollection, response);
