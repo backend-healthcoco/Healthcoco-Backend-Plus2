@@ -1433,8 +1433,19 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 												new Document("$group",
 														new BasicDBObject("_id", "$patientId")
 																.append("invoiced",
-																		new BasicDBObject("$sum",
+																		new BasicDBObject("$first",
 																				"$invoice.grandTotal"))
+																.append("isCghsInvoice",
+																		new BasicDBObject("$max",
+																				"$invoice.isCghsInvoice"))
+																.append("cghsDue", new BasicDBObject("$sum",
+																		new BasicDBObject("$cond",
+																				Arrays.asList("$invoice.isCghsInvoice",
+																						"$invoice.balanceAmount", 0))))
+																.append("amountDue", new BasicDBObject("$sum",
+																		new BasicDBObject("$cond",
+																				Arrays.asList("$invoice.isCghsInvoice",
+																						0, "$invoice.balanceAmount"))))
 																.append("patientName",
 																		new BasicDBObject("$first", "$patientName"))
 																.append("pid", new BasicDBObject("$first", "$pid"))
@@ -1453,8 +1464,10 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("invoiced", new BasicDBObject("$first", "$invoiced"))
 														.append("received",
 																new BasicDBObject("$sum", "$receipt.amountPaid"))
-														.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
-														.append("dueAmount", new BasicDBObject("$first", "$dueAmount"))
+														.append("amountDue", new BasicDBObject("$first", "$amountDue"))
+														.append("isCghsInvoice",
+																new BasicDBObject("$first", "$isCghsInvoice"))
+														.append("cghsDue", new BasicDBObject("$first", "$cghsDue"))														.append("dueAmount", new BasicDBObject("$first", "$dueAmount"))
 														.append("patientName",
 																new BasicDBObject("$first", "$patientName"))
 														.append("pid", new BasicDBObject("$first", "$pid")))),
@@ -1485,6 +1498,17 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																.append("invoiced",
 																		new BasicDBObject("$sum",
 																				"$invoice.grandTotal"))
+																.append("isCghsInvoice",
+																		new BasicDBObject("$max",
+																				"$invoice.isCghsInvoice"))
+																.append("cghsDue", new BasicDBObject("$sum",
+																		new BasicDBObject("$cond",
+																				Arrays.asList("$invoice.isCghsInvoice",
+																						"$invoice.balanceAmount", 0))))
+																.append("amountDue", new BasicDBObject("$sum",
+																		new BasicDBObject("$cond",
+																				Arrays.asList("$invoice.isCghsInvoice",
+																						0, "$invoice.balanceAmount"))))
 																.append("patientName",
 																		new BasicDBObject("$first", "$patientName"))
 																.append("pid", new BasicDBObject("$first", "$pid"))
@@ -1503,7 +1527,10 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("invoiced", new BasicDBObject("$first", "$invoiced"))
 														.append("received",
 																new BasicDBObject("$sum", "$receipt.amountPaid"))
-														.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
+														.append("amountDue", new BasicDBObject("$first", "$amountDue"))
+														.append("isCghsInvoice",
+																new BasicDBObject("$first", "$isCghsInvoice"))
+														.append("cghsDue", new BasicDBObject("$first", "$cghsDue"))
 														.append("dueAmount", new BasicDBObject("$first", "$dueAmount"))
 														.append("patientName",
 																new BasicDBObject("$first", "$patientName"))
@@ -1547,9 +1574,17 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																		new BasicDBObject("$first", "$locationId"))
 																.append("hospitalId",
 																		new BasicDBObject("$first", "$hospitalId"))
-																.append("amountDue",
-																		new BasicDBObject("$sum",
-																				"$invoice.balanceAmount"))
+//																.append("amountDue",
+//																		new BasicDBObject("$sum",
+//																				"$invoice.balanceAmount"))
+																.append("cghsDue", new BasicDBObject("$sum",
+																		new BasicDBObject("$cond",
+																				Arrays.asList("$invoice.isCghsInvoice",
+																						"$invoice.balanceAmount", 0))))
+																.append("amountDue", new BasicDBObject("$sum",
+																		new BasicDBObject("$cond",
+																				Arrays.asList("$invoice.isCghsInvoice",
+																						0, "$invoice.balanceAmount"))))
 																.append("totalDueAmount",
 																		new BasicDBObject("$first",
 																				"$totalDueAmount")))),
@@ -1562,6 +1597,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("received",
 																new BasicDBObject("$sum", "$receipt.amountPaid"))
 														.append("amountDue", new BasicDBObject("$first", "$amountDue"))
+														.append("cghsDue", new BasicDBObject("$first", "$cghsDue"))
 														.append("totalDueAmount",
 																new BasicDBObject("$first", "$totalDueAmount"))
 														.append("doctorName",
@@ -1604,9 +1640,17 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																		new BasicDBObject("$first", "$locationId"))
 																.append("hospitalId",
 																		new BasicDBObject("$first", "$hospitalId"))
-																.append("amountDue",
-																		new BasicDBObject("$sum",
-																				"$invoice.balanceAmount"))
+//																.append("amountDue",
+//																		new BasicDBObject("$sum",
+//																				"$invoice.balanceAmount"))
+																.append("cghsDue", new BasicDBObject("$sum",
+																		new BasicDBObject("$cond",
+																				Arrays.asList("$invoice.isCghsInvoice",
+																						"$invoice.balanceAmount", 0))))
+																.append("amountDue", new BasicDBObject("$sum",
+																		new BasicDBObject("$cond",
+																				Arrays.asList("$invoice.isCghsInvoice",
+																						0, "$invoice.balanceAmount"))))
 																.append("totalDueAmount",
 																		new BasicDBObject("$first",
 																				"$totalDueAmount")))),
@@ -1620,6 +1664,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("received",
 																new BasicDBObject("$sum", "$receipt.amountPaid"))
 														.append("amountDue", new BasicDBObject("$first", "$amountDue"))
+														.append("cghsDue", new BasicDBObject("$first", "$cghsDue"))
 														.append("totalDueAmount",
 																new BasicDBObject("$first", "$totalDueAmount"))
 														.append("doctorName",
@@ -1630,6 +1675,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			} else {
 				throw new BusinessException(ServiceError.Unknown, "Query Type cannot be null");
 			}
+			System.out.println("aggregation " + aggregation);
 			response = mongoTemplate.aggregate(aggregation, DoctorPatientDueAmountCollection.class,
 					AmountDueAnalyticsDataResponse.class).getMappedResults();
 		} catch (Exception e) {
@@ -2110,8 +2156,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				} else {
 					throw new BusinessException(ServiceError.Unknown, "Query Type cannot be null");
 				}
-				System.out.println("aggregation Count " + aggregation);
-
 				response = mongoTemplate.aggregate(aggregation, DoctorPatientDueAmountCollection.class,
 						AmountDueAnalyticsDataResponse.class).getMappedResults().size();
 			}
@@ -2439,8 +2483,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				// Calculate the final total amount for unique patients
 				finalTotalServiceFees = patientTotalAmountPaidMap.values().stream().mapToDouble(Double::doubleValue)
 						.sum();
-				finalTotalAmountPending = patientTotalAmountPendingMap.values().stream().mapToDouble(Double::doubleValue)
-						.sum();
+				finalTotalAmountPending = patientTotalAmountPendingMap.values().stream()
+						.mapToDouble(Double::doubleValue).sum();
 				finalTotalDiscount = patientTotalDiscountMap.values().stream().mapToDouble(Double::doubleValue).sum();
 				// Set the final totals in the response
 				response.setTotalAmountByCash(finalTotalAmountByCash);

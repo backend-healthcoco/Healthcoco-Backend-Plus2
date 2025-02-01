@@ -2,7 +2,7 @@ package com.dpdocter.enums;
 
 public enum PrintSettingType {
 	
-	DEFAULT("DEFAULT"),BILLING("BILLING"),EMR("EMR"),IPD("IPD"),EMAIL("EMAIL");
+	DEFAULT("DEFAULT"),BILLING("BILLING"),RECEIPT("RECEIPT"),EMR("EMR"),IPD("IPD"),EMAIL("EMAIL");
 	
 
 	private String type;

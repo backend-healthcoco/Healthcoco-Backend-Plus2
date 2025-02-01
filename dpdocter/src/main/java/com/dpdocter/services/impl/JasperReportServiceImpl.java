@@ -6889,23 +6889,23 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addPayementItems(parameters, contentFontSize,
 				columnWidth, pageWidth, pageHeight, "$P{receiptItems}", normalStyle));
 
-//		band = new JRDesignBand();
-//		band.setHeight(18);
-//		jrDesignTextField = new JRDesignTextField();
-//		jrDesignTextField.setExpression(new JRDesignExpression("$P{content}"));
-//		jrDesignTextField.setX(0);
-//		jrDesignTextField.setY(0);
-//		jrDesignTextField.setHeight(18);
-//		jrDesignTextField.setWidth(columnWidth);
-//		jrDesignTextField.setStretchWithOverflow(true);
-//		jrDesignTextField.setMarkup("html");
-//		jrDesignTextField.setFontSize(Float.valueOf(contentFontSize));
-//		band.addElement(jrDesignTextField);
-//		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-//		band = new JRDesignBand();
-//		band.setHeight(10);
-//		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-//
+		band = new JRDesignBand();
+		band.setHeight(18);
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{content}"));
+		jrDesignTextField.setX(0);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(18);
+		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setMarkup("html");
+		jrDesignTextField.setFontSize(Float.valueOf(contentFontSize+1));
+		band.addElement(jrDesignTextField);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		band = new JRDesignBand();
+		band.setHeight(10);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
 //		band = new JRDesignBand();
 //		band.setHeight(18);
 //		jrDesignTextField = new JRDesignTextField();

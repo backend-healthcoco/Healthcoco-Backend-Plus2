@@ -15,10 +15,13 @@ public class AmountDueAnalyticsDataResponse {
 	private String doctorName;
 
 	private Double amountDue = 0.0;
-	
+	private Double cghsDue = 0.0;
+
 	private Double totalDueAmount = 0.0;
-	
+
 	private Double totalDiscount = 0.0;
+
+	private Boolean isCghsInvoice = false;
 
 	public Double getAmountDue() {
 		return amountDue;
@@ -82,6 +85,22 @@ public class AmountDueAnalyticsDataResponse {
 
 	public void setTotalDiscount(Double totalDiscount) {
 		this.totalDiscount = totalDiscount;
+	}
+
+	public Boolean getIsCghsInvoice() {
+		return isCghsInvoice;
+	}
+
+	public void setIsCghsInvoice(Boolean isCghsInvoice) {
+		this.isCghsInvoice = isCghsInvoice;
+	}
+
+	public Double getCghsDue() {
+		return cghsDue;
+	}
+
+	public void setCghsDue(Double cghsDue) {
+		this.cghsDue = cghsDue;
 	}
 
 	@Override

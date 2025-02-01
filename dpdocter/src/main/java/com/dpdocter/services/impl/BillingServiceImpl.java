@@ -131,6 +131,7 @@ import com.dpdocter.services.SMSServices;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
+import common.util.web.NumberToWordsConverter;
 
 @Service
 public class BillingServiceImpl implements BillingService {
@@ -2345,7 +2346,7 @@ public class BillingServiceImpl implements BillingService {
 				UserCollection user = userRepository.findById(doctorPatientReceiptCollection.getPatientId())
 						.orElse(null);
 				JasperReportResponse jasperReportResponse = createJasperForReceipt(doctorPatientReceiptCollection,
-						patient, user, PrintSettingType.BILLING.getType());
+						patient, user, PrintSettingType.RECEIPT.getType());
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -2406,14 +2407,26 @@ public class BillingServiceImpl implements BillingService {
 			receiptItems.add(receiptItemJasperDetails); // Add the single object to the list
 		}
 		parameters.put("receiptItems", receiptItems);
-		String content = "<br>Received with thanks from &nbsp;&nbsp; " + userName + user.getFirstName()
-				+ "<br>The sum of Rupees:- " + doctorPatientReceiptCollection.getAmountPaid() + "<br> By "
-				+ doctorPatientReceiptCollection.getModeOfPayment() + "<br>Cheque no:- "
-				+ (doctorPatientReceiptCollection.getTransactionId() != null
-						? doctorPatientReceiptCollection.getTransactionId()
-						: "--")
-				+ "&nbsp;&nbsp;&nbsp;On Date:-"
-				+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate());
+		double totalAmount = doctorPatientReceiptCollection.getAmountPaid();
+		if (doctorPatientReceiptCollection.getUsedAdvanceAmount() != null
+				&& doctorPatientReceiptCollection.getUsedAdvanceAmount() != 0.0) {
+			totalAmount = doctorPatientReceiptCollection.getAmountPaid()
+					+ doctorPatientReceiptCollection.getUsedAdvanceAmount();
+		}
+		String content = "";
+		if (doctorPatientReceiptCollection.getReceiptType().equals(ReceiptType.INVOICE)) {
+			content = "<br>Received with thanks from &nbsp;&nbsp; " + userName + user.getFirstName()
+					+ "<br>The sum of Rupees:- " + NumberToWordsConverter.convert(totalAmount) + " (" + totalAmount
+					+ ")" + "&nbsp;&nbsp;/-";
+		} else if (doctorPatientReceiptCollection.getReceiptType().equals(ReceiptType.ADVANCE)) {
+			content = "<br>Received advance amount with thanks from &nbsp;&nbsp; " + userName + user.getFirstName()
+			+ "<br>The sum of Rupees:- " + NumberToWordsConverter.convert(totalAmount) + " (" + totalAmount
+			+ ")" + "&nbsp;&nbsp;/-";
+		} else if (doctorPatientReceiptCollection.getReceiptType().equals(ReceiptType.REFUND)) {
+			content = "<br>Refunded to &nbsp;&nbsp; " + userName + user.getFirstName()
+			+ "<br>The sum of Rupees:- " + NumberToWordsConverter.convert(totalAmount) + " (" + totalAmount
+			+ ")" + "&nbsp;&nbsp;/-";
+		}
 		parameters.put("content", content);
 		parameters.put("paid", "Rs.&nbsp;" + doctorPatientReceiptCollection.getAmountPaid());
 		PrintSettingsCollection printSettings = null;
