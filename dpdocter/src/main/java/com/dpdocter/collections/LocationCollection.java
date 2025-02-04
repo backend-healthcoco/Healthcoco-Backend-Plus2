@@ -176,7 +176,8 @@ public class LocationCollection extends GenericCollection {
 	@Field
 	private Boolean smsAccountActive = false;
 
-
+	@Field
+	private String chargeCode;
 	public Boolean getIsDentalChain() {
 		return isDentalChain;
 	}
@@ -608,6 +609,14 @@ public class LocationCollection extends GenericCollection {
 
 	public void setSmsAccountActive(Boolean smsAccountActive) {
 		this.smsAccountActive = smsAccountActive;
+	}
+
+	public String getChargeCode() {
+		return chargeCode;
+	}
+
+	public void setChargeCode(String chargeCode) {
+		this.chargeCode = chargeCode;
 	}
 
 	@Override

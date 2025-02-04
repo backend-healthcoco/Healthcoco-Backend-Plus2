@@ -135,7 +135,9 @@ public class ESLocationDocument {
 
 	@Field(type = FieldType.Text)
 	private String locationSlugUrl;
-
+	@Field(type = FieldType.Text)
+	private String chargeCode;
+	
 	public String getLocationSlugUrl() {
 		return locationSlugUrl;
 	}
@@ -438,6 +440,14 @@ public class ESLocationDocument {
 
 	public void setGoogleMapShortUrl(String googleMapShortUrl) {
 		this.googleMapShortUrl = googleMapShortUrl;
+	}
+
+	public String getChargeCode() {
+		return chargeCode;
+	}
+
+	public void setChargeCode(String chargeCode) {
+		this.chargeCode = chargeCode;
 	}
 
 	@Override
