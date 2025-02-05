@@ -1983,7 +1983,9 @@ public class BillingServiceImpl implements BillingService {
 										? amountPaid + "+"
 										: "") + receiptCollection.getUsedAdvanceAmount() + "(From Advance)");
 					}
-
+					receiptItemJasperDetails.setChequeNo(receiptCollection.getTransactionId() != null
+							? receiptCollection.getTransactionId()
+							: "--");
 					receiptItemJasperDetails
 							.setReceivedDate(simpleDateFormat1.format(receiptCollection.getReceivedDate()));
 					receiptItemJasperDetails.setModeOfPayment(receiptCollection.getModeOfPayment().name());

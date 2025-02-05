@@ -777,7 +777,6 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 			for (UserRoleLookupResponse roleLookupResponse : userRoleLookupResponses) {
 				RoleCollection otherRoleCollection = roleLookupResponse.getRoleCollection();
-				System.out.println("otherRoleCollection" + otherRoleCollection.getRole());
 				if (!isMobileApp
 						&& otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.SMB_SUPER_ADMIN.getRole())) {
 				}
@@ -824,8 +823,6 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					roles.add(role);
 				}
 				doctorClinic.setRoles(roles);
-				System.out.println("doctorClinic" + doctorClinic);
-				System.out.println("doctorClinic " + doctorClinic.toString());
 
 				if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 					RecommendationsCollection recommendationsCollection = recommendationsRepository
