@@ -526,7 +526,7 @@ public class OrthoServiceImpl implements OrthoService {
 
 				for (Integer key : alignerDatesUpper.keySet()) {
 					AlignerDates alignerDate = alignerDatesUpper.get(key);
-					if (startDate.after(alignerDate.getStartDate()) && startDate.before(alignerDate.getEndDate())) {
+					if (startDate.equals(DPDoctorUtils.getStartDate(alignerDate.getStartDate()))) {
 						wearingAligner = key;
 						currentStartDate = alignerDate.getStartDate();
 						currentUpperStartDate = alignerDate.getStartDate();
@@ -552,7 +552,7 @@ public class OrthoServiceImpl implements OrthoService {
 				LinkedHashMap<Integer, AlignerDates> alignerDatesLower = lowerAligner.getAlignerDates();
 				for (Integer key : alignerDatesLower.keySet()) {
 					AlignerDates alignerDate = alignerDatesLower.get(key);
-					if (startDate.after(alignerDate.getStartDate()) && startDate.before(alignerDate.getEndDate())) {
+					if (startDate.equals(DPDoctorUtils.getStartDate(alignerDate.getStartDate()))) {
 						wearingAligner = key;
 						currentStartDate = alignerDate.getStartDate();
 						currentEndDate = alignerDate.getEndDate();
@@ -606,10 +606,10 @@ public class OrthoServiceImpl implements OrthoService {
 			String totext = to + "(U&L)";
 
 			smsTrackDetail.setTemplateId("1307170819164643015");
-			text = "Hi " + userCollection.getFirstName() + "," + "it's time to change your aligner from "
-					+ " aligner today from set " + fromtext + " to set " + totext + " at "
-					+ locationCollection.getLocationName() + ". " + "If you need any help, reach out to us at "
-					+ locationCollection.getClinicNumber() + "\n" + "- Healthcoco";
+			text = "Hi " + userCollection.getFirstName() + "," + "it's time to change your aligner from set "
+					+ fromtext + " to set " + totext + " at " + locationCollection.getLocationName() + ". "
+					+ "If you need any help, reach out to us at " + locationCollection.getClinicNumber() + "\n"
+					+ "- Healthcoco";
 			sms.setSmsText(text);
 
 			SMSAddress smsAddress = new SMSAddress();
