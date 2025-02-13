@@ -2,6 +2,8 @@ package com.dpdocter.response;
 
 import java.util.Date;
 
+import com.dpdocter.enums.PatientAnalyticType;
+
 public class InvoiceAnalyticsDataDetailResponse {
 
 	private String id;
@@ -17,6 +19,8 @@ public class InvoiceAnalyticsDataDetailResponse {
 	private String doctorName;
 
 	private String mobileNumber;
+	private PatientAnalyticType patientAnalyticType;
+	private String referedBy;
 
 	private String services;
 
@@ -132,6 +136,22 @@ public class InvoiceAnalyticsDataDetailResponse {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public PatientAnalyticType getPatientAnalyticType() {
+		return patientAnalyticType;
+	}
+
+	public void setPatientAnalyticType(PatientAnalyticType patientAnalyticType) {
+		this.patientAnalyticType = patientAnalyticType;
+	}
+
+	public String getReferedBy() {
+		return referedBy;
+	}
+
+	public void setReferedBy(String referedBy) {
+		this.referedBy = referedBy;
 	}
 
 	@Override

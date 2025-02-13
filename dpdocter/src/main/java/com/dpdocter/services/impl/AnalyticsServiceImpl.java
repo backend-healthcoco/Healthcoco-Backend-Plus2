@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.PatientAnalyticData;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.DoctorExpenseCollection;
 import com.dpdocter.collections.DoctorPatientDueAmountCollection;
@@ -38,6 +40,7 @@ import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.ModeOfPayment;
+import com.dpdocter.enums.PatientAnalyticType;
 import com.dpdocter.enums.PaymentStatusType;
 import com.dpdocter.enums.SearchType;
 import com.dpdocter.enums.UnitType;
@@ -212,6 +215,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Date to = null;
 
 			Criteria criteria2 = new Criteria();
+			Criteria criteria3 = new Criteria();
+
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
@@ -230,22 +235,26 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				fromTime = new DateTime(from);
 				toTime = new DateTime(to);
 				criteria.and("invoiceDate").gte(fromTime).lte(toTime);
-
+				criteria3.and("createdTime").gte(fromTime).lte(toTime);
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				to = new Date(Long.parseLong(fromDate));
 				toTime = new DateTime(to);
 				criteria.and("invoiceDate").gte(fromTime);
+				criteria3.and("createdTime").gte(fromTime);
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
 				to = new Date(Long.parseLong(toDate));
 				toTime = new DateTime(to);
 				criteria.and("invoiceDate").lte(toTime);
+				criteria.and("createdTime").lte(toTime);
 			}
+
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria2.orOperator(new Criteria("patient.localPatientName").regex(searchTerm, "i"),
 						new Criteria("user.firstName").regex(searchTerm, "i"),
 						new Criteria("user.mobileNumber").regex(searchTerm, "i"));
 			}
 			criteria.and("discarded").is(false);
+
 			AggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$_id")
 							.append("uniqueInvoiceId", new BasicDBObject("$first", "$uniqueInvoiceId"))
@@ -258,6 +267,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 							.append("firstName", new BasicDBObject("$first", "$firstName"))
 							.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
 							.append("balanceAmount", new BasicDBObject("$first", "$balanceAmount"))
+							.append("referedBy", new BasicDBObject("$first", "$referedBy"))
+							.append("patientAnalyticType", new BasicDBObject("$first", "$patientAnalyticType"))
 							.append("date", new BasicDBObject("$first", "$invoiceDate"))));
 
 			if (size > 0) {
@@ -266,10 +277,14 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 								Aggregation.newAggregation(Aggregation.match(criteria),
 										Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 										Aggregation.unwind("patient"),
+										Aggregation.lookup("patient_visit_cl", "patientId", "patientId", "visitData"),
+										Aggregation.unwind("visitData", true),
 										Aggregation.lookup("user_cl", "patientId", "_id", "user"),
 										Aggregation.unwind("user"),
 										Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-										Aggregation.unwind("doctor"), Aggregation.match(criteria2),
+										Aggregation.unwind("doctor"),
+										Aggregation.lookup("referrences_cl", "patient.referredBy", "_id", "refer"),
+										Aggregation.unwind("refer", true), Aggregation.match(criteria2),
 										new CustomAggregationOperation(new Document("$project",
 												new BasicDBObject("_id", "$_id")
 														.append("resultantDiscount", new BasicDBObject("$cond",
@@ -290,7 +305,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																new BasicDBObject("if", new BasicDBObject("$eq",
 																		Arrays.asList("$totalTax.unit",
 																				UnitType.PERCENT.name())))
-																		.append("then", new BasicDBObject("$multiply",
+																		.append("then", new BasicDBObject(
+																				"$multiply",
 																				Arrays.asList(new BasicDBObject(
 																						"$divide",
 																						Arrays.asList("$totalTax.value",
@@ -303,6 +319,59 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("doctorName", "$doctor.firstName")
 														.append("uniqueInvoiceId", "$uniqueInvoiceId")
 														.append("balanceAmount", "$balanceAmount")
+														.append("patientAnalyticType", new BasicDBObject("$cond",
+																Arrays.asList(new BasicDBObject("$and", Arrays.asList(
+																		new BasicDBObject("$gt",
+																				Arrays.asList(new BasicDBObject("$cond",
+																						Arrays.asList(new BasicDBObject(
+																								"$eq",
+																								Arrays.asList(
+																										new BasicDBObject(
+																												"$type",
+																												"$visitData"),
+																										"array")),
+																								new BasicDBObject(
+																										"$size",
+																										"$visitData"),
+																								0)),
+																						0)),
+																		new BasicDBObject(
+																				"$gte",
+																				Arrays.asList("$visitData.createdTime",
+																						fromTime)),
+																		new BasicDBObject("$lte",
+																				Arrays.asList("$visitData.createdTime",
+																						toTime)))),
+																		"VISITED_PATIENT",
+																		new BasicDBObject("$cond", Arrays.asList(
+																				new BasicDBObject("$and", Arrays.asList(
+																						new BasicDBObject("$gt", Arrays
+																								.asList(new BasicDBObject(
+																										"$cond",
+																										Arrays.asList(
+																												new BasicDBObject(
+																														"$eq",
+																														Arrays.asList(
+																																new BasicDBObject(
+																																		"$type",
+																																		"$patient"),
+																																"array")),
+																												new BasicDBObject(
+																														"$size",
+																														"$patient"),
+																												0)),
+																										0)),
+																						new BasicDBObject(
+																								"$gte",
+																								Arrays.asList(
+																										"$patient.createdTime",
+																										fromTime)),
+																						new BasicDBObject("$lte",
+																								Arrays.asList(
+																										"$patient.createdTime",
+																										toTime)))),
+																				"NEW_PATIENT", "NEW_PATIENT")))))
+														.append("referedBy", "$refer.reference")
 														.append("resultantInvoiceAmount", "$grandTotal"))),
 										aggregationOperation,
 										Aggregation.sort(new Sort(Sort.Direction.DESC, "invoiceDate")),
@@ -315,10 +384,14 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 								Aggregation.newAggregation(Aggregation.match(criteria),
 										Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 										Aggregation.unwind("patient"),
+										Aggregation.lookup("patient_visit_cl", "patientId", "patientId", "visitData"),
+										Aggregation.unwind("visitData", true),
 										Aggregation.lookup("user_cl", "patientId", "_id", "user"),
 										Aggregation.unwind("user"),
 										Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-										Aggregation.unwind("doctor"), Aggregation.match(criteria2),
+										Aggregation.unwind("doctor"),
+										Aggregation.lookup("referrences_cl", "patient.referredBy", "_id", "refer"),
+										Aggregation.unwind("refer", true), Aggregation.match(criteria2),
 										new CustomAggregationOperation(new Document("$project",
 												new BasicDBObject("_id", "$_id")
 														.append("resultantDiscount", new BasicDBObject("$cond",
@@ -339,7 +412,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																new BasicDBObject("if", new BasicDBObject("$eq",
 																		Arrays.asList("$totalTax.unit",
 																				UnitType.PERCENT.name())))
-																		.append("then", new BasicDBObject("$multiply",
+																		.append("then", new BasicDBObject(
+																				"$multiply",
 																				Arrays.asList(new BasicDBObject(
 																						"$divide",
 																						Arrays.asList("$totalTax.value",
@@ -352,6 +426,59 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("doctorName", "$doctor.firstName")
 														.append("uniqueInvoiceId", "$uniqueInvoiceId")
 														.append("balanceAmount", "$balanceAmount")
+														.append("patientAnalyticType", new BasicDBObject("$cond",
+																Arrays.asList(new BasicDBObject("$and", Arrays.asList(
+																		new BasicDBObject("$gt",
+																				Arrays.asList(new BasicDBObject("$cond",
+																						Arrays.asList(new BasicDBObject(
+																								"$eq",
+																								Arrays.asList(
+																										new BasicDBObject(
+																												"$type",
+																												"$visitData"),
+																										"array")),
+																								new BasicDBObject(
+																										"$size",
+																										"$visitData"),
+																								0)),
+																						0)),
+																		new BasicDBObject(
+																				"$gte",
+																				Arrays.asList("$visitData.createdTime",
+																						fromTime)),
+																		new BasicDBObject("$lte",
+																				Arrays.asList("$visitData.createdTime",
+																						toTime)))),
+																		"VISITED_PATIENT",
+																		new BasicDBObject("$cond", Arrays.asList(
+																				new BasicDBObject("$and", Arrays.asList(
+																						new BasicDBObject("$gt", Arrays
+																								.asList(new BasicDBObject(
+																										"$cond",
+																										Arrays.asList(
+																												new BasicDBObject(
+																														"$eq",
+																														Arrays.asList(
+																																new BasicDBObject(
+																																		"$type",
+																																		"$patient"),
+																																"array")),
+																												new BasicDBObject(
+																														"$size",
+																														"$patient"),
+																												0)),
+																										0)),
+																						new BasicDBObject(
+																								"$gte",
+																								Arrays.asList(
+																										"$patient.createdTime",
+																										fromTime)),
+																						new BasicDBObject("$lte",
+																								Arrays.asList(
+																										"$patient.createdTime",
+																										toTime)))),
+																				"NEW_PATIENT", "NEW_PATIENT")))))
+														.append("referedBy", "$refer.reference")
 														.append("resultantInvoiceAmount", "$grandTotal"))),
 										aggregationOperation,
 										Aggregation.sort(new Sort(Sort.Direction.DESC, "invoiceDate"))),
@@ -1467,7 +1594,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("amountDue", new BasicDBObject("$first", "$amountDue"))
 														.append("isCghsInvoice",
 																new BasicDBObject("$first", "$isCghsInvoice"))
-														.append("cghsDue", new BasicDBObject("$first", "$cghsDue"))														.append("dueAmount", new BasicDBObject("$first", "$dueAmount"))
+														.append("cghsDue", new BasicDBObject("$first", "$cghsDue"))
+														.append("dueAmount", new BasicDBObject("$first", "$dueAmount"))
 														.append("patientName",
 																new BasicDBObject("$first", "$patientName"))
 														.append("pid", new BasicDBObject("$first", "$pid")))),
