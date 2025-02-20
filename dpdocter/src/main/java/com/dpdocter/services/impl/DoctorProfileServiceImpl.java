@@ -614,7 +614,6 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					DoctorClinicProfile doctorClinicProfile = getDoctorClinic(doctorClinicProfileLookupResponse,
 							patientId, isMobileApp, doctorClinicProfileLookupResponses.size());
 					if (doctorClinicProfile != null) {
-						System.out.println("doctorClinicProfile " + doctorClinicProfile.toString());
 						clinicProfile.add(doctorClinicProfile);
 					}
 				}

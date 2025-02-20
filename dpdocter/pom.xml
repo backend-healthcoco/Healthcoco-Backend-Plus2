@@ -799,6 +799,11 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>4.9.3</version>
+		</dependency>
+		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>2.9.8</version>
@@ -943,17 +948,12 @@
 			<artifactId>aspectjtools</artifactId>
 			<version>1.9.4</version>
 		</dependency>
-		<!-- For android GCM push notification services -->
-		<dependency>
-			<groupId>com.ganyo</groupId>
-			<artifactId>gcm-server</artifactId>
-			<version>1.0.2</version>
-		</dependency>
+
 		<!-- For IOS push notification services Fcm -->
 		<dependency>
 			<groupId>com.google.firebase</groupId>
 			<artifactId>firebase-admin</artifactId>
-			<version>6.16.0</version>
+			<version>9.2.0</version>
 		</dependency>
 		<!-- For IOS push notification services -->
 		<dependency>
@@ -970,7 +970,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>18.0</version>
+			<version>31.1-jre</version> <!-- Upgrade from 18.0 -->
 		</dependency>
 		<dependency>
 			<groupId>io.swagger</groupId>

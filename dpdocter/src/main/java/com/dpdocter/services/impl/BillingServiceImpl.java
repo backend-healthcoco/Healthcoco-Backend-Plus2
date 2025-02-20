@@ -358,7 +358,7 @@ public class BillingServiceImpl implements BillingService {
 				doctorPatientInvoiceCollection.setUpdatedTime(new Date());
 				doctorPatientInvoiceCollection.setTotalCost(request.getTotalCost());
 				doctorPatientInvoiceCollection.setTotalDiscount(request.getTotalDiscount());
-				doctorPatientInvoiceCollection.setDiscount(request.getDiscount());
+				doctorPatientInvoiceCollection.setDiscount(request.getDiscountOnTotal());
 				doctorPatientInvoiceCollection.setTotalTax(request.getTotalTax());
 				doctorPatientInvoiceCollection
 						.setBalanceAmount((request.getGrandTotal() - doctorPatientInvoiceCollection.getGrandTotal())

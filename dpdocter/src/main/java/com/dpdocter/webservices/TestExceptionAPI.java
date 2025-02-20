@@ -17,9 +17,6 @@ import com.dpdocter.elasticsearch.repository.ESProfessionRepository;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.MailService;
-import com.google.android.gcm.server.Message;
-import com.google.android.gcm.server.Result;
-import com.google.android.gcm.server.Sender;
 
 import common.util.web.FCMSender;
 import common.util.web.Response;
@@ -80,27 +77,27 @@ public class TestExceptionAPI {
 		Thread t = new Thread() {
 			public void run() {
 				try {
-					if (id == 1) {
-						Sender sender = new FCMSender(PATIENT_GEOCODING_SERVICES_API_KEY.trim());
-						Message message = new Message.Builder().collapseKey("message").timeToLive(3)
-								.delayWhileIdle(true).addData("message", "FCM Notification from Java application")
-								.build();
-
-						// Use the same token(or registration id) that was earlier
-						// used to send the message to the client directly from
-						// Firebase Console's Notification tab.
-						Result result = sender.send(message, patientToken, 1);
-					} else {
-						Sender sender = new FCMSender(DOCTOR_GEOCODING_SERVICES_API_KEY.trim());
-						Message message = new Message.Builder().collapseKey("message").timeToLive(3)
-								.delayWhileIdle(true).addData("message", "FCM Notification from Java application")
-								.build();
-
-						// Use the same token(or registration id) that was earlier
-						// used to send the message to the client directly from
-						// Firebase Console's Notification tab.
-						Result result = sender.send(message, doctorToken, 1);
-					}
+//					if (id == 1) {
+//						Sender sender = new FCMSender(PATIENT_GEOCODING_SERVICES_API_KEY.trim());
+//						Message message = new Message.Builder().collapseKey("message").timeToLive(3)
+//								.delayWhileIdle(true).addData("message", "FCM Notification from Java application")
+//								.build();
+//
+//						// Use the same token(or registration id) that was earlier
+//						// used to send the message to the client directly from
+//						// Firebase Console's Notification tab.
+//						Result result = sender.send(message, patientToken, 1);
+//					} else {
+//						Sender sender = new FCMSender(DOCTOR_GEOCODING_SERVICES_API_KEY.trim());
+//						Message message = new Message.Builder().collapseKey("message").timeToLive(3)
+//								.delayWhileIdle(true).addData("message", "FCM Notification from Java application")
+//								.build();
+//
+//						// Use the same token(or registration id) that was earlier
+//						// used to send the message to the client directly from
+//						// Firebase Console's Notification tab.
+//						Result result = sender.send(message, doctorToken, 1);
+//					}
 
 				} catch (Exception e) {
 					e.printStackTrace();

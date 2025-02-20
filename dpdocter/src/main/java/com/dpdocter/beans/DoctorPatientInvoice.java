@@ -52,7 +52,7 @@ public class DoctorPatientInvoice extends GenericCollection {
 
 	private Date dischargeDate;
 	private Boolean isCghsInvoice = false;
-	private Discount discount;
+	private Discount discountOnTotal;
 
 	public String getId() {
 		return id;
@@ -239,12 +239,13 @@ public class DoctorPatientInvoice extends GenericCollection {
 		this.isCghsInvoice = isCghsInvoice;
 	}
 
-	public Discount getDiscount() {
-		return discount;
+
+	public Discount getDiscountOnTotal() {
+		return discountOnTotal;
 	}
 
-	public void setDiscount(Discount discount) {
-		this.discount = discount;
+	public void setDiscountOnTotal(Discount discountOnTotal) {
+		this.discountOnTotal = discountOnTotal;
 	}
 
 	@Override

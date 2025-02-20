@@ -1560,7 +1560,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 												new Document("$group",
 														new BasicDBObject("_id", "$patientId")
 																.append("invoiced",
-																		new BasicDBObject("$first",
+																		new BasicDBObject("$sum",
 																				"$invoice.grandTotal"))
 																.append("isCghsInvoice",
 																		new BasicDBObject("$max",
