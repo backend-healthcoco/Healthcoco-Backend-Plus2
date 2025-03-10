@@ -36,6 +36,7 @@ import com.dpdocter.response.AppointmentAverageTimeAnalyticResponse;
 import com.dpdocter.response.AppointmentBookedByCountResponse;
 import com.dpdocter.response.BookedAndCancelAppointmentCount;
 import com.dpdocter.response.DailyReportAnalyticResponse;
+import com.dpdocter.response.DischargeSummaryAnalyticsDataResponse;
 import com.dpdocter.response.DoctorAnalyticPieChartResponse;
 import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
 import com.dpdocter.response.DoctorPatientAnalyticResponse;
@@ -43,6 +44,8 @@ import com.dpdocter.response.DoctorPrescriptionAnalyticResponse;
 import com.dpdocter.response.DoctorPrescriptionItemAnalyticResponse;
 import com.dpdocter.response.DoctorTreatmentAnalyticResponse;
 import com.dpdocter.response.DoctorVisitAnalyticResponse;
+import com.dpdocter.response.ExpenseAnalyticsDataResponse;
+import com.dpdocter.response.ExpenseAnalyticsTypeDataResponse;
 import com.dpdocter.response.ExpenseCountResponse;
 import com.dpdocter.response.IncomeAnalyticsDataResponse;
 import com.dpdocter.response.InvoiceAnalyticsDataDetailResponse;
@@ -96,21 +99,20 @@ public class AnalyticsAPI {
 		return response;
 	}
 
-
 	@Path(value = PathProxy.AnalyticsUrls.GET_DAILY_REPORT_ANALYTIC)
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_DAILY_REPORT_ANALYTIC, notes = PathProxy.AnalyticsUrls.GET_DAILY_REPORT_ANALYTIC)
 	public Response<DailyReportAnalyticResponse> getDailyReportAnalytics(@QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate) {
-		DailyReportAnalyticResponse patientAnalyticResponse = analyticsService.getDailyReportAnalytics(doctorId, locationId,
-				hospitalId, fromDate, toDate);
+		DailyReportAnalyticResponse patientAnalyticResponse = analyticsService.getDailyReportAnalytics(doctorId,
+				locationId, hospitalId, fromDate, toDate);
 
 		Response<DailyReportAnalyticResponse> response = new Response<DailyReportAnalyticResponse>();
 		response.setData(patientAnalyticResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.AnalyticsUrls.GET_PATIENT_ANALYTICS_DATA)
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PATIENT_ANALYTICS_DATA, notes = PathProxy.AnalyticsUrls.GET_PATIENT_ANALYTICS_DATA)
@@ -569,17 +571,35 @@ public class AnalyticsAPI {
 	public Response<ExpenseCountResponse> getPatintVisitAnalytic(@QueryParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
-			@QueryParam("discarded") boolean discarded, @QueryParam("searchType") String searchType,
-			@QueryParam("expenseType") String expenseType, @QueryParam("paymentMode") String paymentMode) {
-		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId, searchType)) {
+			@QueryParam("discarded") boolean discarded, @QueryParam("expenseType") String expenseType,
+			@QueryParam("paymentMode") String paymentMode) {
+		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
-					"searchType, locationId, hospitalId should not be empty");
+					"locationId, hospitalId should not be empty");
 		}
 
-		List<ExpenseCountResponse> data = analyticsService.getDoctorExpenseAnalytic(doctorId, searchType, locationId,
-				hospitalId, discarded, fromDate, toDate, expenseType, paymentMode);
+		ExpenseCountResponse data = analyticsService.getDoctorExpenseAnalytic(doctorId, locationId, hospitalId,
+				discarded, fromDate, toDate, expenseType, paymentMode);
 		Response<ExpenseCountResponse> response = new Response<ExpenseCountResponse>();
-		response.setDataList(data);
+		response.setData(data);
+		return response;
+	}
+	
+	@Path(value = PathProxy.AnalyticsUrls.GET_EXPENSE_ANALYTICS_DATA)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_EXPENSE_ANALYTICS_DATA, notes = PathProxy.AnalyticsUrls.GET_EXPENSE_ANALYTICS_DATA)
+	public Response<ExpenseAnalyticsTypeDataResponse> getExpenseAnalyticsTypeData(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate) {
+		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					"doctorId, locationId, hospitalId should not be empty");
+		}
+		List<ExpenseAnalyticsTypeDataResponse> paymentAnalyticsDataResponses = null;
+		paymentAnalyticsDataResponses = analyticsService.getExpenseAnalyticsTypeData(doctorId, locationId, hospitalId,
+				fromDate, toDate);
+		Response<ExpenseAnalyticsTypeDataResponse> response = new Response<ExpenseAnalyticsTypeDataResponse>();
+		response.setDataList(paymentAnalyticsDataResponses);
 		return response;
 	}
 
@@ -907,5 +927,25 @@ public class AnalyticsAPI {
 		return response;
 
 	}
+
+	@Path(value = PathProxy.AnalyticsUrls.GET_DISCHARGE_SUMMARY_ANALYTICS_DATA)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_DISCHARGE_SUMMARY_ANALYTICS_DATA, notes = PathProxy.AnalyticsUrls.GET_DISCHARGE_SUMMARY_ANALYTICS_DATA)
+	public Response<DischargeSummaryAnalyticsDataResponse> getDischargeSummaryAnalyticsData(
+			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId, @QueryParam("fromDate") String fromDate,
+			@QueryParam("toDate") String toDate, @QueryParam("page") int page, @QueryParam("size") int size) {
+		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					"doctorId, locationId, hospitalId should not be empty");
+		}
+		List<DischargeSummaryAnalyticsDataResponse> paymentAnalyticsDataResponses = analyticsService
+				.getDischargeSummaryAnalyticsData(doctorId, locationId, hospitalId, fromDate, toDate, page, size);
+		Response<DischargeSummaryAnalyticsDataResponse> response = new Response<DischargeSummaryAnalyticsDataResponse>();
+		response.setDataList(paymentAnalyticsDataResponses);
+		return response;
+	}
+
+	
 
 }

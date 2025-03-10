@@ -26,14 +26,14 @@ public interface BillingService {
 	DoctorPatientInvoice addEditInvoice(DoctorPatientInvoice request);
 
 	List<DoctorPatientInvoice> getInvoices(String type, long page, int size, String doctorId, String locationId,
-			String hospitalId, String patientId, String updatedTime,String from,String to, Boolean discarded);
+			String hospitalId, String patientId, String updatedTime, String from, String to, Boolean discarded);
 
 	DoctorPatientInvoice deleteInvoice(String invoiceId, Boolean discarded);
 
 	DoctorPatientReceiptAddEditResponse addEditReceipt(DoctorPatientReceiptRequest request);
 
 	List<DoctorPatientReceipt> getReceipts(long page, int size, String doctorId, String locationId, String hospitalId,
-			String patientId, String updatedTime, String from,String to,Boolean discarded);
+			String patientId, String updatedTime, String from, String to, Boolean discarded);
 
 	DoctorPatientReceipt deleteReceipt(String receiptId, Boolean discarded);
 
@@ -46,7 +46,7 @@ public interface BillingService {
 	Double getTotalDueAmount(String doctorId, String locationId, String hospitalId, String patientId);
 
 	DoctorPatientLedgerResponse getLedger(String doctorId, String locationId, String hospitalId, String patientId,
-			String from, String to, long page, int size, String updatedTime,String type);
+			String from, String to, long page, int size, String updatedTime, String type);
 
 	AmountResponse getTotalDueAndAdvanceAmount(String doctorId, String locationId, String hospitalId, String patientId);
 
@@ -70,10 +70,10 @@ public interface BillingService {
 
 	public Boolean sendDueRemainderToPatient(String doctorId, String locationId, String hospitalId, String patientId,
 			String mobileNumber);
-	
+
 	public Boolean sendInvoiceToPatient(String doctorId, String locationId, String hospitalId, String invoiceId,
 			String mobileNumber);
-	
+
 	public Boolean sendReceiptToPatient(String doctorId, String locationId, String hospitalId, String receiptId,
 			String mobileNumber);
 
@@ -86,7 +86,8 @@ public interface BillingService {
 	DoctorExpense addEditDoctorExpense(DoctorExpense request);
 
 	List<DoctorExpense> getDoctorExpenses(String expenseType, int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime,String from,String to,String searchTerm, Boolean discarded, String paymentMode);
+			String hospitalId, String updatedTime, String from, String to, String searchTerm, Boolean discarded,
+			String paymentMode, String vendor);
 
 	DoctorExpense deleteDoctorExpense(String expenseId, Boolean discarded);
 
@@ -103,15 +104,14 @@ public interface BillingService {
 
 	public List<ExpenseType> getExpenseType(int page, int size, String doctorId, String locationId, String hospitalId,
 			String searchTerm, Boolean discarded);
-	
+
 	VendorExpense addEditVendor(VendorExpense request);
 
-	
-	VendorExpense discardVendor(String id,Boolean discarded);
-	
-	 Integer countVendorExpense(Boolean discarded, String searchTerm);
-	 
-	 VendorExpense getVendorExpenseById(String id);
+	VendorExpense discardVendor(String id, Boolean discarded);
+
+	Integer countVendorExpense(Boolean discarded, String searchTerm);
+
+	VendorExpense getVendorExpenseById(String id);
 
 	List<VendorExpense> getVendors(int size, int page, String searchTerm, Boolean discarded, String doctorId,
 			String locationId, String hospitalId);

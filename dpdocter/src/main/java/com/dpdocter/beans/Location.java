@@ -128,6 +128,7 @@ public class Location {
 	
 	private Boolean smsAccountActive = false;
 
+	private String chargeCode;
 
 	public Boolean getIsDentalChain() {
 		return isDentalChain;
@@ -591,6 +592,14 @@ public class Location {
 
 	public void setSmsAccountActive(Boolean smsAccountActive) {
 		this.smsAccountActive = smsAccountActive;
+	}
+
+	public String getChargeCode() {
+		return chargeCode;
+	}
+
+	public void setChargeCode(String chargeCode) {
+		this.chargeCode = chargeCode;
 	}
 
 	@Override

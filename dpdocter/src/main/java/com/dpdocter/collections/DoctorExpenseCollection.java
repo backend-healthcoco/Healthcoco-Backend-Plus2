@@ -42,6 +42,8 @@ public class DoctorExpenseCollection extends GenericCollection {
 	public String uniqueExpenseId;
 	@Field
 	public List<ExpenseReceiptUrlData> expenseReceiptUrlDatas;
+	@Field
+	public String chargeCode;
 
 	public Boolean getDiscarded() {
 		return discarded;
@@ -153,6 +155,14 @@ public class DoctorExpenseCollection extends GenericCollection {
 
 	public void setExpenseReceiptUrlDatas(List<ExpenseReceiptUrlData> expenseReceiptUrlDatas) {
 		this.expenseReceiptUrlDatas = expenseReceiptUrlDatas;
+	}
+
+	public String getChargeCode() {
+		return chargeCode;
+	}
+
+	public void setChargeCode(String chargeCode) {
+		this.chargeCode = chargeCode;
 	}
 
 }

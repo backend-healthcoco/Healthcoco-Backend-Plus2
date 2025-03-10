@@ -8,7 +8,10 @@ import com.dpdocter.response.AllAnalyticResponse;
 import com.dpdocter.response.AmountDueAnalyticsDataResponse;
 import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.DailyReportAnalyticResponse;
+import com.dpdocter.response.DischargeSummaryAnalyticsDataResponse;
 import com.dpdocter.response.DoctorVisitAnalyticResponse;
+import com.dpdocter.response.ExpenseAnalyticsDataResponse;
+import com.dpdocter.response.ExpenseAnalyticsTypeDataResponse;
 import com.dpdocter.response.ExpenseCountResponse;
 import com.dpdocter.response.IncomeAnalyticsDataResponse;
 import com.dpdocter.response.InvoiceAnalyticsDataDetailResponse;
@@ -37,9 +40,8 @@ public interface AnalyticsService {
 	public DoctorVisitAnalyticResponse getVisitAnalytic(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate);
 
-	public List<ExpenseCountResponse> getDoctorExpenseAnalytic(String doctorId, String searchType, String locationId,
-			String hospitalId, Boolean discarded, String fromDate, String toDate, String expenseType,
-			String paymentMode);
+	public ExpenseCountResponse getDoctorExpenseAnalytic(String doctorId, String locationId, String hospitalId,
+			Boolean discarded, String fromDate, String toDate, String expenseType, String paymentMode);
 
 	public List<AnalyticResponse> getReceiptAnalyticData(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate, String searchType, String searchTerm, String paymentMode);
@@ -61,6 +63,11 @@ public interface AnalyticsService {
 
 	public DailyReportAnalyticResponse getDailyReportAnalytics(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate);
-	
+
+	public List<DischargeSummaryAnalyticsDataResponse> getDischargeSummaryAnalyticsData(String doctorId,
+			String locationId, String hospitalId, String fromDate, String toDate, int page, int size);
+
+	public List<ExpenseAnalyticsTypeDataResponse> getExpenseAnalyticsTypeData(String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate);
 
 }

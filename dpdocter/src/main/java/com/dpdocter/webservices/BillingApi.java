@@ -467,14 +467,15 @@ public class BillingApi {
 			@QueryParam("searchTerm") String searchTerm,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded,
-			@QueryParam("expenseType") String expenseType, @QueryParam("paymentMode") String paymentMode) {
+			@QueryParam("expenseType") String expenseType, @QueryParam("paymentMode") String paymentMode,
+			 @QueryParam("vendor") String vendor) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
 		List<DoctorExpense> expenses = billingService.getDoctorExpenses(expenseType, page, size, doctorId, locationId,
-				hospitalId, updatedTime,from,to,searchTerm,discarded, paymentMode);
+				hospitalId, updatedTime,from,to,searchTerm,discarded, paymentMode,vendor);
 
 		Response<DoctorExpense> response = new Response<DoctorExpense>();
 		response.setDataList(expenses);

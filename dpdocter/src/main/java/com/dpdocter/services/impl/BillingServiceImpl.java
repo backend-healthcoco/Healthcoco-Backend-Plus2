@@ -1984,9 +1984,8 @@ public class BillingServiceImpl implements BillingService {
 										? amountPaid + "+"
 										: "") + receiptCollection.getUsedAdvanceAmount() + "(From Advance)");
 					}
-					receiptItemJasperDetails.setChequeNo(receiptCollection.getTransactionId() != null
-							? receiptCollection.getTransactionId()
-							: "--");
+					receiptItemJasperDetails.setChequeNo(
+							receiptCollection.getTransactionId() != null ? receiptCollection.getTransactionId() : "--");
 					receiptItemJasperDetails
 							.setReceivedDate(simpleDateFormat1.format(receiptCollection.getReceivedDate()));
 					receiptItemJasperDetails.setModeOfPayment(receiptCollection.getModeOfPayment().name());
@@ -2423,12 +2422,11 @@ public class BillingServiceImpl implements BillingService {
 					+ ")" + "&nbsp;&nbsp;/-";
 		} else if (doctorPatientReceiptCollection.getReceiptType().equals(ReceiptType.ADVANCE)) {
 			content = "<br>Received advance amount with thanks from &nbsp;&nbsp; " + userName + user.getFirstName()
-			+ "<br>The sum of Rupees:- " + NumberToWordsConverter.convert(totalAmount) + " (" + totalAmount
-			+ ")" + "&nbsp;&nbsp;/-";
+					+ "<br>The sum of Rupees:- " + NumberToWordsConverter.convert(totalAmount) + " (" + totalAmount
+					+ ")" + "&nbsp;&nbsp;/-";
 		} else if (doctorPatientReceiptCollection.getReceiptType().equals(ReceiptType.REFUND)) {
-			content = "<br>Refunded to &nbsp;&nbsp; " + userName + user.getFirstName()
-			+ "<br>The sum of Rupees:- " + NumberToWordsConverter.convert(totalAmount) + " (" + totalAmount
-			+ ")" + "&nbsp;&nbsp;/-";
+			content = "<br>Refunded to &nbsp;&nbsp; " + userName + user.getFirstName() + "<br>The sum of Rupees:- "
+					+ NumberToWordsConverter.convert(totalAmount) + " (" + totalAmount + ")" + "&nbsp;&nbsp;/-";
 		}
 		parameters.put("content", content);
 		parameters.put("paid", "Rs.&nbsp;" + doctorPatientReceiptCollection.getAmountPaid());
@@ -3132,6 +3130,7 @@ public class BillingServiceImpl implements BillingService {
 				request.setCreatedTime(expenseCollection.getCreatedTime());
 				request.setUniqueExpenseId(expenseCollection.getUniqueExpenseId());
 				request.setUpdatedTime(new Date());
+				expenseCollection.setExpenseReceiptUrlDatas(null);
 				BeanUtil.map(request, expenseCollection);
 			} else {
 				userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
@@ -3163,13 +3162,13 @@ public class BillingServiceImpl implements BillingService {
 
 	@Override
 	public List<DoctorExpense> getDoctorExpenses(String expenseType, int page, int size, String doctorId,
-			String locationId, String hospitalId, String updatedTime, String from, String to, String searchTerm,
-			Boolean discarded, String paymentMode) {
+			String locationId, String hospitalId, String updatedTime, String fromDate, String toDate, String searchTerm,
+			Boolean discarded, String paymentMode, String vendor) {
 		List<DoctorExpense> response = null;
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
+			Criteria criteria = new Criteria();
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
@@ -3181,6 +3180,9 @@ public class BillingServiceImpl implements BillingService {
 			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
 				criteria.and("expenseType").is(expenseType.toUpperCase());
 			}
+			if (!DPDoctorUtils.anyStringEmpty(vendor)) {
+				criteria.and("vendor.vendorName").is(vendor.toUpperCase());
+			}
 			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
 				criteria.and("modeOfPayment").is(paymentMode.toUpperCase());
 			}
@@ -3190,34 +3192,28 @@ public class BillingServiceImpl implements BillingService {
 						new Criteria("expenseType").regex("^" + searchTerm));
 			}
 
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
 
-			DateTime fromDateTime = null, toDateTime = null;
-			if (!DPDoctorUtils.anyStringEmpty(from)) {
-				localCalendar.setTime(new Date(Long.parseLong(from)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(0l);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(0l);
+				to = new Date();
+			}
+			fromTime = new DateTime(from);
+			toTime = new DateTime(to);
 
-				fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(to)) {
-				localCalendar.setTime(new Date(Long.parseLong(to)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-			}
-			if (fromDateTime != null && toDateTime != null) {
-				criteria.and("toDate").gte(fromDateTime).lte(toDateTime);
-			} else if (fromDateTime != null) {
-				criteria.and("toDate").gte(fromDateTime);
-			} else if (toDateTime != null) {
-				criteria.and("toDate").lte(toDateTime);
-			}
+			criteria.and("toDate").gte(fromTime).lte(toTime);
 
 			if (size > 0) {
 				response = mongoTemplate.aggregate(

@@ -1,8 +1,6 @@
 package com.dpdocter.services.impl;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +18,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
+import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -27,8 +26,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
-import com.dpdocter.beans.PatientAnalyticData;
 import com.dpdocter.collections.AppointmentCollection;
+import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DoctorExpenseCollection;
 import com.dpdocter.collections.DoctorPatientDueAmountCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
@@ -40,7 +39,6 @@ import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.ModeOfPayment;
-import com.dpdocter.enums.PatientAnalyticType;
 import com.dpdocter.enums.PaymentStatusType;
 import com.dpdocter.enums.SearchType;
 import com.dpdocter.enums.UnitType;
@@ -51,14 +49,16 @@ import com.dpdocter.response.AmountDueAnalyticsDataResponse;
 import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.DailyReportAnalyticItem;
 import com.dpdocter.response.DailyReportAnalyticResponse;
+import com.dpdocter.response.DischargeSummaryAnalyticsDataResponse;
 import com.dpdocter.response.DoctorVisitAnalyticResponse;
+import com.dpdocter.response.ExpenseAnalyticsDataResponse;
+import com.dpdocter.response.ExpenseAnalyticsTypeDataResponse;
 import com.dpdocter.response.ExpenseCountResponse;
 import com.dpdocter.response.IncomeAnalyticsDataResponse;
 import com.dpdocter.response.InvoiceAnalyticsDataDetailResponse;
 import com.dpdocter.response.PaymentAnalyticsDataResponse;
 import com.dpdocter.response.PaymentDetailsAnalyticsDataResponse;
 import com.dpdocter.services.AnalyticsService;
-import com.ibm.icu.impl.CalendarUtil;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
@@ -1815,10 +1815,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	}
 
 	@Override
-	public List<ExpenseCountResponse> getDoctorExpenseAnalytic(String doctorId, String searchType, String locationId,
-			String hospitalId, Boolean discarded, String fromDate, String toDate, String expenseType,
-			String paymentMode) {
-		List<ExpenseCountResponse> response = null;
+	public ExpenseCountResponse getDoctorExpenseAnalytic(String doctorId, String locationId, String hospitalId,
+			Boolean discarded, String fromDate, String toDate, String expenseType, String paymentMode) {
+		ExpenseCountResponse response = null;
 		try {
 			DateTime fromTime = null;
 			DateTime toTime = null;
@@ -1859,57 +1858,24 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
 				criteria.and("modeOfPayment").is(paymentMode.toUpperCase());
 			}
-			AggregationOperation aggregationOperation = null;
-			ProjectionOperation projectList = new ProjectionOperation(
-					Fields.from(Fields.field("cost", "$cost"), Fields.field("toDate", "$toDate")));
-			if (!DPDoctorUtils.anyStringEmpty(searchType))
-				switch (SearchType.valueOf(searchType.toUpperCase())) {
+			// Project required fields
+			ProjectionOperation projectFields = Aggregation.project().andExpression("cost").as("cost")
+					.andExpression("toDate").as("toDate").andExpression("expenseType").as("expenseType")
+					.andExpression("vendor.vendorName").as("vendor"); // ✅ Extract vendor name
 
-				case DAILY: {
-					aggregationOperation = new CustomAggregationOperation(new Document("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-									.append("cost", new BasicDBObject("$sum", "$cost"))
-									.append("toDate", new BasicDBObject("$first", "$toDate"))));
+			// Group by `null` (i.e., accumulate all records into one list)
+			GroupOperation groupExpenses = Aggregation.group().sum("cost").as("cost") // ✅ Aggregate total cost
+					.push(new BasicDBObject("expenseType", "$expenseType").append("cost", "$cost")
+							.append("toDate", "$toDate").append("vendor", "$vendor"))
+					.as("analyticsDataResponse"); // ✅ Convert to list
 
-					break;
-				}
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria), projectFields,
+					groupExpenses, Aggregation.sort(Sort.Direction.DESC, "analyticsDataResponse.toDate"));
 
-				case WEEKLY: {
-					aggregationOperation = new CustomAggregationOperation(new Document("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("week", "$week").append("month", "$month").append("year",
-											"$year"))
-									.append("cost", new BasicDBObject("$sum", "$cost"))
-									.append("toDate", new BasicDBObject("$first", "$toDate"))));
+			System.out.println("Aggregation Query: " + aggregation);
 
-					break;
-				}
-
-				case MONTHLY: {
-					aggregationOperation = new CustomAggregationOperation(new Document("$group",
-							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
-									.append("cost", new BasicDBObject("$sum", "$cost"))
-									.append("toDate", new BasicDBObject("$first", "$toDate"))));
-					break;
-				}
-				case YEARLY: {
-					aggregationOperation = new CustomAggregationOperation(new Document("$group",
-							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
-									.append("cost", new BasicDBObject("$sum", "$cost"))
-									.append("toDate", new BasicDBObject("$first", "$toDate"))));
-
-					break;
-
-				}
-				default:
-					break;
-				}
-			projectList.and("toDate").extractDayOfMonth().as("day").and("toDate").extractMonth().as("month")
-					.and("toDate").extractYear().as("year").and("toDate").extractWeek().as("week");
-			response = mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(criteria), projectList, aggregationOperation),
-					DoctorExpenseCollection.class, ExpenseCountResponse.class).getMappedResults();
+			response = mongoTemplate.aggregate(aggregation, DoctorExpenseCollection.class, ExpenseCountResponse.class)
+					.getUniqueMappedResult();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2631,6 +2597,140 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 		return response;
 
+	}
+
+	@Override
+	public List<DischargeSummaryAnalyticsDataResponse> getDischargeSummaryAnalyticsData(String doctorId,
+			String locationId, String hospitalId, String fromDate, String toDate, int page, int size) {
+		List<DischargeSummaryAnalyticsDataResponse> dailyReportAnalyticItems = null;
+		try {
+			Criteria criteria = new Criteria();
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			long date = 0l;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
+			}
+			fromTime = new DateTime(from);
+			toTime = new DateTime(to);
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria = criteria.and("locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+
+			criteria.and("discarded").is(false);
+			criteria.and("createdTime").gte(new DateTime(fromTime)).lte(new DateTime(toTime));
+			Aggregation aggregation = null;
+
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"), Aggregation.unwind("patient"),
+					Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
+					new CustomAggregationOperation(new Document("$project", new BasicDBObject()
+							.append("id", "$_id").append("patientId",
+									"$patient._id")
+							.append("patientName", "$patient.localPatientName")
+							.append("numberOfDaysAdmitted",
+									new Document("$divide",
+											Arrays.asList(
+													new Document("$subtract",
+															Arrays.asList("$dischargeDate", "$admissionDate")),
+													1000 * 60 * 60 * 24)))
+							.append("mobileNumber", "$user.mobileNumber").append("createdTime", "$createdTime")
+							.append("dateOfDischarge", "$dischargeDate"))),
+					Aggregation.group("id").first("id").as("id").first("patientId").as("patientId").first("patientName")
+							.as("patientName").first("numberOfDaysAdmitted").as("numberOfDaysAdmitted")
+							.first("mobileNumber").as("mobileNumber").first("dateOfDischarge").as("dateOfDischarge")
+							.first("createdTime").as("createdTime"),
+					Aggregation.sort(Direction.DESC, "createdTime"));
+			System.out.println("aggregation" + aggregation);
+			dailyReportAnalyticItems = mongoTemplate
+					.aggregate(aggregation, "discharge_summary_cl", DischargeSummaryAnalyticsDataResponse.class)
+					.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While getting all analytic");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting all analytic");
+		}
+
+		return dailyReportAnalyticItems;
+	}
+
+	@Override
+	public List<ExpenseAnalyticsTypeDataResponse> getExpenseAnalyticsTypeData(String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate) {
+		List<ExpenseAnalyticsTypeDataResponse> expenseAnalytics = null;
+		try {
+			Criteria criteria = new Criteria();
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			long date = 0l;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
+			}
+			fromTime = new DateTime(from);
+			toTime = new DateTime(to);
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria = criteria.and("locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+
+			criteria.and("discarded").is(false);
+			criteria.and("createdTime").gte(new DateTime(fromTime)).lte(new DateTime(toTime));
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.group("expenseType").first("expenseType").as("expenseType").sum("cost").as("cost"),
+					Aggregation.sort(Sort.Direction.DESC, "cost"));
+
+			expenseAnalytics = mongoTemplate
+					.aggregate(aggregation, "doctor_expense_cl", ExpenseAnalyticsTypeDataResponse.class)
+					.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While getting all analytic");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting all analytic");
+		}
+
+		return expenseAnalytics;
 	}
 
 }

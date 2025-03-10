@@ -18,10 +18,10 @@ public class DoctorExpense extends GenericCollection {
 	public Date toDate = new Date();
 	public String notes;
 	private List<ExpenseReceiptUrlData> expenseReceiptUrlDatas;
-
 	public VendorExpense vendor;
 	public Boolean discarded = false;
 	public String uniqueExpenseId;
+	public String chargeCode;
 
 	public String getId() {
 		return id;
@@ -133,6 +133,14 @@ public class DoctorExpense extends GenericCollection {
 
 	public void setExpenseReceiptUrlDatas(List<ExpenseReceiptUrlData> expenseReceiptUrlDatas) {
 		this.expenseReceiptUrlDatas = expenseReceiptUrlDatas;
+	}
+
+	public String getChargeCode() {
+		return chargeCode;
+	}
+
+	public void setChargeCode(String chargeCode) {
+		this.chargeCode = chargeCode;
 	}
 
 }
