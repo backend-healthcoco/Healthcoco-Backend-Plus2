@@ -1853,9 +1853,10 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria.and("discarded").is(discarded);
 
 			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
-				criteria.and("expenseType").is(expenseType.toUpperCase());
+				criteria.and("expenseType").is(expenseType);
 			}
-			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
+
+			if (!DPDoctorUtils.anyStringEmpty(paymentMode)) {
 				criteria.and("modeOfPayment").is(paymentMode.toUpperCase());
 			}
 			// Project required fields
@@ -2720,6 +2721,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.group("expenseType").first("expenseType").as("expenseType").sum("cost").as("cost"),
 					Aggregation.sort(Sort.Direction.DESC, "cost"));
+			System.out.println("aggregation" + aggregation);
 
 			expenseAnalytics = mongoTemplate
 					.aggregate(aggregation, "doctor_expense_cl", ExpenseAnalyticsTypeDataResponse.class)

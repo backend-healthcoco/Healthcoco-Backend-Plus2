@@ -574,8 +574,7 @@ public class AnalyticsAPI {
 			@QueryParam("discarded") boolean discarded, @QueryParam("expenseType") String expenseType,
 			@QueryParam("paymentMode") String paymentMode) {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
-			throw new BusinessException(ServiceError.InvalidInput,
-					"locationId, hospitalId should not be empty");
+			throw new BusinessException(ServiceError.InvalidInput, "locationId, hospitalId should not be empty");
 		}
 
 		ExpenseCountResponse data = analyticsService.getDoctorExpenseAnalytic(doctorId, locationId, hospitalId,
@@ -584,13 +583,14 @@ public class AnalyticsAPI {
 		response.setData(data);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.AnalyticsUrls.GET_EXPENSE_ANALYTICS_DATA)
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_EXPENSE_ANALYTICS_DATA, notes = PathProxy.AnalyticsUrls.GET_EXPENSE_ANALYTICS_DATA)
-	public Response<ExpenseAnalyticsTypeDataResponse> getExpenseAnalyticsTypeData(@QueryParam("doctorId") String doctorId,
-			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate) {
+	public Response<ExpenseAnalyticsTypeDataResponse> getExpenseAnalyticsTypeData(
+			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId, @QueryParam("fromDate") String fromDate,
+			@QueryParam("toDate") String toDate) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"doctorId, locationId, hospitalId should not be empty");
@@ -945,7 +945,5 @@ public class AnalyticsAPI {
 		response.setDataList(paymentAnalyticsDataResponses);
 		return response;
 	}
-
-	
 
 }
