@@ -52,4 +52,6 @@ public interface PrintSettingsRepository extends MongoRepository<PrintSettingsCo
 			ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date, Boolean discarded,
 			String printSettingType);
 
+	boolean existsByDoctorIdAndLocationIdAndPrintSettingType(ObjectId doctorId, ObjectId locationId, String type);
+
 }

@@ -22,6 +22,8 @@ public class PaymentDetailsAnalyticsDataResponse {
 	private String uniqueReceiptId;
 
 	private String uniqueInvoiceId;
+	
+	private String locationId;
 
 	private Double amountPaid = 0.0;
 
@@ -125,6 +127,14 @@ public class PaymentDetailsAnalyticsDataResponse {
 
 	public void setMobileNumber(String mobileNumber) {
 		this.mobileNumber = mobileNumber;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
 	}
 
 	@Override

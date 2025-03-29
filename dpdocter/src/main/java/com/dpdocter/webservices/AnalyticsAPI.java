@@ -946,4 +946,14 @@ public class AnalyticsAPI {
 		return response;
 	}
 
+	@Path(value = PathProxy.AnalyticsUrls.SEND_DAILY_REPORT_ANALYTIC_REPORT_TO_DOCTOR)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.SEND_DAILY_REPORT_ANALYTIC_REPORT_TO_DOCTOR, notes = PathProxy.AnalyticsUrls.SEND_DAILY_REPORT_ANALYTIC_REPORT_TO_DOCTOR)
+	public Response<Boolean> getDailyReportAnalyticstoDoctor() {
+		Boolean dailyReportAnalyticstoDoctorResponse = analyticsService.getWeeklyReportAnalyticstoDoctor();
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(dailyReportAnalyticstoDoctorResponse);
+		return response;
+	}
 }

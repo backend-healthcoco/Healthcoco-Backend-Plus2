@@ -22,4 +22,6 @@ public interface MailService {
 	public Boolean subscribeMail(MailSubsciptionRequest request);
 
 	Boolean sendEmailWithoutAttachment(String to, String subject, String body) throws MessagingException;
+
+	Boolean sendEmailWithPdf(List<String> toList, String subject, String body, byte[] pdfBytes) throws MessagingException;
 }

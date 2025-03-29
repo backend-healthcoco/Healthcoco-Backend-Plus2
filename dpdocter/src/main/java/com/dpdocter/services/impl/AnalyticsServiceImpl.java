@@ -1,10 +1,20 @@
 package com.dpdocter.services.impl;
 
+import java.io.ByteArrayOutputStream;
+import java.time.DayOfWeek;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.bson.Document;
@@ -22,16 +32,18 @@ import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.collections.AppointmentCollection;
-import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DoctorExpenseCollection;
 import com.dpdocter.collections.DoctorPatientDueAmountCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientReceiptCollection;
+import com.dpdocter.collections.EmailListCollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.collections.PatientVisitCollection;
@@ -44,6 +56,10 @@ import com.dpdocter.enums.SearchType;
 import com.dpdocter.enums.UnitType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.repository.DoctorClinicProfileRepository;
+import com.dpdocter.repository.EmailListRepository;
+import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.response.AllAnalyticResponse;
 import com.dpdocter.response.AmountDueAnalyticsDataResponse;
 import com.dpdocter.response.AnalyticResponse;
@@ -51,7 +67,6 @@ import com.dpdocter.response.DailyReportAnalyticItem;
 import com.dpdocter.response.DailyReportAnalyticResponse;
 import com.dpdocter.response.DischargeSummaryAnalyticsDataResponse;
 import com.dpdocter.response.DoctorVisitAnalyticResponse;
-import com.dpdocter.response.ExpenseAnalyticsDataResponse;
 import com.dpdocter.response.ExpenseAnalyticsTypeDataResponse;
 import com.dpdocter.response.ExpenseCountResponse;
 import com.dpdocter.response.IncomeAnalyticsDataResponse;
@@ -59,6 +74,23 @@ import com.dpdocter.response.InvoiceAnalyticsDataDetailResponse;
 import com.dpdocter.response.PaymentAnalyticsDataResponse;
 import com.dpdocter.response.PaymentDetailsAnalyticsDataResponse;
 import com.dpdocter.services.AnalyticsService;
+import com.dpdocter.services.MailBodyGenerator;
+import com.dpdocter.services.MailService;
+import com.ibm.icu.text.DecimalFormat;
+import com.ibm.icu.text.SimpleDateFormat;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
@@ -71,6 +103,24 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
+	@Autowired
+	private MailService mailService;
+
+	@Autowired
+	private MailBodyGenerator mailBodyGenerator;
+
+	@Autowired
+	private RoleRepository roleRepository;
+
+	@Autowired
+	private DoctorClinicProfileRepository doctorClinicProfileRepository;
+
+	@Autowired
+	private LocationRepository locationRepository;
+
+	@Autowired
+	private EmailListRepository emailListRepository;
+	private Boolean isWeekly = false;
 
 	Logger logger = Logger.getLogger(AnalyticsServiceImpl.class);
 
@@ -96,37 +146,12 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		DoctorVisitAnalyticResponse data = null;
 		try {
 			Criteria criteria = null;
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-			long date = 0l;
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date();
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(date);
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date(date);
-				to = new Date();
-			}
-			criteria = getCriteria(doctorId, locationId, hospitalId).and("discarded").is(false);
-
-			fromTime = new DateTime(from);
-			toTime = new DateTime(to);
 
 			data = new DoctorVisitAnalyticResponse();
 			data.setTotalVisit((int) mongoTemplate.count(new Query(criteria), PatientVisitCollection.class));
-			criteria.and("adminCreatedTime").gte(fromTime).lte(toTime);
+			applyDateCriteria(criteria, "adminCreatedTime", fromDate, toDate);
+
 			data.setTotalVisitCreated((int) mongoTemplate.count(new Query(criteria), PatientVisitCollection.class));
-			// mongoTemplate.aggregate(aggregation,
-			// DoctorClinicProfileCollection.class,
-			// DoctorprescriptionAnalyticResponse.class).getUniqueMappedResult();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -144,10 +169,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		try {
 
 			Criteria criteria = new Criteria();
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
 
 			Criteria criteria2 = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
@@ -161,38 +182,22 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 				criteria2.and("patient.hospitalId").is(new ObjectId(hospitalId));
 			}
+			applyDateCriteria(criteria, "createdTime", fromDate, toDate);
 
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-				fromTime = new DateTime(from);
-				toTime = new DateTime(to);
-				criteria.and("invoiceDate").gte(fromTime).lte(toTime);
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				to = new Date(Long.parseLong(fromDate));
-				toTime = new DateTime(to);
-				criteria.and("invoiceDate").gte(fromTime);
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				to = new Date(Long.parseLong(toDate));
-				toTime = new DateTime(to);
-				criteria.and("invoiceDate").lte(toTime);
-			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria2.orOperator(new Criteria("patient.localPatientName").regex(searchTerm, "i"),
 						new Criteria("user.firstName").regex(searchTerm, "i"),
 						new Criteria("user.mobileNumber").regex(searchTerm, "i"));
 			}
 			criteria.and("discarded").is(false);
-
-			response = mongoTemplate
-					.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-							Aggregation.unwind("patient"), Aggregation.lookup("user_cl", "patientId", "_id", "user"),
-							Aggregation.unwind("user"), Aggregation.lookup("user_cl", "doctorId", "_id", "docter"),
-							Aggregation.unwind("docter"), Aggregation.match(criteria2)),
-							DoctorPatientInvoiceCollection.class, InvoiceAnalyticsDataDetailResponse.class)
-					.getMappedResults().size();
+			Aggregation aggregation = null;
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"), Aggregation.unwind("patient"),
+					Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
+					Aggregation.lookup("user_cl", "doctorId", "_id", "docter"), Aggregation.unwind("docter"),
+					Aggregation.match(criteria2));
+			response = mongoTemplate.aggregate(aggregation, DoctorPatientInvoiceCollection.class,
+					InvoiceAnalyticsDataDetailResponse.class).getMappedResults().size();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -203,6 +208,34 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		return response;
 	}
 
+	public static void applyDateCriteria(Criteria criteria, String field, String fromDate, String toDate) {
+		DateTime fromTime = null;
+		DateTime toTime = null;
+		Date from = null;
+		Date to = null;
+		long date = 0;
+		if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+			from = new Date(Long.parseLong(fromDate));
+			to = new Date(Long.parseLong(toDate));
+		} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+			from = new Date(Long.parseLong(fromDate));
+			to = new Date();
+		} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+			from = new Date(date);
+			to = new Date(Long.parseLong(toDate));
+		} else {
+			from = new Date(date);
+			to = new Date();
+		}
+
+		fromTime = new DateTime(DateUtil.getStartOfDay(from));
+		toTime = new DateTime(DateUtil.getEndOfDay(to));
+//		fromTime = new DateTime(from);
+//		toTime = new DateTime(to);
+
+		criteria.and(field).gte(fromTime).lte(toTime);
+	}
+
 	@Override
 	public List<InvoiceAnalyticsDataDetailResponse> getIncomeDetailsAnalyticsData(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate, String searchTerm, int page, int size) {
@@ -211,9 +244,10 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Criteria criteria = new Criteria();
 			DateTime fromTime = null;
 			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-
+			if (!DPDoctorUtils.anyStringEmpty(fromDate))
+				fromTime = new DateTime(DateUtil.getStartOfDay(new Date(Long.parseLong(fromDate))));
+			if (!DPDoctorUtils.anyStringEmpty(toDate))
+				toTime = new DateTime(DateUtil.getEndOfDay(new Date(Long.parseLong(toDate))));
 			Criteria criteria2 = new Criteria();
 			Criteria criteria3 = new Criteria();
 
@@ -229,24 +263,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria2.and("patient.hospitalId").is(new ObjectId(hospitalId));
 			}
 
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-				fromTime = new DateTime(from);
-				toTime = new DateTime(to);
-				criteria.and("invoiceDate").gte(fromTime).lte(toTime);
-				criteria3.and("createdTime").gte(fromTime).lte(toTime);
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				to = new Date(Long.parseLong(fromDate));
-				toTime = new DateTime(to);
-				criteria.and("invoiceDate").gte(fromTime);
-				criteria3.and("createdTime").gte(fromTime);
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				to = new Date(Long.parseLong(toDate));
-				toTime = new DateTime(to);
-				criteria.and("invoiceDate").lte(toTime);
-				criteria.and("createdTime").lte(toTime);
-			}
+			applyDateCriteria(criteria, "createdTime", fromDate, toDate);
+			applyDateCriteria(criteria3, "createdTime", fromDate, toDate);
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria2.orOperator(new Criteria("patient.localPatientName").regex(searchTerm, "i"),
@@ -271,23 +289,24 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 							.append("patientAnalyticType", new BasicDBObject("$first", "$patientAnalyticType"))
 							.append("date", new BasicDBObject("$first", "$invoiceDate"))));
 
+			Aggregation aggregation = null;
 			if (size > 0) {
-				response = mongoTemplate
-						.aggregate(
-								Aggregation.newAggregation(Aggregation.match(criteria),
-										Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-										Aggregation.unwind("patient"),
-										Aggregation.lookup("patient_visit_cl", "patientId", "patientId", "visitData"),
-										Aggregation.unwind("visitData", true),
-										Aggregation.lookup("user_cl", "patientId", "_id", "user"),
-										Aggregation.unwind("user"),
-										Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-										Aggregation.unwind("doctor"),
-										Aggregation.lookup("referrences_cl", "patient.referredBy", "_id", "refer"),
-										Aggregation.unwind("refer", true), Aggregation.match(criteria2),
-										new CustomAggregationOperation(new Document("$project",
-												new BasicDBObject("_id", "$_id")
-														.append("resultantDiscount", new BasicDBObject("$cond",
+
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+								Aggregation.unwind("patient"),
+								Aggregation.lookup("patient_visit_cl", "patientId", "patientId", "visitData"),
+								Aggregation.unwind("visitData", true),
+								Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
+								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+								Aggregation.unwind("doctor"),
+								Aggregation.lookup("referrences_cl", "patient.referredBy", "_id", "refer"),
+								Aggregation.unwind("refer", true), Aggregation.match(criteria2),
+								new CustomAggregationOperation(
+										new Document("$project", new BasicDBObject("_id", "$_id")
+												.append("resultantDiscount",
+														new BasicDBObject("$cond",
 																new BasicDBObject("if", new BasicDBObject("$eq",
 																		Arrays.asList("$totalDiscount.unit",
 																				UnitType.PERCENT.name())))
@@ -299,102 +318,84 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																								100)),
 																						"$totalCost")))
 																		.append("else", "$totalDiscount.value")))
-														.append("resultantCost", "$totalCost")
-														.append("invoiceDate", "$invoiceDate")
-														.append("resultantTax", new BasicDBObject("$cond",
+												.append("resultantCost", "$totalCost")
+												.append("invoiceDate", "$invoiceDate")
+												.append("resultantTax",
+														new BasicDBObject("$cond",
 																new BasicDBObject("if", new BasicDBObject("$eq",
 																		Arrays.asList("$totalTax.unit",
 																				UnitType.PERCENT.name())))
-																		.append("then", new BasicDBObject(
-																				"$multiply",
+																		.append("then", new BasicDBObject("$multiply",
 																				Arrays.asList(new BasicDBObject(
 																						"$divide",
 																						Arrays.asList("$totalTax.value",
 																								100)),
 																						"$totalCost")))
 																		.append("else", "$totalTax.value")))
-														.append("localPatientName", "$patient.localPatientName")
-														.append("firstName", "$user.firstName")
-														.append("mobileNumber", "$user.mobileNumber")
-														.append("doctorName", "$doctor.firstName")
-														.append("uniqueInvoiceId", "$uniqueInvoiceId")
-														.append("balanceAmount", "$balanceAmount")
-														.append("patientAnalyticType", new BasicDBObject("$cond",
-																Arrays.asList(new BasicDBObject("$and", Arrays.asList(
-																		new BasicDBObject("$gt",
-																				Arrays.asList(new BasicDBObject("$cond",
+												.append("localPatientName", "$patient.localPatientName")
+												.append("firstName", "$user.firstName")
+												.append("mobileNumber", "$user.mobileNumber")
+												.append("doctorName", "$doctor.firstName")
+												.append("uniqueInvoiceId", "$uniqueInvoiceId")
+												.append("balanceAmount", "$balanceAmount")
+												.append("patientAnalyticType", new BasicDBObject("$cond", Arrays.asList(
+														new BasicDBObject("$and", Arrays.asList(new BasicDBObject(
+																"$gt",
+																Arrays.asList(new BasicDBObject("$cond", Arrays.asList(
+																		new BasicDBObject("$eq",
+																				Arrays.asList(new BasicDBObject("$type",
+																						"$visitData"), "array")),
+																		new BasicDBObject("$size", "$visitData"), 0)),
+																		0)),
+																new BasicDBObject(
+																		"$gte",
+																		Arrays.asList("$visitData.createdTime",
+																				fromTime)),
+																new BasicDBObject(
+																		"$lte", Arrays.asList("$visitData.createdTime",
+																				toTime)))),
+														"VISITED_PATIENT",
+														new BasicDBObject("$cond", Arrays.asList(new BasicDBObject(
+																"$and",
+																Arrays.asList(new BasicDBObject("$gt", Arrays.asList(
+																		new BasicDBObject("$cond", Arrays.asList(
+																				new BasicDBObject("$eq",
 																						Arrays.asList(new BasicDBObject(
-																								"$eq",
-																								Arrays.asList(
-																										new BasicDBObject(
-																												"$type",
-																												"$visitData"),
-																										"array")),
-																								new BasicDBObject(
-																										"$size",
-																										"$visitData"),
-																								0)),
-																						0)),
-																		new BasicDBObject(
-																				"$gte",
-																				Arrays.asList("$visitData.createdTime",
+																								"$type", "$patient"),
+																								"array")),
+																				new BasicDBObject("$size", "$patient"),
+																				0)),
+																		0)),
+																		new BasicDBObject("$gte",
+																				Arrays.asList("$patient.createdTime",
 																						fromTime)),
 																		new BasicDBObject("$lte",
-																				Arrays.asList("$visitData.createdTime",
+																				Arrays.asList("$patient.createdTime",
 																						toTime)))),
-																		"VISITED_PATIENT",
-																		new BasicDBObject("$cond", Arrays.asList(
-																				new BasicDBObject("$and", Arrays.asList(
-																						new BasicDBObject("$gt", Arrays
-																								.asList(new BasicDBObject(
-																										"$cond",
-																										Arrays.asList(
-																												new BasicDBObject(
-																														"$eq",
-																														Arrays.asList(
-																																new BasicDBObject(
-																																		"$type",
-																																		"$patient"),
-																																"array")),
-																												new BasicDBObject(
-																														"$size",
-																														"$patient"),
-																												0)),
-																										0)),
-																						new BasicDBObject(
-																								"$gte",
-																								Arrays.asList(
-																										"$patient.createdTime",
-																										fromTime)),
-																						new BasicDBObject("$lte",
-																								Arrays.asList(
-																										"$patient.createdTime",
-																										toTime)))),
-																				"NEW_PATIENT", "NEW_PATIENT")))))
-														.append("referedBy", "$refer.reference")
-														.append("resultantInvoiceAmount", "$grandTotal"))),
-										aggregationOperation,
-										Aggregation.sort(new Sort(Sort.Direction.DESC, "invoiceDate")),
-										Aggregation.skip((long) (page) * size), Aggregation.limit(size)),
-								DoctorPatientInvoiceCollection.class, InvoiceAnalyticsDataDetailResponse.class)
-						.getMappedResults();
+																"NEW_PATIENT", "NEW_PATIENT")))))
+												.append("referedBy", "$refer.reference")
+												.append("resultantInvoiceAmount", "$grandTotal"))),
+								aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "invoiceDate")),
+								Aggregation.skip((long) (page) * size), Aggregation.limit(size));
+				response = mongoTemplate.aggregate(aggregation, DoctorPatientInvoiceCollection.class,
+						InvoiceAnalyticsDataDetailResponse.class).getMappedResults();
 			} else {
-				response = mongoTemplate
-						.aggregate(
-								Aggregation.newAggregation(Aggregation.match(criteria),
-										Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-										Aggregation.unwind("patient"),
-										Aggregation.lookup("patient_visit_cl", "patientId", "patientId", "visitData"),
-										Aggregation.unwind("visitData", true),
-										Aggregation.lookup("user_cl", "patientId", "_id", "user"),
-										Aggregation.unwind("user"),
-										Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-										Aggregation.unwind("doctor"),
-										Aggregation.lookup("referrences_cl", "patient.referredBy", "_id", "refer"),
-										Aggregation.unwind("refer", true), Aggregation.match(criteria2),
-										new CustomAggregationOperation(new Document("$project",
-												new BasicDBObject("_id", "$_id")
-														.append("resultantDiscount", new BasicDBObject("$cond",
+
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+								Aggregation.unwind("patient"),
+								Aggregation.lookup("patient_visit_cl", "patientId", "patientId", "visitData"),
+								Aggregation.unwind("visitData", true),
+								Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
+								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+								Aggregation.unwind("doctor"),
+								Aggregation.lookup("referrences_cl", "patient.referredBy", "_id", "refer"),
+								Aggregation.unwind("refer", true), Aggregation.match(criteria2),
+								new CustomAggregationOperation(
+										new Document("$project", new BasicDBObject("_id", "$_id")
+												.append("resultantDiscount",
+														new BasicDBObject("$cond",
 																new BasicDBObject("if", new BasicDBObject("$eq",
 																		Arrays.asList("$totalDiscount.unit",
 																				UnitType.PERCENT.name())))
@@ -406,84 +407,66 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																								100)),
 																						"$totalCost")))
 																		.append("else", "$totalDiscount.value")))
-														.append("resultantCost", "$totalCost")
-														.append("invoiceDate", "$invoiceDate")
-														.append("resultantTax", new BasicDBObject("$cond",
+												.append("resultantCost", "$totalCost")
+												.append("invoiceDate", "$invoiceDate")
+												.append("resultantTax",
+														new BasicDBObject("$cond",
 																new BasicDBObject("if", new BasicDBObject("$eq",
 																		Arrays.asList("$totalTax.unit",
 																				UnitType.PERCENT.name())))
-																		.append("then", new BasicDBObject(
-																				"$multiply",
+																		.append("then", new BasicDBObject("$multiply",
 																				Arrays.asList(new BasicDBObject(
 																						"$divide",
 																						Arrays.asList("$totalTax.value",
 																								100)),
 																						"$totalCost")))
 																		.append("else", "$totalTax.value")))
-														.append("localPatientName", "$patient.localPatientName")
-														.append("firstName", "$user.firstName")
-														.append("mobileNumber", "$user.mobileNumber")
-														.append("doctorName", "$doctor.firstName")
-														.append("uniqueInvoiceId", "$uniqueInvoiceId")
-														.append("balanceAmount", "$balanceAmount")
-														.append("patientAnalyticType", new BasicDBObject("$cond",
-																Arrays.asList(new BasicDBObject("$and", Arrays.asList(
-																		new BasicDBObject("$gt",
-																				Arrays.asList(new BasicDBObject("$cond",
+												.append("localPatientName", "$patient.localPatientName")
+												.append("firstName", "$user.firstName")
+												.append("mobileNumber", "$user.mobileNumber")
+												.append("doctorName", "$doctor.firstName")
+												.append("uniqueInvoiceId", "$uniqueInvoiceId")
+												.append("balanceAmount", "$balanceAmount")
+												.append("patientAnalyticType", new BasicDBObject("$cond", Arrays.asList(
+														new BasicDBObject("$and", Arrays.asList(new BasicDBObject(
+																"$gt",
+																Arrays.asList(new BasicDBObject("$cond", Arrays.asList(
+																		new BasicDBObject("$eq",
+																				Arrays.asList(new BasicDBObject("$type",
+																						"$visitData"), "array")),
+																		new BasicDBObject("$size", "$visitData"), 0)),
+																		0)),
+																new BasicDBObject(
+																		"$gte",
+																		Arrays.asList("$visitData.createdTime",
+																				fromTime)),
+																new BasicDBObject(
+																		"$lte", Arrays.asList("$visitData.createdTime",
+																				toTime)))),
+														"VISITED_PATIENT",
+														new BasicDBObject("$cond", Arrays.asList(new BasicDBObject(
+																"$and",
+																Arrays.asList(new BasicDBObject("$gt", Arrays.asList(
+																		new BasicDBObject("$cond", Arrays.asList(
+																				new BasicDBObject("$eq",
 																						Arrays.asList(new BasicDBObject(
-																								"$eq",
-																								Arrays.asList(
-																										new BasicDBObject(
-																												"$type",
-																												"$visitData"),
-																										"array")),
-																								new BasicDBObject(
-																										"$size",
-																										"$visitData"),
-																								0)),
-																						0)),
-																		new BasicDBObject(
-																				"$gte",
-																				Arrays.asList("$visitData.createdTime",
+																								"$type", "$patient"),
+																								"array")),
+																				new BasicDBObject("$size", "$patient"),
+																				0)),
+																		0)),
+																		new BasicDBObject("$gte",
+																				Arrays.asList("$patient.createdTime",
 																						fromTime)),
 																		new BasicDBObject("$lte",
-																				Arrays.asList("$visitData.createdTime",
+																				Arrays.asList("$patient.createdTime",
 																						toTime)))),
-																		"VISITED_PATIENT",
-																		new BasicDBObject("$cond", Arrays.asList(
-																				new BasicDBObject("$and", Arrays.asList(
-																						new BasicDBObject("$gt", Arrays
-																								.asList(new BasicDBObject(
-																										"$cond",
-																										Arrays.asList(
-																												new BasicDBObject(
-																														"$eq",
-																														Arrays.asList(
-																																new BasicDBObject(
-																																		"$type",
-																																		"$patient"),
-																																"array")),
-																												new BasicDBObject(
-																														"$size",
-																														"$patient"),
-																												0)),
-																										0)),
-																						new BasicDBObject(
-																								"$gte",
-																								Arrays.asList(
-																										"$patient.createdTime",
-																										fromTime)),
-																						new BasicDBObject("$lte",
-																								Arrays.asList(
-																										"$patient.createdTime",
-																										toTime)))),
-																				"NEW_PATIENT", "NEW_PATIENT")))))
-														.append("referedBy", "$refer.reference")
-														.append("resultantInvoiceAmount", "$grandTotal"))),
-										aggregationOperation,
-										Aggregation.sort(new Sort(Sort.Direction.DESC, "invoiceDate"))),
-								DoctorPatientInvoiceCollection.class, InvoiceAnalyticsDataDetailResponse.class)
-						.getMappedResults();
+																"NEW_PATIENT", "NEW_PATIENT")))))
+												.append("referedBy", "$refer.reference")
+												.append("resultantInvoiceAmount", "$grandTotal"))),
+								aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "invoiceDate")));
+				response = mongoTemplate.aggregate(aggregation, DoctorPatientInvoiceCollection.class,
+						InvoiceAnalyticsDataDetailResponse.class).getMappedResults();
 			}
 
 		} catch (Exception e) {
@@ -504,7 +487,10 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Criteria criteria = new Criteria();
 			DateTime fromTime = null;
 			DateTime toTime = null;
-
+			if (!DPDoctorUtils.anyStringEmpty(fromDate))
+				fromTime = new DateTime(DateUtil.getStartOfDay(new Date(Long.parseLong(fromDate))));
+			if (!DPDoctorUtils.anyStringEmpty(toDate))
+				toTime = new DateTime(DateUtil.getEndOfDay(new Date(Long.parseLong(toDate))));
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
@@ -516,20 +502,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
 
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-
-				fromTime = new DateTime(new Date(Long.parseLong(fromDate)));
-				toTime = new DateTime(new Date(Long.parseLong(toDate)));
-				criteria.and("invoiceDate").gte(fromTime).lte(toTime);
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				fromTime = new DateTime(new Date(Long.parseLong(fromDate)));
-
-				criteria.and("invoiceDate").gte(fromTime);
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				toTime = new DateTime(new Date(Long.parseLong(toDate)));
-				criteria.and("invoiceDate").lte(toTime);
-			}
+			applyDateCriteria(criteria, "createdTime", fromDate, toDate);
 
 			if (!DPDoctorUtils.anyStringEmpty(queryType)) {
 				switch (queryType) {
@@ -932,10 +905,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		try {
 			Criteria criteria = new Criteria();
 			Criteria criteria2 = new Criteria();
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
+
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
@@ -948,22 +918,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria2.and("patient.hospitalId").is(new ObjectId(hospitalId));
 			}
 
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-				fromTime = new DateTime(from);
-				toTime = new DateTime(to);
-				criteria.and("receivedDate").gte(fromTime).lte(toTime);
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				to = new Date(Long.parseLong(fromDate));
-				toTime = new DateTime(to);
-				criteria.and("receivedDate").gte(fromTime);
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				to = new Date(Long.parseLong(toDate));
-				toTime = new DateTime(to);
-				criteria.and("receivedDate").lte(toTime);
-			}
+			applyDateCriteria(criteria, "receivedDate", fromDate, toDate);
 			criteria.and("discarded").is(false);
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
@@ -1114,17 +1069,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria2.and("patient.hospitalId").is(new ObjectId(hospitalId));
 			}
 
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+			applyDateCriteria(criteria, "receivedDate", fromDate, toDate);
 
-				criteria.and("receivedDate").gte(new DateTime(new Date(Long.parseLong(fromDate))))
-						.lte(new DateTime(new Date(Long.parseLong(toDate))));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				criteria.and("receivedDate").gte(new DateTime(new Date(Long.parseLong(fromDate))));
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-
-				criteria.and("receivedDate").lte(new DateTime(new Date(Long.parseLong(toDate))));
-			}
 			criteria.and("discarded").is(false);
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
@@ -1166,10 +1112,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		List<PaymentAnalyticsDataResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
@@ -1181,22 +1123,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
 
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-				fromTime = new DateTime(from);
-				toTime = new DateTime(to);
-				criteria.and("receivedDate").gte(fromTime).lte(toTime);
+			applyDateCriteria(criteria, "receivedDate", fromDate, toDate);
 
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				fromTime = new DateTime(from);
-				criteria.and("receivedDate").gte(fromTime);
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				to = new Date(Long.parseLong(toDate));
-				toTime = new DateTime(to);
-				criteria.and("receivedDate").lte(toTime);
-			}
 			switch (queryType) {
 			case "DOCTORS": {
 				response = getPaymentDataByDoctors(page, size, criteria);
@@ -1489,10 +1417,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Criteria criteria2 = new Criteria();
 			Criteria criteria3 = new Criteria();
 			Criteria criteria4 = new Criteria();
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 				criteria3.and("invoice.doctorId").is(new ObjectId(doctorId));
@@ -1512,26 +1436,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria4.and("receipt.hospitalId").is(new ObjectId(hospitalId));
 			}
 
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-				fromTime = new DateTime(from);
-				toTime = new DateTime(to);
-				criteria4.and("receipt.receivedDate").gte(fromTime).lte(toTime);
-				criteria3.and("invoice.invoiceDate").gte(fromTime).lte(toTime);
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				fromTime = new DateTime(from);
-				criteria4.and("receipt.receivedDate").gte(fromTime);
-				criteria3.and("invoice.invoiceDate").gte(fromTime);
-
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				to = new Date(Long.parseLong(toDate));
-				toTime = new DateTime(to);
-				criteria4.and("receipt.receivedDate").lte(toTime);
-				criteria3.and("invoice.invoiceDate").lte(toTime);
-			}
+			applyDateCriteria(criteria4, "receipt.receivedDate", fromDate, toDate);
+			applyDateCriteria(criteria3, "invoice.invoiceDate", fromDate, toDate);
 
 			Aggregation aggregation = null;
 
@@ -1803,7 +1709,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			} else {
 				throw new BusinessException(ServiceError.Unknown, "Query Type cannot be null");
 			}
-			System.out.println("aggregation " + aggregation);
 			response = mongoTemplate.aggregate(aggregation, DoctorPatientDueAmountCollection.class,
 					AmountDueAnalyticsDataResponse.class).getMappedResults();
 		} catch (Exception e) {
@@ -1819,31 +1724,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Boolean discarded, String fromDate, String toDate, String expenseType, String paymentMode) {
 		ExpenseCountResponse response = null;
 		try {
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-			long date = 0;
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(date);
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date(date);
-				to = new Date();
-			}
-
-			fromTime = new DateTime(from);
-
-			toTime = new DateTime(to);
-
-			Criteria criteria = new Criteria("toDate").gte(fromTime).lte(toTime);
+			Criteria criteria = new Criteria();
+			applyDateCriteria(criteria, "toDate", fromDate, toDate);
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
@@ -1873,8 +1755,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria), projectFields,
 					groupExpenses, Aggregation.sort(Sort.Direction.DESC, "analyticsDataResponse.toDate"));
 
-			System.out.println("Aggregation Query: " + aggregation);
-
 			response = mongoTemplate.aggregate(aggregation, DoctorExpenseCollection.class, ExpenseCountResponse.class)
 					.getUniqueMappedResult();
 
@@ -1891,33 +1771,12 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		List<AnalyticResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-			long date = 0;
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
 
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date();
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(date);
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date(date);
-				to = new Date();
-			}
-			fromTime = new DateTime(from);
-			toTime = new DateTime(to);
+			applyDateCriteria(criteria, "receivedDate", fromDate, toDate);
 
 			CustomAggregationOperation aggregationOperation = null;
 			ProjectionOperation projectList = new ProjectionOperation(
 					Fields.from(Fields.field("count", "$patientId"), Fields.field("receivedDate", "$receivedDate")));
-
-			criteria.and("receivedDate").gte(fromTime).lte(toTime);
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
@@ -2019,33 +1878,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		List<AnalyticResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-			long date = 0;
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date();
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(date);
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date(date);
-				to = new Date();
-			}
-			fromTime = new DateTime(from);
-			toTime = new DateTime(to);
+			applyDateCriteria(criteria, "createdTime", fromDate, toDate);
 
 			CustomAggregationOperation aggregationOperation = null;
 			ProjectionOperation projectList = new ProjectionOperation(
 					Fields.from(Fields.field("count", "$patientId"), Fields.field("invoiceDate", "$invoiceDate")));
-
-			criteria.and("invoiceDate").gte(fromTime).lte(toTime);
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
@@ -2147,10 +1984,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Criteria criteria2 = new Criteria();
 			Criteria criteria3 = new Criteria();
 			Criteria criteria4 = new Criteria();
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
+
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 				criteria3.and("invoice.doctorId").is(new ObjectId(doctorId));
@@ -2170,26 +2004,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria4.and("receipt.hospitalId").is(new ObjectId(hospitalId));
 			}
 
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-				fromTime = new DateTime(from);
-				toTime = new DateTime(to);
-				criteria4.and("receipt.receivedDate").gte(fromTime).lte(toTime);
-				criteria3.and("invoice.invoiceDate").gte(fromTime).lte(toTime);
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				fromTime = new DateTime(from);
-				criteria4.and("receipt.receivedDate").gte(fromTime);
-				criteria3.and("invoice.invoiceDate").gte(fromTime);
-
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				to = new Date(Long.parseLong(toDate));
-				toTime = new DateTime(to);
-				criteria4.and("receipt.receivedDate").lte(toTime);
-				criteria3.and("invoice.invoiceDate").lte(toTime);
-			}
+			applyDateCriteria(criteria4, "receipt.receivedDate", fromDate, toDate);
+			applyDateCriteria(criteria3, "invoice.invoiceDate", fromDate, toDate);
 
 			Aggregation aggregation = null;
 
@@ -2269,25 +2085,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		AllAnalyticResponse response = new AllAnalyticResponse();
 		try {
 			Criteria criteria = new Criteria();
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-			long date = 0;
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date();
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(date);
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date(date);
-				to = new Date();
-			}
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
@@ -2299,10 +2096,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
 				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
+			applyDateCriteria(criteria, "createdTime", fromDate, toDate);
 
-			//
 			criteria.and("discarded").is(false);
-			criteria.and("createdTime").gte(new DateTime(from)).lte(new DateTime(to));
 			Aggregation aggregation = null;
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
 
@@ -2329,7 +2125,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
 				criteriaAppointment = criteriaAppointment.and("hospitalId").is(new ObjectId(hospitalId));
 			}
-			criteriaAppointment.and("fromDate").gte(new DateTime(from)).lte(new DateTime(to));
+			applyDateCriteria(criteriaAppointment, "fromDate", fromDate, toDate);
+
 			criteriaAppointment = criteriaAppointment.and("type").is(AppointmentType.APPOINTMENT);
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteriaAppointment));
 			Integer totalAppointments = mongoTemplate
@@ -2346,7 +2143,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			//
 			Criteria criteriaPrescription = new Criteria();
 			criteriaPrescription.and("discarded").is(false);
-			criteriaPrescription.and("createdTime").gte(new DateTime(from)).lte(new DateTime(to));
+			applyDateCriteria(criteriaPrescription, "createdTime", fromDate, toDate);
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteriaPrescription = criteriaPrescription.and("doctorId").is(new ObjectId(doctorId));
@@ -2362,7 +2159,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			response.setTotalPrescription(
 					(int) mongoTemplate.count(new Query(criteriaPrescription), PrescriptionCollection.class));
 
-			//
 			Criteria criteria1 = new Criteria();
 			Criteria criteria2 = new Criteria();
 			Criteria criteria3 = new Criteria();
@@ -2386,26 +2182,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria4.and("receipt.hospitalId").is(new ObjectId(hospitalId));
 			}
 
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-				fromTime = new DateTime(from);
-				toTime = new DateTime(to);
-				criteria4.and("receipt.receivedDate").gte(fromTime).lte(toTime);
-				criteria3.and("invoice.invoiceDate").gte(fromTime).lte(toTime);
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				fromTime = new DateTime(from);
-				criteria4.and("receipt.receivedDate").gte(fromTime);
-				criteria3.and("invoice.invoiceDate").gte(fromTime);
-
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				to = new Date(Long.parseLong(toDate));
-				toTime = new DateTime(to);
-				criteria4.and("receipt.receivedDate").lte(toTime);
-				criteria3.and("invoice.invoiceDate").lte(toTime);
-			}
+			applyDateCriteria(criteria4, "receipt.receivedDate", fromDate, toDate);
+			applyDateCriteria(criteria3, "invoice.invoiceDate", fromDate, toDate);
 
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria1),
 					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
@@ -2469,26 +2247,15 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		DailyReportAnalyticResponse response = new DailyReportAnalyticResponse();
 		try {
 			Criteria criteria = new Criteria();
-			Date from = null;
-			Date to = null;
-
-			from = DateUtil.getStartOfDay(new Date());
-			to = DateUtil.getEndOfDay(new Date());
-
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
-			}
-
-			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria = criteria.and("locationId").is(new ObjectId(locationId));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
-			}
-
+			DateTime from = null;
+			DateTime to = null;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate))
+				from = new DateTime(DateUtil.getStartOfDay(new Date(Long.parseLong(fromDate))));
+			if (!DPDoctorUtils.anyStringEmpty(toDate))
+				to = new DateTime(DateUtil.getEndOfDay(new Date(Long.parseLong(toDate))));
 			//
 			criteria.and("discarded").is(false);
-			criteria.and("createdTime").gte(new DateTime(from)).lte(new DateTime(to));
+			applyDateCriteria(criteria, "createdTime", fromDate, toDate);
 			Aggregation aggregation = null;
 
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -2521,7 +2288,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 									.append("serviceName", "$invoice.invoiceItems.name"))),
 
 					Aggregation.sort(Direction.DESC, "createdTime"));
-			System.out.println("aggregation" + aggregation);
 			List<DailyReportAnalyticItem> dailyReportAnalyticItems = mongoTemplate
 					.aggregate(aggregation, DoctorPatientReceiptCollection.class, DailyReportAnalyticItem.class)
 					.getMappedResults();
@@ -2606,41 +2372,10 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		List<DischargeSummaryAnalyticsDataResponse> dailyReportAnalyticItems = null;
 		try {
 			Criteria criteria = new Criteria();
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-			long date = 0l;
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date();
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(date);
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date(date);
-				to = new Date();
-			}
-			fromTime = new DateTime(from);
-			toTime = new DateTime(to);
-
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
-			}
-
-			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria = criteria.and("locationId").is(new ObjectId(locationId));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
-			}
 
 			criteria.and("discarded").is(false);
-			criteria.and("createdTime").gte(new DateTime(fromTime)).lte(new DateTime(toTime));
+			applyDateCriteria(criteria, "createdTime", fromDate, toDate);
+
 			Aggregation aggregation = null;
 
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -2663,7 +2398,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 							.first("mobileNumber").as("mobileNumber").first("dateOfDischarge").as("dateOfDischarge")
 							.first("createdTime").as("createdTime"),
 					Aggregation.sort(Direction.DESC, "createdTime"));
-			System.out.println("aggregation" + aggregation);
 			dailyReportAnalyticItems = mongoTemplate
 					.aggregate(aggregation, "discharge_summary_cl", DischargeSummaryAnalyticsDataResponse.class)
 					.getMappedResults();
@@ -2683,27 +2417,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		List<ExpenseAnalyticsTypeDataResponse> expenseAnalytics = null;
 		try {
 			Criteria criteria = new Criteria();
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-			long date = 0l;
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date();
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(date);
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date(date);
-				to = new Date();
-			}
-			fromTime = new DateTime(from);
-			toTime = new DateTime(to);
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
@@ -2717,11 +2430,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			}
 
 			criteria.and("discarded").is(false);
-			criteria.and("createdTime").gte(new DateTime(fromTime)).lte(new DateTime(toTime));
+			applyDateCriteria(criteria, "createdTime", fromDate, toDate);
+
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.group("expenseType").first("expenseType").as("expenseType").sum("cost").as("cost"),
 					Aggregation.sort(Sort.Direction.DESC, "cost"));
-			System.out.println("aggregation" + aggregation);
 
 			expenseAnalytics = mongoTemplate
 					.aggregate(aggregation, "doctor_expense_cl", ExpenseAnalyticsTypeDataResponse.class)
@@ -2733,6 +2446,340 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		}
 
 		return expenseAnalytics;
+	}
+
+	@Scheduled(cron = "0 0 22 * * ?", zone = "IST")
+	@Override
+	public Boolean getDailyReportAnalyticstoDoctor() {
+		Boolean response = false;
+		try {
+			Date todayDate = new Date();
+			ZoneId defaultZoneId = ZoneId.systemDefault();
+			Instant instant = todayDate.toInstant();
+			LocalDate localDate = instant.atZone(defaultZoneId).toLocalDate();
+			LocalDateTime startOfDay = LocalDateTime.of(localDate, LocalTime.MIDNIGHT);
+			LocalDateTime endOfDay = LocalDateTime.of(localDate, LocalTime.MAX);
+
+			// Fetch payments for today
+			Criteria paymentCriteria = Criteria.where("receivedDate").gte(startOfDay).lte(endOfDay).and("discarded")
+					.is(false);
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(paymentCriteria),
+					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"), Aggregation.unwind("patient"),
+					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
+					Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
+					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+					Aggregation.sort(Sort.Direction.DESC, "receivedDate"),
+					new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id")
+							.append("date", new BasicDBObject("$first", "$receivedDate"))
+							.append("patientName", new BasicDBObject("$first", "$patient.localPatientName"))
+							.append("uniqueReceiptId", new BasicDBObject("$first", "$uniqueReceiptId"))
+							.append("uniqueInvoiceId", new BasicDBObject("$first", "$uniqueInvoiceId"))
+							.append("locationId", new BasicDBObject("$first", "$location._id"))
+							.append("amountPaid", new BasicDBObject("$first", "$amountPaid"))
+							.append("modeOfPayment", new BasicDBObject("$first", "$modeOfPayment"))
+							.append("receiptType", new BasicDBObject("$first", "$receiptType"))
+							.append("localPatientName", new BasicDBObject("$first", "$patient.localPatientName"))
+							.append("firstName", new BasicDBObject("$first", "$user.firstName"))
+							.append("mobileNumber", new BasicDBObject("$first", "$user.mobileNumber"))
+							.append("doctorName", new BasicDBObject("$first", "$doctor.firstName"))
+							.append("usedAdvanceAmount", new BasicDBObject("$first", "$usedAdvanceAmount")))));
+
+			List<PaymentDetailsAnalyticsDataResponse> receiptCollections = mongoTemplate.aggregate(aggregation,
+					DoctorPatientReceiptCollection.class, PaymentDetailsAnalyticsDataResponse.class).getMappedResults();
+
+			if (receiptCollections != null && !receiptCollections.isEmpty()) {
+				Map<String, List<PaymentDetailsAnalyticsDataResponse>> locationPayments = receiptCollections.stream()
+						.collect(Collectors.groupingBy(PaymentDetailsAnalyticsDataResponse::getLocationId));
+
+				for (String locationId : locationPayments.keySet()) {
+					LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId))
+							.orElse(null);
+
+					if (locationCollection != null) {
+						try {
+
+							ByteArrayOutputStream byteArrayOutputStream = createPdf(locationCollection,
+									receiptCollections,
+									"Daily Payments Report : " + locationCollection.getLocationName(), isWeekly, null,
+									null);
+
+							// Send Email
+							EmailListCollection emailListCollection = emailListRepository
+									.findByLocationId(locationCollection.getId());
+							if (emailListCollection != null && !emailListCollection.getEmails().isEmpty()) {
+								List<String> emails = emailListCollection.getEmails();
+								byte[] pdfBytes = byteArrayOutputStream.toByteArray();
+								String subject = locationCollection.getLocationName()
+										+ " - Daily Payment Collection Report";
+								String body = "Hello,\n\n"
+										+ "Please find attached the payments report for the last 24 hours.\n\n"
+										+ "Thank you for your attention.\n\n\n\n" + "--- Auto-generated Report\n"
+										+ "Do not reply to this email";
+								mailService.sendEmailWithPdf(emails, subject, body, pdfBytes);
+								response = true;
+							}
+						} catch (Exception e) {
+							logger.error("Error generating/sending PDF: ", e);
+							throw new BusinessException(ServiceError.Unknown, e.getMessage());
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Error in getDailyReportAnalyticstoDoctor(): ", e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	private ByteArrayOutputStream createPdf(LocationCollection locationCollection,
+			List<PaymentDetailsAnalyticsDataResponse> payments, String title, Boolean isWeekly, LocalDate startOfWeek,
+			LocalDate endOfWeek) {
+
+		// Create PDF
+		com.itextpdf.text.Document document = new com.itextpdf.text.Document();
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+		try {
+			DateTime now = DateTime.now();
+			PdfWriter writer = PdfWriter.getInstance(document, byteArrayOutputStream);
+
+			// Add page event handler to show footer on every page
+			writer.setPageEvent(new PdfPageEventHelper() {
+				@Override
+				public void onEndPage(PdfWriter writer, com.itextpdf.text.Document document) {
+					PdfContentByte cb = writer.getDirectContent();
+					Font footerFont = new Font(Font.FontFamily.HELVETICA, 8, Font.ITALIC);
+					Phrase footer = new Phrase("Auto-generated PDF | HealthCoco Software", footerFont);
+
+					// Precise bottom right corner positioning
+					float x = document.right() - 10; // 10 points from right margin
+					float y = document.bottom() + 10; // 10 points above bottom margin
+
+					ColumnText.showTextAligned(cb, Element.ALIGN_RIGHT, footer, x, y, 0);
+				}
+			});
+			document.open();
+
+			Font titleFont = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD);
+			Paragraph titleParagraph = new Paragraph(title, titleFont);
+			document.add(titleParagraph);
+			Paragraph dateParagraph;
+			Font dateFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
+			if (isWeekly) {
+				dateParagraph = new Paragraph("Date: " + new DateTime(startOfWeek.toString()).toString("dd-MM-yyyy")
+						+ " to " + new DateTime(endOfWeek.toString()).toString("dd-MM-yyyy"), dateFont);
+			} else {
+				dateParagraph = new Paragraph("Date: " + now.toString("dd-MM-yyyy"), dateFont);
+			}
+			document.add(dateParagraph);
+			document.add(new Paragraph(" "));
+
+			float[] columnWidths = { 2f, 1.5f, 1.5f, 1.5f, 1.5f };
+			PdfPTable table = new PdfPTable(columnWidths);
+			table.setWidthPercentage(100);
+
+			String[] headers = { "Patient Name", "Receipt Date", "Payment Method", "Used Advance Amount",
+					"Paid Amount" };
+			Font headerFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
+
+			for (String header : headers) {
+				PdfPCell cell = new PdfPCell(new Paragraph(header, headerFont));
+				cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+				cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+				cell.setPadding(5);
+				table.addCell(cell);
+			}
+
+			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+			double totalAmount = 0.0;
+			double[] totals = new double[6];
+
+			for (PaymentDetailsAnalyticsDataResponse payment : payments) {
+				table.addCell(createCenteredCell(payment.getLocalPatientName()));
+				table.addCell(createCenteredCell(sdf.format(payment.getDate())));
+				table.addCell(createCenteredCell(payment.getModeOfPayment().name()));
+				table.addCell(createCenteredCell(String.valueOf(payment.getUsedAdvanceAmount())));
+				table.addCell(createCenteredCell(String.valueOf(formatLargeNumber(payment.getAmountPaid()))));
+
+				totalAmount += payment.getAmountPaid();
+
+				switch (payment.getModeOfPayment().name().toUpperCase()) {
+				case "CASH":
+					totals[0] += payment.getAmountPaid();
+					break;
+				case "ONLINE":
+					totals[1] += payment.getAmountPaid();
+					break;
+				case "WALLET":
+					totals[2] += payment.getAmountPaid();
+					break;
+				case "CARD":
+					totals[3] += payment.getAmountPaid();
+					break;
+				case "UPI":
+					totals[4] += payment.getAmountPaid();
+					break;
+				case "CHEQUE":
+					totals[5] += payment.getAmountPaid();
+					break;
+				}
+			}
+
+			document.add(table);
+
+			// Summary Table with Dynamic Columns
+			document.add(new Paragraph(" "));
+
+			// Determine non-zero columns
+			List<String> activeSummaryHeaders = new ArrayList<>();
+			List<Double> activeTotals = new ArrayList<>();
+
+			String[] summaryHeaders = { "Cash Amount", "Card Amount", "Online Amount", "Wallet Amount", "UPI Amount",
+					"Cheque Amount" };
+
+			// Collect non-zero totals and corresponding headers
+			for (int i = 0; i < totals.length; i++) {
+				if (totals[i] > 0) {
+					activeSummaryHeaders.add(summaryHeaders[i]);
+					activeTotals.add(totals[i]);
+				}
+			}
+
+			// Add Total Amount
+			activeSummaryHeaders.add("Total Amount");
+			activeTotals.add(totalAmount);
+
+			// Create dynamic width array
+			float[] summaryColumnWidths = new float[activeSummaryHeaders.size()];
+			Arrays.fill(summaryColumnWidths, 1f);
+
+			PdfPTable summaryTable = new PdfPTable(summaryColumnWidths);
+			summaryTable.setWidthPercentage(100);
+			Font headerFont1 = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD); // Increased font size to 14
+
+			// Add headers
+			for (String header : activeSummaryHeaders) {
+				PdfPCell cell = new PdfPCell(new Paragraph(header, headerFont1));
+				cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+				cell.setPadding(5);
+				summaryTable.addCell(cell);
+			}
+
+			for (Double total : activeTotals) {
+				summaryTable.addCell(createCenteredCell(formatLargeNumber(total)));
+			}
+
+			document.add(summaryTable);
+
+			document.close();
+
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+
+		return byteArrayOutputStream;
+	}
+
+	// Formatting method to handle large numbers
+	private String formatLargeNumber(double number) {
+		// Use DecimalFormat to avoid scientific notation
+		DecimalFormat df = new DecimalFormat("#,##0.00");
+		return df.format(number);
+	}
+
+	// Helper method to create a centered cell with a paragraph
+	private PdfPCell createCenteredCell(String text) {
+		PdfPCell cell = new PdfPCell(new Paragraph(text));
+		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+		cell.setPadding(5);
+		return cell;
+	}
+
+	@Scheduled(cron = "0 0 22 * * 6", zone = "IST")
+	@Override
+	public Boolean getWeeklyReportAnalyticstoDoctor() {
+		Boolean response = false;
+		isWeekly = true;
+		try {
+			LocalDate today = LocalDate.now();
+			LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+			LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
+
+			LocalDateTime startOfWeekDateTime = startOfWeek.atStartOfDay();
+			LocalDateTime endOfWeekDateTime = endOfWeek.atTime(LocalTime.MAX);
+
+			Criteria paymentCriteria = Criteria.where("receivedDate").gte(startOfWeekDateTime).lte(endOfWeekDateTime)
+					.and("discarded").is(false);
+
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(paymentCriteria),
+					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"), Aggregation.unwind("patient"),
+					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
+					Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
+					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+					Aggregation.sort(Sort.Direction.DESC, "receivedDate"),
+					new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id")
+							.append("date", new BasicDBObject("$first", "$receivedDate"))
+							.append("patientName", new BasicDBObject("$first", "$patient.localPatientName"))
+							.append("uniqueReceiptId", new BasicDBObject("$first", "$uniqueReceiptId"))
+							.append("uniqueInvoiceId", new BasicDBObject("$first", "$uniqueInvoiceId"))
+							.append("locationId", new BasicDBObject("$first", "$location._id"))
+							.append("amountPaid", new BasicDBObject("$first", "$amountPaid"))
+							.append("modeOfPayment", new BasicDBObject("$first", "$modeOfPayment"))
+							.append("receiptType", new BasicDBObject("$first", "$receiptType"))
+							.append("localPatientName", new BasicDBObject("$first", "$patient.localPatientName"))
+							.append("firstName", new BasicDBObject("$first", "$user.firstName"))
+							.append("mobileNumber", new BasicDBObject("$first", "$user.mobileNumber"))
+							.append("doctorName", new BasicDBObject("$first", "$doctor.firstName"))
+							.append("usedAdvanceAmount", new BasicDBObject("$first", "$usedAdvanceAmount")))));
+			List<PaymentDetailsAnalyticsDataResponse> receiptCollections = mongoTemplate.aggregate(aggregation,
+					DoctorPatientReceiptCollection.class, PaymentDetailsAnalyticsDataResponse.class).getMappedResults();
+
+			if (receiptCollections != null && !receiptCollections.isEmpty()) {
+				Map<String, List<PaymentDetailsAnalyticsDataResponse>> locationPayments = receiptCollections.stream()
+						.collect(Collectors.groupingBy(PaymentDetailsAnalyticsDataResponse::getLocationId));
+
+				for (String locationId : locationPayments.keySet()) {
+					LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId))
+							.orElse(null);
+
+					if (locationCollection != null) {
+						try {
+
+							ByteArrayOutputStream byteArrayOutputStream = createPdf(locationCollection,
+									receiptCollections,
+									"Weekly Payments Report : " + locationCollection.getLocationName(), isWeekly,
+									startOfWeek, endOfWeek);
+
+							// Send Email
+							EmailListCollection emailListCollection = emailListRepository
+									.findByLocationId(locationCollection.getId());
+							if (emailListCollection != null && !emailListCollection.getEmails().isEmpty()) {
+								List<String> emails = emailListCollection.getEmails();
+								byte[] pdfBytes = byteArrayOutputStream.toByteArray();
+								String subject = locationCollection.getLocationName()
+										+ " - Weekly Payment Collection Report";
+								String body = "Hello,\n\n"
+										+ "Please find attached the payments report for the last week.\n\n"
+										+ "Thank you for your attention.\n\n\n\n" + "--- Auto-generated Report\n"
+										+ "Do not reply to this email";
+								mailService.sendEmailWithPdf(emails, subject, body, pdfBytes);
+								response = true;
+							}
+						} catch (Exception e) {
+							logger.error("Error generating/sending PDF: ", e);
+							throw new BusinessException(ServiceError.Unknown, e.getMessage());
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
 	}
 
 }

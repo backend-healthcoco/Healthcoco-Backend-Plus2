@@ -114,13 +114,14 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			PrintSettingsCollection oldPrintSettingsCollection = null;
 			if (request.getId() == null) {
 				if (!request.getIsLab()) {
-					if (!DPDoctorUtils.anyStringEmpty(printSettingType))
+					if (!DPDoctorUtils.anyStringEmpty(printSettingType)) {
 						oldPrintSettingsCollection = printSettingsRepository
 								.findByDoctorIdAndLocationIdAndHospitalIdAndPrintSettingType(doctorObjectId,
 										locationObjectId, hospitalObjectId, printSettingType);
-					else
+					} else {
 						oldPrintSettingsCollection = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalId(
 								doctorObjectId, locationObjectId, hospitalObjectId);
+					}
 				} else {
 					oldPrintSettingsCollection = printSettingsRepository.findByLocationIdAndHospitalId(locationObjectId,
 							hospitalObjectId);
@@ -193,6 +194,32 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 							.setFooterImageUrl(getFinalImageURL(response.getFooterSetup().getFooterImageUrl()));
 					response.getFooterSetup()
 							.setSignatureUrl(getFinalImageURL(response.getFooterSetup().getSignatureUrl()));
+				}
+			}
+
+			// If printSettingType is BILLING, save a copy for RECEIPT
+			if (printSettingType.equalsIgnoreCase(PrintSettingType.BILLING.getType())) {
+
+				// Check if RECEIPT type print setting already exists
+				boolean receiptExists = printSettingsRepository.existsByDoctorIdAndLocationIdAndPrintSettingType(
+						printSettingsCollection.getDoctorId(), printSettingsCollection.getLocationId(),
+						PrintSettingType.RECEIPT.getType());
+				if (!receiptExists) {
+					PrintSettingsCollection receiptSettingsCollection = new PrintSettingsCollection();
+
+					// Copy all values from the existing billing settings
+					BeanUtil.map(printSettingsCollection, receiptSettingsCollection);
+
+					receiptSettingsCollection.setId(null); // Ensure a new record is created
+					receiptSettingsCollection.setPrintSettingType(PrintSettingType.RECEIPT.getType());
+
+					// Retain the same doctorId and locationId
+					receiptSettingsCollection.setDoctorId(printSettingsCollection.getDoctorId());
+					receiptSettingsCollection.setLocationId(printSettingsCollection.getLocationId());
+					receiptSettingsCollection.setHospitalId(printSettingsCollection.getHospitalId());
+
+					// Save the new collection
+					printSettingsRepository.save(receiptSettingsCollection);
 				}
 			}
 
@@ -802,7 +829,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 		parameters.put("pid", patient.getPID() != null ? patient.getPID() : "--");
 		parameters.put("mobileNumber", user.getMobileNumber() != null ? user.getMobileNumber() : "--");
 		parameters.put("gender", patient.getGender() != null ? patient.getGender() : "--");
-        parameters.put("dob", dobString != null ? dobString : "--");
+		parameters.put("dob", dobString != null ? dobString : "--");
 		parameters.put("barcode", barcodeImageUrl != null ? barcodeImageUrl : "");
 		parameters.put("patientSticker", dbObject);
 

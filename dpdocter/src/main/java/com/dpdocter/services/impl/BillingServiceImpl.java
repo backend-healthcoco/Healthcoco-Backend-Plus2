@@ -3524,7 +3524,7 @@ public class BillingServiceImpl implements BillingService {
 			String mobileNumber) {
 		Boolean response = false;
 		try {
-			String pattern = "dd/MM/yyyy";
+			String pattern = "dd MMM, yyyy";
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 			DoctorPatientReceiptCollection doctorPatientReceiptCollection = doctorPatientReceiptRepository
 					.findByIdAndDoctorIdAndLocationIdAndHospitalId(new ObjectId(receiptId), new ObjectId(doctorId),
@@ -3544,20 +3544,10 @@ public class BillingServiceImpl implements BillingService {
 				smsDetail.setUserId(doctorPatientReceiptCollection.getPatientId());
 				smsDetail.setUserName(patient.getFirstName());
 				SMS sms = new SMS();
-				// String message = invoiceRemainderSMS;
 
-				String clinicNumber = locationCollection.getClinicNumber() != null
-						? (!DPDoctorUtils.anyStringEmpty(locationCollection.getClinicNumber())
-								? locationCollection.getClinicNumber()
-								: "")
-						: "";
-
-				sms.setSmsText("Hi " + patient.getFirstName() + ", your receipt for the invoice "
-						+ doctorPatientReceiptCollection.getUniqueInvoiceId() + " by "
-						+ locationCollection.getLocationName() + " Clinic and the total amount paid is "
-						+ doctorPatientReceiptCollection.getAmountPaid() + " on Date:"
-						+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate())
-						+ ". For queries,contact clinic " + clinicNumber + ".-Healthcoco");
+				sms.setSmsText("Thank you for payment of INR " + doctorPatientReceiptCollection.getAmountPaid()
+						+ " to " + locationCollection.getLocationName() + " on "
+						+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate()) + ".-Healthcoco");
 
 				SMSAddress smsAddress = new SMSAddress();
 				smsAddress.setRecipient(mobileNumber);
@@ -3567,7 +3557,7 @@ public class BillingServiceImpl implements BillingService {
 				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 				smsDetails.add(smsDetail);
 				smsTrackDetail.setSmsDetails(smsDetails);
-				smsTrackDetail.setTemplateId("1307161641234614877");
+				smsTrackDetail.setTemplateId("1407174254790882498");
 				smsServices.sendSMS(smsTrackDetail, true);
 				response = true;
 

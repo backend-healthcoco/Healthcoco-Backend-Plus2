@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.enums.MessageStatusType;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MessageResponse extends GenericCollection {
 
 	private String body;
