@@ -10,10 +10,12 @@ import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -78,19 +80,19 @@ import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.ibm.icu.text.DecimalFormat;
 import com.ibm.icu.text.SimpleDateFormat;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.ColumnText;
-import com.itextpdf.text.pdf.PdfContentByte;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfPageEventHelper;
-import com.itextpdf.text.pdf.PdfWriter;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.ColumnText;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfPageEventHelper;
+import com.lowagie.text.pdf.PdfWriter;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
@@ -2453,7 +2455,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	public Boolean getDailyReportAnalyticstoDoctor() {
 		Boolean response = false;
 		try {
-			Date todayDate = new Date();
+			Date todayDate;
+			todayDate = new Date();
 			ZoneId defaultZoneId = ZoneId.systemDefault();
 			Instant instant = todayDate.toInstant();
 			LocalDate localDate = instant.atZone(defaultZoneId).toLocalDate();
@@ -2484,46 +2487,42 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 							.append("doctorName", new BasicDBObject("$first", "$doctor.firstName"))
 							.append("usedAdvanceAmount", new BasicDBObject("$first", "$usedAdvanceAmount")))));
 
-			List<PaymentDetailsAnalyticsDataResponse> receiptCollections = mongoTemplate.aggregate(aggregation,
-					DoctorPatientReceiptCollection.class, PaymentDetailsAnalyticsDataResponse.class).getMappedResults();
+			List<PaymentDetailsAnalyticsDataResponse> receiptCollections = Optional
+					.ofNullable(mongoTemplate.aggregate(aggregation, DoctorPatientReceiptCollection.class,
+							PaymentDetailsAnalyticsDataResponse.class).getMappedResults())
+					.orElse(Collections.emptyList());
 
-			if (receiptCollections != null && !receiptCollections.isEmpty()) {
-				Map<String, List<PaymentDetailsAnalyticsDataResponse>> locationPayments = receiptCollections.stream()
-						.collect(Collectors.groupingBy(PaymentDetailsAnalyticsDataResponse::getLocationId));
+			// Group by locationId for quick access
+			Map<String, List<PaymentDetailsAnalyticsDataResponse>> locationPayments = receiptCollections != null
+					? receiptCollections.stream()
+							.collect(Collectors.groupingBy(PaymentDetailsAnalyticsDataResponse::getLocationId))
+					: new HashMap<>();
 
-				for (String locationId : locationPayments.keySet()) {
-					LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId))
-							.orElse(null);
+			// Loop through all locations
+			List<LocationCollection> allLocations = locationRepository.findAll();
 
-					if (locationCollection != null) {
-						try {
+			for (LocationCollection locationCollection : allLocations) {
 
-							ByteArrayOutputStream byteArrayOutputStream = createPdf(locationCollection,
-									receiptCollections,
-									"Daily Payments Report : " + locationCollection.getLocationName(), isWeekly, null,
-									null);
+				String locationId = locationCollection.getId().toString();
 
-							// Send Email
-							EmailListCollection emailListCollection = emailListRepository
-									.findByLocationId(locationCollection.getId());
-							if (emailListCollection != null && !emailListCollection.getEmails().isEmpty()) {
-								List<String> emails = emailListCollection.getEmails();
-								byte[] pdfBytes = byteArrayOutputStream.toByteArray();
-								String subject = locationCollection.getLocationName()
-										+ " - Daily Payment Collection Report";
-								String body = "Hello,\n\n"
-										+ "Please find attached the payments report for the last 24 hours.\n\n"
-										+ "Thank you for your attention.\n\n\n\n" + "--- Auto-generated Report\n"
-										+ "Do not reply to this email";
-								mailService.sendEmailWithPdf(emails, subject, body, pdfBytes);
-								response = true;
-							}
-						} catch (Exception e) {
-							logger.error("Error generating/sending PDF: ", e);
-							throw new BusinessException(ServiceError.Unknown, e.getMessage());
-						}
-					}
+				List<PaymentDetailsAnalyticsDataResponse> locationSpecificReceipts = locationPayments
+						.getOrDefault(locationId, new ArrayList<>());
+
+				if (locationSpecificReceipts == null || locationSpecificReceipts.isEmpty()) {
+
+					// No payments for this location – add blank row
+					locationSpecificReceipts = new ArrayList<>();
+					PaymentDetailsAnalyticsDataResponse blankEntry = new PaymentDetailsAnalyticsDataResponse();
+					blankEntry.setLocalPatientName("No Patient for Today");
+					blankEntry.setDate(null);
+					blankEntry.setModeOfPayment(null);
+					blankEntry.setUsedAdvanceAmount(0.0);
+					blankEntry.setAmountPaid(0.0);
+					locationSpecificReceipts.add(blankEntry);
 				}
+
+				response = createPdfAndSendEmail(locationSpecificReceipts, locationCollection);
+			    logger.info("Scheduled task triggered for getDailyReportAnalyticstoDoctor()");
 			}
 		} catch (Exception e) {
 			logger.error("Error in getDailyReportAnalyticstoDoctor(): ", e);
@@ -2532,12 +2531,40 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		return response;
 	}
 
-	private ByteArrayOutputStream createPdf(LocationCollection locationCollection,
-			List<PaymentDetailsAnalyticsDataResponse> payments, String title, Boolean isWeekly, LocalDate startOfWeek,
-			LocalDate endOfWeek) {
+	private boolean createPdfAndSendEmail(List<PaymentDetailsAnalyticsDataResponse> locationSpecificReceipts,
+			LocationCollection locationCollection) {
+		boolean response = false;
+		try {
+
+			ByteArrayOutputStream byteArrayOutputStream = createPdf(locationSpecificReceipts,
+					"Daily Payments Report : " + locationCollection.getLocationName(), isWeekly, null, null);
+
+			// Send Email
+			EmailListCollection emailListCollection = emailListRepository.findByLocationId(locationCollection.getId());
+			if (emailListCollection != null && !emailListCollection.getEmails().isEmpty()) {
+
+				List<String> emails = emailListCollection.getEmails();
+				byte[] pdfBytes = byteArrayOutputStream.toByteArray();
+
+				String subject = locationCollection.getLocationName() + " - Daily Payment Collection Report";
+				String body = "Hello,\n\n" + "Please find attached the payments report for the last 24 hours.\n\n"
+						+ "Thank you for your attention.\n\n\n\n" + "--- Auto-generated Report\n"
+						+ "Do not reply to this email";
+				mailService.sendEmailWithPdf(emails, subject, body, pdfBytes);
+				response = true;
+			}
+		} catch (Exception e) {
+			logger.error("Error generating/sending PDF: ", e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	private ByteArrayOutputStream createPdf(List<PaymentDetailsAnalyticsDataResponse> payments, String title,
+			Boolean isWeekly, LocalDate startOfWeek, LocalDate endOfWeek) {
 
 		// Create PDF
-		com.itextpdf.text.Document document = new com.itextpdf.text.Document();
+		com.lowagie.text.Document document = new com.lowagie.text.Document();
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
 		try {
@@ -2547,10 +2574,10 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			// Add page event handler to show footer on every page
 			writer.setPageEvent(new PdfPageEventHelper() {
 				@Override
-				public void onEndPage(PdfWriter writer, com.itextpdf.text.Document document) {
+				public void onEndPage(PdfWriter writer, com.lowagie.text.Document document) {
 					PdfContentByte cb = writer.getDirectContent();
-					Font footerFont = new Font(Font.FontFamily.HELVETICA, 8, Font.ITALIC);
-					Phrase footer = new Phrase("Auto-generated PDF | HealthCoco Software", footerFont);
+					Font footerFont = new Font(Font.HELVETICA, 8, Font.ITALIC);
+					Phrase footer = new Phrase("Auto-generated PDF | Powered by Healthcoco", footerFont);
 
 					// Precise bottom right corner positioning
 					float x = document.right() - 10; // 10 points from right margin
@@ -2561,11 +2588,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			});
 			document.open();
 
-			Font titleFont = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD);
+			Font titleFont = new Font(Font.HELVETICA, 16, Font.BOLD);
 			Paragraph titleParagraph = new Paragraph(title, titleFont);
 			document.add(titleParagraph);
 			Paragraph dateParagraph;
-			Font dateFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
+			Font dateFont = new Font(Font.HELVETICA, 12, Font.BOLD);
 			if (isWeekly) {
 				dateParagraph = new Paragraph("Date: " + new DateTime(startOfWeek.toString()).toString("dd-MM-yyyy")
 						+ " to " + new DateTime(endOfWeek.toString()).toString("dd-MM-yyyy"), dateFont);
@@ -2575,13 +2602,12 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			document.add(dateParagraph);
 			document.add(new Paragraph(" "));
 
-			float[] columnWidths = { 2f, 1.5f, 1.5f, 1.5f, 1.5f };
+			float[] columnWidths = { 2f, 1.5f, 1.5f, 1.5f };
 			PdfPTable table = new PdfPTable(columnWidths);
 			table.setWidthPercentage(100);
 
-			String[] headers = { "Patient Name", "Receipt Date", "Payment Method", "Used Advance Amount",
-					"Paid Amount" };
-			Font headerFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
+			String[] headers = { "Patient Name", "Receipt Date", "Payment Method", "Paid Amount" };
+			Font headerFont = new Font(Font.HELVETICA, 12, Font.BOLD);
 
 			for (String header : headers) {
 				PdfPCell cell = new PdfPCell(new Paragraph(header, headerFont));
@@ -2596,32 +2622,44 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			double[] totals = new double[6];
 
 			for (PaymentDetailsAnalyticsDataResponse payment : payments) {
-				table.addCell(createCenteredCell(payment.getLocalPatientName()));
-				table.addCell(createCenteredCell(sdf.format(payment.getDate())));
-				table.addCell(createCenteredCell(payment.getModeOfPayment().name()));
-				table.addCell(createCenteredCell(String.valueOf(payment.getUsedAdvanceAmount())));
-				table.addCell(createCenteredCell(String.valueOf(formatLargeNumber(payment.getAmountPaid()))));
 
-				totalAmount += payment.getAmountPaid();
+				String patientName = payment.getLocalPatientName() != null ? payment.getLocalPatientName() : "";
+				String formattedDate = payment.getDate() != null ? sdf.format(payment.getDate()) : "--";
+				String modeOfPayment = payment.getModeOfPayment() != null ? payment.getModeOfPayment().name() : "";
+				Double usedAdvanceAmount = payment.getUsedAdvanceAmount() != null ? payment.getUsedAdvanceAmount()
+						: 0.0;
+//				System.out.println("payment.getAmountPaid()" + payment.getAmountPaid());
+				Double amountPaid = payment.getAmountPaid() != null ? payment.getAmountPaid() : 0.0;
+				table.addCell(createCenteredCell(patientName));
+				table.addCell(createCenteredCell(formattedDate));
+				table.addCell(createCenteredCell(modeOfPayment));
+//				table.addCell(createCenteredCell(String.valueOf(usedAdvanceAmount)));
+				table.addCell(createCenteredCell(String.valueOf(formatLargeNumber(amountPaid))));
 
-				switch (payment.getModeOfPayment().name().toUpperCase()) {
+				totalAmount += amountPaid;
+				String mode = payment.getModeOfPayment() != null ? payment.getModeOfPayment().name().toUpperCase()
+						: "UNKNOWN";
+				switch (mode) {
 				case "CASH":
-					totals[0] += payment.getAmountPaid();
+					totals[0] += amountPaid;
 					break;
 				case "ONLINE":
-					totals[1] += payment.getAmountPaid();
+					totals[1] += amountPaid;
 					break;
 				case "WALLET":
-					totals[2] += payment.getAmountPaid();
+					totals[2] += amountPaid;
 					break;
 				case "CARD":
-					totals[3] += payment.getAmountPaid();
+					totals[3] += amountPaid;
 					break;
 				case "UPI":
-					totals[4] += payment.getAmountPaid();
+					totals[4] += amountPaid;
 					break;
 				case "CHEQUE":
-					totals[5] += payment.getAmountPaid();
+					totals[5] += amountPaid;
+					break;
+				default:
+					// optionally log or track unknown payment type
 					break;
 				}
 			}
@@ -2656,7 +2694,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 			PdfPTable summaryTable = new PdfPTable(summaryColumnWidths);
 			summaryTable.setWidthPercentage(100);
-			Font headerFont1 = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD); // Increased font size to 14
+			Font headerFont1 = new Font(Font.HELVETICA, 12, Font.BOLD); // Increased font size to 14
 
 			// Add headers
 			for (String header : activeSummaryHeaders) {
@@ -2676,6 +2714,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 		} catch (DocumentException e) {
 			e.printStackTrace();
+		} catch (Exception e) {
+			logger.error("Error generating/sending PDF: ", e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 
 		return byteArrayOutputStream;
@@ -2736,47 +2777,67 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			List<PaymentDetailsAnalyticsDataResponse> receiptCollections = mongoTemplate.aggregate(aggregation,
 					DoctorPatientReceiptCollection.class, PaymentDetailsAnalyticsDataResponse.class).getMappedResults();
 
-			if (receiptCollections != null && !receiptCollections.isEmpty()) {
-				Map<String, List<PaymentDetailsAnalyticsDataResponse>> locationPayments = receiptCollections.stream()
-						.collect(Collectors.groupingBy(PaymentDetailsAnalyticsDataResponse::getLocationId));
+			// Group by locationId for quick access
+			Map<String, List<PaymentDetailsAnalyticsDataResponse>> locationPayments = (receiptCollections != null)
+					? receiptCollections.stream()
+							.collect(Collectors.groupingBy(PaymentDetailsAnalyticsDataResponse::getLocationId))
+					: new HashMap<>();
 
-				for (String locationId : locationPayments.keySet()) {
-					LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId))
-							.orElse(null);
+			// Loop through all locations
+			List<LocationCollection> allLocations = locationRepository.findAll();
+			for (LocationCollection locationCollection : allLocations) {
+				String locationId = locationCollection.getId().toHexString();
+				List<PaymentDetailsAnalyticsDataResponse> locationSpecificReceipts = locationPayments.get(locationId);
 
-					if (locationCollection != null) {
-						try {
-
-							ByteArrayOutputStream byteArrayOutputStream = createPdf(locationCollection,
-									receiptCollections,
-									"Weekly Payments Report : " + locationCollection.getLocationName(), isWeekly,
-									startOfWeek, endOfWeek);
-
-							// Send Email
-							EmailListCollection emailListCollection = emailListRepository
-									.findByLocationId(locationCollection.getId());
-							if (emailListCollection != null && !emailListCollection.getEmails().isEmpty()) {
-								List<String> emails = emailListCollection.getEmails();
-								byte[] pdfBytes = byteArrayOutputStream.toByteArray();
-								String subject = locationCollection.getLocationName()
-										+ " - Weekly Payment Collection Report";
-								String body = "Hello,\n\n"
-										+ "Please find attached the payments report for the last week.\n\n"
-										+ "Thank you for your attention.\n\n\n\n" + "--- Auto-generated Report\n"
-										+ "Do not reply to this email";
-								mailService.sendEmailWithPdf(emails, subject, body, pdfBytes);
-								response = true;
-							}
-						} catch (Exception e) {
-							logger.error("Error generating/sending PDF: ", e);
-							throw new BusinessException(ServiceError.Unknown, e.getMessage());
-						}
-					}
+				if (locationSpecificReceipts == null || locationSpecificReceipts.isEmpty()) {
+					// No payments for this location – add blank row
+					locationSpecificReceipts = new ArrayList<>();
+					PaymentDetailsAnalyticsDataResponse blankEntry = new PaymentDetailsAnalyticsDataResponse();
+					blankEntry.setLocalPatientName("No Patient for Today");
+					blankEntry.setDate(null);
+					blankEntry.setModeOfPayment(null);
+					blankEntry.setUsedAdvanceAmount(0.0);
+					blankEntry.setAmountPaid(0.0);
+					locationSpecificReceipts.add(blankEntry);
 				}
+
+				response = createPdfAndSendEmailforWeeklyData(locationSpecificReceipts, locationCollection);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	private Boolean createPdfAndSendEmailforWeeklyData(
+			List<PaymentDetailsAnalyticsDataResponse> locationSpecificReceipts, LocationCollection locationCollection) {
+		boolean response = false;
+		LocalDate today = LocalDate.now();
+		LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+		LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
+
+		try {
+			ByteArrayOutputStream byteArrayOutputStream = createPdf(locationSpecificReceipts,
+					"Weekly Payments Report : " + locationCollection.getLocationName(), isWeekly, startOfWeek,
+					endOfWeek);
+
+			// Send Email
+			EmailListCollection emailListCollection = emailListRepository.findByLocationId(locationCollection.getId());
+			if (emailListCollection != null && !emailListCollection.getEmails().isEmpty()) {
+				List<String> emails = emailListCollection.getEmails();
+				byte[] pdfBytes = byteArrayOutputStream.toByteArray();
+
+				String subject = locationCollection.getLocationName() + " - Weekly Payment Collection Report";
+				String body = "Hello,\n\n" + "Please find attached the payments report for the last week.\n\n"
+						+ "Thank you for your attention.\n\n\n\n" + "--- Auto-generated Report\n"
+						+ "Do not reply to this email";
+				mailService.sendEmailWithPdf(emails, subject, body, pdfBytes);
+				response = true;
+			}
+		} catch (Exception e) {
+			logger.error("Error generating/sending PDF: ", e);
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;

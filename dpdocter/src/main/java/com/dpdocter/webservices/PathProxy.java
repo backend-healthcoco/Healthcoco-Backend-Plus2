@@ -129,7 +129,7 @@ public interface PathProxy {
 		public static final String PATIENT_REGISTER = "/patient";
 
 		public static final String USER_REGISTER_IN_CLINIC = "/user";
-		
+
 		public static final String SMILEBIRD_ADMIN_REGISTER_IN_CLINIC = "/smilebirdAdmin";
 
 		public static final String EDIT_USER_IN_CLINIC = "/user/{userId}/{locationId}/edit";
@@ -277,6 +277,10 @@ public interface PathProxy {
 		public static final String UPDATE_SHOW_PATIENT_NUMBER = "/updateShowPatient/{doctorId}/{locationId}";
 
 		public static final String UPDATE_IS_SHOW_DOCTOR_IN_CALENDER = "/updateIsShowDoctorInCalender/{doctorId}/{locationId}";
+
+		public static final String ADD_ID_TOKEN_OF_GOOGLE = "/googleToken/add";
+
+		public static final String REMOVE_ID_TOKEN_OF_GOOGLE = "/googleToken/remove";
 
 	}
 
@@ -953,7 +957,7 @@ public interface PathProxy {
 		public static final String UPLOAD_SIGNATURE = "/upload/signature/";
 
 		public static final String BLANK_PRINT = "/blank/print/{patientId}";
-		
+
 		public static final String PRINT_PATIENT_STICKER = "/patientSticker/{patientId}";
 
 	}
@@ -1761,6 +1765,7 @@ public interface PathProxy {
 		public static final String GET_DISCHARGE_SUMMARY_ANALYTICS_DATA = "/dischargeSummary";
 		public static final String GET_EXPENSE_ANALYTICS_DATA = "/get/expenseTypeData";
 		public static final String SEND_DAILY_REPORT_ANALYTIC_REPORT_TO_DOCTOR = "send/getDailyReportAnalyticstoDoctor";
+		public static final String SEND_WEEKLY_REPORT_ANALYTIC_REPORT_TO_DOCTOR = "send/getWeeklyReportAnalyticstoDoctor";
 
 	}
 

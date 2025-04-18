@@ -30,6 +30,7 @@ import com.dpdocter.request.ClinicImageAddRequest;
 import com.dpdocter.request.ClinicLogoAddRequest;
 import com.dpdocter.request.ClinicProfileHandheld;
 import com.dpdocter.request.DoctorRegisterRequest;
+import com.dpdocter.request.GoogleTokenIdRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.ClinicDoctorResponse;
 import com.dpdocter.response.PatientInitialAndCounter;
@@ -204,5 +205,9 @@ public interface RegistrationService {
 	RegisterDoctorResponse registerNewSmilebirdAdmin(DoctorRegisterRequest request);
 
 	RegisterDoctorResponse registerExisitingSmilebirdAdmin(DoctorRegisterRequest request);
+
+	Boolean addGoogleTokenId(GoogleTokenIdRequest request);
+
+	Boolean removeGoogleTokenId(String doctorId, String locationId, String hospitalId);
 
 }

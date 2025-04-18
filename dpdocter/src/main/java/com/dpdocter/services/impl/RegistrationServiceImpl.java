@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -124,6 +125,7 @@ import com.dpdocter.collections.FeedbackCollection;
 import com.dpdocter.collections.FeedbackRecommendationCollection;
 import com.dpdocter.collections.FlowsheetCollection;
 import com.dpdocter.collections.FormContentCollection;
+import com.dpdocter.collections.GoogleTokenIdCollections;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.GrowthChartCollection;
 import com.dpdocter.collections.HistoryCollection;
@@ -207,6 +209,7 @@ import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DynamicUIRepository;
 import com.dpdocter.repository.FeedbackRepository;
 import com.dpdocter.repository.FormContentRepository;
+import com.dpdocter.repository.GoogleTokenIdRepository;
 import com.dpdocter.repository.GroupRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.MasterBabyAchievementRepository;
@@ -231,6 +234,7 @@ import com.dpdocter.request.ClinicImageAddRequest;
 import com.dpdocter.request.ClinicLogoAddRequest;
 import com.dpdocter.request.ClinicProfileHandheld;
 import com.dpdocter.request.DoctorRegisterRequest;
+import com.dpdocter.request.GoogleTokenIdRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.CheckPatientSignUpResponse;
 import com.dpdocter.response.ClinicDoctorResponse;
@@ -260,6 +264,13 @@ import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.mongodb.BasicDBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -279,6 +290,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private GoogleTokenIdRepository googleTokenIdRepository;
 
 	@Autowired
 	private RoleRepository roleRepository;
@@ -465,6 +479,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Value(value = "${doctor.reference.message}")
 	private String doctorReferenceMessage;
+
+	@Value("${healthcoco.plus.google.web.client.id}")
+	private String GOOGLE_WEB_CLIENT_ID;
+
+	@Value("${healthcoco.plus.google.web.client.secret}")
+	private String GOOGLE_WEB_CLIENT_SECRET;
 
 	@Autowired
 	private DoctorLabReportRepository doctorLabReportRepository;
@@ -5953,6 +5973,74 @@ public class RegistrationServiceImpl implements RegistrationService {
 					mailService.sendEmail(userCollection.getEmailAddress(), smbsuperadminAccountVerifySub, body, null);
 				}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean addGoogleTokenId(GoogleTokenIdRequest request) {
+		Boolean response = false;
+		try {
+
+			GoogleTokenIdCollections googleTokenIdCollections = googleTokenIdRepository.findByDoctorIdAndLocationId(
+					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
+
+			if (googleTokenIdCollections != null) {
+				BeanUtil.map(request, googleTokenIdCollections);
+				googleTokenIdCollections.setDoctorId(new ObjectId(request.getDoctorId()));
+				googleTokenIdCollections.setLocationId(new ObjectId(request.getLocationId()));
+				googleTokenIdCollections.setHospitalId(new ObjectId(request.getHospitalId()));
+				googleTokenIdCollections.setIdToken(request.getIdToken());
+			} else {
+				googleTokenIdCollections = new GoogleTokenIdCollections();
+				googleTokenIdCollections.setDoctorId(new ObjectId(request.getDoctorId()));
+				googleTokenIdCollections.setLocationId(new ObjectId(request.getLocationId()));
+				googleTokenIdCollections.setHospitalId(new ObjectId(request.getHospitalId()));
+				googleTokenIdCollections.setIdToken(request.getIdToken());
+			}
+
+			// Exchange auth code (NOT ID token) for tokens
+			GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
+					GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance(),
+					"https://oauth2.googleapis.com/token", GOOGLE_WEB_CLIENT_ID, GOOGLE_WEB_CLIENT_SECRET,
+					request.getIdToken(), "").execute();
+
+			String accessToken = tokenResponse.getAccessToken();
+			String refreshToken = tokenResponse.getRefreshToken();
+			String idTokenFromExchange = tokenResponse.getIdToken();
+			// You can optionally parse the returned ID token to extract email
+			GoogleIdToken idToken = GoogleIdToken.parse(JacksonFactory.getDefaultInstance(), idTokenFromExchange);
+			String email = idToken.getPayload().getEmail();
+
+			googleTokenIdCollections.setAccessToken(accessToken);
+			googleTokenIdCollections.setRefreshToken(refreshToken);
+			googleTokenIdCollections.setEmail(email);
+			googleTokenIdRepository.save(googleTokenIdCollections);
+			response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean removeGoogleTokenId(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		try {
+			GoogleTokenIdCollections googleTokenIdCollections = googleTokenIdRepository
+					.findByDoctorIdAndLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+
+			if (googleTokenIdCollections != null) {
+				googleTokenIdRepository.delete(googleTokenIdCollections);
+				response = true;
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);

@@ -3,6 +3,8 @@ package com.dpdocter.request;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.constraints.DecimalMin;
+
 import com.dpdocter.enums.ModeOfPayment;
 import com.dpdocter.enums.ReceiptType;
 
@@ -31,7 +33,8 @@ public class DoctorPatientReceiptRequest {
 	private String transactionId;
 
 	private List<String> invoiceIds;
-
+	
+    @DecimalMin(value = "0.0", inclusive = true, message = "Amount paid must be zero or positive")
 	private Double amountPaid = 0.0;
 
 	private Double usedAdvanceAmount = 0.0;

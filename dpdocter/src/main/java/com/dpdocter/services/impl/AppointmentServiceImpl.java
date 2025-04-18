@@ -52,6 +52,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.aop.GoogleCalendarService;
 import com.dpdocter.beans.Age;
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.AppointmentSlot;
@@ -273,6 +274,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Autowired
 	PushNotificationServices pushNotificationServices;
+	
+	@Autowired
+	GoogleCalendarService googleCalendarService;
 
 	@Value(value = "${mail.appointment.cancel.subject}")
 	private String appointmentCancelMailSubject;
@@ -1175,6 +1179,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 										patientName, dateTime, clinicName, clinicContactNum, patientEmailAddress,
 										patientMobileNumber, doctorEmailAddress, doctorMobileNumber, facility, branch,
 										clinicGoogleMapShortUrl);
+
 							}
 						} catch (MessagingException e) {
 							e.printStackTrace();
@@ -1264,6 +1269,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						}
 					}
 				}
+				googleCalendarService.addEventToGoogleCalendar(response, doctorEmailAddress);
 
 			}
 		} catch (Exception e) {

@@ -806,6 +806,11 @@ public class BillingServiceImpl implements BillingService {
 		DoctorPatientReceipt receipt = null;
 		DoctorPatientInvoice invoice = null;
 		try {
+			
+			if (request.getAmountPaid() < 0) {
+			    throw new IllegalArgumentException("Amount paid cannot be negative");
+			}
+
 			Double dueAmount = 0.0;
 			Double advanceAmount = 0.0;
 			DoctorPatientReceiptCollection doctorPatientReceiptCollection = new DoctorPatientReceiptCollection();

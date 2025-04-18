@@ -235,12 +235,12 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 								.equalsIgnoreCase(DeviceType.IOS.getType())
 								|| userDeviceCollection.getDeviceType().getType()
 										.equalsIgnoreCase(DeviceType.IPAD.getType())) {
-							pushNotificationOnIosDevices(userDeviceCollection.getDeviceId(),
-									userDeviceCollection.getPushToken(), message, componentType, componentTypeId,
-									userDeviceCollection.getDeviceType().getType(),
-									userDeviceCollection.getRole().getRole(), userId);
-							userDeviceCollection.setBatchCount(userDeviceCollection.getBatchCount() + 1);
-							userDeviceRepository.save(userDeviceCollection);
+//							pushNotificationOnIosDevices(userDeviceCollection.getDeviceId(),
+//									userDeviceCollection.getPushToken(), message, componentType, componentTypeId,
+//									userDeviceCollection.getDeviceType().getType(),
+//									userDeviceCollection.getRole().getRole(), userId);
+//							userDeviceCollection.setBatchCount(userDeviceCollection.getBatchCount() + 1);
+//							userDeviceRepository.save(userDeviceCollection);
 						} else if (userDeviceCollection.getDeviceType().getType()
 								.equalsIgnoreCase(DeviceType.WEB.getType())
 								|| userDeviceCollection.getDeviceType().getType()
@@ -1933,11 +1933,11 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 							response = true;
 						} else if (userDeviceCollection.getDeviceType().getType()
 								.equalsIgnoreCase(DeviceType.IOS.getType()) && role.equals(RoleEnum.PATIENT)) {
-							pushNotificationOnIosDevices(userDeviceCollection.getDeviceId(),
-									userDeviceCollection.getPushToken(), message, componentType.getType(), requestId,
-									responseId, userDeviceCollection.getRole().getRole(), null);
-							userDeviceCollection.setBatchCount(userDeviceCollection.getBatchCount() + 1);
-							userDeviceRepository.save(userDeviceCollection);
+//							pushNotificationOnIosDevices(userDeviceCollection.getDeviceId(),
+//									userDeviceCollection.getPushToken(), message, componentType.getType(), requestId,
+//									responseId, userDeviceCollection.getRole().getRole(), null);
+//							userDeviceCollection.setBatchCount(userDeviceCollection.getBatchCount() + 1);
+//							userDeviceRepository.save(userDeviceCollection);
 						}
 
 					}
@@ -2005,12 +2005,12 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 								.equalsIgnoreCase(DeviceType.IOS.getType())
 								|| userDeviceCollection.getDeviceType().getType()
 										.equalsIgnoreCase(DeviceType.IPAD.getType())) {
-							pushNotificationOnIosDevicesTwilio(userDeviceCollection.getDeviceId(),
-									userDeviceCollection.getPushToken(), message, componentType, componentTypeId,
-									userDeviceCollection.getDeviceType().getType(),
-									userDeviceCollection.getRole().getRole(), userId, room, title, callType);
-							userDeviceCollection.setBatchCount(userDeviceCollection.getBatchCount() + 1);
-							userDeviceRepository.save(userDeviceCollection);
+//							pushNotificationOnIosDevicesTwilio(userDeviceCollection.getDeviceId(),
+//									userDeviceCollection.getPushToken(), message, componentType, componentTypeId,
+//									userDeviceCollection.getDeviceType().getType(),
+//									userDeviceCollection.getRole().getRole(), userId, room, title, callType);
+//							userDeviceCollection.setBatchCount(userDeviceCollection.getBatchCount() + 1);
+//							userDeviceRepository.save(userDeviceCollection);
 						}
 					}
 				}

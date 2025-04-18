@@ -56,6 +56,7 @@ import com.dpdocter.request.ClinicImageAddRequest;
 import com.dpdocter.request.ClinicLogoAddRequest;
 import com.dpdocter.request.ClinicProfileHandheld;
 import com.dpdocter.request.DoctorRegisterRequest;
+import com.dpdocter.request.GoogleTokenIdRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.ClinicDoctorResponse;
 import com.dpdocter.response.PatientInitialAndCounter;
@@ -667,7 +668,7 @@ public class RegistrationApi {
 		response.setData(doctorResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.RegistrationUrls.SMILEBIRD_ADMIN_REGISTER_IN_CLINIC)
 	@POST
 	@ApiOperation(value = PathProxy.RegistrationUrls.SMILEBIRD_ADMIN_REGISTER_IN_CLINIC, notes = PathProxy.RegistrationUrls.SMILEBIRD_ADMIN_REGISTER_IN_CLINIC)
@@ -770,7 +771,7 @@ public class RegistrationApi {
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 		}
 		List<Role> professionResponse = registrationService.getRole(range, page, size, locationId, hospitalId,
-				updatedTime, role,isDentalChain);
+				updatedTime, role, isDentalChain);
 		Response<Role> response = new Response<Role>();
 		response.setDataList(professionResponse);
 		return response;
@@ -1446,6 +1447,35 @@ public class RegistrationApi {
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(
 				registrationService.updateIsShowDoctorInCalender(doctorId, isShowDoctorInCalender, locationId));
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.ADD_ID_TOKEN_OF_GOOGLE)
+	@POST
+	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_ID_TOKEN_OF_GOOGLE, notes = PathProxy.RegistrationUrls.ADD_ID_TOKEN_OF_GOOGLE, response = Response.class)
+	public Response<Boolean> addGoogleTokenId(GoogleTokenIdRequest request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId())) {
+			logger.warn(invalidInput);
+			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
+		}
+		Boolean reference = registrationService.addGoogleTokenId(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(reference);
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.REMOVE_ID_TOKEN_OF_GOOGLE)
+	@GET
+	@ApiOperation(value = PathProxy.RegistrationUrls.REMOVE_ID_TOKEN_OF_GOOGLE, notes = PathProxy.RegistrationUrls.REMOVE_ID_TOKEN_OF_GOOGLE, response = Response.class)
+	public Response<Boolean> removeGoogleTokenId(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor ,location Id could not null");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(registrationService.removeGoogleTokenId(doctorId, locationId, hospitalId));
 		return response;
 	}
 }
