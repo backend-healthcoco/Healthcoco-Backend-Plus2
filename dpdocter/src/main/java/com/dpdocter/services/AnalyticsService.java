@@ -70,8 +70,8 @@ public interface AnalyticsService {
 	public List<ExpenseAnalyticsTypeDataResponse> getExpenseAnalyticsTypeData(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate);
 
-	public Boolean getDailyReportAnalyticstoDoctor();
-	
-	public Boolean getWeeklyReportAnalyticstoDoctor();
+	Boolean getDailyReportAnalyticstoDoctor();
+
+	Boolean getWeeklyReportAnalyticstoDoctor();
 
 }

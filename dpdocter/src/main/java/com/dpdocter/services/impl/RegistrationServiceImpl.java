@@ -48,6 +48,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.aop.GoogleCalendarService;
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.BloodGroup;
@@ -269,8 +270,12 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.auth.http.HttpCredentialsAdapter;
+import com.google.auth.oauth2.AccessToken;
+import com.google.auth.oauth2.GoogleCredentials;
 import com.mongodb.BasicDBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -503,6 +508,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Value(value = "${healthcoco.support.number}")
 	private String healthcocoSupportNumber;
+	@Autowired
+	GoogleCalendarService googleCalendarService;
 
 	@Override
 	@Transactional
@@ -6033,13 +6040,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	public Boolean removeGoogleTokenId(String doctorId, String locationId, String hospitalId) {
 		Boolean response = false;
 		try {
-			GoogleTokenIdCollections googleTokenIdCollections = googleTokenIdRepository
-					.findByDoctorIdAndLocationId(new ObjectId(doctorId), new ObjectId(locationId));
 
-			if (googleTokenIdCollections != null) {
-				googleTokenIdRepository.delete(googleTokenIdCollections);
-				response = true;
-			}
+			response = googleCalendarService.removeAllGoogleCalendarDataOnSignOut(doctorId, locationId);
 
 		} catch (Exception e) {
 			e.printStackTrace();

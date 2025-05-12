@@ -155,6 +155,12 @@ public class AppointmentCollection extends GenericCollection {
 	private ObjectId specialityId;
 	@Field
 	private Boolean isDentalChainAppointment = false;
+	
+	@Field
+	private String eventId;
+	
+	@Field
+	private String googleEventEmail;
 
 	public Boolean getIsDentalChainAppointment() {
 		return isDentalChainAppointment;
@@ -514,6 +520,22 @@ public class AppointmentCollection extends GenericCollection {
 
 	public void setProblemDetailsId(ObjectId problemDetailsId) {
 		this.problemDetailsId = problemDetailsId;
+	}
+
+	public String getEventId() {
+		return eventId;
+	}
+
+	public void setEventId(String eventId) {
+		this.eventId = eventId;
+	}
+
+	public String getGoogleEventEmail() {
+		return googleEventEmail;
+	}
+
+	public void setGoogleEventEmail(String googleEventEmail) {
+		this.googleEventEmail = googleEventEmail;
 	}
 
 	@Override

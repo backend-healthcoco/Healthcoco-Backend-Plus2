@@ -1764,8 +1764,7 @@ public interface PathProxy {
 		public static final String GET_DAILY_REPORT_ANALYTIC = "getDailyReportAnalytics";
 		public static final String GET_DISCHARGE_SUMMARY_ANALYTICS_DATA = "/dischargeSummary";
 		public static final String GET_EXPENSE_ANALYTICS_DATA = "/get/expenseTypeData";
-		public static final String SEND_DAILY_REPORT_ANALYTIC_REPORT_TO_DOCTOR = "send/getDailyReportAnalyticstoDoctor";
-		public static final String SEND_WEEKLY_REPORT_ANALYTIC_REPORT_TO_DOCTOR = "send/getWeeklyReportAnalyticstoDoctor";
+		public static final String GET_PATIENT_REFFERED_BY_ANALYTICS_DATA = "/patient/refferedBy";
 
 	}
 

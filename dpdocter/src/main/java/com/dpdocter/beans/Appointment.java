@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AppointmentState;
@@ -80,46 +81,50 @@ public class Appointment extends GenericCollection {
 
 	private RegisteredPatientDetails registeredPatientDetails;
 
-    private long waitedFor = 0;
-    
-    private long engagedFor = 0;
-    
-    private long engagedAt = 0;
-    
-    private long checkedInAt = 0;
-    
-    private long checkedOutAt = 0;
+	private long waitedFor = 0;
 
-    private Integer count; 
-    
-    private String category;
-    
+	private long engagedFor = 0;
+
+	private long engagedAt = 0;
+
+	private long checkedInAt = 0;
+
+	private long checkedOutAt = 0;
+
+	private Integer count;
+
+	private String category;
+
 	private String branch;
 
 	private String cancelledByProfile;
-    
+
 	private String localPatientName;
-	
+
 	private List<Fields> treatmentFields;
 
 	private Boolean isCreatedByPatient = false;
-	
+
 	private PatientTreatmentResponse patientTreatmentResponse;
-	
+
 	private ConsultationType consultationType;
-	
+
 	private Date consultationStartedOn;
-	
+
 	private String problemDetailsId;
-	
+
 	private AppointmentSlot onlineConsultationSlot;
-	
-	private Long callDurationInMinutes=0L;
-	
-private Boolean isAnonymousAppointment = false;
-	
+
+	private Long callDurationInMinutes = 0L;
+
+	private Boolean isAnonymousAppointment = false;
+
 	private String specialityId;
 	
+	private String eventId;
+	
+	private String googleEventEmail;
+
 	public PatientTreatmentResponse getPatientTreatmentResponse() {
 		return patientTreatmentResponse;
 	}
@@ -479,10 +484,6 @@ private Boolean isAnonymousAppointment = false;
 	public void setBranch(String branch) {
 		this.branch = branch;
 	}
-	
-	
-
-	
 
 	public AppointmentSlot getOnlineConsultationSlot() {
 		return onlineConsultationSlot;
@@ -515,10 +516,7 @@ private Boolean isAnonymousAppointment = false;
 	public void setConsultationStartedOn(Date consultationStartedOn) {
 		this.consultationStartedOn = consultationStartedOn;
 	}
-	
-	
 
-	
 	public Boolean getIsAnonymousAppointment() {
 		return isAnonymousAppointment;
 	}
@@ -541,6 +539,22 @@ private Boolean isAnonymousAppointment = false;
 
 	public void setCallDurationInMinutes(Long callDurationInMinutes) {
 		this.callDurationInMinutes = callDurationInMinutes;
+	}
+
+	public String getEventId() {
+		return eventId;
+	}
+
+	public void setEventId(String eventId) {
+		this.eventId = eventId;
+	}
+
+	public String getGoogleEventEmail() {
+		return googleEventEmail;
+	}
+
+	public void setGoogleEventEmail(String googleEventEmail) {
+		this.googleEventEmail = googleEventEmail;
 	}
 
 	@Override

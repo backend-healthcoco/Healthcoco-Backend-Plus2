@@ -682,6 +682,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 		Appointment response = null;
 		PatientTreatmentResponse patientTreatmentResponse = new PatientTreatmentResponse();
 		try {
+			
+			ObjectId doctorId = new ObjectId(request.getDoctorId());
+
+			UserCollection userCollection = userRepository.findById(doctorId).orElse(null);
 			AppointmentLookupResponse appointmentLookupResponse = mongoTemplate.aggregate(Aggregation.newAggregation(
 					Aggregation.match(new Criteria("appointmentId").is(request.getAppointmentId())),
 					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
@@ -954,6 +958,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 					response.setLatitude(appointmentLookupResponse.getLocation().getLatitude());
 					response.setLongitude(appointmentLookupResponse.getLocation().getLongitude());
 				}
+				final String doctorEmailAddress = userCollection.getEmailAddress();
+				googleCalendarService.addEventToGoogleCalendar(response, doctorEmailAddress,request.getState().getState());
+
 				// for Online consultation
 				if (request.getType() != null && request.getType().equals(AppointmentType.ONLINE_CONSULTATION)) {
 					List<DoctorClinicProfileCollection> doctorClinicProfileCollectionn = doctorClinicProfileRepository
@@ -1269,7 +1276,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						}
 					}
 				}
-				googleCalendarService.addEventToGoogleCalendar(response, doctorEmailAddress);
+				googleCalendarService.addEventToGoogleCalendar(response, doctorEmailAddress,request.getState().getState());
 
 			}
 		} catch (Exception e) {

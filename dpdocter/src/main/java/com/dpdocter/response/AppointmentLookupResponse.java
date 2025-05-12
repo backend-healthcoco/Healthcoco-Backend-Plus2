@@ -112,6 +112,9 @@ public class AppointmentLookupResponse extends GenericCollection {
 	private String specialityId;
 
 	private Boolean isDentalChainAppointment = false;
+	private String eventId;
+
+	private String googleEventEmail;
 
 	public String getId() {
 		return id;
@@ -495,6 +498,22 @@ public class AppointmentLookupResponse extends GenericCollection {
 
 	public void setCallDurationInMinutes(Long callDurationInMinutes) {
 		this.callDurationInMinutes = callDurationInMinutes;
+	}
+
+	public String getEventId() {
+		return eventId;
+	}
+
+	public void setEventId(String eventId) {
+		this.eventId = eventId;
+	}
+
+	public String getGoogleEventEmail() {
+		return googleEventEmail;
+	}
+
+	public void setGoogleEventEmail(String googleEventEmail) {
+		this.googleEventEmail = googleEventEmail;
 	}
 
 	@Override

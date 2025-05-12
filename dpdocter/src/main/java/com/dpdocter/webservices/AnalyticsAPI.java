@@ -24,6 +24,7 @@ import com.dpdocter.beans.PaymentSummary;
 import com.dpdocter.beans.PrescriptionAnalyticDetail;
 import com.dpdocter.beans.TreatmentAnalyticDetail;
 import com.dpdocter.beans.TreatmentService;
+import com.dpdocter.elasticsearch.response.PatientReferredByAnalyticData;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.AllAnalyticResponse;
@@ -946,25 +947,25 @@ public class AnalyticsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.AnalyticsUrls.SEND_DAILY_REPORT_ANALYTIC_REPORT_TO_DOCTOR)
+	@Path(value = PathProxy.AnalyticsUrls.GET_PATIENT_REFFERED_BY_ANALYTICS_DATA)
 	@GET
-	@ApiOperation(value = PathProxy.AnalyticsUrls.SEND_DAILY_REPORT_ANALYTIC_REPORT_TO_DOCTOR, notes = PathProxy.AnalyticsUrls.SEND_DAILY_REPORT_ANALYTIC_REPORT_TO_DOCTOR)
-	public Response<Boolean> getDailyReportAnalyticstoDoctor() {
-		Boolean dailyReportAnalyticstoDoctorResponse = analyticsService.getDailyReportAnalyticstoDoctor();
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PATIENT_REFFERED_BY_ANALYTICS_DATA, notes = PathProxy.AnalyticsUrls.GET_PATIENT_REFFERED_BY_ANALYTICS_DATA)
+	public Response<PatientReferredByAnalyticData> getPatientRefferedByAnalyticData(
+			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId, @QueryParam("fromDate") String fromDate,
+			@QueryParam("toDate") String toDate, @DefaultValue("NEW_PATIENT") @QueryParam("queryType") String queryType,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("referredBy") String referred,
+			@DefaultValue("0") @QueryParam(value = "page") int page,
+			@DefaultValue("0") @QueryParam(value = "size") int size) {
+		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "locationId, hospitalId should not be empty");
+		}
+		List<PatientReferredByAnalyticData> patientAnalyticResponse = patientAnalyticService
+				.getPatientReferredByAnalyticData(doctorId, locationId, hospitalId, referred, fromDate, toDate,
+						queryType, searchTerm,page,size);
 
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(dailyReportAnalyticstoDoctorResponse);
-		return response;
-	}
-
-	@Path(value = PathProxy.AnalyticsUrls.SEND_WEEKLY_REPORT_ANALYTIC_REPORT_TO_DOCTOR)
-	@GET
-	@ApiOperation(value = PathProxy.AnalyticsUrls.SEND_WEEKLY_REPORT_ANALYTIC_REPORT_TO_DOCTOR, notes = PathProxy.AnalyticsUrls.SEND_WEEKLY_REPORT_ANALYTIC_REPORT_TO_DOCTOR)
-	public Response<Boolean> getWeeklyReportAnalyticstoDoctor() {
-		Boolean dailyReportAnalyticstoDoctorResponse = analyticsService.getWeeklyReportAnalyticstoDoctor();
-
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(dailyReportAnalyticstoDoctorResponse);
+		Response<PatientReferredByAnalyticData> response = new Response<PatientReferredByAnalyticData>();
+		response.setDataList(patientAnalyticResponse);
 		return response;
 	}
 }

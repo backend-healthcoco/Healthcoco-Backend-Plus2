@@ -1,16 +1,20 @@
 package com.dpdocter.services.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
@@ -20,18 +24,24 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.PatientAnalyticData;
+import com.dpdocter.collections.DoctorPatientInvoiceCollection;
+import com.dpdocter.collections.DoctorPatientReceiptCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.elasticsearch.response.PatientReferredByAnalyticData;
 import com.dpdocter.enums.PatientAnalyticType;
 import com.dpdocter.enums.SearchType;
+import com.dpdocter.enums.UnitType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.AnalyticCountResponse;
 import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.DoctorPatientAnalyticResponse;
+import com.dpdocter.response.InvoiceAnalyticsDataDetailResponse;
 import com.dpdocter.services.PatientAnalyticService;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
+import common.util.web.DateUtil;
 
 @Service
 public class PatientAnalyticServiceImpl implements PatientAnalyticService {
@@ -1565,5 +1575,176 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 		return response;
 
+	}
+
+	@Override
+	public List<PatientReferredByAnalyticData> getPatientReferredByAnalyticData(String doctorId, String locationId,
+			String hospitalId, String referred, String fromDate, String toDate, String queryType, String searchTerm,
+			int page, int size) {
+		List<PatientReferredByAnalyticData> response = null;
+		try {
+			Criteria criteria = new Criteria();
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			long date = 0;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
+			}
+
+			fromTime = new DateTime(DateUtil.getStartOfDay(from));
+			toTime = new DateTime(DateUtil.getEndOfDay(to));
+			
+			Criteria criteria2 = new Criteria();
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+				criteria2.and("patient.locationId").is(new ObjectId(locationId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+				criteria2.and("patient.hospitalId").is(new ObjectId(hospitalId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(referred)) {
+				criteria2.and("refer.reference").is(referred);
+			}
+			applyDateCriteria(criteria, "receivedDate", fromDate, toDate);
+
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria2.orOperator(new Criteria("patient.localPatientName").regex(searchTerm, "i"),
+						new Criteria("user.firstName").regex(searchTerm, "i"),
+						new Criteria("user.mobileNumber").regex(searchTerm, "i"));
+			}
+			criteria.and("discarded").is(false);
+
+			AggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
+					new BasicDBObject("_id", "$_id").append("cost", new BasicDBObject("$first", "$cost"))
+							.append("localPatientName", new BasicDBObject("$first", "$localPatientName"))
+							.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
+							.append("referredBy", new BasicDBObject("$first", "$referredBy"))
+							.append("servicesArray", new BasicDBObject("$addToSet", "$services.name"))
+							.append("patientAnalyticType", new BasicDBObject("$first", "$patientAnalyticType"))
+							.append("receiptDate", new BasicDBObject("$first", "$receiptDate"))));
+
+			Aggregation aggregation = null;
+
+			List<AggregationOperation> operations = new ArrayList<>();
+
+			operations.add(Aggregation.match(criteria));
+			operations.add(Aggregation.lookup("patient_treatment_cl", "patientId", "patientId", "treatments"));
+			operations.add(Aggregation.unwind("treatments", true));
+			operations.add(Aggregation.lookup("treatment_services_cl", "$treatments.treatments.treatmentServiceId",
+					"_id", "services"));
+			operations.add(Aggregation.unwind("services", true));
+			operations.add(Aggregation.lookup("patient_cl", "patientId", "userId", "patient"));
+			operations.add(Aggregation.unwind("patient", true));
+			operations.add(Aggregation.lookup("patient_visit_cl", "patientId", "patientId", "visitData"));
+			operations.add(Aggregation.unwind("visitData", true));
+			operations.add(Aggregation.lookup("user_cl", "patientId", "_id", "user"));
+			operations.add(Aggregation.unwind("user", true));
+			operations.add(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"));
+			operations.add(Aggregation.unwind("doctor", true));
+			operations.add(Aggregation.lookup("referrences_cl", "patient.referredBy", "_id", "refer"));
+			operations.add(Aggregation.unwind("refer", true));
+			operations.add(Aggregation.match(criteria2));
+			operations
+					.add(new CustomAggregationOperation(
+							new Document("$project",
+									new BasicDBObject("_id", "$_id").append("cost", "$amountPaid")
+											.append("receiptDate", "$receivedDate")
+											.append("localPatientName", "$patient.localPatientName")
+											.append("mobileNumber", "$user.mobileNumber")
+											.append("patientAnalyticType", new BasicDBObject("$cond", Arrays.asList(
+													new BasicDBObject("$and",
+															Arrays.asList(
+																	new BasicDBObject("$gte",
+																			Arrays.asList("$patient.createdTime",
+																					fromTime)),
+																	new BasicDBObject(
+																			"$lte",
+																			Arrays.asList("$patient.createdTime",
+																					toTime)))),
+													"NEW_PATIENT",
+													new BasicDBObject("$cond", Arrays.asList(
+															new BasicDBObject("$and", Arrays.asList(
+																	new BasicDBObject("$lt",
+																			Arrays.asList("$patient.createdTime",
+																					fromTime)),
+																	new BasicDBObject("$gte",
+																			Arrays.asList("$receivedDate", fromTime)),
+																	new BasicDBObject("$lte",
+																			Arrays.asList("$receivedDate", toTime)))),
+															"VISITED_PATIENT", "OTHER")))))
+											.append("services", "$services")
+											.append("referredBy", "$refer.reference"))));
+
+			operations.add(aggregationOperation);
+
+			if (queryType != null && !queryType.isEmpty()) {
+				operations.add(Aggregation.match(Criteria.where("patientAnalyticType").is(queryType)));
+			}
+
+			operations.add(Aggregation.sort(Sort.by(Sort.Direction.DESC, "receivedDate")));
+
+			if (size > 0) {
+				operations.add(Aggregation.skip((long) page * size));
+				operations.add(Aggregation.limit(size));
+			}
+
+			aggregation = Aggregation.newAggregation(operations);
+			response = mongoTemplate
+					.aggregate(aggregation, DoctorPatientReceiptCollection.class, PatientReferredByAnalyticData.class)
+					.getMappedResults();
+			System.out.println("aggregation  " + aggregation);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While getting income analytics data");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting income analytics data");
+		}
+		return response;
+	}
+
+	public static void applyDateCriteria(Criteria criteria, String field, String fromDate, String toDate) {
+		DateTime fromTime = null;
+		DateTime toTime = null;
+		Date from = null;
+		Date to = null;
+		long date = 0;
+		if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+			from = new Date(Long.parseLong(fromDate));
+			to = new Date(Long.parseLong(toDate));
+		} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+			from = new Date(Long.parseLong(fromDate));
+			to = new Date();
+		} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+			from = new Date(date);
+			to = new Date(Long.parseLong(toDate));
+		} else {
+			from = new Date(date);
+			to = new Date();
+		}
+
+		fromTime = new DateTime(DateUtil.getStartOfDay(from));
+		toTime = new DateTime(DateUtil.getEndOfDay(to));
+//		fromTime = new DateTime(from);
+//		toTime = new DateTime(to);
+
+		criteria.and(field).gte(fromTime).lte(toTime);
 	}
 }

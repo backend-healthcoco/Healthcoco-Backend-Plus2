@@ -24,10 +24,15 @@ public interface AppointmentRepository extends MongoRepository<AppointmentCollec
 	@Query("{'fromDate': {'$gte': ?0}, 'toDate': {'$lte': ?1}, 'state': {'$eq' : 'CONFIRM'}}")
 	List<AppointmentCollection> findConfirmAppointments(DateTime start, DateTime end, Sort sort);
 
-	AppointmentCollection findByDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndAppointmentId(ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, ObjectId patientObjectId, String appointmentId);
-	
-	AppointmentCollection findByDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndTimeFromTimeAndTimeToTimeAndFromDateAndToDate(ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, ObjectId patientObjectId, int from, int to, Date fromDate, Date toDate);
+	AppointmentCollection findByDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndAppointmentId(ObjectId doctorObjectId,
+			ObjectId locationObjectId, ObjectId hospitalObjectId, ObjectId patientObjectId, String appointmentId);
 
-	
+	AppointmentCollection findByDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndTimeFromTimeAndTimeToTimeAndFromDateAndToDate(
+			ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, ObjectId patientObjectId,
+			int from, int to, Date fromDate, Date toDate);
+
+	@Query("{ 'doctorId': ?0, 'locationId': ?1, 'googleEventEmail': { $ne: null }, 'eventId': { $ne: null } }")
+	List<AppointmentCollection> findByDoctorIdLocationIdAndGoogleEventEmailAndEventIdNotNull(ObjectId doctorId,
+			ObjectId locationId);
 
 }

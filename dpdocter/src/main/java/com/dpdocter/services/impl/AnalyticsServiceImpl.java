@@ -58,10 +58,8 @@ import com.dpdocter.enums.SearchType;
 import com.dpdocter.enums.UnitType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.EmailListRepository;
 import com.dpdocter.repository.LocationRepository;
-import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.response.AllAnalyticResponse;
 import com.dpdocter.response.AmountDueAnalyticsDataResponse;
 import com.dpdocter.response.AnalyticResponse;
@@ -76,7 +74,6 @@ import com.dpdocter.response.InvoiceAnalyticsDataDetailResponse;
 import com.dpdocter.response.PaymentAnalyticsDataResponse;
 import com.dpdocter.response.PaymentDetailsAnalyticsDataResponse;
 import com.dpdocter.services.AnalyticsService;
-import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.ibm.icu.text.DecimalFormat;
 import com.ibm.icu.text.SimpleDateFormat;
@@ -85,8 +82,6 @@ import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.ColumnText;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPCell;
@@ -105,24 +100,15 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
+
 	@Autowired
 	private MailService mailService;
-
-	@Autowired
-	private MailBodyGenerator mailBodyGenerator;
-
-	@Autowired
-	private RoleRepository roleRepository;
-
-	@Autowired
-	private DoctorClinicProfileRepository doctorClinicProfileRepository;
 
 	@Autowired
 	private LocationRepository locationRepository;
 
 	@Autowired
 	private EmailListRepository emailListRepository;
-	private Boolean isWeekly = false;
 
 	Logger logger = Logger.getLogger(AnalyticsServiceImpl.class);
 
@@ -2453,6 +2439,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	@Scheduled(cron = "0 0 22 * * ?", zone = "IST")
 	@Override
 	public Boolean getDailyReportAnalyticstoDoctor() {
+		System.out.println("Scheduled method triggered");
 		Boolean response = false;
 		try {
 			Date todayDate;
@@ -2522,7 +2509,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 
 				response = createPdfAndSendEmail(locationSpecificReceipts, locationCollection);
-			    logger.info("Scheduled task triggered for getDailyReportAnalyticstoDoctor()");
 			}
 		} catch (Exception e) {
 			logger.error("Error in getDailyReportAnalyticstoDoctor(): ", e);
@@ -2537,20 +2523,22 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		try {
 
 			ByteArrayOutputStream byteArrayOutputStream = createPdf(locationSpecificReceipts,
-					"Daily Payments Report : " + locationCollection.getLocationName(), isWeekly, null, null);
+					"Daily Payments Report : " + locationCollection.getLocationName(), false, null, null);
 
 			// Send Email
 			EmailListCollection emailListCollection = emailListRepository.findByLocationId(locationCollection.getId());
 			if (emailListCollection != null && !emailListCollection.getEmails().isEmpty()) {
-
 				List<String> emails = emailListCollection.getEmails();
 				byte[] pdfBytes = byteArrayOutputStream.toByteArray();
 
 				String subject = locationCollection.getLocationName() + " - Daily Payment Collection Report";
+
 				String body = "Hello,\n\n" + "Please find attached the payments report for the last 24 hours.\n\n"
 						+ "Thank you for your attention.\n\n\n\n" + "--- Auto-generated Report\n"
 						+ "Do not reply to this email";
-				mailService.sendEmailWithPdf(emails, subject, body, pdfBytes);
+				// Replace newline characters with HTML line breaks
+				String htmlBody = body.replace("\n", "<br/>");
+				mailService.sendEmailWithPdf(emails, subject, htmlBody, pdfBytes);
 				response = true;
 			}
 		} catch (Exception e) {
@@ -2741,8 +2729,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	@Scheduled(cron = "0 0 22 * * 6", zone = "IST")
 	@Override
 	public Boolean getWeeklyReportAnalyticstoDoctor() {
+		System.out.println("Scheduled method triggered");
 		Boolean response = false;
-		isWeekly = true;
 		try {
 			LocalDate today = LocalDate.now();
 			LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
@@ -2820,8 +2808,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 		try {
 			ByteArrayOutputStream byteArrayOutputStream = createPdf(locationSpecificReceipts,
-					"Weekly Payments Report : " + locationCollection.getLocationName(), isWeekly, startOfWeek,
-					endOfWeek);
+					"Weekly Payments Report : " + locationCollection.getLocationName(), true, startOfWeek, endOfWeek);
 
 			// Send Email
 			EmailListCollection emailListCollection = emailListRepository.findByLocationId(locationCollection.getId());
@@ -2833,7 +2820,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				String body = "Hello,\n\n" + "Please find attached the payments report for the last week.\n\n"
 						+ "Thank you for your attention.\n\n\n\n" + "--- Auto-generated Report\n"
 						+ "Do not reply to this email";
-				mailService.sendEmailWithPdf(emails, subject, body, pdfBytes);
+				// Replace newline characters with HTML line breaks
+				String htmlBody = body.replace("\n", "<br/>");
+				mailService.sendEmailWithPdf(emails, subject, htmlBody, pdfBytes);
 				response = true;
 			}
 		} catch (Exception e) {
@@ -2842,5 +2831,4 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		}
 		return response;
 	}
-
 }
