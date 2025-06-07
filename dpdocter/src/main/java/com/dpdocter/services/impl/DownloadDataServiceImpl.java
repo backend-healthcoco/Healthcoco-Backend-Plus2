@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -9,7 +10,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.bson.Document;
@@ -47,6 +50,7 @@ import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientReceiptCollection;
 import com.dpdocter.collections.DownloadDataRequestCollection;
 import com.dpdocter.collections.DynamicUICollection;
+import com.dpdocter.collections.EmailListCollection;
 import com.dpdocter.collections.InvestigationCollection;
 import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.ObservationCollection;
@@ -54,6 +58,7 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientTreatmentCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.RecordsCollection;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.ClinicalNotesPermissionEnum;
 import com.dpdocter.enums.ComponentType;
@@ -63,6 +68,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.repository.DoctorPatientReceiptRepository;
 import com.dpdocter.repository.DownloadDataRequestRepository;
+import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.ExportRequest;
 import com.dpdocter.response.RecordsLookupResponse;
 import com.dpdocter.services.DownloadDataService;
@@ -90,7 +96,8 @@ public class DownloadDataServiceImpl implements DownloadDataService {
 
 	@Autowired
 	private MailService mailService;
-
+	@Autowired
+	private UserRepository userRepository;
 	@Autowired
 	private DoctorPatientReceiptRepository doctorPatientReceiptRepository;
 
@@ -268,7 +275,6 @@ public class DownloadDataServiceImpl implements DownloadDataService {
 				e.printStackTrace();
 			}
 		}
-
 		return mailAttachment;
 
 	}
@@ -925,11 +931,12 @@ public class DownloadDataServiceImpl implements DownloadDataService {
 											new BasicDBObject("format", "%Y-%m-%d").append("date", "$invoiceDate")))
 							.append("invoiceId", "$uniqueInvoiceId")
 							.append("name", new BasicDBObject("$concat", Arrays.asList("'", "$invoiceItems.name", "'")))
-							.append("cost", "$invoiceItems.cost").append("quantity", "$invoiceItems.quantity.value")
+							.append("cost", "$invoiceItems.cost")
+							.append("quantityValue", "$invoiceItems.quantity.value")
 							.append("quantityType", "$invoiceItems.quantity.type")
-							.append("discount", "$invoiceItems.discount.value")
+							.append("discountValue", "$invoiceItems.discount.value")
 							.append("discountUnit", "$invoiceItems.discount.unit")
-							.append("tax", "$invoiceItems.tax.value").append("taxUnit", "$invoiceItems.tax.unit")
+							.append("taxValue", "$invoiceItems.tax.value").append("taxUnit", "$invoiceItems.tax.unit")
 							.append("finalCost", "$invoiceItems.finalCost").append("note", "$invoiceItems.note"))),
 
 					new CustomAggregationOperation(new Document("$sort", new BasicDBObject("date", 1))));
@@ -1115,6 +1122,75 @@ public class DownloadDataServiceImpl implements DownloadDataService {
 				e.printStackTrace();
 			}
 		}
+		return response;
+	}
+
+	@Override
+	public Boolean backupAllDataAnEmail(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+
+		try {
+			ObjectId doctorObj = new ObjectId(doctorId);
+			ObjectId locationObj = new ObjectId(locationId);
+			ObjectId hospitalObj = new ObjectId(hospitalId);
+
+			// Generate all CSV files
+			downloadAppointmentData(doctorObj, locationObj, hospitalObj);
+			downloadClinicalNotesData(doctorObj, locationObj, hospitalObj);
+			downloadInvoicesData(doctorObj, locationObj, hospitalObj);
+			generatePatientData(doctorObj, locationObj, hospitalObj);
+			downloadPaymentsData(doctorObj, locationObj, hospitalObj);
+			downloadPrescriptionData(doctorObj, locationObj, hospitalObj);
+			downloadTreatmentData(doctorObj, locationObj, hospitalObj);
+
+			// Collect all generated CSV files
+			String[] filePaths = { "/home/ubuntu/Appointments.csv", "/home/ubuntu/ClinicalNotes.csv",
+					"/home/ubuntu/Invoices.csv", "/home/ubuntu/Patients.csv", "/home/ubuntu/Payments.csv",
+					"/home/ubuntu/Prescriptions.csv", "/home/ubuntu/Treatments.csv" };
+
+			Map<String, byte[]> csvFiles = new HashMap<>();
+
+			for (String filePath : filePaths) {
+				File file = new File(filePath);
+				if (file.exists()) {
+					try (FileInputStream fis = new FileInputStream(file);
+							ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+
+						byte[] buffer = new byte[4096];
+						int bytesRead;
+						while ((bytesRead = fis.read(buffer)) != -1) {
+							baos.write(buffer, 0, bytesRead);
+						}
+
+						csvFiles.put(file.getName(), baos.toByteArray());
+					}
+				} else {
+					logger.warn("CSV file not found: " + filePath);
+				}
+			}
+			UserCollection doctor = userRepository.findById(doctorObj).orElse(null);
+			if (!csvFiles.isEmpty() && !DPDoctorUtils.anyStringEmpty(doctor.getEmailAddress())) {
+				List<String> emails = List.of(doctor.getEmailAddress());
+
+				String subject = "Doctor Data Backup - " + new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+				String body = "Hello " + doctor.getTitle() + " " + doctor.getFirstName()
+						+ ",\n\nPlease find attached your data backup for:\n"
+						+ "- Appointments\n- Clinical Notes\n- Invoices\n- Patients\n- Payments\n- Prescriptions\n- Treatments\n\n"
+						+ "Regards,\nHealthcoco \n\n--- Auto-generated email, do not reply.";
+				String htmlBody = body.replace("\n", "<br/>");
+
+				mailService.sendEmailWithMultipleCsvAttachments(emails, subject, htmlBody, csvFiles);
+				logger.info("Backup data email sent successfully.");
+				response = true;
+			} else {
+				logger.warn("No CSV files were available to attach in backup email. or email address not present");
+			}
+
+		} catch (Exception e) {
+			logger.error("Error backing up and sending doctor data: " + e.getMessage(), e);
+			throw new BusinessException(ServiceError.Unknown, "Error backing up and emailing doctor data");
+		}
+
 		return response;
 	}
 

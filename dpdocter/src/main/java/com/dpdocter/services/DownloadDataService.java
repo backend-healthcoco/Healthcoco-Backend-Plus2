@@ -31,4 +31,6 @@ public interface DownloadDataService {
 
 	Boolean downloadfiles(String doctorId, String locationId, String hospitalId, int page, int size);
 
+	Boolean backupAllDataAnEmail(String doctorId, String locationId, String hospitalId);
+
 }

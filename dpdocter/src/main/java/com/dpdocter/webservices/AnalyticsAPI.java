@@ -968,4 +968,6 @@ public class AnalyticsAPI {
 		response.setDataList(patientAnalyticResponse);
 		return response;
 	}
+	
+	
 }

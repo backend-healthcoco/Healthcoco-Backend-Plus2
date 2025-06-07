@@ -1,6 +1,7 @@
 package com.dpdocter.services;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.MessagingException;
 
@@ -24,4 +25,9 @@ public interface MailService {
 	Boolean sendEmailWithoutAttachment(String to, String subject, String body) throws MessagingException;
 
 	Boolean sendEmailWithPdf(List<String> toList, String subject, String body, byte[] pdfBytes) throws MessagingException;
+
+	Boolean sendEmailWithCsv(List<String> emails, String subject, String htmlBody, byte[] csvBytes);
+
+	Boolean sendEmailWithMultipleCsvAttachments(List<String> emails, String subject, String htmlBody,
+			Map<String, byte[]> csvFiles);
 }

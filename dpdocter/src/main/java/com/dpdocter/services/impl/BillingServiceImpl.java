@@ -806,9 +806,9 @@ public class BillingServiceImpl implements BillingService {
 		DoctorPatientReceipt receipt = null;
 		DoctorPatientInvoice invoice = null;
 		try {
-			
+
 			if (request.getAmountPaid() < 0) {
-			    throw new IllegalArgumentException("Amount paid cannot be negative");
+				throw new IllegalArgumentException("Amount paid cannot be negative");
 			}
 
 			Double dueAmount = 0.0;
@@ -845,6 +845,7 @@ public class BillingServiceImpl implements BillingService {
 
 			}
 			if (doctorPatientReceiptCollection.getReceiptType().name().equalsIgnoreCase(ReceiptType.ADVANCE.name())) {
+				System.out.println("setRemainingAdvanceAmount" + true);
 				doctorPatientReceiptCollection.setRemainingAdvanceAmount(request.getAmountPaid());
 				doctorPatientReceiptCollection.setBalanceAmount(0.0);
 				doctorPatientReceiptCollection = doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
@@ -975,7 +976,6 @@ public class BillingServiceImpl implements BillingService {
 
 			else if (doctorPatientReceiptCollection.getReceiptType().name()
 					.equalsIgnoreCase(ReceiptType.INVOICE.name())) {
-
 				if (request.getInvoiceIds() != null && !request.getInvoiceIds().isEmpty()) {
 					DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = doctorPatientInvoiceRepository
 							.findById(new ObjectId(request.getInvoiceIds().get(0))).orElse(null);
@@ -1011,10 +1011,14 @@ public class BillingServiceImpl implements BillingService {
 											receiptCollection.getRemainingAdvanceAmount() - advanceAmountToBeUsed);
 									invoiceIdWithAmount.setUsedAdvanceAmount(advanceAmountToBeUsed);
 									advanceAmountToBeUsed = 0.0;
+								} else if (receiptCollection.getRemainingAdvanceAmount() == advanceAmountToBeUsed) {
+									receiptCollection
+											.setRemainingAdvanceAmount(receiptCollection.getRemainingAdvanceAmount());
+									invoiceIdWithAmount.setUsedAdvanceAmount(advanceAmountToBeUsed);
+									advanceAmountToBeUsed = 0.0;
 								} else {
 									receiptCollection.setRemainingAdvanceAmount(0.0);
-									invoiceIdWithAmount
-											.setUsedAdvanceAmount(receiptCollection.getRemainingAdvanceAmount());
+									invoiceIdWithAmount.setUsedAdvanceAmount(advanceAmountToBeUsed);
 									advanceAmountToBeUsed = advanceAmountToBeUsed
 											- receiptCollection.getRemainingAdvanceAmount();
 								}
@@ -1361,17 +1365,19 @@ public class BillingServiceImpl implements BillingService {
 					doctorPatientReceiptCollection.getLocationId(), doctorPatientReceiptCollection.getHospitalId());
 			amountCollection.setUpdatedTime(new Date());
 			if (doctorPatientReceiptCollection.getReceiptType().equals(ReceiptType.ADVANCE)) {
-				if (amountCollection.getDueAmount() > 0.0)
+				if (amountCollection.getDueAmount() > 0.0) {
 					amountCollection.setDueAmount(
 							amountCollection.getDueAmount() + doctorPatientReceiptCollection.getAmountPaid());
-				// .setDueAmount(amountCollection.getDueAmount());
-				else
-					amountCollection.setDueAmount(doctorPatientReceiptCollection.getRemainingAdvanceAmount()
-							+ amountCollection.getDueAmount());
-
-			} else
+				} else {
+					amountCollection.setDueAmount(
+							doctorPatientReceiptCollection.getAmountPaid() + amountCollection.getDueAmount());
+//					amountCollection.setDueAmount(doctorPatientReceiptCollection.getRemainingAdvanceAmount()
+//							+ amountCollection.getDueAmount());
+				}
+			} else {
 				amountCollection
 						.setDueAmount(amountCollection.getDueAmount() + doctorPatientReceiptCollection.getAmountPaid());
+			}
 			doctorPatientDueAmountRepository.save(amountCollection);
 
 			doctorPatientReceiptCollection.setUpdatedTime(new Date());
@@ -3550,8 +3556,8 @@ public class BillingServiceImpl implements BillingService {
 				smsDetail.setUserName(patient.getFirstName());
 				SMS sms = new SMS();
 
-				sms.setSmsText("Thank you for payment of INR " + doctorPatientReceiptCollection.getAmountPaid()
-						+ " to " + locationCollection.getLocationName() + " on "
+				sms.setSmsText("Thank you for payment of INR " + doctorPatientReceiptCollection.getAmountPaid() + " to "
+						+ locationCollection.getLocationName() + " on "
 						+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate()) + ".-Healthcoco");
 
 				SMSAddress smsAddress = new SMSAddress();

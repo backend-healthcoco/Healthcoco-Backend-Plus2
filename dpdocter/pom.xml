@@ -1019,6 +1019,12 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- Swagger Core -->
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-jersey2-jaxrs</artifactId>
+			<version>1.5.0</version>
+		</dependency>
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-annotations</artifactId>
@@ -1200,6 +1206,32 @@
 			<version>1.42.3</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-ui</artifactId>
+			<version>1.6.15</version> <!-- Use latest compatible version -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-webmvc-core</artifactId>
+			<version>1.6.15</version>
+		</dependency>
+
+		<!-- Required for annotations like @Operation, @Schema -->
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-annotations</artifactId>
+			<version>2.1.6</version>
+		</dependency>
+
+
+		<!-- Webjars (for Swagger UI static resources) -->
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>swagger-ui</artifactId>
+			<version>4.15.5</version>
+		</dependency>
 
 	</dependencies>
 	<build>

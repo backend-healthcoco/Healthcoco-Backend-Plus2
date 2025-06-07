@@ -9,23 +9,20 @@ public class InvoiceDownloadData {
 	private String patientId;
 
 	private String date;
-	
+
 	private String invoiceId;
-	
+
 	private String name;
 
 	private Double cost = 0.0;
 
-	private String quantity;
-
+	private String quantityValue;
 	private String quantityType;
 
-	private String discount;
-
+	private String discountValue;
 	private String discountUnit;
 
-	private String tax;
-
+	private String taxValue;
 	private String taxUnit;
 
 	private Double finalCost = 0.0;
@@ -88,28 +85,12 @@ public class InvoiceDownloadData {
 		this.cost = cost;
 	}
 
-	public String getQuantity() {
-		return quantity;
-	}
-
-	public void setQuantity(String quantity) {
-		this.quantity = quantity;
-	}
-
 	public String getQuantityType() {
 		return quantityType;
 	}
 
 	public void setQuantityType(String quantityType) {
 		this.quantityType = quantityType;
-	}
-
-	public String getDiscount() {
-		return discount;
-	}
-
-	public void setDiscount(String discount) {
-		this.discount = discount;
 	}
 
 	public String getDiscountUnit() {
@@ -120,12 +101,28 @@ public class InvoiceDownloadData {
 		this.discountUnit = discountUnit;
 	}
 
-	public String getTax() {
-		return tax;
+	public String getQuantityValue() {
+		return quantityValue;
 	}
 
-	public void setTax(String tax) {
-		this.tax = tax;
+	public void setQuantityValue(String quantityValue) {
+		this.quantityValue = quantityValue;
+	}
+
+	public String getDiscountValue() {
+		return discountValue;
+	}
+
+	public void setDiscountValue(String discountValue) {
+		this.discountValue = discountValue;
+	}
+
+	public String getTaxValue() {
+		return taxValue;
+	}
+
+	public void setTaxValue(String taxValue) {
+		this.taxValue = taxValue;
 	}
 
 	public String getTaxUnit() {
@@ -156,8 +153,8 @@ public class InvoiceDownloadData {
 	public String toString() {
 		return "InvoiceDownloadData [doctorName=" + doctorName + ", patientName=" + patientName + ", patientId="
 				+ patientId + ", date=" + date + ", invoiceId=" + invoiceId + ", name=" + name + ", cost=" + cost
-				+ ", quantity=" + quantity + ", quantityType=" + quantityType + ", discount=" + discount
-				+ ", discountUnit=" + discountUnit + ", tax=" + tax + ", taxUnit=" + taxUnit + ", finalCost="
+				+ ", quantity=" + quantityValue + ", quantityType=" + quantityType + ", discount=" + discountValue
+				+ ", discountUnit=" + discountUnit + ", tax=" + taxValue + ", taxUnit=" + taxUnit + ", finalCost="
 				+ finalCost + ", note=" + note + "]";
 	}
 }

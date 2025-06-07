@@ -186,4 +186,20 @@ public class DownloadDataApi {
 		response.setData(downloadDataService.downloadfiles(doctorId, locationId, hospitalId, page, size));
 		return response;
 	}
+	
+
+	@Path(value = PathProxy.DownloadDataUrls.BACKUP_ALL_DATA)
+	@GET
+	@ApiOperation(value = PathProxy.DownloadDataUrls.BACKUP_ALL_DATA, notes = PathProxy.DownloadDataUrls.BACKUP_ALL_DATA)
+	public Response<Boolean> backupAllDataAnEmail(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(downloadDataService.backupAllDataAnEmail(doctorId, locationId, hospitalId));
+		return response;
+	}
+	
 }

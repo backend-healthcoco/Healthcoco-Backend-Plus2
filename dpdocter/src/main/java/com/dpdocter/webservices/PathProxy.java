@@ -1899,6 +1899,7 @@ public interface PathProxy {
 		public static final String CLINICAL_ITEMS = "/clinicalItems/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String GET_FILES = "/files/{doctorId}/{locationId}/{hospitalId}/";
+		public static final String BACKUP_ALL_DATA = "/backupAllData/{doctorId}/{locationId}/{hospitalId}/";
 
 	}
 

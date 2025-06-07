@@ -1605,7 +1605,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 			fromTime = new DateTime(DateUtil.getStartOfDay(from));
 			toTime = new DateTime(DateUtil.getEndOfDay(to));
-			
+
 			Criteria criteria2 = new Criteria();
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
@@ -1638,7 +1638,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 							.append("localPatientName", new BasicDBObject("$first", "$localPatientName"))
 							.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
 							.append("referredBy", new BasicDBObject("$first", "$referredBy"))
-							.append("servicesArray", new BasicDBObject("$addToSet", "$services.name"))
+							.append("servicesArray", new Document("$addToSet", "$invoice.invoiceItems.name"))
 							.append("patientAnalyticType", new BasicDBObject("$first", "$patientAnalyticType"))
 							.append("receiptDate", new BasicDBObject("$first", "$receiptDate"))));
 
@@ -1647,11 +1647,9 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			List<AggregationOperation> operations = new ArrayList<>();
 
 			operations.add(Aggregation.match(criteria));
-			operations.add(Aggregation.lookup("patient_treatment_cl", "patientId", "patientId", "treatments"));
-			operations.add(Aggregation.unwind("treatments", true));
-			operations.add(Aggregation.lookup("treatment_services_cl", "$treatments.treatments.treatmentServiceId",
-					"_id", "services"));
-			operations.add(Aggregation.unwind("services", true));
+			operations.add(Aggregation.lookup("doctor_patient_invoice_cl", "invoiceId", "_id", "invoice"));
+			operations.add(Aggregation.unwind("invoice", true));
+			operations.add(Aggregation.unwind("invoice.invoiceItems", true));
 			operations.add(Aggregation.lookup("patient_cl", "patientId", "userId", "patient"));
 			operations.add(Aggregation.unwind("patient", true));
 			operations.add(Aggregation.lookup("patient_visit_cl", "patientId", "patientId", "visitData"));
@@ -1691,8 +1689,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 																	new BasicDBObject("$lte",
 																			Arrays.asList("$receivedDate", toTime)))),
 															"VISITED_PATIENT", "OTHER")))))
-											.append("services", "$services")
-											.append("referredBy", "$refer.reference"))));
+											.append("invoice", "$invoice").append("referredBy", "$refer.reference"))));
 
 			operations.add(aggregationOperation);
 

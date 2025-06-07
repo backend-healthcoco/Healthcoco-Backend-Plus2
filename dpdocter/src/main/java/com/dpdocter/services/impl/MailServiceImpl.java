@@ -3,8 +3,10 @@ package com.dpdocter.services.impl;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.nio.ByteBuffer;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.activation.DataHandler;
@@ -367,6 +369,108 @@ public class MailServiceImpl implements MailService {
 			System.out.println("Error message: " + ex.getMessage());
 		}
 		return respone;
+	}
+
+	@Override
+	public Boolean sendEmailWithCsv(List<String> toList, String subject, String body, byte[] csvBytes) {
+		Boolean response = false;
+		try {
+			Session session = Session.getInstance(new Properties());
+			MimeMessage mimeMessage = new MimeMessage(session);
+			mimeMessage.setSubject(subject);
+			mimeMessage.setFrom(new InternetAddress(FROM, FROM_NAME));
+
+			Multipart mainMultipart = new MimeMultipart("related");
+			Multipart htmlMultipart = new MimeMultipart("alternative");
+
+			MimeBodyPart htmlPart = new MimeBodyPart();
+			htmlPart.setContent(body, "text/html; charset=utf-8");
+			htmlMultipart.addBodyPart(htmlPart);
+
+			MimeBodyPart htmlWrapper = new MimeBodyPart();
+			htmlWrapper.setContent(htmlMultipart);
+			mainMultipart.addBodyPart(htmlWrapper);
+
+			if (csvBytes != null) {
+				DataSource dataSource = new ByteArrayDataSource(csvBytes, "text/csv");
+				MimeBodyPart attachment = new MimeBodyPart();
+				attachment.setDataHandler(new DataHandler(dataSource));
+				attachment.setFileName("Patient_Report_" + LocalDate.now() + ".csv");
+				mainMultipart.addBodyPart(attachment);
+			}
+
+			mimeMessage.setContent(mainMultipart);
+
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			mimeMessage.writeTo(outputStream);
+			RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
+
+			BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+			AmazonSimpleEmailServiceClient sesClient = new AmazonSimpleEmailServiceClient(credentials);
+			sesClient.setRegion(Region.getRegion(Regions.fromName(AWS_REGION)));
+
+			SendRawEmailRequest request = new SendRawEmailRequest(rawMessage).withSource(FROM).withDestinations(toList);
+			sesClient.sendRawEmail(request);
+			response = true;
+		} catch (Exception ex) {
+//	        logger.error("Failed to send CSV email: " + ex.getMessage(), ex);
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean sendEmailWithMultipleCsvAttachments(List<String> toList, String subject, String body,
+			Map<String, byte[]> csvFiles) {
+		Boolean response = false;
+		try {
+			Session session = Session.getInstance(new Properties());
+			MimeMessage mimeMessage = new MimeMessage(session);
+			mimeMessage.setSubject(subject);
+			mimeMessage.setFrom(new InternetAddress(FROM, FROM_NAME));
+
+			Multipart mainMultipart = new MimeMultipart("related");
+			Multipart htmlMultipart = new MimeMultipart("alternative");
+
+			MimeBodyPart htmlPart = new MimeBodyPart();
+			htmlPart.setContent(body, "text/html; charset=utf-8");
+			htmlMultipart.addBodyPart(htmlPart);
+
+			MimeBodyPart htmlWrapper = new MimeBodyPart();
+			htmlWrapper.setContent(htmlMultipart);
+			mainMultipart.addBodyPart(htmlWrapper);
+
+			// Attach each CSV file
+			for (Map.Entry<String, byte[]> entry : csvFiles.entrySet()) {
+				String fileName = entry.getKey();
+				byte[] data = entry.getValue();
+
+				DataSource dataSource = new ByteArrayDataSource(data, "text/csv");
+				MimeBodyPart attachment = new MimeBodyPart();
+				attachment.setDataHandler(new DataHandler(dataSource));
+				attachment.setFileName(fileName);
+				mainMultipart.addBodyPart(attachment);
+			}
+
+			mimeMessage.setContent(mainMultipart);
+
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			mimeMessage.writeTo(outputStream);
+			RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
+
+			BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+			AmazonSimpleEmailServiceClient sesClient = new AmazonSimpleEmailServiceClient(credentials);
+			sesClient.setRegion(Region.getRegion(Regions.fromName(AWS_REGION)));
+
+			SendRawEmailRequest request = new SendRawEmailRequest(rawMessage).withSource(FROM).withDestinations(toList);
+
+			sesClient.sendRawEmail(request);
+			response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Failed to send email with multiple CSVs : " + e.getCause().getMessage());
+		}
+		return response;
 	}
 
 }
