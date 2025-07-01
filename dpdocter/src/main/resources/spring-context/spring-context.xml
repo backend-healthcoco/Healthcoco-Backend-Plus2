@@ -34,7 +34,7 @@
 		location="classpath:jdbc.properties,classpath:mail.properties,classpath:commons.properties,classpath:sms.properties,classpath:jasperreports_extension.properties,classpath:exceptions.properties,classpath:message.properties"
 		ignore-unresolvable="true" />
 	<import resource="application-context-elasticsearch.xml" />
-	<import resource="classpath:database-connection.xml" />
+	<import resource="database-connection.xml" />
 	<import resource="mail-config.xml" />
 	<import resource="application-context-velocity.xml" />
 	<import resource="swagger.xml" />

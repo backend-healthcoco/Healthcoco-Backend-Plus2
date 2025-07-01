@@ -12,7 +12,7 @@ public class DoctorExpense extends GenericCollection {
 	public String locationId;
 	public String hospitalId;
 	public String expenseType;
-	public ModeOfPayment modeOfPayment = ModeOfPayment.CASH;
+	public String modeOfPayment;
 	public String chequeNo;
 	public Double cost = 0.0;
 	public Date toDate = new Date();
@@ -63,11 +63,11 @@ public class DoctorExpense extends GenericCollection {
 		this.expenseType = expenseType;
 	}
 
-	public ModeOfPayment getModeOfPayment() {
+	public String getModeOfPayment() {
 		return modeOfPayment;
 	}
 
-	public void setModeOfPayment(ModeOfPayment modeOfPayment) {
+	public void setModeOfPayment(String modeOfPayment) {
 		this.modeOfPayment = modeOfPayment;
 	}
 

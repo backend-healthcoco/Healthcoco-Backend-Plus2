@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.bson.Document;
@@ -867,7 +868,8 @@ public class DownloadDataServiceImpl implements DownloadDataService {
 			for (Field field : obj.getClass().getDeclaredFields()) {
 				field.setAccessible(true);
 				if (!field.getName().equalsIgnoreCase("dob") && !field.getName().equalsIgnoreCase("registrationDate")) {
-					dataString.add((field.get(obj) != null ? (String) (field.get(obj) + "") : ""));
+					Object value = field.get(obj);
+					dataString.add(value != null ? objectToString(value) : "");
 				}
 			}
 			break;
@@ -876,27 +878,40 @@ public class DownloadDataServiceImpl implements DownloadDataService {
 			for (Field field : obj.getClass().getDeclaredFields()) {
 				field.setAccessible(true);
 				if (!field.getName().equalsIgnoreCase("diagnosticTests")) {
-					dataString.add((field.get(obj) != null ? (String) (field.get(obj) + "") : ""));
+					Object value = field.get(obj);
+					dataString.add(value != null ? objectToString(value) : "");
 				}
 			}
 			break;
+
 		case CLINICAL_NOTES:
 			for (Field field : obj.getClass().getDeclaredFields()) {
 				field.setAccessible(true);
 				if (fieldsName.contains(field.getName())) {
-					dataString.add((field.get(obj) != null ? (String) (field.get(obj)) : ""));
+					Object value = field.get(obj);
+					dataString.add(value != null ? objectToString(value) : "");
 				}
 			}
 			break;
+
 		default:
 			for (Field field : obj.getClass().getDeclaredFields()) {
 				field.setAccessible(true);
-				dataString.add((field.get(obj) != null ? (String) (field.get(obj) + "") : ""));
+				Object value = field.get(obj);
+				dataString.add(value != null ? objectToString(value) : "");
 			}
 			break;
 		}
-		writer.writeNext(dataString.toArray(new String[0]));
 
+		writer.writeNext(dataString.toArray(new String[0]));
+	}
+
+	private String objectToString(Object value) {
+		if (value instanceof List<?>) {
+			List<?> list = (List<?>) value;
+			return list.stream().map(Object::toString).collect(Collectors.joining(", "));
+		}
+		return value.toString();
 	}
 
 	@Override

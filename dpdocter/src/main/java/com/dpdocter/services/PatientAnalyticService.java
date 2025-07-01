@@ -29,4 +29,7 @@ public interface PatientAnalyticService {
 	public List<PatientReferredByAnalyticData> getPatientReferredByAnalyticData(String doctorId, String locationId,
 			String hospitalId, String referred, String fromDate, String toDate, String queryType,
 			String searchTerm, int page, int size);
+
+	public int getPatientReferredByAnalyticDataCount(String doctorId, String locationId, String hospitalId,
+			String referred, String fromDate, String toDate, String queryType, String searchTerm, int page, int size);
 }

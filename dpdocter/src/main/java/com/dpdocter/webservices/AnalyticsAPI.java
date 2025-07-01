@@ -963,9 +963,11 @@ public class AnalyticsAPI {
 		List<PatientReferredByAnalyticData> patientAnalyticResponse = patientAnalyticService
 				.getPatientReferredByAnalyticData(doctorId, locationId, hospitalId, referred, fromDate, toDate,
 						queryType, searchTerm,page,size);
-
+		int count = patientAnalyticService.getPatientReferredByAnalyticDataCount(doctorId, locationId, hospitalId, referred, fromDate, toDate,
+				queryType, searchTerm,page,size);
 		Response<PatientReferredByAnalyticData> response = new Response<PatientReferredByAnalyticData>();
 		response.setDataList(patientAnalyticResponse);
+		response.setCount(count);
 		return response;
 	}
 	

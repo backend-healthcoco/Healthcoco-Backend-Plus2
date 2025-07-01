@@ -2439,7 +2439,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	@Scheduled(cron = "0 0 22 * * ?", zone = "IST")
 	@Override
 	public Boolean getDailyReportAnalyticstoDoctor() {
-		System.out.println("Scheduled method triggered");
 		Boolean response = false;
 		try {
 			Date todayDate;

@@ -83,6 +83,7 @@ import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.ConsultationType;
 import com.dpdocter.enums.FONTSTYLE;
 import com.dpdocter.enums.InvoiceItemType;
+import com.dpdocter.enums.ModeOfPayment;
 import com.dpdocter.enums.PatientTreatmentStatus;
 import com.dpdocter.enums.PrintSettingType;
 import com.dpdocter.enums.ReceiptType;
@@ -3129,6 +3130,7 @@ public class BillingServiceImpl implements BillingService {
 	@Override
 	public DoctorExpense addEditDoctorExpense(DoctorExpense request) {
 		DoctorExpense response = null;
+		String modeOfPaymentString = null;
 		try {
 			DoctorExpenseCollection expenseCollection = null;
 			UserCollection userCollection = null;
@@ -3142,6 +3144,8 @@ public class BillingServiceImpl implements BillingService {
 				request.setUniqueExpenseId(expenseCollection.getUniqueExpenseId());
 				request.setUpdatedTime(new Date());
 				expenseCollection.setExpenseReceiptUrlDatas(null);
+				modeOfPaymentString = request.getModeOfPayment();
+				request.setModeOfPayment(null);
 				BeanUtil.map(request, expenseCollection);
 			} else {
 				userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
@@ -3160,7 +3164,15 @@ public class BillingServiceImpl implements BillingService {
 				expenseCollection
 						.setUniqueExpenseId(UniqueIdInitial.EXPENSE.getInitial() + DPDoctorUtils.generateRandomId());
 			}
-
+			try {
+				if (modeOfPaymentString != null) {
+					String mode = modeOfPaymentString.toUpperCase().replace(" ", "_");
+					expenseCollection.setModeOfPayment(ModeOfPayment.valueOf(mode));
+				}
+			} catch (IllegalArgumentException ex) {
+				throw new BusinessException(ServiceError.Unknown,
+						"Invalid mode of payment: " + request.getModeOfPayment());
+			}
 			expenseCollection = doctorExpenseRepository.save(expenseCollection);
 			response = new DoctorExpense();
 			BeanUtil.map(expenseCollection, response);
@@ -3238,7 +3250,7 @@ public class BillingServiceImpl implements BillingService {
 								Aggregation.sort(new Sort(Sort.Direction.DESC, "toDate"))),
 						DoctorExpenseCollection.class, DoctorExpense.class).getMappedResults();
 			}
-
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
