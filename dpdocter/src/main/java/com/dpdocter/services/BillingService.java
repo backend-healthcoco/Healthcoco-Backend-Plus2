@@ -118,4 +118,8 @@ public interface BillingService {
 
 	Boolean updateTotalDueAmount(DoctorAmountRequest request);
 
+	int getDoctorExpensesCount(String expenseType, String doctorId, String locationId, String hospitalId,
+			String updatedTime, String from, String to, String searchTerm, Boolean discarded, String paymentMode,
+			String vendor);
+
 }

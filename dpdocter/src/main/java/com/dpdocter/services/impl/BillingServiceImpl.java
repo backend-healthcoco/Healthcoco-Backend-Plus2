@@ -3250,7 +3250,7 @@ public class BillingServiceImpl implements BillingService {
 								Aggregation.sort(new Sort(Sort.Direction.DESC, "toDate"))),
 						DoctorExpenseCollection.class, DoctorExpense.class).getMappedResults();
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -3779,5 +3779,76 @@ public class BillingServiceImpl implements BillingService {
 
 		return response;
 
+	}
+
+	@Override
+	public int getDoctorExpensesCount(String expenseType, String doctorId, String locationId, String hospitalId,
+			String updatedTime, String fromDate, String toDate, String searchTerm, Boolean discarded,
+			String paymentMode, String vendor) {
+		int response = 0;
+		try {
+			long createdTimestamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria();
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
+				criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+
+			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
+				criteria.and("expenseType").is(expenseType.toUpperCase());
+			}
+			if (!DPDoctorUtils.anyStringEmpty(vendor)) {
+				criteria.and("vendor.vendorName").is(vendor.toUpperCase());
+			}
+			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
+				criteria.and("modeOfPayment").is(paymentMode.toUpperCase());
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria.orOperator(new Criteria("expenseType").regex("^" + searchTerm, "i"),
+						new Criteria("expenseType").regex("^" + searchTerm));
+			}
+
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(0l);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(0l);
+				to = new Date();
+			}
+			fromTime = new DateTime(from);
+			toTime = new DateTime(to);
+
+			criteria.and("toDate").gte(fromTime).lte(toTime);
+
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.count().as("totalCount"));
+
+			List<Document> result = mongoTemplate.aggregate(aggregation, DoctorExpenseCollection.class, Document.class)
+					.getMappedResults();
+
+			if (!result.isEmpty()) {
+				response = result.get(0).getInteger("totalCount", 0);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
 	}
 }
