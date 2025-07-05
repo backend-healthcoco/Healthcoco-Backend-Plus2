@@ -129,7 +129,6 @@ public class MailServiceImpl implements MailService {
 			BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 			AmazonSimpleEmailServiceClient amazonSimpleEmailServiceClient = new AmazonSimpleEmailServiceClient(
 					credentials);
-			System.out.println("AWS_REGION" + AWS_REGION);
 			amazonSimpleEmailServiceClient.setRegion(Region.getRegion(Regions.fromName(AWS_REGION)));
 			amazonSimpleEmailServiceClient.sendRawEmail(rawEmailRequest);
 			outputStream.close();
@@ -260,7 +259,6 @@ public class MailServiceImpl implements MailService {
 			BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 			AmazonSimpleEmailServiceClient amazonSimpleEmailServiceClient = new AmazonSimpleEmailServiceClient(
 					credentials);
-			System.out.println("AWS_REGION" + AWS_REGION);
 
 			amazonSimpleEmailServiceClient.setRegion(Region.getRegion(Regions.fromName(AWS_REGION)));
 			amazonSimpleEmailServiceClient.sendRawEmail(rawEmailRequest);
@@ -365,7 +363,6 @@ public class MailServiceImpl implements MailService {
 			respone = true;
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			System.out.println("The email was not sent.");
 			System.out.println("Error message: " + ex.getMessage());
 		}
 		return respone;

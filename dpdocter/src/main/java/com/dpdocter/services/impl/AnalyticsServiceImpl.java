@@ -2418,7 +2418,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			}
 
 			criteria.and("discarded").is(false);
-			applyDateCriteria(criteria, "createdTime", fromDate, toDate);
+			applyDateCriteria(criteria, "toDate", fromDate, toDate);
 
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.group("expenseType").first("expenseType").as("expenseType").sum("cost").as("cost"),
@@ -2615,7 +2615,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				String modeOfPayment = payment.getModeOfPayment() != null ? payment.getModeOfPayment().name() : "";
 				Double usedAdvanceAmount = payment.getUsedAdvanceAmount() != null ? payment.getUsedAdvanceAmount()
 						: 0.0;
-//				System.out.println("payment.getAmountPaid()" + payment.getAmountPaid());
 				Double amountPaid = payment.getAmountPaid() != null ? payment.getAmountPaid() : 0.0;
 				table.addCell(createCenteredCell(patientName));
 				table.addCell(createCenteredCell(formattedDate));

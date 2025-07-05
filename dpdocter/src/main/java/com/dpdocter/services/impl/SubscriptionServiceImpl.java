@@ -233,7 +233,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			smsDetails.add(smsDetail);
 			smsTrackDetail.setSmsDetails(smsDetails);
 			Boolean ck = smsServices.sendSMS(smsTrackDetail, false);
-			System.out.println("sms send" + ck);
 
 			// save sms in repository write code
 
@@ -285,8 +284,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 						int fromDateConvertDay = fromDateConvert.get(Calendar.DATE);
 						int fromDateConvertMonth = fromDateConvert.get(Calendar.MONTH) + 1;
 						int fromDateConvertYear = fromDateConvert.get(Calendar.YEAR);
-						System.out
-								.println("frm days" + fromDateConvertDay + fromDateConvertMonth + fromDateConvertYear);
 						// to date
 						Calendar toDateConvert = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 						toDateConvert.setTime(subscriptionCollection.getToDate());

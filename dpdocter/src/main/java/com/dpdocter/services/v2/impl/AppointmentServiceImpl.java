@@ -742,7 +742,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 			connection.setDoOutput(true);
 
 			// Send request
-			System.out.println(requestObject1);
 			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
 			wr.writeBytes(requestObject1.toString());
 			wr.close();
@@ -771,7 +770,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 			}
 			rd.close();
 
-			System.out.println("http response" + response.toString());
 
 			ObjectMapper mapper = new ObjectMapper();
 
@@ -1033,7 +1031,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 		Appointment response = null;
 		DoctorClinicProfileCollection clinicProfileCollection = null;
 
-		System.out.println(request.getFromDate() + " to " + request.getToDate());
 		try {
 
 			ObjectId doctorId = new ObjectId(request.getDoctorId()), locationId = new ObjectId(request.getLocationId()),

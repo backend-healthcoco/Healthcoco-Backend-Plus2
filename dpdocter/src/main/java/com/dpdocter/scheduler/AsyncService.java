@@ -278,7 +278,6 @@ public class AsyncService {
 				smsDetails.add(smsDetail);
 				smsTrackDetail.setSmsDetails(smsDetails);
 				sMSServices.sendSMS(smsTrackDetail, true);
-				System.out.println("sms sent");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -317,7 +316,6 @@ public class AsyncService {
 			mailService.sendEmail(userCollection.getEmailAddress(), "Healthcoco sent you Transaction Status", body,
 					null);
 
-			System.out.println("mail sent");
 
 		} catch (Exception e) {
 			e.printStackTrace();

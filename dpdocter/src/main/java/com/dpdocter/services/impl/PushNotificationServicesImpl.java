@@ -704,7 +704,6 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					.build();
 
 			Response response = client.newCall(request).execute();
-			System.out.println("Response: " + response.body().string());
 
 			List<String> deviceIds = new ArrayList<>();
 			deviceIds.add(deviceId);
@@ -855,7 +854,6 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					.build();
 
 			Response response = client.newCall(request).execute();
-			System.out.println("Response: " + response.body().string());
 
 			PushNotificationCollection pushNotificationCollection = new PushNotificationCollection(null, deviceIds,
 					message, DeviceType.ANDROID, null, PushNotificationType.INDIVIDUAL);
@@ -1431,7 +1429,6 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				response.append(inputLine);
 			}
 
-			System.out.println("Resonse: " + response);
 
 			// 2nd
 //			  ApsAlert alert =

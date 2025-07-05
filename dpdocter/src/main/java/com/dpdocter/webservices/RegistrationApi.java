@@ -190,7 +190,6 @@ public class RegistrationApi {
 			}
 		}
 
-		System.out.println("lang" + request.getLanguage());
 
 		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 		RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request,

@@ -3457,7 +3457,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 			connection.setDoOutput(true);
 
 			// Send request
-			System.out.println(requestObject1);
 			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
 			wr.writeBytes(requestObject1.toString());
 			wr.close();
@@ -3486,7 +3485,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 			}
 			rd.close();
 
-			System.out.println("http response" + response.toString());
 
 			ObjectMapper mapper = new ObjectMapper();
 
@@ -6453,7 +6451,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 			connection.setDoOutput(true);
 
 			// Send request
-			System.out.println(requestObject1);
 			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
 			wr.writeBytes(requestObject1.toString());
 			wr.close();
@@ -6482,7 +6479,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 			}
 			rd.close();
 
-			System.out.println("http response" + response.toString());
 
 			ObjectMapper mapper = new ObjectMapper();
 

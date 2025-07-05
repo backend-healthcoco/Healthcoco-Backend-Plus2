@@ -50,7 +50,6 @@ public class FCMSender {
 				.build();
 
 		Response response = client.newCall(request).execute();
-		System.out.println("Response: " + response.body().string());
 	}
 
 }

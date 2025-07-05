@@ -259,7 +259,6 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 			connection.setDoOutput(true);
 
 			// Send request
-			System.out.println(requestObject1);
 			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
 			wr.writeBytes(requestObject1.toString());
 			wr.close();
@@ -288,7 +287,6 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 			}
 			rd.close();
 
-			System.out.println("http response" + response.toString());
 
 			ObjectMapper mapper = new ObjectMapper();
 

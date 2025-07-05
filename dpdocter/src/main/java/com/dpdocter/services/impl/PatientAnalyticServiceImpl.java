@@ -1652,20 +1652,47 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			operations.add(Aggregation.lookup("referrences_cl", "patient.referredBy", "_id", "refer"));
 			operations.add(Aggregation.unwind("refer", true));
 			operations.add(Aggregation.match(criteria2));
-
+			operations
+					.add(new CustomAggregationOperation(
+							new Document("$project",
+									new BasicDBObject("_id", "$_id").append("cost", "$amountPaid")
+											.append("receiptDate", "$receivedDate")
+											.append("localPatientName", "$patient.localPatientName")
+											.append("mobileNumber", "$user.mobileNumber")
+											.append("patientAnalyticType", new BasicDBObject("$cond", Arrays.asList(
+													new BasicDBObject("$and",
+															Arrays.asList(
+																	new BasicDBObject("$gte",
+																			Arrays.asList("$patient.createdTime",
+																					fromTime)),
+																	new BasicDBObject(
+																			"$lte",
+																			Arrays.asList("$patient.createdTime",
+																					toTime)))),
+													"NEW_PATIENT",
+													new BasicDBObject("$cond", Arrays.asList(
+															new BasicDBObject("$and", Arrays.asList(
+																	new BasicDBObject("$lt",
+																			Arrays.asList("$patient.createdTime",
+																					fromTime)),
+																	new BasicDBObject("$gte",
+																			Arrays.asList("$receivedDate", fromTime)),
+																	new BasicDBObject("$lte",
+																			Arrays.asList("$receivedDate", toTime)))),
+															"VISITED_PATIENT", "OTHER")))))
+											.append("invoice", "$invoice").append("referredBy", "$refer.reference"))));
 			// Move sort before group
 			operations.add(Aggregation.sort(Sort.by(Sort.Direction.DESC, "receivedDate")));
 
 			// GROUP here to deduplicate based on unique receipt ID:
 			operations.add(new CustomAggregationOperation(new Document("$group",
-					new BasicDBObject("_id", "$_id").append("cost", new BasicDBObject("$first", "$amountPaid"))
-							.append("receiptDate", new BasicDBObject("$first", "$receivedDate"))
-							.append("localPatientName", new BasicDBObject("$first", "$patient.localPatientName"))
-							.append("mobileNumber", new BasicDBObject("$first", "$user.mobileNumber"))
+					new BasicDBObject("_id", "$_id").append("cost", new BasicDBObject("$first", "$cost"))
+							.append("receiptDate", new BasicDBObject("$first", "$receiptDate"))
+							.append("localPatientName", new BasicDBObject("$first", "$localPatientName"))
+							.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
 							.append("patientAnalyticType", new BasicDBObject("$first", "$patientAnalyticType"))
-							.append("referredBy", new BasicDBObject("$first", "$refer.reference"))
+							.append("referredBy", new BasicDBObject("$first", "$referredBy"))
 							.append("servicesArray", new Document("$addToSet", "$invoice.invoiceItems.name")))));
-
 			// Then project or match by patientAnalyticType
 			if (queryType != null && !queryType.isEmpty()) {
 				operations.add(Aggregation.match(Criteria.where("patientAnalyticType").is(queryType)));

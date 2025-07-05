@@ -94,7 +94,6 @@ public class VisitFieldWiseServiceImpl implements VisitFieldWiseService {
 					.getMappedResults();
 
 			if (patientVisitlookupbeans != null && !patientVisitlookupbeans.isEmpty()) {
-				System.out.println(patientVisitlookupbeans.size());
 				for (AdmitCardResponseFieldWise patientVisitlookupBean : patientVisitlookupbeans) {
 					response.setData(patientVisitlookupBean);
 				}

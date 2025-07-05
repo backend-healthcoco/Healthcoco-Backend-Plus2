@@ -12,7 +12,6 @@ public class GeneralTests {
 
 		Date dt = sdf.parse("100");
 		sdf = new SimpleDateFormat("hh:mm a");
-		System.out.println("EFB4FB6F-8D4B-4B7D-BFE9-C7DDF002E11C".toLowerCase());
 
 	}
 }

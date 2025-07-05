@@ -846,7 +846,6 @@ public class BillingServiceImpl implements BillingService {
 
 			}
 			if (doctorPatientReceiptCollection.getReceiptType().name().equalsIgnoreCase(ReceiptType.ADVANCE.name())) {
-				System.out.println("setRemainingAdvanceAmount" + true);
 				doctorPatientReceiptCollection.setRemainingAdvanceAmount(request.getAmountPaid());
 				doctorPatientReceiptCollection.setBalanceAmount(0.0);
 				doctorPatientReceiptCollection = doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
@@ -1237,13 +1236,13 @@ public class BillingServiceImpl implements BillingService {
 			if (size > 0) {
 				responses = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "receivedDate")),
 								Aggregation.skip((page) * size), Aggregation.limit(size)),
 						DoctorPatientReceiptCollection.class, DoctorPatientReceipt.class).getMappedResults();
 			} else {
 				responses = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime"))),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "receivedDate"))),
 						DoctorPatientReceiptCollection.class, DoctorPatientReceipt.class).getMappedResults();
 			}
 		} catch (BusinessException be) {

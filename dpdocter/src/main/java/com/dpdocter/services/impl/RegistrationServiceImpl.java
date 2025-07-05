@@ -1326,7 +1326,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 					i++;
 					response = true;
 				}
-				System.out.println(i);
 			}
 
 		} catch (Exception e) {

@@ -143,7 +143,6 @@ public class AddEditProcedureSheetRequest {
 		
 		list.add(map);
 		
-		System.out.println(JacksonUtil.obj2Json(list));
 		// it's wrong JSONObject json = new JSONObject(list);
 		// if u use list to add data u must be use JSONArray
 

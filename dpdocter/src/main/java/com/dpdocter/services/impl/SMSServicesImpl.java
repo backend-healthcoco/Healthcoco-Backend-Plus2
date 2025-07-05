@@ -730,7 +730,6 @@ public class SMSServicesImpl implements SMSServices {
 
 			responses.getEntity().writeTo(out);
 			String responseString = out.toString();
-			System.out.println("responseString" + responseString);
 			ObjectMapper mapper = new ObjectMapper();
 
 			MessageResponse list = mapper.readValue(out.toString(), MessageResponse.class);
@@ -824,7 +823,6 @@ public class SMSServicesImpl implements SMSServices {
 				userNumber = (UserMobileNumbers) in.readObject();
 				in.close();
 				fileIn.close();
-				System.out.println(userNumber);
 			}
 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -843,7 +841,6 @@ public class SMSServicesImpl implements SMSServices {
 							.addParameter("type", type).addParameter("body", message).addParameter("sender", SENDER_ID)
 							.addParameter("template_id", smsTrackDetail.getTemplateId()).setUri(strUrl)
 							.setHeader("api-key", KEY).build();
-					System.out.println("senderId" + senderId);
 					org.apache.http.HttpResponse responses = client.execute(httprequest);
 					responses.getEntity().writeTo(out);
 					list = mapper.readValue(out.toString(), MessageResponse.class);
@@ -854,7 +851,6 @@ public class SMSServicesImpl implements SMSServices {
 						.addParameter("type", type).addParameter("body", message).addParameter("sender", SENDER_ID)
 						.addParameter("template_id", smsTrackDetail.getTemplateId()).setUri(strUrl)
 						.setHeader("api-key", KEY).build();
-				System.out.println("senderId" + senderId);
 				org.apache.http.HttpResponse responses = client.execute(httprequest);
 				responses.getEntity().writeTo(out);
 				list = mapper.readValue(out.toString(), MessageResponse.class);
@@ -874,7 +870,6 @@ public class SMSServicesImpl implements SMSServices {
 			if (save) {
 
 				String responseString = out.toString();
-				System.out.println("responseString" + responseString);
 
 				MessageCollection collection = new MessageCollection();
 				if (list != null) {
@@ -1092,7 +1087,6 @@ public class SMSServicesImpl implements SMSServices {
 		smsTrackDetail.setSmsDetails(smsDetails);
 		smsTrackDetail.setTemplateId("1307170133250574920");
 		sendSMS(smsTrackDetail, true);
-		System.out.println("sms: " + sms.getSmsAddress().getRecipient() + sms.getSmsText());
 		String emailBody1 = "";
 
 		String body = mailBodyGenerator.smsCreditBalanceEmailBody(emailBody1, doctorName, smsCreditCount,
@@ -1248,7 +1242,6 @@ public class SMSServicesImpl implements SMSServices {
 						.addParameter("type", type).addParameter("body", message).addParameter("sender", SENDER_ID)
 						.addParameter("template_id", smsTrackDetail.getTemplateId()).setUri(strUrl)
 						.setHeader("api-key", KEY).build();
-				System.out.println("senderId" + senderId);
 				org.apache.http.HttpResponse responses = client.execute(httprequest);
 				responses.getEntity().writeTo(out);
 				list = mapper.readValue(out.toString(), MessageResponse.class);
@@ -1257,7 +1250,6 @@ public class SMSServicesImpl implements SMSServices {
 
 			if (save) {
 				String responseString = out.toString();
-				System.out.println("responseString" + responseString);
 
 				MessageCollection collection = new MessageCollection();
 				list.setMessageId(list.getId());
@@ -1310,14 +1302,12 @@ public class SMSServicesImpl implements SMSServices {
 					.addParameter("sender", SMILEBIRD_SENDER_ID)
 					.addParameter("template_id", smsTrackDetail.getTemplateId()).setUri(strUrl)
 					.setHeader("api-key", KEY).build();
-			System.out.println("senderId" + senderId);
 			org.apache.http.HttpResponse responses = client.execute(httprequest);
 			responses.getEntity().writeTo(out);
 			list = mapper.readValue(out.toString(), MessageResponse.class);
 
 			if (save) {
 				String responseString = out.toString();
-				System.out.println("responseString" + responseString);
 
 				MessageCollection collection = new MessageCollection();
 				list.setMessageId(list.getId());

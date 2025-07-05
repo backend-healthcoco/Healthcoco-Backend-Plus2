@@ -375,7 +375,6 @@ public class SignUpServiceImplV2 implements SignUpService {
 					.verifyEmailBody((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
 							+ userCollection.getFirstName(), tokenCollection.getId(), "verifyDoctor.vm");
 			Boolean mail = mailService.sendEmail(userCollection.getEmailAddress(), signupRequestSubject, body, null);
-			System.out.println(mail);
 
 			response = new DoctorSignUp();
 			User user = new User();
@@ -417,7 +416,6 @@ public class SignUpServiceImplV2 implements SignUpService {
 //					"Your emailId has been verified successfully.", ComponentType.EMAIL_VERIFICATION.getType(), null, null);
 
 			List<User> users = notificationToAdmin();
-			System.out.println("usersAdmin" + users);
 			for (User userr : users) {
 				pushNotificationServices.notifyUser(userr.getId().toString(), "NEW Doctor has been Signed up ",
 						ComponentType.SIGNED_UP.getType(), null, null);
